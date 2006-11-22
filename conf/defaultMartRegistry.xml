@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MartRegistry>
+<MartRegistry>
+
+
+
+<RegistryURLPointer
+                    name         = "central_server"
+                    host         = "www.biomart.org"
+                    port         = "80"
+                    proxy        = ""
+                    path         = ""
+                    includeMarts = ""
+/>
+
+
+
+<!-- You can use the DB pointer instead if you have
+an open outgoing connection on port 3306. You can't use
+both pointers together unless you separate them in different
+virtualSchemas
+
+<RegistryDBPointer
+                    name         = "central_registry"
+                    host         = "martdb.ebi.ac.uk"
+                    port         = "3306"
+                    user         = "anonymous"
+                    password     = ""
+                    database     = "central_registry"
+                    schema       = "central_registry"
+                    databaseType = "mysql"
+                    proxy        = ""
+                    includeMarts = ""
+/>
+
+-->
+
+</MartRegistry>

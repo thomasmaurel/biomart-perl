@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MartRegistry>
+<MartRegistry>
+
+
+<RegistryDBPointer
+                    name         = "central_registry"
+                    host         = "martdb.ebi.ac.uk"
+                    port         = "3306"
+                    user         = "anonymous"
+                    password     = ""
+                    database     = "central_registry"
+                    schema       = "central_registry"
+                    proxy        = "http://wwwcache.ebi.ac.uk:8080"
+                    databaseType = "mysql"
+                    includeMarts = ""
+
+/>
+
+
+</MartRegistry>

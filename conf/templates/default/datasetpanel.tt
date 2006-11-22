@@ -1,0 +1,265 @@
+[% # $Id$ %]
+[% # First get information on which dataset should be the default one and pre-selected.%]
+
+
+ 	[% # Scenario 1: dataset info at runtime %]
+  	[% schema2focus   = "${datasetOBJ.virtualSchema}" %]
+  	[% database2focus = "${datasetOBJ.locationDisplayName}" %]
+  	[% dsUnitsFocus = datasetOBJ.displayName.split('\|') %]
+	[% IF dsUnitsFocus.2 # means there was a pipe and its a multi menu%]
+		[% dataset2focus_1  = dsUnitsFocus.0 %]
+		[% dataset2focus_2  = dsUnitsFocus.1 %]
+		[% dataset2focus_3  = dsUnitsFocus.2 %]
+	[% ELSE %]
+		[% dataset2focus_3  = dsUnitsFocus.0 %]	
+	[% END %]
+
+[% # Then render the whole thing %]
+<script language="JavaScript" type="text/javascript" >
+//<![CDATA[
+// set up datastructure which specifies which dataset belong to which schema, for the
+// dynamic dataset menu trick to work. We do this by transforming the Perl hash w/ 
+// dset-2-schema info to Javascript hash, which then gets used by the generic 
+// pushaction-function (see header.tt) called in the onchange() event handler.
+
+var pushActionsOfDatasetmenu = [% tbuilder.perlhash2js(js_pushactions_of_datasetmenu) %];
+// grab info on current settings from session
+var sessionValueOfDatasetmenu = { 'schema'       : "[% schema2focus   || '' %]",
+                                  'databasemenu' : "[% database2focus  || '' %]",
+                                  'datasetmenu_1'  : "[% dataset2focus_1  || '' %]",
+                                  'datasetmenu_2'  : "[% dataset2focus_2  || '' %]",
+                                  'datasetmenu_3'  : "[% dataset2focus_3  || '' %]"
+                                };
+//]]> 
+</script>
+
+[% first_pushaction_datasetmenu = '' # determine which menu to start the dset-panel pushaction-
+                                     # cascade with. Needs a bit of care, since we can have 
+                                     # one, two or three menus present which complicates things %]
+
+<div class="mart_datasetselectpanel">
+
+
+[% IF schemas.size() > 0  # Only show this if we have more than just the 'default' schema %]
+	[% first_pushaction_datasetmenu = 'schema' %]
+
+	<div class="mart_schemamenu"
+		[% IF schemas.size() == 1  && schemas.0.visible() != 1 %]
+			style="display:none;"
+		[% END %] >
+	
+	<table cellpadding="0" width="100%" style="table-layout: fixed;">
+	<tr>	
+	<td align="left" width="15%" valign="bottom">	
+		[* session.param("__Schema") *]:
+	</td>
+	<td align="left" width="85%" valign="bottom">	
+	<select name="schema" 
+	
+
+	class="mart_input"
+	onmouseover="this.className='mart_input mart_inputhov'" 
+	onmouseout="this.className='mart_input'"
+
+	onchange=
+	"
+	removeHiddenFormParam('dataBase');
+	removeHiddenFormParam('dataset');
+	addDatasetParamToForm('');
+
+	document.mainform.summarypanel_filter_count_1.value = '';
+	document.mainform.summarypanel_filter_count_2.value = '';
+
+	document.mainform.do_export.value = 0; 
+	document.mainform.showquery.value = 0;
+	document.mainform.savequery.value = 0; 
+	document.mainform.target = '_self'; 
+	document.mainform.submit(); ">
+
+	[% FOREACH schema = schemas %]
+  		<option value="[% schema.name() %]"
+		[% IF schema2focus &&  schema2focus == "${schema.name}" %]
+ 			selected="selected"
+		[% END %]
+		>[% schema.displayName() || schema.name() %]</option>
+
+	[% END %]
+	</select>
+	</td>
+	</tr>
+	</table>
+	
+	</div>
+[% ELSE %]
+	[% IF schemas.0.visible() == 1 %]
+		<table cellpadding="0" width="100%" style="table-layout: fixed;">
+		<tr>	
+		<td align="left" width="15%" valign="bottom">	
+			[* session.param("__Schema") *]:
+		</td>
+		<td align="left" width="85%" valign="bottom">
+		[% schemas.0.name %] <input name="schema" type="hidden" value="[% schemas.0.name %]" />
+		</td>
+		</tr>
+		</table>	
+	[% ELSE %]
+		<input name="schema" type="hidden" value="[% schemas.0.name %]" />
+	[% END %]
+[% END %]
+
+
+<div class="mart_databasemenu">
+<table cellpadding="0" width="100%" style="table-layout: fixed;">
+<tr>
+<td align="left" width="15%" valign="bottom">	
+[* session.param("__Database") *]: 
+</td>
+	<td align="left" width="85%" valign="bottom">	
+	[% IF database_names.size() > 0 # Only show this menu if 1> db's with useful names %]
+		<select name="databasemenu" 
+		class="mart_input"
+		onmouseover="this.className='mart_input mart_inputhov'" 
+		onmouseout="this.className='mart_input'"
+
+		onchange=
+		"removeHiddenFormParam('dataset');
+		addDatasetParamToForm('');
+
+		removeHiddenFormParam('dataBase');
+		addHiddenFormParam('dataBase', document.mainform, document.mainform.databasemenu.value);
+		 
+		document.mainform.summarypanel_filter_count_1.value = '';
+		document.mainform.summarypanel_filter_count_2.value = '';
+		 
+		 
+		document.mainform.do_export.value = 0;
+		document.mainform.showquery.value = 0; 
+		document.mainform.savequery.value = 0; 
+		document.mainform.target = '_self'; 
+		document.mainform.submit(); ">
+		<option value=""></option>
+		</select>
+	[% ELSE # Just show the db-name since there's only one on the list %]
+		[% database_names.0 %]<input name="database" type="hidden" value="[% database_names.0 %]" />
+	[% END %]
+	</td>
+</tr>
+</table>
+
+</div>
+
+<div class="mart_datasetmenu">
+<table cellpadding="0" width="100%" style="table-layout: fixed;">
+<tr>
+<td align="left" width="15%" valign="bottom">	
+	[* session.param("__Dataset") *]:
+</td>
+	
+	[% # FIND OUT if its single menu or multiple menu game %]
+	[% multiMenu = "false" %]
+	[% countMultiMenu = 0 %]
+	[% IF datasetOBJ.displayName.search('\|') %]
+		[% multiMenu = "true" %]
+		[% FOREACH dataset = datasets %]
+			[% IF dataset.displayName.search('\|') %]
+				[% countMultiMenu = 0 %]				
+				[% # determine how many menus are required %]
+				[% FOREACH dsUnit = dataset.displayName.split('\|') %]
+					[% countMultiMenu =  countMultiMenu + 1 %]				
+				[% END %]
+			[% END %]
+		[% END %]
+	[% END %]		
+	
+	[% IF multiMenu == "true" # ALL THE LOGIC OF BENs COMPARA GOES HERE %]
+		<td align="left" width="85%" valign="bottom">	
+		[% loopCount = 1 %]		
+		[% WHILE loopCount <=  countMultiMenu %]
+			<select name="datasetmenu_[%loopCount%]" 
+				class="mart_input"
+				onmouseover="this.className='mart_input mart_inputhov'" 
+				onmouseout="this.className='mart_input'"		
+				onchange="
+					document.mainform.menuNumber.value = [%loopCount%];
+					document.mainform.do_export.value = 0;
+					document.mainform.showquery.value = 0; 
+					document.mainform.savequery.value = 0; 
+					document.mainform.target = '_self';  
+					
+					document.mainform.summarypanel_filter_count_1.value = '';
+					document.mainform.summarypanel_filter_count_2.value = '';
+					
+					document.mainform.submit(); ">
+				<option value=""></option>
+				[% ## The options above get populated via JS, which gets execute by the script at the end of this page %]
+			</select>
+			[% loopCount = loopCount + 1 %]
+			<br/>
+		[% END ## WHILE LOOP %]
+		</td>
+	[% ELSE # SINGLE MENU BLOCK HERE %]
+		<td align="left" width="85%" valign="bottom">	
+		<select name="datasetmenu_3" 
+			class="mart_input"
+			onmouseover="this.className='mart_input mart_inputhov'" 
+			onmouseout="this.className='mart_input'"
+		
+			onchange=
+			"removeHiddenFormParam('dataset'); 
+			addDatasetParamToForm(document.mainform.datasetmenu_3.value);
+			
+			document.mainform.do_export.value = 0;
+			document.mainform.showquery.value = 0; 
+			document.mainform.savequery.value = 0; 
+			
+			document.mainform.summarypanel_filter_count_1.value = '';
+			document.mainform.summarypanel_filter_count_2.value = '';
+			
+			document.mainform.target = '_self';  
+			document.mainform.submit(); ">
+			<option value=""></option>
+		</select>
+		</td>
+	[% END %]
+	
+</tr>
+</table>
+
+</div>
+
+<!--div class="mart_interfacemenu">
+Configuration:
+<select name="interface">
+  <option value="Basic">Basic</option>
+  <option value="Advanced">Advanced</option>
+</select>
+</div -->
+<!-- end interface menu -->
+
+
+<!--
+<p>
+  <input type="submit" name="dataset_select" value="Submit" onclick="removeHiddenFormParam('dataset'); addDatasetParamToForm(document.mainform.datasetmenu.value); document.mainform.submit(); " />
+</p>
+-->
+
+<script language="JavaScript" type="text/javascript" >
+//<![CDATA[
+// Initial update of pushactions for dataset-selection menus on page load. Note that
+// we want to kick of the pushaction-cascade at either the schema-level or the database-
+// level, depending on which menus are present. And if only the dataset-menu is 
+// present, not do pa's at all here, alright?
+var firstPushactionDatasetmenu = "[% first_pushaction_datasetmenu %]";
+if(firstPushactionDatasetmenu != '') {
+   var pa_menu = document.mainform.elements[firstPushactionDatasetmenu];
+   //alert("getting pa-info for dataset-selection menu " + pa_menu.name + ", obj " + pa_menu + ", type " +  pa_menu.type);
+   if(pa_menu) {
+      updateMenuPushactions(pa_menu, pushActionsOfDatasetmenu, sessionValueOfDatasetmenu);
+   }
+}
+
+//]]>  
+</script>
+
+
+</div>

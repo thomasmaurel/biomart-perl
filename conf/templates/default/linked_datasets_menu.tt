@@ -1,0 +1,79 @@
+[% # $Id$ %]
+<div class="mart_datasetselectpanel">
+
+[% linked_dataset_list = wq.get_mart_registry.getDatasetsExportingTo(session.param("schema"),session.param("dataset").first) %]
+[% IF linked_dataset_list.size() > 0 %]
+
+	<div class="mart_datasetlinkmenu">
+
+	<table cellpadding="0" width="100%" style="table-layout: fixed;">
+	<tr>
+	<td align="left" width="15%" valign="bottom">	
+		Linked [% session.param("__dataset") %]:
+	</td>
+
+	<td align="left" width="85%" valign="bottom">	
+
+	<select name="linked_dataset" 
+	
+	class="mart_input"
+	onmouseover="this.className='mart_input mart_inputhov'" 
+	onmouseout="this.className='mart_input'"
+
+	onchange="var dsetName = document.mainform.elements['linked_dataset'].value; 
+
+	[% IF dataset.defined() %]
+ 		removeHiddenFormParam('dataset', '$dataset.name');
+ 		if(dsetName != 'NONE') 
+ 		{ 
+ 			addDatasetParamToForm(dsetName);
+ 		} 
+ 		else 
+ 		{ 
+ 			document.mainform['mart_mainpanel__current_visible_section'].value  = 'add_linked_datasetpanel'; 
+ 			document.mainform['summarypanel__current_highlighted_branch'].value = 'show_linked_datasetpanel'; 
+ 		}
+	[% ELSE %]
+ 		addDatasetParamToForm(dsetName);
+	[% END %] 
+	document.mainform.do_export.value = 0;
+	document.mainform.showquery.value = 0;  
+	document.mainform.savequery.value = 0; 
+	document.mainform.target = '_self'; 
+	
+	var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
+	if (summaryCountElt1)
+	{				
+		document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+	}
+	document.mainform.summarypanel_filter_count_2.value = '';
+	
+	document.mainform.submit();">
+	<option value="NONE" 
+	[% IF !dataset.defined() %]
+ 		selected="selected"
+	[% END %]
+	>NONE</option>
+
+	[% FOREACH linked_dataset_name = linked_dataset_list.sort %]
+  		[% linked_dataset = wq.get_mart_registry().getDatasetByName(session.param("schema"),linked_dataset_name) %]
+  		[% IF linked_dataset %]
+	  		<option value="$linked_dataset_name"
+			[% IF dataset.defined() && dataset.name == linked_dataset_name %]
+				 selected="selected"
+			[% END %]>[[% linked_dataset.locationDisplayName() %]] [% linked_dataset.displayName() %]</option>
+		[% END %]
+	[% END %]
+	</select>
+	
+	</td>
+	</tr>
+	</table>
+	
+	</div>
+
+[% ELSE %]
+	 No linked [% session.param("__dataset") %]s available
+[% END %]
+
+</div>
