@@ -1155,7 +1155,6 @@ sub getResultTable {
 
       # GET RESULTTABLE FROM DATASETI IMPLEMENTING OBJECT      
       my $has_data = $self->_getResultTable(%param);
-      $logger->debug("Result table contains ".scalar($has_data)." rows");
 
       # DO MERGING OF ATTRIBUTES IF REQUIRED 
       if ($importable){
@@ -1172,7 +1171,6 @@ sub getResultTable {
 	  $self->get('attributeHash')->{$linkName}){
 	  $table = $self->_attributeMerge($table,$importable_size,$linkName);
       }
-      $logger->debug("Initial attribute hash is: ".$self->get('attributeHash'));
 
       # DO HASHING OF ATTRIBUTES IF REQUIRED 
       if ($self->forceHash){
@@ -1214,15 +1212,11 @@ sub getResultTable {
       if ($to_hash){
 	  $table = $self->_hashAttributes($table,$exportable_size);
       }
-      $logger->debug("Final attribute hash is: ".$self->get('attributeHash'));
 
       # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
-      $logger->debug("Returning (def) has_data: $has_data") if ($has_data); 
       return $has_data if ($has_data); #always return defined result
-      $logger->debug("Returning table: $table") if ($firstbatch);
       return $table if ($firstbatch); #returns empty table for first call. 
                                       #Next call will be exhausted
-      $logger->debug("Returning (undef) has_data"); 
       return $has_data; #subsequent batches must return undef
   }
   $self->unimplemented_method();

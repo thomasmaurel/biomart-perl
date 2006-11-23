@@ -321,8 +321,6 @@ sub _getResultTable {
 
     my $datasetsToProcess = [@{$self->get('final_dataset_order')}];
     my $results = $self->_processPath($datasetsToProcess);
-    $logger->debug("Final results table is: $results") if $results;
-    $logger->debug("Final results table is undef") if not defined $results;
     return defined($results) ? $results:undef;
 }
 
@@ -340,7 +338,6 @@ sub _processPath {
 	my $datasetToProcess = $self->get('registry')->
 	    getDatasetByName($query->virtualSchema, $dset);
 	return if (!$datasetToProcess);
-	$logger->debug("Processing dataset $datasetToProcess");
 	#determine batching logic
 	my $virtualSchemaNameForQuery = $query->virtualSchema;
 	if ($datasetToProcess->serverType eq "web"){    
@@ -361,7 +358,6 @@ sub _processPath {
 	#    if ($query->getAllAttributes($dset)); 
 	my $subquery_atts = $query->getAllAttributes($dset);
 	if ($subquery_atts){
-		$logger->debug("Subquery atts are ".@$subquery_atts);
 	    foreach my $subquery_att(@{$subquery_atts}){
 		$subquery->addAttributeWithoutLinking($subquery_att);
 	    }
@@ -371,7 +367,6 @@ sub _processPath {
 	#    if ($query->getAllFilters($dset));
 	my $subquery_filts = $query->getAllFilters($dset);
 	if ($subquery_filts){
-		$logger->debug("Subquery filts are ".@$subquery_filts);
 	    foreach my $subquery_filter(@{$subquery_filts}){
 		$subquery->addFilterWithoutLinking($subquery_filter);
 	    }
@@ -411,14 +406,13 @@ sub _processPath {
 	    }
 	    # call for a single dataset query
 	    my $rtable = $datasetToProcess->getResultTable(%params);
-		$logger->debug("Result table has more rows? ".$rtable->hasMoreRows());
+	    $logger->debug("Bottom dataset "$datasetToProcess->name." gave ".scalar(@{$rtable->get('columns')}));
 
 	    # perform union if appropiate entry exists in union_tables hash
 	    if ($union_tables{$datasetToProcess->name}){
 		my $tableToAdd = $union_tables{$datasetToProcess->name};
 		if ($tableToAdd->getNumFields == $rtable->getNumFields){
 		    $rtable->addRows($tableToAdd->getRows);
-			$logger->debug("Result table still has more rows after union? ".$rtable->hasMoreRows());
 		    $union_tables{$datasetToProcess->name} = undef;
 		    $self->set('union_tables',\%union_tables);
 		}
@@ -567,14 +561,13 @@ sub _processPath {
 
     # execute and add exportable to Query
     my $tempTable = $datasetToProcess->getResultTable(%params);		
-    $logger->debug("Result table has more rows? ".$tempTable->hasMoreRows());
+	$logger->debug("Non-bottom dataset "$datasetToProcess->name." gave ".scalar(@{$tempTable->get('columns')}));
     
     # perform union if appropiate entry exists in union_tables hash
     if ($union_tables{$datasetToProcess->name}){
 	my $tableToAdd = $union_tables{$datasetToProcess->name};
 	if ($tableToAdd->getNumFields == $tempTable->getNumFields){
 	    $tempTable->addRows($tableToAdd->getRows);
-		$logger->debug("Result table still has more rows after union? ".$tempTable->hasMoreRows());
 	    $union_tables{$datasetToProcess->name} = undef;
 	    $self->set('union_tables',\%union_tables);
 	}
