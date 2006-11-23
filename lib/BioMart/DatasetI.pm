@@ -1297,14 +1297,18 @@ sub _hashAttributes {
 sub _attributeMerge {
     my ($self,$rtable,$importable_size,$linkName) = @_;
 
+	$logger->debug("Importable size: $importable_size");
+	$logger->debug("Link name: $linkName");
     my %this_dset_hash;
     my $rows = $rtable->getRows();
     foreach my $row(@{$rows}){
 	my $key_string = '';
 	for (my $i = 0; $i < $importable_size; $i++){
 	    next if (!$$row[$i]);
+	    $logger->debug("Appending ".$$row[$i]);
 	    $key_string .= $$row[$i];
 	}
+	$logger->debug("Final key string is: ".$key_string);
 	next if ($key_string eq "");
 	# store hash element;
 
@@ -1318,17 +1322,21 @@ sub _attributeMerge {
     my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
     foreach my $key(%this_dset_hash){
 	my $this_dset_rows = $this_dset_hash{$key};
+	$logger->debug("Processing key: ".$key);
+    $logger->debug("This previous rows: ".scalar(@$this_dset_rows));
 	foreach my $this_dset_row(@$this_dset_rows){
 	    my $prev_dset_rows = $prev_dset_hash{lc($key)}; 	## this matching of both lower and upper case of keys
 		if(!$prev_dset_rows)						## is introduced ever since ensembl 41 has made the 
 		{										## pdb for e.g in UPPER case and in MSD its in LOWER case	
 			$prev_dset_rows = $prev_dset_hash{uc($key)};	## so its safe to test both the scenarios
 		}
+	    $logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
 	    foreach my $prev_dset_row(@$prev_dset_rows){
 		push @new_rows, [@$this_dset_row,@$prev_dset_row];
 	    }
 	}
     }
+	$logger->debug("Finished with rows: ".scalar(@new_rows));
 
     $rtable->setRows(\@new_rows);
     return $rtable;
