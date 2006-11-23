@@ -143,7 +143,7 @@ div#mart_export_data
 .mart_btn
 {
 	font-family: [theme_font_family];	
-	font-size: [theme_font_size];
+	font-size: [buttons_font_size];
 	border:1px solid;
 	font-weight: bold;
 	color:[button_text_colour];
@@ -154,7 +154,7 @@ div#mart_export_data
 .mart_btnhov			
 {
 	font-family: [theme_font_family];
-	font-size: [theme_font_size];
+	font-size: [buttons_font_size];
 	font-weight: bold;	
 	color:[button_text_colour_hover];
    	background-color:[button_background_colour_hover];
@@ -550,12 +550,15 @@ acronym
 }
 
 /* Website HEADER specific settins */
+
 .menuh
 {
 		color: white;
 		font-weight: bold;
 		cursor : pointer ;
-		border : 5px solid white;		
+		border-style: solid;
+		border-width: 5px 5px 5px 0px;
+		border-color: white;
 		background-color : black;
 		border-collapse: collapse;
 }
@@ -565,7 +568,9 @@ acronym
 		font-weight: bold;
 		cursor : default ;
 		Background-Color : #FF9900;
-		border : 5px solid white;
+		border-style: solid;
+		border-width: 5px 5px 5px 0px;
+		border-color: white;
 		border-collapse: collapse;
 		vertical-align: middle;
 		horizontal-align: center;
@@ -575,11 +580,6 @@ acronym
 		color: #000000;
 		cursor : default ;
 		Background-Color : #ECEEF0 ;
-		border-right : 1px solid #ECEEF0 ;
-		border-bottom : 1px solid #ECEEF0 ;
-		border-top : 1px solid #ECEEF0 ;
-		border-left : 1px solid #ECEEF0 ;
-		border-collapse: collapse;
 }
 
 .tabletop 

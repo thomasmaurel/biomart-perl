@@ -13,16 +13,14 @@
 	
 	<table cellpadding="0" class ="mart_main_menubar" border="0" width="100%" style="table-layout: fixed;">
 	<tr>
-	<td align="left" width="35%" valign="top">	
+	<td align="left" width="35%" valign="top" >	
 				     
 			<!--
 			<img src="/martview/images/biomart-logo.gif" alt="" style="float: right; margin: 6px 4px 0px 0px"/></a> 				 
 			-->
 	
-		<table cellpadding="0" border="0" width="100%" style="table-layout: fixed; padding: 2px 10px 2px 18px;">
-		<tr>
-		<td align="left" width="13%" valign="top">	
-			<input type="submit" value="New" name="submit.newsession" 
+		
+			<input type="submit" value="New" style="margin: 0px 0px 0px 22px" name="submit.newsession" 
 
 			class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
@@ -37,9 +35,8 @@
   			return false; 
   			" 
   			Title="Start a new query"/>	    
-		</td>
-
-		<td align="center" width="13%" valign="top">	
+	
+	
 		     <input type="submit" value="XML" name="submit.showquery" 
 
 			class="mart_btn"
@@ -53,21 +50,33 @@
 			document.mainform.target = 'newwindow'; 
 			document.mainform.submit(); " Title ="Show query in XML Web Service Format"/>
 
-		</td>
-
-		<td align="center" width="14%" valign="top">	
+	
 			<input type="submit" value="Help" name="submit.help" 
 
 			class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
+   			
+          	onclick="
+          	document.mainform.showquery.value = 0; 
+          	document.mainform.do_export.value = 0; 
+			document.mainform.savequery.value = 0;
+			document.mainform.target = '_self'; 
+			var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
+			if (summaryCountElt1)
+			{				
+				document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+			}
+			var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
+			if (summaryCountElt2)
+			{
+				document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+			}
 
-          	onclick="javascript:void(window.open('/help.html','martview','width=600,height=500,resizable,scrollbars'));	
+          	
+          	javascript:void(window.open('/help.html','martview','width=600,height=500,resizable,scrollbars'));	
           	 " Title ="Get Help"/>
 
-		</td>
-
-		<td align="center" width="16%" valign="top">	
 	
 			<input type="submit" value="Count" name="get_count_button" 
 
@@ -79,14 +88,12 @@
 			document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
 			document.mainform.savequery.value = 0; 
 			document.mainform.showquery.value = 0; 
-			document.mainform.countButton.value = 1; 
+			document.mainform.countButton.value = 1;
 			document.mainform.target = '_self'; 
 			document.mainform.submit();
 			" Title="Get result count for the query with any filters applied"/>
 
-		</td>
-
-		<td align="center" width="18%" valign="top">	
+	
 			<input type="submit" value="Results" name="get_results_button" 
 
 			class="mart_btn"
@@ -118,9 +125,7 @@
 			document.mainform.target = '_self'; 
 			document.mainform.submit();" 
 			Title="Preview the results of the query"/>
-		</td>
-		</tr>
-		</table>
+	
 			<!--
 			<div style="clear: both; width: inherit; line-height: 0; height: 0;">&nbsp;</div>
 			-->
