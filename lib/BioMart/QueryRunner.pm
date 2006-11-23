@@ -321,7 +321,8 @@ sub _getResultTable {
 
     my $datasetsToProcess = [@{$self->get('final_dataset_order')}];
     my $results = $self->_processPath($datasetsToProcess);
-    $logger->debug("Final results table contains more rows? ".$results->hasMoreRows());
+    $logger->debug("Final results table contains more rows? ".$results->hasMoreRows()) if $results;
+    $logger->debug("Final table is undef") if not defined $results;
     return defined($results) ? $results:undef;
 }
 
@@ -360,7 +361,7 @@ sub _processPath {
 	#    if ($query->getAllAttributes($dset)); 
 	my $subquery_atts = $query->getAllAttributes($dset);
 	if ($subquery_atts){
-		$logger->debug("Subquery atts are $subquery_atts");
+		$logger->debug("Subquery atts are ".@$subquery_atts);
 	    foreach my $subquery_att(@{$subquery_atts}){
 		$subquery->addAttributeWithoutLinking($subquery_att);
 	    }
@@ -370,7 +371,7 @@ sub _processPath {
 	#    if ($query->getAllFilters($dset));
 	my $subquery_filts = $query->getAllFilters($dset);
 	if ($subquery_filts){
-		$logger->debug("Subquery filts are $subquery_filts");
+		$logger->debug("Subquery filts are ".@$subquery_filts);
 	    foreach my $subquery_filter(@{$subquery_filts}){
 		$subquery->addFilterWithoutLinking($subquery_filter);
 	    }
