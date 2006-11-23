@@ -80,19 +80,4 @@ if (top != self)
       </table>
       
       </td></tr> 
-	<tr>
-
-		<td width="100%" height="2" class="white">
-		<table width="100%" height="2" border="0" cellspacing="0" cellpadding="0">
-              <tr> 
-                <td width="100%" height="2" align="center">
-               <!-- InstanceBeginEditable name="topnav" --><nobr></nobr><!-- InstanceEndEditable --></td>
-              </tr> 
-          </table>
-          </td>
-
-	</tr>
-	<tr>
-<!--		<td  class="tableborder"><img alt="Image" src="/martview/images/trans.gif" height= "3" width="1" /></td> -->
-	</tr>
 </table>
