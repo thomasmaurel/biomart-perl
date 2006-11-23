@@ -19,9 +19,9 @@
 			<img src="/martview/images/biomart-logo.gif" alt="" style="float: right; margin: 6px 4px 0px 0px"/></a> 				 
 			-->
 	
-		<table cellpadding="0" border="0" width="100%" style="table-layout: fixed; padding: 2px 28px 2px 18px;">
+		<table cellpadding="0" border="0" width="100%" style="table-layout: fixed; padding: 2px 10px 2px 18px;">
 		<tr>
-		<td align="left" width="18%" valign="top">	
+		<td align="left" width="13%" valign="top">	
 			<input type="submit" value="New" name="submit.newsession" 
 
 			class="mart_btn"
@@ -39,7 +39,7 @@
   			Title="Start a new query"/>	    
 		</td>
 
-		<td align="right" width="17%" valign="top">	
+		<td align="center" width="13%" valign="top">	
 		     <input type="submit" value="XML" name="submit.showquery" 
 
 			class="mart_btn"
@@ -55,7 +55,7 @@
 
 		</td>
 
-		<td align="right" width="19%" valign="top">	
+		<td align="center" width="14%" valign="top">	
 			<input type="submit" value="Help" name="submit.help" 
 
 			class="mart_btn"
@@ -67,7 +67,7 @@
 
 		</td>
 
-		<td align="right" width="20%" valign="top">	
+		<td align="center" width="16%" valign="top">	
 	
 			<input type="submit" value="Count" name="get_count_button" 
 
@@ -86,7 +86,7 @@
 
 		</td>
 
-		<td align="right" width="26%" valign="top">	
+		<td align="center" width="18%" valign="top">	
 			<input type="submit" value="Results" name="get_results_button" 
 
 			class="mart_btn"
