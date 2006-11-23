@@ -486,7 +486,7 @@ div#mart_export_data
 .mart_results
 {
 	font-family: [FASTA_CSV_TSV_font];
-	font-size : [theme_font_size];
+	font-size : [FASTA_CSV_TSV_font_size];
 }
 
 .mart_table
@@ -582,7 +582,6 @@ acronym
 		border-collapse: collapse;
 }
 
-.tablehead { background-color: #2A3E56}
 .tabletop 
 {
 	background-color: white;
