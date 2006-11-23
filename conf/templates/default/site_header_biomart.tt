@@ -60,7 +60,7 @@ if (top != self)
 	<tr>
 		<td width="100%">
 
-		<table class="menutable" border="0"  cellpadding="1" cellspacing="0" bordercolor="#ECEEF0" width="800" rows="*, *, *, *, *, *, *, *">
+		<table class="menutable" border="0"  cellpadding="2" cellspacing="0" bordercolor="#ECEEF0" width="800" rows="*, *, *, *, *, *, *, *">
         <tr>
 
           <td align="center" valign="middle" width="16%"  nowrap="true"  class="menu" id="BioMart Home" onClick="location='/martview/../index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">HOME</td> 
