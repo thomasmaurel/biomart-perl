@@ -321,7 +321,7 @@ sub _getResultTable {
 
     my $datasetsToProcess = [@{$self->get('final_dataset_order')}];
     my $results = $self->_processPath($datasetsToProcess);
-    $logger->debug("Final results table contains more rows? ".$rtable->hasMoreRows());
+    $logger->debug("Final results table contains more rows? ".$results->hasMoreRows());
     return defined($results) ? $results:undef;
 }
 
