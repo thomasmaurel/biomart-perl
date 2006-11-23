@@ -497,7 +497,8 @@ div#mart_export_data
 
 .mart_th
 { 
-	font-size: [theme_font_size];
+	font-size: [HTML_formatter_header_font_size];
+	font-family: [HTML_formatter_header_font_type];
 	border: solid 2px; 
 	white-space: nowrap;
 	border-color: black;
@@ -506,7 +507,8 @@ div#mart_export_data
 
 .mart_th2
 { 
-	font-size: [theme_font_size];
+	font-size: [HTML_formatter_header_font_size];
+	font-family: [HTML_formatter_header_font_type];	
 	border: solid 2px; 
 	white-space: nowrap;
 	border-color: black;
@@ -515,21 +517,25 @@ div#mart_export_data
 
 .mart_tr1
 { 
-	font-size: [theme_font_size];
+	font-size: [HTML_formatter_rows_font_size];
+	font-family: [HTML_formatter_rows_font_type];
 	border: solid 1px; 
 	background-color: white;
 }
 
 .mart_tr2
 { 	
-	font-size: [theme_font_size];
+	font-size: [HTML_formatter_rows_font_size];
+	font-family: [HTML_formatter_rows_font_type];	
 	border: solid 1px; 
 	background-color: white; 
 }
 
 .mart_td
 { 
-	font-size: [theme_font_size];						
+	font-size: [HTML_formatter_rows_font_size];
+	font-family: [HTML_formatter_rows_font_type];	
+
 	border-width: 1px 2px 1px 2px; 
 	border-style: solid; 
 	white-space: nowrap;
@@ -537,7 +543,9 @@ div#mart_export_data
 }
 .mart_td_hyperlinks
 { 
-	font-size: [theme_font_size];						
+	font-size: [HTML_formatter_rows_font_size];
+	font-family: [HTML_formatter_rows_font_type];	
+
 	white-space: nowrap;
 	color: black;
 }
