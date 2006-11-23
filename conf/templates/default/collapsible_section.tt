@@ -18,7 +18,7 @@
 <input type="hidden" name="[% section_name %]__visibility" value="[% state_from_session %]" />
 <div id="[% section_name %]__show" class="
 [% IF state_from_session == "show" %]
-ctl_hidden_AttFiltPanel
+ctl_hidden_AttFiltPanel" style="display: none
 [% ELSE %]
 ctl_visible_AttFiltPanel
 [% END %]
@@ -39,7 +39,7 @@ ctl_visible_AttFiltPanel
 [% IF state_from_session == "show" %]
 ctl_visible_AttFiltPanel
 [% ELSE %]
-ctl_hidden_AttFiltPanel
+ctl_hidden_AttFiltPanel" style="display: none 
 [% END %]
 ">
   <span onclick="visibility('[% section_name %]','hide');">
@@ -53,7 +53,7 @@ ctl_hidden_AttFiltPanel
 [% IF state_from_session == 'show' %]
 el_visible_AttFiltPanel
 [% ELSE %]
-el_hidden_AttFiltPanel
+el_hidden_AttFiltPanel" style="display: none
 [% END %]
 " id="$section_name" >
 
@@ -83,7 +83,7 @@ el_hidden_AttFiltPanel
 
 	<span class="
 	[% IF state_from_session == "show" %]
-		ctl_hidden
+		ctl_hidden" style="display: none
 	[% ELSE %]
 		ctl_visible
 	[% END %]
@@ -101,7 +101,7 @@ el_hidden_AttFiltPanel
 [% IF state_from_session == "show" %]
 ctl_visible
 [% ELSE %]
-ctl_hidden
+ctl_hidden" style="display: none
 [% END %]
 ">
 <span> $section_displayname</span>
