@@ -360,7 +360,7 @@ sub _processPath {
 	if ($subquery_atts){
 	    foreach my $subquery_att(@{$subquery_atts}){
 		$subquery->addAttributeWithoutLinking($subquery_att);
-	    $logger->debug("Added attribute ${subquery_att->name} to bottom dataset ".$datasetToProcess->name);
+	    $logger->debug("Added attribute $subquery_att to bottom dataset ".$datasetToProcess->name);
 	    }
 	}
 
@@ -370,7 +370,7 @@ sub _processPath {
 	if ($subquery_filts){
 	    foreach my $subquery_filter(@{$subquery_filts}){
 		$subquery->addFilterWithoutLinking($subquery_filter);
-	    $logger->debug("Added filter ${subquery_filter->name} to bottom dataset ".$datasetToProcess->name);
+	    $logger->debug("Added filter $subquery_filter to bottom dataset ".$datasetToProcess->name);
 	    }
 	}
 
