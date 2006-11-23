@@ -6,135 +6,141 @@ this stylesheet (possibly combined with customizing of HTML templates).
 
 /* BioMart container panel, contains all Mart components */
 
-div#mart_containerpanel  { 
-					  font-family: [theme_font_family];
-					  font-size: [theme_font_size];
-					  height: 100%;
-                           width: 100%;
-
-                           background-color: white;                     
-                         }
+div#mart_containerpanel
+{ 
+	font-family: [theme_font_family];
+	font-size: [theme_font_size];
+	height: 100%;
+	width: 100%;
+	background-color: white;                     
+}
 
 .mart_summarypanel_datasets
-					{ 
-						background-color: [summary_panel_bgcolour];
-                            border-style: solid;
-                            margin: 16px 8px 16px 0px;
-                            border-width: 3px 3px 3px 0px;
-                            border-color: [blocks_outline_colour];
-					   /*min-height: 350px; */
-					   _width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/						
-					   max-width: inherit; /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
-                            padding: 16px 30px 16px 30px;
-					   height: [left_right_panel_height];
-                            clear: both;
-                            overflow: auto;
-                          }
+{ 
+	background-color: [summary_panel_bgcolour];
+	border-style: solid;
+	margin: 16px 8px 16px 0px;
+	border-width: 3px 3px 3px 0px;
+	border-color: [blocks_outline_colour];
+	/*min-height: 350px; */
+	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/						
+	max-width: inherit; /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
+	padding: 16px 30px 16px 30px;
+	height: [left_right_panel_height];
+	clear: both;
+	overflow: auto;
+}
 
 div#mart_mainpanel
-					{
-						height: [left_right_panel_height];
-						background-color: [main_panel_bgcolour];
-                            border-style: solid;
-                            margin: 16px 0px 16px 8px;
-                            border-width: 3px 0px 3px 3px;
-                            border-color: [blocks_outline_colour];
-					   /*min-height: 350px; */
-                            padding: 16px 20px 16px 20px;
-                            max-width: inherit;  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
-						_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/
-                            clear: both;
-                            overflow: auto;
-						
-					   
-					}
+{
+	height: [left_right_panel_height];
+	background-color: [main_panel_bgcolour];
+	border-style: solid;
+	margin: 16px 0px 16px 8px;
+	border-width: 3px 0px 3px 3px;
+	border-color: [blocks_outline_colour];
+	/*min-height: 350px; */
+	padding: 16px 20px 16px 20px;
+	max-width: inherit;  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
+	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/
+	clear: both;
+	overflow: auto;
+}
+
 .mart_datasetselectpanel 
-					{ background-color: [main_panel_bgcolour];
-                            border-style: solid;
-                            border-width: 0px;
-                            border-color: [blocks_outline_colour];
-					   /*min-height: 350px; */
-                            padding: 4px;
-                            width: inherit;
-                            clear: both;
-                            overflow: auto;
-                          }
+{
+	background-color: [main_panel_bgcolour];
+	border-style: solid;
+	border-width: 0px;
+	border-color: [blocks_outline_colour];
+	/*min-height: 350px; */
+	padding: 4px;
+	width: inherit;
+	clear: both;
+	overflow: auto;
+}
 
 
 /* horizontal menubar */
-div#mart_main_menubar_outer {
-                           padding: 2px;
-                           margin: 2px;
-                           border-style: solid;
-                           border-width: 2px;
-                           border-color: [blocks_outline_colour];
-                           width: inherit;
-                           background-color: white;                           
-                         }
-.mart_main_menubar    { /*text-align: left;*/
-                           /*padding: 8px;*/
-                           border-color: [top_menubar_colour];
-                           background-color: [top_menubar_colour];
-                         }
-div#mart_bottom_bar		{ /*text-align: left;*/
-                           padding: 3px 3px 4px 30px;
-                           border-style: solid;
-                           border-width: 1px;
-                           color: white;
+div#mart_main_menubar_outer
+{
+	padding: 2px;
+	margin: 2px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: [blocks_outline_colour];
+	width: inherit;
+	background-color: white;                           
+}
 
-                           font-weight: bold;
-                           width: inherit;
-                           border-color: [top_menubar_colour];
-                           background-color: [top_menubar_colour];
-                   		font-size: [theme_font_size]; 
-					font-family: [theme_font_family];
+.mart_main_menubar
+{
+	/*text-align: left;*/
+	/*padding: 8px;*/
+	border-color: [top_menubar_colour];
+	background-color: [top_menubar_colour];
+}
 
-                         }
+div#mart_bottom_bar
+{	
+	/*text-align: left;*/
+	padding: 3px 3px 4px 30px;
+	border-style: solid;
+	border-width: 1px;
+	color: white;
+	font-weight: bold;
+	width: inherit;
+	border-color: [top_menubar_colour];
+	background-color: [top_menubar_colour];
+	font-size: [theme_font_size]; 
+	font-family: [theme_font_family];
+}
 
-.mart_datasetpanel       { border-style: solid;
-                           border-width: 1px;                           
-                           padding: 4px;
-                           border-color: [blocks_outline_colour];
-                           clear: both;
-                           width: inherit;                           
-                           overflow: auto;
-                         }
+.mart_datasetpanel
+{
+	border-style: solid;
+	border-width: 1px;                           
+	padding: 4px;
+	border-color: [blocks_outline_colour];
+	clear: both;
+	width: inherit;                           
+	overflow: auto;
+}
 /* Results Section*/
 
+div#mart_export_menubar	
+{
+	border: solid;
+	font-size: [theme_font_size];
+	clear: both;
+	background-color: [main_panel_bgcolour];                            
+	border-width: 0px 0px 3px 0px;
+	padding: 0px 0px 8px 0px;
+	border-color: [blocks_outline_colour];
+	width: inherit;                           
+	overflow: auto;							
+}
 
-div#mart_export_menubar	{
-					  border: solid;
-					  font-size: [theme_font_size];
-                           clear: both;
-					  background-color: [main_panel_bgcolour];                            
-					  border-width: 0px 0px 3px 0px;
-					  padding: 0px 0px 8px 0px;
-                           border-color: [blocks_outline_colour];
-                           width: inherit;                           
-                           overflow: auto;							
-					}
-
-div#mart_export_data         { 
-						background-color: [main_panel_bgcolour];
-						
-                            /* border-style: solid; */
-                            /* border-width: 1px; */
-                            /* border-color: [blocks_outline_colour]; */
-						/* This is my life time achievement, so dont fiddle with the following */
-						/* life is tough with different IE */
-                           	width: inherit;  /*For all browsers including IE 7*/
-						_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/						
-						
-						height: 100%;
-                            /* padding: 4px; */
-					   margin: 12px 0px 2px 0px;
-                            /* clear: both; */
-                            /* overflow: auto; */
-                            }
+div#mart_export_data
+{ 
+	background-color: [main_panel_bgcolour];
+	/* border-style: solid; */
+	/* border-width: 1px; */
+	/* border-color: [blocks_outline_colour]; */
+	/* This is my life time achievement, so dont fiddle with the following */
+	/* life is tough with different IE */
+	width: inherit;  /*For all browsers including IE 7*/
+	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/
+	height: 100%;
+	/* padding: 4px; */
+	margin: 12px 0px 2px 0px;
+	/* clear: both; */
+	/* overflow: auto; */
+}
 					
 /* button and hover on functions */					
 .mart_btn
-	{
+{
 	font-family: [theme_font_family];	
 	font-size: [theme_font_size]; 				
 	border:1px solid;
@@ -142,88 +148,84 @@ div#mart_export_data         {
 	color:[button_text_colour];
    	background-color:[button_background_colour];
 	border-color: [button_border_colour];
-
-	}
+}
       				
 .mart_btnhov			
-	{
+{
 	font-family: [theme_font_family];
 	font-size: [theme_font_size]; 				
 	font-weight: bold;	
 	color:[button_text_colour_hover];
    	background-color:[button_background_colour_hover];
 	border-color: [button_border_colour_hover];
-	}
-
-
+}
 
 /* Other Input fields such drop downs and text field and hover on functions */					
 .mart_input				
-	{
-		font-size: [theme_font_size]; 
-		font-family: [theme_font_family];
-	}
+{
+	font-size: [theme_font_size]; 
+	font-family: [theme_font_family];
+}
       				
 .mart_inputhov			
-	{	
-		font-size: [theme_font_size]; 
-		font-family: [theme_font_family];
-	}
+{	
+	font-size: [theme_font_size]; 
+	font-family: [theme_font_family];
+}
 
-.email_notification	
-					{
-						margin: 0px 0px 0px 0px;
-					}
+.email_notification
+{
+	margin: 0px 0px 0px 0px;
+}
 					
 /* smaller containers for filter collections and similar items. Most share
    the same basic attributes defined here, while some have minor adjustments in
    borders etc. below */
 .mart_button
-					{
-					  border: solid;
-					  border-width: 0px 0px 4px 0px;
-                           border-color: #CCCCCC;							
-						
-					}
+{
+	border: solid;
+	border-width: 0px 0px 4px 0px;
+	border-color: #CCCCCC;							
+}
 
 .mart_schemamenu,	
 .mart_datasetlinkmenu
-					{ background-color: [main_panel_bgcolour];
-                            border-style: solid;
-                            border-width: 0px 0px 4px 0px;
-                            border-color: [blocks_outline_colour];
-                            padding: 0px 0px 16px 0px;
-                            height: 100%;
-                            clear: both;
-                            font-size: [theme_font_size];
-                            overflow: auto;
-                          }
+{
+	background-color: [main_panel_bgcolour];
+	border-style: solid;
+	border-width: 0px 0px 4px 0px;
+	border-color: [blocks_outline_colour];
+	padding: 0px 0px 16px 0px;
+	height: 100%;
+	clear: both;
+	font-size: [theme_font_size];
+	overflow: auto;
+}
 
 .mart_databasemenu,
 .mart_interfacemenu,
 .mart_datasetmenu
-					{ background-color: [main_panel_bgcolour];
-                            border-style: solid;
-                            border-width: 0px 0px 4px 0px;
-                            border-color: [blocks_outline_colour];
-                            padding: 16px 0px 16px 0px;
-                            height: 100%;
-                            clear: both;
-                            font-size: [theme_font_size];                            
-                            overflow: auto;
-                          }
+{
+	background-color: [main_panel_bgcolour];
+	border-style: solid;
+	border-width: 0px 0px 4px 0px;
+	border-color: [blocks_outline_colour];
+	padding: 16px 0px 16px 0px;
+	height: 100%;
+	clear: both;
+	font-size: [theme_font_size];                            
+	overflow: auto;
+}
 
 .dummyLine
-					{
-					background-color: [summary_panel_bgcolour];
-                            border-style: solid;
-                            border-width: 0px 0px 4px 0px;
-                            border-color: [blocks_outline_colour];
-                            margin: 16px 0px 16px 0px;
-					}
+{
+	background-color: [summary_panel_bgcolour];
+	border-style: solid;
+	border-width: 0px 0px 4px 0px;
+	border-color: [blocks_outline_colour];
+	margin: 16px 0px 16px 0px;
+}
 					
-
-
 .mart_filtergroup,
 .mart_filtercollection,
 .mart_attributegroup,
@@ -232,227 +234,312 @@ div#mart_export_data         {
 .mart_outputformats,
 .mart_outputformats_list,
 .mart_compression_list,
-.mart_compression         { background-color: [main_panel_bgcolour];
-                            border-style: solid;
-                            border-width: 1px 0px 1px 1px;
-                            border-color: [blocks_outline_colour];
-                            padding: 4px;
-					   margin: 0px 0px 2px 0px;
-                            height: inherit;
-                            clear: both;
-                            overflow: auto;
-                          }
-.collectionBREAK { 
-					background-color: [main_panel_bgcolour];
-                         clear: both;
-
-                            }
+.mart_compression
+{
+	background-color: [main_panel_bgcolour];
+	border-style: solid;
+	border-width: 1px 0px 1px 1px;
+	border-color: [blocks_outline_colour];
+	padding: 4px;
+	margin: 0px 0px 2px 0px;
+	height: inherit;
+	clear: both;
+	overflow: auto;
+}
+.collectionBREAK
+{ 
+	background-color: [main_panel_bgcolour];
+	clear: both;
+}
 
 .mart_datasetselectpanel,
 .mart_filterpanel,
-.mart_attributepanel      {
-                           
-                            padding: 0px;   
-                          }
+.mart_attributepanel
+{
+	padding: 0px;   
+}
 
 .mart_outputformats_list,
 .mart_compression_list,
 .mart_filtercollection,
-.mart_attributecollection { border-width: 1px 0px 0px 0px;
-					font-size: [theme_font_size];	
-						}
-.mart_filtercollection    { overflow: auto; }
+.mart_attributecollection
+{
+	border-width: 1px 0px 0px 0px;
+	font-size: [theme_font_size];	
+}
+.mart_filtercollection
+{
+	overflow: auto;
+}
 .mart_filter,
-.mart_attribute           { 
-					
-					height: auto;
-                            clear: both; 
-                            overflow: auto;
-                          }
-.mart_filtername          {
-                            width: 40%;
-                            float: left;
+.mart_attribute
+{
+	height: auto;
+	clear: both; 
+	overflow: auto;
+}
+.mart_filtername
+{
+	width: 40%;
+	float: left;
+}
+.mart_filtervalue
+{
+	float: left;
+}
+.mart_filter_acresult
+{
+	/* z-index: 1; */
+	border: 1px solid black;
+	background-color: white;
+}
 
-                          }
-.mart_filtervalue         {
-                            float: left;
-
-                          }
-.mart_filter_acresult     {
-                            /* z-index: 1; */
-                            border: 1px solid black;
-                            background-color: white;
-                          }
 .mart_attribute_col,
 .mart_outputformats_list_col,
-.mart_compression_list_col{
-                            width: 45%;
-                            float: left; 
-                          }
-.mart_attributepage_selection_col{
-						font-size: [theme_font_size];
-						font-weight: bold;
-                            float: left;
-                          }
-.mart_filter_acresultbox  {
-                            border: 1px solid black;
-                            background-color: white;
-                          }
-.mart_aclist_highlighted  {}
-.mart_aclist_selected     { background-color: blue;  }
-.mart_aclist_notselected  { background-color: white; }
+.mart_compression_list_col
+{
+	width: 45%;
+	float: left; 
+}
+.mart_attributepage_selection_col
+{
+	font-size: [theme_font_size];
+	font-weight: bold;
+	float: left;
+}
+.mart_filter_acresultbox
+{
+	border: 1px solid black;
+	background-color: white;
+}
+
+.mart_aclist_selected
+{
+	background-color: blue;
+}
+
+.mart_aclist_notselected 
+{
+	background-color: white; 
+}
+
 .mart_summarypanel_dataset_entrycount 
-	{
-		font-size : [theme_font_size];
-		color: [summarypanel_dataset_entrycount_colour];
-          font-style: [summarypanel_dataset_entrycount_style];
-	}
-.mart_summarypanel_list_disabled { color: grey; }
+{
+	font-size : [theme_font_size];
+	color: [summarypanel_dataset_entrycount_colour];
+	font-style: [summarypanel_dataset_entrycount_style];
+}
+
+.mart_summarypanel_list_disabled
+{
+	color: grey;
+}
+
 .mart_summarypanel_listheader,
 .mart_summarypanel_listheader_mouseover,
-.mart_summarypanel_listheader_highlighted {
-                            cursor: pointer;
-	                       font-weight: bold;                            
-					   font-size: [theme_font_size]; 
-                            clear: both;
-					   margin: 0px 0px 2px 0px;
-                          }
 .mart_summarypanel_listheader_highlighted
-					 {
-			    			background-color: 	[summary_panel_highlight] ;
-                          }
+{
+	cursor: pointer;
+	font-weight: bold;                            
+	font-size: [theme_font_size]; 
+	clear: both;
+	margin: 0px 0px 2px 0px;
+}
+
+.mart_summarypanel_listheader_highlighted
+{
+	background-color: 	[summary_panel_highlight] ;
+}
+
 .el_hidden,
-.ctl_hidden  			{ 
-						display:none;
-						margin: 0px 0px 2px 0px;
-						font-size: [theme_font_size]; 
-					}
+.ctl_hidden
+{ 
+	display:none;
+	margin: 0px 0px 2px 0px;
+	font-size: [theme_font_size]; 
+}
+
 .el_visible,
 .ctl_visible,
 .mart_dataset_noneSelected
-	{ 						
-		margin: 1px 0px 1px 13px;
-		font-size: [theme_font_size]; 		
-	}
+{ 						
+	margin: 1px 0px 1px 13px;
+	font-size: [theme_font_size]; 		
+}
+
+.el_hidden_AttFiltPanel,
+.ctl_hidden_AttFiltPanel 
+{
+	display:none;
+	margin: 0px 0px 2px 0px;
+	font-size: [theme_font_size];
+}
+
+.el_visible_AttFiltPanel,
+.ctl_visible_AttFiltPanel,
+{
+	margin: 1px 0px 1px 0px;
+        font-size: [theme_font_size];
+}
 
 .mart_summarypanel_AttFiltHeader,
 .mart_summarypanel_AttFiltHeader_highlighted
-	{
-		font-size: [theme_font_size]; 
-		cursor: pointer;
-          font-weight: bold;                            	
-		margin: 1px 0px 1px 13px;
-		clear: both;
-	}                     
+{
+	font-size: [theme_font_size]; 
+	cursor: pointer;
+	font-weight: bold;                            	
+	margin: 1px 0px 1px 13px;
+	clear: both;
+}                     
+
 .mart_summarypanel_AttFiltHeader_highlighted
-	{
-		background-color: 	[summary_panel_highlight] ;
-	}
+{
+	background-color: 	[summary_panel_highlight] ;
+}
 						
 .mart_summarypanel_list_disabled,
 .mart_summarypanel_list   
-	{ 
-		font-size: [theme_font_size]; 
-		clear: both;
-		width: inherit;
-		margin: 1px 0px 1px 26px;
-	}
+{ 
+	font-size: [theme_font_size]; 
+	clear: both;
+	width: inherit;
+	margin: 1px 0px 1px 26px;
+}
+
 .mart_summarypanel_listitem_disabled,
-.mart_summarypanel_listitem {
-					   font-size: [theme_font_size]; 
-					   font-style: [summarypanel_att_filt_font_style];
-                            margin: 1px 0px 1px 0px;
-                            width: inherit;
-                            clear: both;
-                            color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
-                          }
-.mart_summarypanel_listitem2 {
-					   font-size: [theme_font_size]; 
-					   font-style: [summarypanel_att_filt_font_style];
-                            margin: 1px 0px 1px 0px;
-                            width: inherit;
-                            clear: both;
-                            color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
-                          }
+.mart_summarypanel_listitem 
+{
+	font-size: [theme_font_size]; 
+	font-style: [summarypanel_att_filt_font_style];
+	margin: 1px 0px 1px 0px;
+	width: inherit;
+	clear: both;
+	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
+}
 
-.mart_summarypanel_listitem3 {
-					   font-size: [theme_font_size]; 
-					   font-style: [summarypanel_att_filt_font_style];
-                            margin: 1px 0px 1px 26px;
-                            width: inherit;
-                            clear: both;
-                            color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
-                          }
-.mart_summarypanel_listitem4 {
-					   font-size: [theme_font_size]; 
-					   font-style: [summarypanel_att_filt_font_style];
-                            margin: 1px 0px 1px 26px;
-                            width: inherit;
-                            clear: both;
-                            color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
-                          }
+.mart_summarypanel_listitem2
+{
+	font-size: [theme_font_size]; 
+	font-style: [summarypanel_att_filt_font_style];
+	margin: 1px 0px 1px 0px;
+	width: inherit;
+	clear: both;
+	color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
+}
 
-.mart_summarypanel_listitem_disabled { color: grey; }
+.mart_summarypanel_listitem3
+{
+	font-size: [theme_font_size]; 
+	font-style: [summarypanel_att_filt_font_style];
+	margin: 1px 0px 1px 26px;
+	width: inherit;
+	clear: both;
+	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
+}
+
+.mart_summarypanel_listitem4 
+{
+	font-size: [theme_font_size];
+	font-style: [summarypanel_att_filt_font_style];
+	margin: 1px 0px 1px 26px;
+	width: inherit;
+	clear: both;
+	color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
+}
+
+.mart_summarypanel_listitem_disabled 
+{
+	color: grey;
+}
 
 /* Some text-styles, for section titles and such*/
 .mart_filterpanel_title,
 .mart_attributepanel_title,
-.mart_joineddsetpanel_title{ font-size: [theme_font_size];
-                             font-weight: bold; }
-.mart_filtergroup_title,
-.mart_attributegroup_title{ font-weight: bold;
-                            font-style: italic; }
-
-.mart_attributecollection_title { 
-                                  font-weight: bold; }
-.highlighted { background-color: yellow; }
-.mart_hyperlink_cursor_on_mouseover { cursor: pointer; }
-
-/* Style settings for results-preview panel */
-/* pre.mart_results         { font-size: pt; } */
-.mart_results {
-
-font-family: [FASTA_CSV_TSV_font];
-font-size : [theme_font_size];
+.mart_joineddsetpanel_title
+{
+	font-size: [theme_font_size];
+	font-weight: bold;
 }
-.mart_table              { 
-                           	border: solid black 2px; 
-                           	border-collapse: collapse; 
-                         }
-.mart_th                 { 
-						font-size: [theme_font_size];
-						border: solid 2px; 
-                           	white-space: nowrap;
-	                   		border-color: black;
-                           	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
-                         }
-.mart_th2                { 
-						font-size: [theme_font_size];
-						border: solid 2px; 
-               	          white-space: nowrap;
-                    	     border-color: black;
-	                   		color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
-                         }
-.mart_tr1                { 
-						font-size: [theme_font_size];
-						border: solid 1px; 
-					  	background-color: white;
-					}
-.mart_tr2                { 	
-						font-size: [theme_font_size];
-						border: solid 1px; 
-                           	background-color: white; 
-                         }
-.mart_td                 { 
-						font-size: [theme_font_size];						
-						border-width: 1px 2px 1px 2px; 
-                           	border-style: solid; 
-                           	white-space: nowrap;
-                         }
+
+.mart_filtergroup_title,
+.mart_attributegroup_title
+{
+	font-weight: bold;
+	font-style: italic;
+}
+
+.mart_attributecollection_title
+{
+	font-weight: bold;
+}
+
+.highlighted
+{
+	background-color: yellow;
+}
+
+.mart_hyperlink_cursor_on_mouseover
+{
+	cursor: pointer;
+}
+
+.mart_results
+{
+	font-family: [FASTA_CSV_TSV_font];
+	font-size : [theme_font_size];
+}
+
+.mart_table
+{ 
+	border: solid black 2px; 
+	border-collapse: collapse;
+}
+
+.mart_th
+{ 
+	font-size: [theme_font_size];
+	border: solid 2px; 
+	white-space: nowrap;
+	border-color: black;
+	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
+}
+
+.mart_th2
+{ 
+	font-size: [theme_font_size];
+	border: solid 2px; 
+	white-space: nowrap;
+	border-color: black;
+	color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
+}
+
+.mart_tr1
+{ 
+	font-size: [theme_font_size];
+	border: solid 1px; 
+	background-color: white;
+}
+
+.mart_tr2
+{ 	
+	font-size: [theme_font_size];
+	border: solid 1px; 
+	background-color: white; 
+}
+
+.mart_td
+{ 
+	font-size: [theme_font_size];						
+	border-width: 1px 2px 1px 2px; 
+	border-style: solid; 
+	white-space: nowrap;
+}
 
 /* Ensure that all acronyms appear with correct dotted underlines. */
-acronym 				 { border-bottom: 1px dotted;  
-						 }
+acronym 				 
+{
+	border-bottom: 1px dotted;  
+}
 
 /* div {border: solid 1px #f00;}  */
 

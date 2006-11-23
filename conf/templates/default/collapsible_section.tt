@@ -18,9 +18,9 @@
 <input type="hidden" name="[% section_name %]__visibility" value="[% state_from_session %]" />
 <div id="[% section_name %]__show" class="
 [% IF state_from_session == "show" %]
-ctl_hidden
+ctl_hidden_AttFiltPanel
 [% ELSE %]
-ctl_visible
+ctl_visible_AttFiltPanel
 [% END %]
 ">
   <span onclick="visibility('[% section_name %]','show');">
@@ -37,9 +37,9 @@ ctl_visible
 
 <div id="[% section_name %]__hide" class="
 [% IF state_from_session == "show" %]
-ctl_visible
+ctl_visible_AttFiltPanel
 [% ELSE %]
-ctl_hidden
+ctl_hidden_AttFiltPanel
 [% END %]
 ">
   <span onclick="visibility('[% section_name %]','hide');">
@@ -51,9 +51,9 @@ ctl_hidden
 <!-- Start of collapsible section -->
 <div class="
 [% IF state_from_session == 'show' %]
-el_visible
+el_visible_AttFiltPanel
 [% ELSE %]
-el_hidden
+el_hidden_AttFiltPanel
 [% END %]
 " id="$section_name" >
 
