@@ -321,8 +321,8 @@ sub _getResultTable {
 
     my $datasetsToProcess = [@{$self->get('final_dataset_order')}];
     my $results = $self->_processPath($datasetsToProcess);
-    $logger->debug("Final results table contains more rows? ".$results->hasMoreRows()) if $results;
-    $logger->debug("Final table is undef") if not defined $results;
+    $logger->debug("Final results table is: $results") if $results;
+    $logger->debug("Final results table is undef") if not defined $results;
     return defined($results) ? $results:undef;
 }
 
