@@ -534,7 +534,7 @@ div#mart_export_data
 .mart_td
 { 
 	font-size: [HTML_formatter_rows_font_size];
-	font-family: [HTML_formatter_rows_font_type];	
+	font-family: [HTML_formatter_rows_font_type]; 	
 
 	border-width: 1px 2px 1px 2px; 
 	border-style: solid; 
@@ -547,7 +547,7 @@ div#mart_export_data
 	font-family: [HTML_formatter_rows_font_type];	
 
 	white-space: nowrap;
-	color: black;
+	/*color: black; */
 }
 
 
