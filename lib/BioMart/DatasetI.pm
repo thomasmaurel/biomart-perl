@@ -1334,9 +1334,13 @@ sub _attributeMerge {
 		{										## pdb for e.g in UPPER case and in MSD its in UPPER case	
 			$prev_dset_rows = $prev_dset_hash{uc($key)};	## so its safe to test both the scenarios
 		}
+	    if ($prev_dset_rows) {
 	    $logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
 	    foreach my $prev_dset_row(@$prev_dset_rows){
 		push @new_rows, [@$this_dset_row,@$prev_dset_row];
+	    }
+	    } else {
+	    $logger->debug("There were NO previous rows");
 	    }
 	}
     }
