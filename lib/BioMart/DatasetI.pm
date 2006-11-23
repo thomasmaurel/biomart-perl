@@ -1325,9 +1325,13 @@ sub _attributeMerge {
 	$logger->debug("Processing key: ".$key);
     $logger->debug("This previous rows: ".scalar(@$this_dset_rows));
 	foreach my $this_dset_row(@$this_dset_rows){
-	    my $prev_dset_rows = $prev_dset_hash{lc($key)}; 	## this matching of both lower and upper case of keys
+	    my $prev_dset_rows = $prev_dset_hash{$key}; 	## this matching of both lower and upper case of keys
 		if(!$prev_dset_rows)						## is introduced ever since ensembl 41 has made the 
 		{										## pdb for e.g in UPPER case and in MSD its in LOWER case	
+			$prev_dset_rows = $prev_dset_hash{lc($key)};	## so its safe to test both the scenarios
+		}		
+		if(!$prev_dset_rows)						## is introduced ever since ensembl 41 has made the 
+		{										## pdb for e.g in UPPER case and in MSD its in UPPER case	
 			$prev_dset_rows = $prev_dset_hash{uc($key)};	## so its safe to test both the scenarios
 		}
 	    $logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
