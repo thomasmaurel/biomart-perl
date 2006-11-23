@@ -61,6 +61,7 @@ package BioMart::QueryRunner;
 use strict;
 use warnings;
 use Digest::MD5;
+use Data::Dumper;
 use Log::Log4perl;
 my $logger=Log::Log4perl->get_logger(__PACKAGE__);
 
@@ -360,6 +361,7 @@ sub _processPath {
 	if ($subquery_atts){
 	    foreach my $subquery_att(@{$subquery_atts}){
 		$subquery->addAttributeWithoutLinking($subquery_att);
+	    $logger->debug("Added attribute $subquery_att to bottom dataset ".$datasetToProcess->name);
 	    }
 	}
 
@@ -369,15 +371,19 @@ sub _processPath {
 	if ($subquery_filts){
 	    foreach my $subquery_filter(@{$subquery_filts}){
 		$subquery->addFilterWithoutLinking($subquery_filter);
+	    $logger->debug("Added filter $subquery_filter to bottom dataset ".$datasetToProcess->name);
 	    }
 	}
 
 
 	$subquery->orderBy($query->orderBy()) 
 	    if ($query->orderBy());
+    $logger->debug("Added orderBy ".$query->orderBy." to bottom dataset ".$datasetToProcess->name)
+	    if ($query->orderBy());
 	# add dataset name incase no atts/filts eg start page count
 	$subquery->addDatasetName($dset,
 				  $query->getInterfaceForDataset($dset));
+    $logger->debug("Added dataset $dset interface ".$query->getInterfaceForDataset($dset)." to bottom dataset ".$datasetToProcess->name);
 	
 	my %params = ('query' => $subquery);
 
@@ -405,6 +411,7 @@ sub _processPath {
 		}
 	    }
 	    # call for a single dataset query
+	    $logger->debug("Bottom dataset ".$datasetToProcess->name." query params are: ".Dumper(%params));
 	    my $rtable = $datasetToProcess->getResultTable(%params);
 	    $logger->debug("Bottom dataset ".$datasetToProcess->name." gave ".scalar(@{$rtable->get('columns')}));
 
