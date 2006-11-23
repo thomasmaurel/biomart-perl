@@ -4,7 +4,9 @@ var currentTab="Query";
 
 
 
-<link rel="stylesheet" href="/martview/../include/stylesheet.css" type="text/css" />
+<!--link rel="stylesheet" href="/martview/../include/stylesheet.css" type="text/css" /-->
+
+
  <script language="javascript" type="text/javascript">
 <!--
 
@@ -53,24 +55,31 @@ if (top != self)
 </table><table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabletop">
 	<tr>
 		<td width="100%">
-		<table class="menutable" border="1"  cellpadding="2" cellspacing="0" bordercolor="#ECEEF0" width="750" rows="*, *, *, *, *, *, *, *">
+
+		<table class="menutable" border="1"  cellpadding="0" cellspacing="0" bordercolor="#ECEEF0" width="100%" rows="*, *, *, *, *, *, *, *">
         <tr>
-          <td align="center" valign="middle" width="150" height="20" nowrap="true"  class="menu" id="BioMart Home" onClick="location='/martview/../index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Home</td> 
-          <td align="center" valign="middle" width="150" nowrap="true"  class="menu"  id="Documentation" onClick="location='/martview/../install.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Documentation</td> 
+
+          <td align="center" valign="middle" width="16%" height="20" nowrap="true"  class="menu" id="BioMart Home" onClick="location='/martview/../index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Home</td> 
+
+          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Documentation" onClick="location='/martview/../install.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Documentation</td> 
          
 
-		  <td align="center" valign="middle" width="150" nowrap="true"  class="menu"  id="News" onClick="location='/martview/../news.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">News</td> 
-          <td align="center" valign="middle" width="150" nowrap="true"  class="menu"  id="Contact" onClick="location='/martview/../contact.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Contact</td> 
-          <td align="center" valign="middle" width="150" nowrap="true"  class="menu"  id="Credits" onClick="location='/martview/../credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Credits</td> 
+		  <td align="center" valign="middle" width="16%" nowrap="true"  class="menu"  id="News" onClick="location='/martview/../news.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">News</td> 
 
-      <td align="center" valign="middle" width="150" nowrap="true"  class="menuh"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Query</td>    
+          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Contact" onClick="location='/martview/../contact.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Contact</td> 
+
+          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Credits" onClick="location='/martview/../credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Credits</td> 
+
+      <td align="center" valign="middle" width="17%" nowrap="true"  class="menuh"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Query</td>    
 
 		</tr>
-      </table></td></tr> 
+      </table>
+      
+      </td></tr> 
 	<tr>
 		<td width="100%" height="5" class="tablehead"><table width="100%" height="5" border="0" cellspacing="0" cellpadding="0">
               <tr> 
-                <td width="100%" height="20" align="center"><!-- InstanceBeginEditable name="topnav" --><nobr><a href = "index.html" class = "white">BioMart</a></nobr><!-- InstanceEndEditable --></td>
+                <td width="100%" height="20" align="center"><!-- InstanceBeginEditable name="topnav" --><nobr></nobr><!-- InstanceEndEditable --></td>
               </tr> 
             </table></td>
 	</tr>
