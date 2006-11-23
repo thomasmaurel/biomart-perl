@@ -1171,9 +1171,9 @@ sub getResultTable {
       if ($has_data && $has_data > 0 && $linkName && 
 	  $self->get('attributeHash')->{$linkName}){
       $logger->debug("Attribute merge using linkName: $linkName");
-      $logger->debug("Before merge: ".$table->get('columns'));
+      $logger->debug("Before merge: ".scalar(@{$has_data->get('columns')}));
 	  $table = $self->_attributeMerge($table,$importable_size,$linkName);
-      $logger->debug("After merge: ".$table->get('columns'));
+      $logger->debug("After merge: ".scalar(@{$has_data->get('columns')}));
       }
 
       # DO HASHING OF ATTRIBUTES IF REQUIRED 
@@ -1214,16 +1214,19 @@ sub getResultTable {
       }
 
       if ($to_hash){
-      $logger->debug("Attribute hash using linkName: $linkName");
-      $logger->debug("Before hash: ".$table->get('columns'));
+      $logger->debug("Attribute hash");
+      $logger->debug("Before hash: ".scalar(@{$table->get('columns')}));
 	  $table = $self->_hashAttributes($table,$exportable_size);
-      $logger->debug("After hash: ".$table->get('columns'));
+      $logger->debug("After hash: ".scalar(@{$table->get('columns')}));
       }
 
       # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
+      $logger->debug("Returning defined has_data") if $has_data;
       return $has_data if ($has_data); #always return defined result
+      $logger->debug("Returning table") if $firstbatch;
       return $table if ($firstbatch); #returns empty table for first call. 
                                       #Next call will be exhausted
+      $logger->debug("Returning undefined has_data") if $has_data;
       return $has_data; #subsequent batches must return undef
   }
   $self->unimplemented_method();
