@@ -1155,6 +1155,8 @@ sub getResultTable {
 
       # GET RESULTTABLE FROM DATASETI IMPLEMENTING OBJECT      
       my $has_data = $self->_getResultTable(%param);
+      $logger->debug("Got results") if $has_data;
+      $logger->debug("Got no results") unless $has_data;
 
       # DO MERGING OF ATTRIBUTES IF REQUIRED 
       if ($importable){
@@ -1166,10 +1168,12 @@ sub getResultTable {
  	  $attributeHash->{$linkName} = $attribute_table->hashedResults;
  	  $self->set('attributeHash',$attributeHash);
       }     
-      $logger->debug("Attribute merge using linkName: $linkName");
       if ($has_data && $has_data > 0 && $linkName && 
 	  $self->get('attributeHash')->{$linkName}){
+      $logger->debug("Attribute merge using linkName: $linkName");
+      $logger->debug("Before merge: ".$table->get('columns'));
 	  $table = $self->_attributeMerge($table,$importable_size,$linkName);
+      $logger->debug("After merge: ".$table->get('columns'));
       }
 
       # DO HASHING OF ATTRIBUTES IF REQUIRED 
@@ -1210,7 +1214,10 @@ sub getResultTable {
       }
 
       if ($to_hash){
+      $logger->debug("Attribute hash using linkName: $linkName");
+      $logger->debug("Before hash: ".$table->get('columns'));
 	  $table = $self->_hashAttributes($table,$exportable_size);
+      $logger->debug("After hash: ".$table->get('columns'));
       }
 
       # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
