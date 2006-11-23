@@ -1320,7 +1320,7 @@ sub _attributeMerge {
     my @new_rows;
     # loop over both hashes and produce new table
     my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
-    foreach my $key(%this_dset_hash){
+    foreach my $key(keys %this_dset_hash){
 	my $this_dset_rows = $this_dset_hash{$key};
 	$logger->debug("Processing key: ".$key);
     $logger->debug("This previous rows: ".scalar(@$this_dset_rows));
