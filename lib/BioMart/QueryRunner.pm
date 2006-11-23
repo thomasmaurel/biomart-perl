@@ -61,7 +61,6 @@ package BioMart::QueryRunner;
 use strict;
 use warnings;
 use Digest::MD5;
-use Data::Dumper;
 use Log::Log4perl;
 my $logger=Log::Log4perl->get_logger(__PACKAGE__);
 
@@ -361,7 +360,7 @@ sub _processPath {
 	if ($subquery_atts){
 	    foreach my $subquery_att(@{$subquery_atts}){
 		$subquery->addAttributeWithoutLinking($subquery_att);
-	    $logger->debug("Added attribute $subquery_att to bottom dataset ".$datasetToProcess->name);
+	    $logger->debug("Added attribute ${subquery_att->name} to bottom dataset ".$datasetToProcess->name);
 	    }
 	}
 
@@ -371,7 +370,7 @@ sub _processPath {
 	if ($subquery_filts){
 	    foreach my $subquery_filter(@{$subquery_filts}){
 		$subquery->addFilterWithoutLinking($subquery_filter);
-	    $logger->debug("Added filter $subquery_filter to bottom dataset ".$datasetToProcess->name);
+	    $logger->debug("Added filter ${subquery_filter->name} to bottom dataset ".$datasetToProcess->name);
 	    }
 	}
 
@@ -411,7 +410,7 @@ sub _processPath {
 		}
 	    }
 	    # call for a single dataset query
-	    $logger->debug("Bottom dataset ".$datasetToProcess->name." query params are: ".Data::Dumper->new([%params],qw(subquery))->Dump);
+	    $logger->debug("Bottom dataset ".$datasetToProcess->name." query params are: ".keys(%{$params{'query'}}));
 	    my $rtable = $datasetToProcess->getResultTable(%params);
 	    $logger->debug("Bottom dataset ".$datasetToProcess->name." gave ".scalar(@{$rtable->get('columns')}));
 
