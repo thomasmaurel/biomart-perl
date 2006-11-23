@@ -411,7 +411,7 @@ sub _processPath {
 		}
 	    }
 	    # call for a single dataset query
-	    $logger->debug("Bottom dataset ".$datasetToProcess->name." query params are: ".Dumper(%params));
+	    $logger->debug("Bottom dataset ".$datasetToProcess->name." query params are: ".Data::Dumper->new([%params],qw(subquery))->Dump);
 	    my $rtable = $datasetToProcess->getResultTable(%params);
 	    $logger->debug("Bottom dataset ".$datasetToProcess->name." gave ".scalar(@{$rtable->get('columns')}));
 
