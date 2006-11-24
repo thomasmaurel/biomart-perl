@@ -687,7 +687,7 @@ function enableFiltersInCollection(filterCollectionEltId) {
     resetSummaryPanelCount(dset_prefix);
     
     for(filterName in filtersInContainer) {
-	//alert('Enabling filter '+filterName+', value='+filtersInContainer[filterName][1]);
+	//alert('Enabling filter '+filterName+', value='+filtersInContainer[filterName][0]);
 	addToSummaryPanelList(dset_prefix+'filterlist', filterName, filtersInContainer[filterName][0],filtersInContainer[filterName][1]); 
     }
 }
@@ -803,7 +803,7 @@ function getFiltersInContainer(containerEltId) {
 	    }
 	    // If we got here, then it's probably inside an acronym. Read that instead.
 	    for(var p=0; p<divs[i].childNodes.length;p++) {
-		if(divs[i].childNodes[p].nodeName == 'acronym' || divs[i].childNodes[p].nodeName == 'ACRONYM') {
+		if(divs[i].childNodes[p].nodeName == 'a' || divs[i].childNodes[p].nodeName == 'A') {
 		var acroNodeValue = divs[i].childNodes[p].innerHTML;
 		if(acroNodeValue
 		   && acroNodeValue.match(/\w/)) {

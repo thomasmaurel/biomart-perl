@@ -55,9 +55,6 @@ onblur="[% onblur_js %]" />
 [% buttonURL = filter.buttonURL %]
 [% IF buttonURL %]
 <input type='button' 
-			class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
                name="[% param_name %]__button"
 	       value='<browse>' ONCLICK='javascript:
                                           var nW = window.open("[% buttonURL  %]", "[% filter.internalName %]",
