@@ -178,23 +178,6 @@ sub makehttpdConf
 			/;
 		}
 		
-	## APACHE 2.x compression
-	#if ($OPTIONS{httpd_modperl})
-	#{
-		if ($OPTIONS{httpd_version} eq '2.0' || $OPTIONS{httpd_version} eq '2.1+')
-		{
-		print STDHTTPD qq/
-		<IfModule mod_deflate.c>
-			## zip both input and output
-			SetOutputFilter DEFLATE
-			SetInputFilter DEFLATE
-			## donot zip already zipped files 
-			SetEnvIfNoCase Request_URI \\.(?:exe|t?gz|zip|bz2|sit|rar)\$ no-gzip dont-vary			
-		<\/IfModule>
-		/;
-		}
-	#}
-			
 
 	print STDHTTPD qq/	
 	DocumentRoot "$OPTIONS{htdocs}"
@@ -207,11 +190,25 @@ sub makehttpdConf
 
 	ScriptAlias \/$OPTIONS{cgiLocation} "$OPTIONS{cgibin}"
 	<Location \/$OPTIONS{cgiLocation}\/martview>
-    	AllowOverride None
+
+	AllowOverride None
     	Options None
     	Order allow,deny
     	Allow from all
 	/;
+
+        if ($OPTIONS{httpd_version} eq '2.0' || $OPTIONS{httpd_version} eq '2.1+')
+        {
+                print STDHTTPD qq/
+                <IfModule mod_deflate.c>
+                        ## zip both input and output
+                        SetOutputFilter DEFLATE
+                        SetInputFilter DEFLATE
+                        ## donot zip already zipped files 
+                        SetEnvIfNoCase Request_URI \\.(?:exe|t?gz|zip|bz2|sit|rar)\$ no-gzip dont-vary
+                <\/IfModule>
+                /;
+        }
 
 	if ($OPTIONS{httpd_modperl})
 	{
@@ -226,6 +223,7 @@ sub makehttpdConf
 			print STDHTTPD qq/PerlResponseHandler ModPerl::Registry/;
 		}
 	}
+	
 	print STDHTTPD qq/
     	Options +ExecCGI
 	<\/Location>
