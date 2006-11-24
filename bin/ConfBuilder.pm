@@ -34,6 +34,7 @@ sub makehttpdConf
 	AddType text\/css .css
 	AddType text\/html .html .htm
 	AddType text\/plain .asc .txt
+	AddType application\/pdf .pdf
 	AddType application\/x-gzip .gz .tgz
 	AddType application\/vnd.ms-excel .xls
     
