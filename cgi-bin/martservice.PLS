@@ -386,7 +386,7 @@ sub get_configuration {
     $xmlTree = $dset->getConfigurationTree($interface)->toXML() if ($dset);
 
     if ($xmlTree){
-	print  "\n$xmlTree\n";
+	print  "$xmlTree\n";
     }
     else{
 	BioMart::Exception::Usage->throw("Problem retrieving configuration for dataset $dataset_name in mart $mart_name and schema $vschema_name, check your parameters");
