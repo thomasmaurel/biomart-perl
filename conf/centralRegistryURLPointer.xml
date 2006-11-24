@@ -4,9 +4,9 @@
 
 <RegistryURLPointer
                     name         = "central_server"
-                    host         = "www.biomart.org"
+                    host         = "dev.biomart.org"
                     port         = "80"
                     path         = ""
-                    includeMarts = "uniprot,msd"
+                    includeMarts = "msd,uniprot"
 />
 </MartRegistry>

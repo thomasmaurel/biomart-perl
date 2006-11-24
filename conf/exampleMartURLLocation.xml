@@ -6,7 +6,7 @@
 <MartURLLocation
                     name         = "msd"
                     displayName  = "My BioMart Database"
-                    host         = "www.biomart.org"
+                    host         = "dev.biomart.org"
                     port         = "80"
                     visible      = "1"
                     default      = ""
