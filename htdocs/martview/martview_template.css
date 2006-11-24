@@ -203,7 +203,18 @@ div#mart_export_data
 	overflow: auto;
 }
 
-.mart_databasemenu,
+.mart_databasemenu
+{
+	background-color: [main_panel_bgcolour];
+	border-style: solid;
+	border-width: 0px 0px 4px 0px;
+	border-color: [blocks_outline_colour];
+	/*padding: 16px 0px 16px 0px; To be handles in datasetpanel.tt based on if we have a schema menu or not*/
+	height: 100%;
+	clear: both;
+	font-size: [theme_font_size];                            
+	overflow: auto;
+}
 .mart_interfacemenu,
 .mart_datasetmenu
 {

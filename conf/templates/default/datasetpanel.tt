@@ -108,7 +108,13 @@ var sessionValueOfDatasetmenu = { 'schema'       : "[% schema2focus   || '' %]",
 [% END %]
 
 
-<div class="mart_databasemenu">
+<div class="mart_databasemenu" 
+	[% IF schemas.size() == 1  && schemas.0.visible() != 1 %]	
+		style = "padding: 0px 0px 16px 0px;"
+	[% ELSE %]
+		style = "padding: 16px 0px 16px 0px;"
+	[% END %] >
+	
 <table cellpadding="0" width="100%" style="table-layout: fixed;">
 <tr>
 <td align="left" width="15%" valign="bottom">	
