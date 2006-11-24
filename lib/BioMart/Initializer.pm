@@ -939,9 +939,9 @@ sub _populateRegistry {
 	foreach my $location (@{$locations}){
 	    my @datasets = $location->retrieveDatasetInfo($virtualSchema->name, $virtualSchema->default);
           if(!@datasets)
-          {
+          {    my $name=$location->name;
                BioMart::Exception::Configuration->throw("\n
-               No datasets available with given parameters for Location: '$location->name'\n");
+               No datasets available with given parameters for Location: $name\n");
           }
 	    foreach my $datasetData (@datasets){
 		my $dataSetName = lc($datasetData->{'dataset'});
