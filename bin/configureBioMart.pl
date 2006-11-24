@@ -42,7 +42,10 @@ if ($ARGUMENTS{"-r"})
 }
 else
 {
-	$OPTIONS{conf}.="defaultMartRegistry.xml";
+	#$OPTIONS{conf}.="defaultMartRegistry.xml";
+	print "\nSwitch -r followed by registryFileName is missing, Can't proceed.\n";
+	exit;
+	
 }
 
 if (! -e $OPTIONS{conf}) { BioMart::Exception::Configuration->throw ("ConfigureBioMart.pl: Registry File $OPTIONS{conf} does not exist under directory conf/");  exit ;}
