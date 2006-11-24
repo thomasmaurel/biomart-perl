@@ -124,12 +124,21 @@ sub _new {
                BioMart::Exception::Configuration->throw ("Initializer needs a registry file");
      }
           
-     $registryFile =~ m/(.*\/)[^\/]*/;
+     $registryFile =~ m/(.*\/)([^\/]*)/;
      $self->attr('confDir', $1);
+     $self->attr('cachedRegistries', $1.'cachedRegistries/');
+     $self->attr('regFileName', $2);
+     my $cahcedDirectory = $1.'cachedRegistries';
+     if(!-e $cahcedDirectory) { system("mkdir $cahcedDirectory"); }    
+          
+     #print "\n",$registryFile, "\n",$self->get('cachedRegistries'), "\n", $self->get('regFileName') ;
+     #print "\n\n\n", $self->get('registryFileDOM');
+     #exit;
+     
      $self->attr('dirPath', $1."Cached/"); ## absolute path to registry file directory
      ### this dollar one capturing in regex is path to registry folder and is used below at many places
      my $copyRegistryFile = $1.'registry_DOM_XML';
-     $self->attr('registryFileDOM', $copyRegistryFile);
+     $self->attr('registryFileDOM', $copyRegistryFile);     
      system("cp $registryFile $copyRegistryFile");
      $self->attr('orderedLocations', undef);          
 
@@ -137,7 +146,10 @@ sub _new {
      $self->attr('registry',undef);
      $self->attr('configurationUpdate','true');  ## onlt used by martview, to guess if there was anything updated
 
-    
+     $registryFile = $self->get('cachedRegistries') . $self->get('regFileName'); # changing it only for backup rules below
+     
+     
+
      if ($params{'registryFile'} && ( defined($params{'action'}) && ($params{'action'} eq 'clean')))          
      {
           if (-e "$registryFile.cached") { system("cp $registryFile.cached $registryFile.cached_backup"); }
@@ -172,6 +184,8 @@ sub _new {
      }          
 
      $self->set('registry',$mart_registry);
+     if (-e $self->get('registryFileDOM')) { unlink $self->get('registryFileDOM');}
+     
 }
 
 #------------------------------------------------------------------------
@@ -286,7 +300,12 @@ sub init_cached
      my(%params) = @params;
 
      my $mart_registry;
-     my $cachefile = $params{'registryFile'}.".cached";
+
+     my $registryFile = $self->get('cachedRegistries') . $self->get('regFileName');# pointing to cachedRegistries directory
+
+     #my $cachefile = $params{'registryFile'}.".cached";
+     my $cachefile = $registryFile.".cached";
+     
      if (-e $cachefile ) 
      {      
           print  STDERR "\nProcessing Cached Registry: $cachefile\n\n";                    
@@ -298,8 +317,12 @@ sub init_cached
      {
           print  "\nCached Registry Unavailable...!!!\n";          
           my $cachefile_min = undef;
-          my $cachefile_min_disk = $params{'registryFile'}.".min_cached_disk";
-          my $cachefile_min_mem = $params{'registryFile'}.".min_cached_mem";
+          #my $cachefile_min_disk = $params{'registryFile'}.".min_cached_disk";          
+          my $cachefile_min_disk = $registryFile.".min_cached_disk";
+          
+          #my $cachefile_min_mem = $params{'registryFile'}.".min_cached_mem";
+          my $cachefile_min_mem = $registryFile.".min_cached_mem";
+          
           my $previous_mode = undef;
           if (-e $cachefile_min_disk)
      	{    
@@ -367,11 +390,18 @@ sub init_clean
      my(%params) = @params;
 
      $self->_init(@params);     
-     my $mart_registry = $self->get('registry');        
+     my $mart_registry = $self->get('registry');
     
-     my $cachefile = $params{'registryFile'}.".cached";
-     my $cachefile_min_disk = $params{'registryFile'}.".min_cached_disk";
-     my $cachefile_min_mem = $params{'registryFile'}.".min_cached_mem";                          
+     my $registryFile = $self->get('cachedRegistries') . $self->get('regFileName');# pointing to cachedRegistries directory    
+    
+     #my $cachefile = $params{'registryFile'}.".cached";
+     my $cachefile = $registryFile.".cached";
+
+     #my $cachefile_min_disk = $params{'registryFile'}.".min_cached_disk";
+     my $cachefile_min_disk = $registryFile.".min_cached_disk";
+     
+     #my $cachefile_min_mem = $params{'registryFile'}.".min_cached_mem";
+     my $cachefile_min_mem = $registryFile.".min_cached_mem";                                                         
                     
      if (-e $cachefile) { unlink $cachefile; }               
      if (-e $cachefile_min_disk)
@@ -421,13 +451,19 @@ sub init_update
    
      my(%params) = @params;
      my $mart_registry = $self->get('registry');        
-
+     
+     my $registryFile = $self->get('cachedRegistries') . $self->get('regFileName');# pointing to cachedRegistries directory     
+     
      my $reConfigure = 'false';
      my $previous_mode = undef ; # 'MEMORY', or 'LAZYLOAD'
      my $cachefile_min;
-     my $cachefile = $params{'registryFile'}.".cached"; 
-     my $cachefile_min_disk  = $params{'registryFile'}.".min_cached_disk";
-     my $cachefile_min_mem  = $params{'registryFile'}.".min_cached_mem"; 
+     #my $cachefile = $params{'registryFile'}.".cached"; 
+     #my $cachefile_min_disk  = $params{'registryFile'}.".min_cached_disk";
+     #my $cachefile_min_mem  = $params{'registryFile'}.".min_cached_mem"; 
+     my $cachefile = $registryFile.".cached"; 
+     my $cachefile_min_disk  = $registryFile.".min_cached_disk";
+     my $cachefile_min_mem  = $registryFile.".min_cached_mem"; 
+     
      if (-e $cachefile_min_disk)
      {    
           $cachefile_min = $cachefile_min_disk;	
@@ -552,7 +588,8 @@ sub init_update
    	}   
      else ### retrieve the old mart registry and set it to current object;
      {
-          my $existingRegistry = $params{'registryFile'}.".cached";     
+          #my $existingRegistry = $params{'registryFile'}.".cached";
+          my $existingRegistry = $registryFile.".cached";
           eval{ $mart_registry = retrieve($existingRegistry); };
           $self->set('configurationUpdate','false');          
      }

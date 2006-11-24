@@ -639,7 +639,7 @@ sub validate {
        	if($atts) {$queryAttsExist = 1; last;}
     		}
 	    if (!$queryAttsExist && $self->count()==0){
-			BioMart::Exception::Usage->throw('No attributes selected, please select atleast one');
+			BioMart::Exception::Usage->throw('No attributes selected, please select at least one');
     	}
   	
   	foreach my $datasetName(@$datasetNames){
