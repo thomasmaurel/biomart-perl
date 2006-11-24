@@ -1,280 +1,105 @@
-<html><!-- InstanceBegin template="/Templates/biomart_standalone.dwt" codeOutsideHTMLIsLocked="false" -->	
-	<head> 
-		<!-- InstanceBeginEditable name="doctitle" -->
-<meta name="Description" content="BioMart is a simple and robust data integration system for large scale data querying. It has been designed to provide researchers with an easy and interactive access to both the wealth of data available on the Internet and for in house data integration.">
-<meta name="keywords" content="BioMart, DATABASE, SEARCHES, protein">
-
-<title>BioMart Project</title>
-<script language = "javascript">
-var currentTab="BioMart Home";
-</script>
-<!-- InstanceEndEditable -->
-	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-<!-- InstanceBeginEditable name="head" -->
+<html>
+<head>
 
 
 
-<!-- InstanceEndEditable -->
-<link rel="stylesheet" href="include/stylesheet.css" type="text/css" />
- <script language="javascript" type="text/javascript">
-<!--
+
+<meta http-equiv="owner" content= "EMBL Outstation - Hinxton, European Bioinformatics Institute " />
+<meta name="author" content="BioMart">
+
+<style type="text/css">
+    td 			 { color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: normal}
+	body 		 { background: #ffffff; color: #000000; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: normal; margin: 0px; scrollbar-track-color: #ffffff;  scrollbar-arrow-color: #2B3856;  scrollbar-darkshadow-color: #ffffff}
+	.tablegreen  {background-color:#2B3856} 
+	.whitetitle  {font-weight: normal; font-size: 14pt; font-family: Arial, Helvetica, sans-serif; text-decoration:none; color: #ffffff}
+	.pagetitle   {font-family: Arial, Helvetica, sans-serif; font-size: 14pt; font-weight: bold; color: #2B3856}
+    .pbold 		 {font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; text-decoration: none; color: #000000}	
+	a.greenboldsmall_list:link { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; color: #2B3856 ; text-decoration: underline}
+	a.greenboldsmall_list:visited { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; color: #2B3856 ; text-decoration: underline}
+	a.greenboldsmall_list:active { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; color: #2B3856 ; text-decoration: underline}
+	a.greenboldsmall_list:hover { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; color: #666666 ; text-decoration: none}
+	.greenboldsmall_list { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; font-weight: bold; color: #2B3856 ; text-decoration: none}
+	.tablebody    { background-color: #ECEEF0} 	
+    
+    
+</style> 
 
 
-if (top != self)
-   {
-    top.location.href=location.href;
-   }
-	function colourTab(){
-		if((document.getElementById(currentTab))){
-			(document.getElementById(currentTab)).className='menuh';
-		}
-	}
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<title>BioMart Project</title></head>
+ 
+<body  marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" rightmargin="0" bottommargin="0">
+ <img src=martview/images/trans.gif width="1" height="17"><br /> 
+<div align="center"><table width="560" border="0" align="center" cellpadding="0" cellspacing="0">
+<tr><td></td>
+<td>
+<table width="550" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+                <td valign = "top"> 
+				
+				
+		            <table width="100%" border="0" cellspacing="0" cellpadding="4">
+              <tr> 
+                
+    <td class = "tablegreen" nowrap width="1%"><nobr>&nbsp;<span class = "whitetitle">BioMart</span>&nbsp;</nobr></td>
+    <td><nobr class="pagetitle">&nbsp;</nobr><nobr class="pagetitle"><nobr class="pagetitle">release 0.5</nobr></nobr></td>
+              </tr>
+            </table>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr> 
+                
+       <!--   <td height="3" background="images/hor.gif"><img src="images/trans.gif" width="25" height="3" /></td> -->
+              </tr>
+            </table>		
+				
+				
+				
+				
+				
+				
+                  
+      <table width="550" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td align = "justify">                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                              <td><br />
+                                      <a href="/biomart/martview"><img src="martview/images/logo_biomart.gif" alt="Start BioMart" width = "113" height = "75" border = "0" align="right"></a> 
 
-	function rollOver(overTab){
-		if(currentTab!=overTab){
-			(document.getElementById(overTab)).className='menuh';
-		}
-	}
-	function rollOut(overTab){
-		if(currentTab!=overTab){
-			(document.getElementById(overTab)).className='menu';
-		}
-	}
-// -->
-</script>
+ BioMart is a generic data management system which offers a range of 
+advanced query interfaces and administration tools. 
+<br /><br />The system comes with 
+built-in support for query-optimisation and database fedaration. 
+BioMart provides users with the ability to conduct fast, powerful queries 
+using either web, graphical, or text based applications, or 
+programatically using web service or software libraries written in Perl and Java. For 
+data providers, the system simplifies the task of integrating their own 
+data with other datasets hosted on the network.<br /><br />
+All the software, including an easy to install BioMart website, is 
+available for local installation.  BioMart software is completely Open 
+Source, licensed under the LGPL, and freely available to anyone without 
+restrictions.
+</br>
 
-</head>
-<body  marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" rightmargin="0" bottommargin="0" onLoad="colourTab()" >
-<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabletop">
-	<tr>
-		
-    <td width="270" align="right">
-    <a href="index.html">
-    		<img style = "margin: 20px 0px 20px 30px;" src="/martview/images/biomart-logo.gif" alt="EBI Home Page" border="0" />
-    </a>
+
+                                      <br><br>
+                                      <span class="pbold"><a href="/biomart/martview">Start MartView session</span></a>
+<br><br>
+
+
+
+
+
+                              </td>
+                          </tr>
+                                    </table>          <br />                  
+                                    <br />                  <br />
+            </td>
+        </tr>
+      </table>
+                  
     </td>
-		 <td valign="top" align="right" width="100%">
 
-  	</td>
-	</tr>
-</table>
-
-<table class="menutable" border="0"  cellpadding="2" cellspacing="0" bordercolor="#ECEEF0" height="30" width="800" rows="*, *, *, *, *, *, *, *">
-        <tr>
-          <td align="center" valign="middle" width="16%" nowrap="true"  class="menu" id="BioMart Home" onClick="location='index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">HOME</td> 
-          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Documentation" onClick="location='install.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">DOCS</td> 
-         
-<!--
- <td align="center" valign="middle" width="150" nowrap="true"  class="menu"  id="Publications" onClick="location='publications.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Publications</td>
--->
-
-		  <td align="center" valign="middle" width="16%" nowrap="true"  class="menu"  id="News" onClick="location='news.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">NEWS</td> 
-          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Contact" onClick="location='contact.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CONTACT</td> 
-          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Credits" onClick="location='credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CREDITS</td> 
-
-<!--
-		<td align="center" valign="middle" width="150" nowrap="true"  class="menu"  id="Jobs" onClick="location='jobs.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">Jobs</td>
-
--->
-
-      <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">QUERY</td>         
-
-
-
-
-		</tr>
-</table>
-      
-<table class="tablehead" width="100%" height="5" border="0" cellspacing="0" cellpadding="0">
-             <tr> 
-                <td width="100%" height="20" align="center"><!-- InstanceBeginEditable name="topnav" --><nobr></nobr><!-- InstanceEndEditable --></td>
-              </tr> 
-</table>
-
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-	<tr>
-		
-    <td  width="1%" height="20"><img alt="Image" src="images/trans.gif" height="20" width="20" /></td>
-		
-    <td width="1%" height="20" valign="top" align="left" bgcolor="#ffffff"><img alt="Image" src="images/trans.gif" width="20" height="20" /></td>
-		
-    <td width="100%">&nbsp;</td>
-		
-    <td width="1%" colspan="2"><img alt="Image" src="images/trans.gif" height="8" width="20" /></td> 
-	</tr>
-	<tr>
-		
-    <td  width="1%" valign="top" align="left"><img alt="Image" src="images/trans.gif" width="20" height="30" /></td>
-    		
-    <td width="1%">&nbsp;</td>
-          	
-    <td align="left" valign="top" width="100%">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-				<tr>
-                	
-          <td width="100%" valign="top" nowrap><!-- InstanceBeginEditable name="contents" -->
-            <table width="100%" border="0" cellspacing="0" cellpadding="4">
-                    
-              <tr>
-                      
-                <td class = "tablegreen" nowrap><nobr>&nbsp;<span class = "whitetitle">BioMart</span>&nbsp;</nobr></td>
-                <td  width="100%"><nobr class="pagetitle">&nbsp;Project</nobr></td>
-              </tr>
-                  
-            </table>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                    
-              <tr>
-                      
-                <td height="3" background="images/hor.gif"><img src="images/trans.gif" width="25" height="3"></td>
-              </tr>
-                  
-            </table>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                    
-              <tr>
-                      
-                <td ><br />
-   
-
-
-BioMart is a query-oriented data management system developed jointly by the <a href="http://www.ebi.ac.uk/" target="_blank">European Bioinformatics Institute (EBI)</a> and <a href="http://www.cshl.edu/" target="_blank">Cold Spring Harbor Laboratory (CSHL)</a>.
-
-<br><br>
-
-The system can be used with any type of data and comes with a range of query interfaces and administration tools, including 'out of the box' website that can be installed, configured and customised according to requirements. The system simplifies the task of creation and maintenance of advanced query interfaces backed by a relational database and it is particularly suited for providing the 'data mining' like searches of complex descriptive (e.g. biological) data. BioMart can work with existing data repositories by converting them to a required BioMart format as well as newly created databases.
-
-<br><br>
-
-BioMart has built-in support for query optimization, which makes it particularly useful when working with large data repositories storing high throughput experiment data such as genomic sequence or microarray experiments. The system can also be used with small datasets typical of the 'wet lab' environment because it only requires a minimal support.
-BioMart architecture makes possible to cross-query multiple datasets distributed across the internet, removing the need to integrate and store data locally. BioMart data can be accessed using 
-either web, graphical, or text based applications, or programatically using web services or software libraries written in Perl and Java. Currently supported RDBMS platforms are MySQL, Oracle and Postgres.
-<br><br>
-
-BioMart is completely Open Source, licensed under the LGPL, and freely available to anyone without restrictions
-
-<br>
-
-</td>
-              </tr>
-                  
-            </table>
-            <br />
-                  <br />
-
-
-<table width="40%" border="0" align="center" cellpadding="0" cellspacing="0">
-
-<td align="center" valign="top" colspan="3">
-<span class="pbold" align="center">Powered by BioMart software:</span>
-</td>
-</table>
-
-            <table width="40%" border="0" align="center" cellpadding="0" cellspacing="10">
-
-              <tr>
-                <td align="left" valign="top" colspan="3">
-		<li><a href="http://www.biomart.org/biomart/martview" target="_blank" class="greenboldsmall_list">Central Server </a></li>
-		<li><a href="http://www.ensembl.org/Multi/martview" target="_blank" class="greenboldsmall_list">Ensembl</a></li>
-		<li><a href="http://hapmart.hapmap.org/BioMart/martview" target="_blank" class="greenboldsmall_list">HapMap</a></li>
-	
-		</td>
-                
-                
-		<td align="left" valign="top" colspan="3">
-                <li><a href="http://www.dictybase.org/biomart/martview" target="_blank" class="greenboldsmall_list">Dictybase</a></li>
-		<li><a href="http://www.wormbase.org/BioMart/martview" target="_blank" class="greenboldsmall_list">Wormbase</a></li>
-		<li><a href="http://www.gramene.org/Multi/martview" target="_blank" class="greenboldsmall_list">Gramene</a></li>
-
-		</td>
-                
-		<td align="left" valign = "top" colspan="3">
-		<li><a href="http://www.sanger.ac.uk/perl/Projects/D_rerio/Zefimad/martview" target="_blank" class="greenboldsmall_list">ZF-MODELS </a></li>
-		<li><a href="http://www.germonline.org/Multi/martview" target="_blank" class="greenboldsmall_list">GermOnLine </a></li>
-		<li><a href="http://insects.eugenes.org/BioMart/martview" target="_blank" class="greenboldsmall_list">DroSpeGe</a></li>
-		</td>
-              </tr>
-
-            </table>
-            <br />
-
-<!--
-</td>           
-              </tr>
-
-            </table>
-            <br />
-                  <br />
--->
-
-
-
-
-                  
-            <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                      
-              <tr>
-                          
-                <td height="3" background="images/hor.gif"><img src="images/trans.gif" width="25" height="3"></td>
-              </tr>
-                  
-            </table>
-
-
-
-            <br>
-
-
-
-    
-                 
-
-
-
-
-
-
-
-
-            <table width="10%" border="0" align="center" cellpadding="6" cellspacing="0">
-                      
-              <tr>
-                          
-                <td align="right" valign="top"><a href="http://www.ebi.ac.uk/" target="_blank"><img src="images/ebi.gif" alt="EBI" width="113" height="75" border="0"></a></td>
-                <td width="100" valign = "top">&nbsp; </td>
-                <td align="left" valign = "top"><a href="http://www.cshl.edu/" target="_blank"><img src="images/csh.gif" alt="CSH" width="113" height="75" border="0"></a></td>
-              </tr>
-                  
-            </table>
-            <br />
-    
-
-
-        <!-- InstanceEndEditable --></td>
-                	
-          <td width="1%"><img alt="Image" src="images/trans.gif" width="6" height="8" /></td>
-					
-          <td width="1%" background="images/vert.gif"><img alt="Image" src="images/trans.gif" height="3" width="3" /></td>
-					
-          <td width="1%"><img alt="Image" src="images/trans.gif" height="8" width="6" /></td>
-					<td valign="top"><!-- InstanceBeginEditable name="rightnav" -->&nbsp;<!-- InstanceEndEditable --></td>
-				</tr>
-				<tr>
-					<td width="100%" class="tablebody" background="images/hor.gif" height="3"><img alt="Image" src="images/trans.gif" height="3" width="3" /></td>
-					<td colspan="5"><img alt="Image" src="images/trans.gif" height="1" width="1" /></td>
-				</tr>
-			</table></td>
-		
-    <td width="1%"><img alt="Image" src="images/trans.gif" height="8" width="20" /> </td>
-	</tr>
-</table>
-<div align="center">Page last updated: <script language="javascript">
-<!-- 
-document.write(document.lastModified);   
-// -->
-</script></div>
-
-
-		
+				
+<!-- <div align="center"></div> -->
 </body>
-<!-- InstanceEnd --></html>  
+</html>
