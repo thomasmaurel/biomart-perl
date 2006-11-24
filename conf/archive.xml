@@ -2,7 +2,7 @@
 <!DOCTYPE MartRegistry>
 <MartRegistry>
 
-<virtualSchema name="test_sanger" displayName="Test Sanger" default = "1" visible="1">
+<virtualSchema name="test_sanger" displayName="Test Sanger" default = "1" visible="0">
 <MartDBLocation databaseType="mysql" host="127.0.0.1" database="ds5_ensembl_mart_41" name="ensembl" displayName="ENSEMBL 41  (TEST)" port="3309" schema="ds5_ensembl_mart_41" user="ensadmin" password="ensembl" visible="1" default="1" martUser="" includeDatasets="" />
 <MartDBLocation databaseType="mysql" host="127.0.0.1" database="ds5_snp_mart_41" name="snp" displayName="SNP 41  (TEST)" port="3309" schema="ds5_snp_mart_41" user="ensadmin" password="ensembl" visible="1" default="0" martUser="" includeDatasets="" />
 <MartDBLocation databaseType="mysql" host="127.0.0.1" database="ds5_sequence_mart_41" name="sequence" displayName="SEQUENCE 41  (TEST)" port="3309" schema="ds5_sequence_mart_41" user="ensadmin" password="ensembl" visible="0" default="1" martUser="" includeDatasets="" />
@@ -15,6 +15,10 @@
 3306" schema="msd_mart_4" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 </virtualSchema>
 
+
+<MartURLLocation path="" host="www.dictybase.org" proxy="http://wwwcache.ebi.ac.uk:8080" name="dicty" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="1" martUser="" includeDatasets="" redirect="1" />
+
+<!--
 
 
 <virtualSchema name="central_server_1" displayName="Central Server 1" default = "1" visible="1">
@@ -46,7 +50,6 @@
 
 </virtualSchema>
 
-<!--
 
 <virtualSchema name="central_server_0" displayName="Central Server 0" default = "0" visible="1">
 <MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="ensembl_mart_40" name="ensembl" displayName="ENSEMBL 40  (SANGER)" port="3306" schema="ensembl_mart_40" user="anonymous" password="" visible="1" default="1" martUser="" includeDatasets="" /><MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="sequence_mart_40" name="sequence" displayName="SEQUENCE 40  (SANGER)" port="3306" schema="sequence_mart_40" user="anonymous" password="" visible="0" default="0" martUser="" includeDatasets="" /><MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="snp_mart_40" name="snp" displayName="SNP 40  (SANGER)" port="3306" schema="snp_mart_40" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" /><MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="vega_mart_40" name="vega" displayName="VEGA 40  (SANGER)" port="3306" schema="vega_mart_40" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
