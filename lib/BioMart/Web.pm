@@ -769,6 +769,7 @@ sub _new
 	$self->save_session($session, $CGI);
 
 	my( $def_schema, $def_db, $def_ds, $def_ds_OBJ);
+	my $reverseName = 0;# Incase of Compara Menus, determines whether its a dataset as in DB or its a dataste with reverse naming convention	
 	#======================================
 	#print $session->param("summarypanel__current_highlighted_branch");
 	#print " == ", $session->param("mart_mainpanel__current_visible_section");
@@ -906,17 +907,20 @@ sub _new
 					foreach my $mart (@{$schema->getAllMarts()}) {
 						if($mart->displayName eq $def_db) {
 					    		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+					    			# ----- Effort 1 - to see if we can find out the ds_internalName from displayName
+					    			# ----- with menu1.menu2.menu3
 					    			my $tempRemoveSpaces = $dataset->displayName;
+					    			my $tempdsDisplayName = $dsDisplayName;
 					    			$tempRemoveSpaces =~ s/\s//mg; # space cause trouble in matching regex
-					    			$dsDisplayName =~ s/\s//mg;
+					    			$tempdsDisplayName =~ s/\s//mg;
 					    			$tempRemoveSpaces =~ s/\|//mg; # pipe pretends to be OR cause trouble in matching regex
-					    			$dsDisplayName =~ s/\|//mg;
+					    			$tempdsDisplayName =~ s/\|//mg;
 					    			$tempRemoveSpaces =~ s/\(//mg; # ( pretends to be OR cause trouble in matching regex
-					    			$dsDisplayName =~ s/\(//mg;
+					    			$tempdsDisplayName =~ s/\(//mg;
 					    			$tempRemoveSpaces =~ s/\)//mg; # ) pretends to be OR cause trouble in matching regex
-					    			$dsDisplayName =~ s/\)//mg;
+					    			$tempdsDisplayName =~ s/\)//mg;
 
-					    			if($tempRemoveSpaces =~ m/^$dsDisplayName/) {
+					    			if($tempRemoveSpaces =~ m/^$tempdsDisplayName/) {
 			    						foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}){
 			    							if($configurationTree->defaultDataset())
 			    							{
@@ -926,7 +930,33 @@ sub _new
 						    			}
 						    			$def_ds ||= $dataset->name();
 						    			$def_ds_OBJ ||= $dataset;
+						    			$reverseName = 2;
 			    					}
+					    			# ----- Effort 2 - to see if we can find out the ds_internalName from displayName
+					    			# ----- with menu2.menu1.menu3
+								if(!$reverseName)
+								{
+									my @unitsArray = split('\|', $dsDisplayName);
+									$tempdsDisplayName = $unitsArray[1].'|'.$unitsArray[0].'|'.$unitsArray[2];
+									
+									$tempdsDisplayName =~ s/\s//mg;						    			
+						    			$tempdsDisplayName =~ s/\|//mg;						    			
+						    			$tempdsDisplayName =~ s/\(//mg;						    			
+						    			$tempdsDisplayName =~ s/\)//mg;
+
+						    			if($tempRemoveSpaces =~ m/^$tempdsDisplayName/) {
+				    						foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}){
+				    							if($configurationTree->defaultDataset())
+				    							{
+							    					$def_ds = $dataset->name();
+							    					$def_ds_OBJ = $dataset;
+							    				}
+							    			}
+							    			$def_ds ||= $dataset->name();
+							    			$def_ds_OBJ ||= $dataset;
+					    					$reverseName = 1;
+				    					}	
+								}
 					    		}
 					    	}
 					}
@@ -1490,6 +1520,7 @@ sub _new
 		    			my @dsPortions = split(/\|/,$dsName);
 		    			my $menuCount = 1;
 		    			$unitsHash->{$dsPortions[0]}->{$dsPortions[1]}->{$dsPortions[2]} = [$dataset->name, $dataset->displayName()];
+					$unitsHash->{$dsPortions[1]}->{$dsPortions[0]}->{$dsPortions[2]} = [$dataset->name, $dataset->displayName()];	    			
 					$default_dataset ||= $dataset;
 					$dsName = $default_dataset->displayName;
 					@datasetUnits = split(/\|/,$dsName);
@@ -1539,8 +1570,8 @@ sub _new
             return 0;
      }
 
-	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-web/conf/templates/HEY_U");
-	#print STDME Dumper(\%js_pushactions_of_datasetmenu);
+	#open(STDME, ">>/homes/syed/Desktop/temp6/biomart-perl/HEY_U_1");
+	#print STDME $reverseName ;
 	#close(STDME);
 
 	
@@ -1565,7 +1596,8 @@ sub _new
 											datasets                  => \@datasets,
 											js_pushactions_of_datasetmenu => \%js_pushactions_of_datasetmenu,
 											datasetOBJ           => $def_ds_OBJ,
-											build_errors=> \%build_errors,
+											reverseNAME			=> $reverseName,
+											build_errors=> \%build_errors,											
 											});
 	my $datasetpanel_outputfh = IO::File->new(">".$self->get_cached_tt_dir()."/datasetpanel.tt") || die $!;
 	$datasetpanel_outputfh->print("[% TAGS star %]\n".$dataset_menu_tt);
