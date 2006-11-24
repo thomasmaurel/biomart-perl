@@ -17,6 +17,19 @@ for (my $index = 0; $index < scalar(@ARGV); $index++)
 	}
 	
 }
+
+# check if registry is present
+my $found_reg;
+for (my $i = 0; $i < scalar(@ARGV); $i++) {
+if ($ARGV[$i] eq "-r"){$found_reg=1;}  
+}
+
+unless ($found_reg) {
+print "\nSwitch -r followed by registryFileName is missing, Can't proceed.\n\n";
+exit;
+}
+
+
 my @libModules;
 my %reqList;
 
