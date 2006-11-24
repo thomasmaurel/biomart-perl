@@ -13,7 +13,7 @@
 	
 	<table cellpadding="0" class ="mart_main_menubar" border="0" width="100%" style="table-layout: fixed;">
 	<tr>
-	<td align="left" width="35%" valign="top" >	
+	<td align="left" valign="top" >	
 				     
 			<!--
 			<img src="/martview/images/biomart-logo.gif" alt="" style="float: right; margin: 6px 4px 0px 0px"/></a> 				 
@@ -130,8 +130,6 @@
 			<div style="clear: both; width: inherit; line-height: 0; height: 0;">&nbsp;</div>
 			-->
 	
-	<td align="left" width="65%" valign="top">
-	</td>
 	</tr>
 	</table>
 	
