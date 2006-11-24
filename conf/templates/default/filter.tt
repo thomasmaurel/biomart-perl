@@ -27,7 +27,7 @@
 <div class="mart_filtername" onmouseover="">
   [% render_filtercollection_checkbox(filter, filtercollection2show) %]  
   [% IF filtercollection.description %]
-  <acronym title="[% filtercollection.description | replace('"','&quot;') %]">$filtercollection.displayName</acronym>
+  <a title="[% filtercollection.description | replace('"','&quot;') %]">$filtercollection.displayName</a>
   [% ELSE %]
   $filtercollection.displayName
   [% END %]
@@ -35,7 +35,7 @@
 <div class="mart_filtername" onmouseover="" style="margin-left: 22px">
 
   [% IF filter.description %]
-  <acronym title="[% filter.description | replace('"','&quot;') %]">$filter.displayName</acronym>
+  <a title="[% filter.description | replace('"','&quot;') %]">$filter.displayName</a>
   [% ELSE %]
   $filter.displayName
   [% END %]

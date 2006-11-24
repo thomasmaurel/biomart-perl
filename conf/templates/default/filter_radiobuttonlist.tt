@@ -48,7 +48,7 @@ document['${param_name}__image'].src='${filter.imageURL}';
 [* is_first_option = 0 *]
 [* END *]
  />[% IF option.description %]
-  <acronym title="[% option.description | replace('"','&quot;') %]">[% option_displayname %]</acronym>
+  <a title="[% option.description | replace('"','&quot;') %]">[% option_displayname %]</a>
   [% ELSE %]
   [% option_displayname %]
   [% END %]<br />

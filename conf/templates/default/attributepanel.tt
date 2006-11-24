@@ -55,7 +55,7 @@
 	
 	[% IF attributetree_count > 1 %]
 		[% IF attributetree.description %]
-		<acronym title="[% attributetree.description | replace('"','&quot;') %]">[% attributetree.displayName() %]</acronym>
+		<a title="[% attributetree.description | replace('"','&quot;') %]">[% attributetree.displayName() %]</a>
 	  	[% ELSE %]
 		[% attributetree.displayName() %]
 	  	[% END %]
@@ -136,7 +136,7 @@
 	[% attributes = attributecollection.getAllAttributes() %]
 		[% IF attributes.size > 0 %]
 		<span class="mart_attributecollection_title">[% IF attributecollection.description %]
-		<acronym title="[% attributecollection.description | replace('"','&quot;') %]">$attributecollection.displayName</acronym>
+		<a title="[% attributecollection.description | replace('"','&quot;') %]">$attributecollection.displayName</a>
 		[% ELSE %]
 		$attributecollection.displayName
 	  	[% END %]</span>

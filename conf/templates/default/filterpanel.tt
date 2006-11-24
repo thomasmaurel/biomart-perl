@@ -67,7 +67,7 @@
 				[% # incase we have more than one filter, we are sending only the first one as thats what it expects in the function. %]
 				[% render_filtercollection_checkbox(filters.0, filtercollection) %]
 				[% IF filtercollection.description %]
-				  <acronym title="[% filtercollection.description | replace('"','&quot;') %]">$filtercollection.displayName</acronym>
+				  <a title="[% filtercollection.description | replace('"','&quot;') %]">$filtercollection.displayName</a>
 				[% ELSE %]
 					$filtercollection.displayName
 				[% END %]
