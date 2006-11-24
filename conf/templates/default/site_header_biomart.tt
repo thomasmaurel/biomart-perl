@@ -40,7 +40,7 @@ if (top != self)
 		
     <td width="270" align="right">
     <a href="index.html">
-    		<img style = "margin: 20px 0px 20px 30px;" src="/martview/images/biomart-logo.gif" alt="EBI Home Page" border="0" />
+    		<img style = "margin: 20px 0px 20px 30px;" height="33" width="107" src="/martview/images/biomart-logo.gif" alt="EBI Home Page" border="0" />
     </a>
     </td>
 		 <td valign="top" align="right" width="100%">
