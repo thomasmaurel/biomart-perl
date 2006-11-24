@@ -350,9 +350,9 @@
   							[% END %]
 						</select>
 						<input type="submit" name="export_submit" value="Go" 
-							class="mart_btn"
-							onmouseover="this.className='mart_btn mart_btnhov'" 
-							onmouseout="this.className='mart_btn'"
+							class="mart_btn_go"
+							onmouseover="this.className='mart_btn_go mart_btnhov_go'" 
+							onmouseout="this.className='mart_btn_go'"
 
 							onclick="
 							if(this.value != '') 

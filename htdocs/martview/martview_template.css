@@ -160,6 +160,26 @@ div#mart_export_data
    	background-color:[button_background_colour_hover];
 	border-color: [button_border_colour_hover];
 }
+.mart_btn_go
+{
+	font-family: [theme_font_family];	
+	font-size: [theme_font_size];
+	border:1px solid;
+	font-weight: bold;
+	color:[button_text_colour];
+   	background-color:[button_background_colour];
+	border-color: [button_border_colour];
+}
+      				
+.mart_btnhov_go			
+{
+	font-family: [theme_font_family];
+	font-size: [theme_font_size];
+	font-weight: bold;	
+	color:[button_text_colour_hover];
+   	background-color:[button_background_colour_hover];
+	border-color: [button_border_colour_hover];
+}
 
 /* Other Input fields such drop downs and text field and hover on functions */					
 .mart_input				
