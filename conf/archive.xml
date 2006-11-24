@@ -13,10 +13,12 @@
 
 <MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="uniprot_mart_17" name="uniprot" displayName="UNIPROT PROTOTYPE 4-5  (TEST)" port="3306" schema="uniprot_mart_17" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" /><MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="msd_mart_4" name="msd" displayName="MSD PROTOTYPE 4  (TEST)" port="
 3306" schema="msd_mart_4" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
-</virtualSchema>
 
 
 <MartURLLocation path="" host="www.dictybase.org" proxy="http://wwwcache.ebi.ac.uk:8080" name="dicty" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="1" martUser="" includeDatasets="" redirect="1" />
+
+</virtualSchema>
+
 
 <!--
 
