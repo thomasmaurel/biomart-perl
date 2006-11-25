@@ -194,11 +194,17 @@ sub preProcessRowMlagan{
     return (@want, $score);
 }
 #------------------------------------------
+#sub getDisplayNames {
+#// WARNING
+#// This return the number of attribute in the attribute list. (eg: 17)
+#    my $self = shift;
+#    return $self->getTextDisplayNames("\t");
+#}
+#----------------------------------
 sub getDisplayNames {
     my $self = shift;
-    return $self->getTextDisplayNames("\t");
+    return '' ;
 }
-
 # subroutines from AXT.pm <alpha version>
 #--------------------------------------------
 sub _get_aligned_sequence_from_original_sequence_and_cigar_line  {
