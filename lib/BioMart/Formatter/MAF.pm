@@ -103,7 +103,7 @@ sub nextRow {
     if ( ( ($$row[0]=~/^(A|C|G|T|N)/) && ($$row[0]!~/^(Chr)/) ) && ( ($$row[1]=~/^(A|C|G|T|N)/) && ($$row[1]!~/^(Chr)/) )   ){  # 15/08/06 removed /i
 	                                                                   # added a hack for 'Ch'
 	@data = &preProcessRowMlagan(\@{$row});
-	# print "MLAGAN data : 2 sequences ...\n";
+	 print "MLAGAN data : 2 sequences ...\n";
 	my $score = pop @data;
 	$SCORE2 = "a score=$score\n";
 	my $nb_species = @data;
@@ -121,11 +121,11 @@ sub nextRow {
 	    my $end    = $data[$i][3] ;
 	    my $strand = $data[$i][4] ;
 	    my $length = $data[$i][5] ;
-	    my $gdb_id = $data[$i][6] ;
+	    my $genome = $data[$i][6] ;
 	    my $cigar  = $data[$i][7] ;
 	    
 	    if ($seq ne 'N'){
-	$PROCESSED_SEQS .=  &returnMAFline4Mlagan($seq,$chr,$start,$end,$strand,$length,$gdb_id,$size_chro,$cigar);
+	$PROCESSED_SEQS .=  &returnMAFline4Mlagan($seq,$chr,$start,$end,$strand,$length,$genome,$size_chro,$cigar);
 	    }
 	}
 	#print "\n";  
@@ -140,7 +140,7 @@ sub nextRow {
     # line 1: spe1_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line Score 
     # line 2: spe2_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line
     else {
-	#print "PAIRWISE data  ...\n";
+	print "PAIRWISE data  ...\n";
 	@data = &preProcessRow(\@{$row});
 	# next - \@{$row} can dereferenced by using @$row
 	# or be passed by reference using \
