@@ -62,6 +62,7 @@ use warnings;
 # Extends BioMart::FormatterI
 use base qw(BioMart::FormatterI);
 my $aln_nb = 0 ;
+
 sub _new {
     my ($self) = @_;
     $self->SUPER::_new();
@@ -79,7 +80,6 @@ sub nextRow {
     my @data ;
     my @array;
     my $PROCESSED_SEQS ;
-    #my $aln_nb = 0 ;
     my $rtable = $self->get('result_table');
     my $row = $rtable->nextRow;
     if (!$row){
