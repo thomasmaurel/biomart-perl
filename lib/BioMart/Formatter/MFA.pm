@@ -79,34 +79,37 @@ sub processQuery {
 
 sub nextRow {
     my $self = shift;
+    my @data ;
+    my $PROCESSED_SEQS ;
     my $rtable = $self->get('result_table');
     my $row = $rtable->nextRow;
     if (!$row){
         return;
     }
-    # Need to process the row - to know how many species there is
-    # on a line you have spe1(8entries), spe2(7entries), speN(7entries),and so on..
-    # line 1: spe1_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line Score 
-    # line 2: spe2_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line
-    my @data = &preProcessRow(\@{$row}); 
-    my $score = pop @data;
-    
-    my $nb_species = @data; 
-    for  (my $i=0;$i<=$nb_species-1;$i++){
+   
+    if ( ( ($$row[0]=~/^(A|C|G|T|N)/) && ($$row[0]!~/^(Chr)/) ) && ( ($$row[1]=~/^(A|C|G|T|N)/) && ($$row[1]!~/^(Chr)/) )   ){  # 15/08/06 removed /i
+	# added a hack for 'Ch'
+	@data = &preProcessRowMlagan(\@{$row});
 	
-	my $seq    = $data[$i][0] ;
-	my $chr    = $data[$i][1] ;
-	my $start  = $data[$i][2] ;
-	my $end    = $data[$i][3] ;
-	my $strand = $data[$i][4] ;
-	my $length = $data[$i][5] ;
-	my $cigar  = $data[$i][6] ;
+	my $score = pop @data;
+	my $nb_species = @data;
 	
-	print &returnMFAline($seq,$chr,$start,$end,$strand,$length,$cigar);
-	
-  }
-    return "#\n";
-
+	for  (my $i=0;$i<=$nb_species-1;$i++){
+	    my $seq    = $data[$i][0] ;
+	    my $chr    = $data[$i][1] ;
+	    my $start  = $data[$i][2] ;
+	    my $end    = $data[$i][3] ;
+	    my $strand = $data[$i][4] ;
+	    my $length = $data[$i][5] ;
+	    my $genome = $data[$i][6] ;
+	    my $cigar  = $data[$i][7] ;
+	    my @prearray = ($seq,$chr,$start,$end,$strand,$length,$cigar);
+	    ## Can be better coded ## need to change that like, add another for ($j=0..$j<=7){ push (@array, $data[$i][$j] )
+	    
+	    $PROCESSED_SEQS .=  &returnMFAline(@prearray);
+	}
+    }
+    return $PROCESSED_SEQS . "#\n";
 }
 #--------------------------------------------
 sub returnMFAline{
@@ -136,7 +139,35 @@ sub returnMFAline{
     return ($header."\n".$fasta_seq);
 		     
 }
+#--------------------------------------------
+sub preProcessRowMlagan{
+    my $row =  shift ;
+    my @want ;
+    my $score;
+    my $k = 0;
+    my $size_row = @{$row};
+    #print "size_row subroutine :  $size_row\n";
     
+    while ( ($$row[0]=~/^(A|C|G|T|N)/i) && ($$row[0]!~/^Chr/i) ) { # get all seq out
+	$want[$k][0] = shift (@{$row});
+	$k++;
+    }
+    
+    # $k-1 is equal to the number of seqs (=nb of species)
+    for  (my $j=0;$j<=$k-1;$j++){ 
+	#print "== $j 0 ";print "    ---- $want[$j][0]\n";
+	for (my $i=1;$i<=7;$i++){
+	    #print "== $j $i ";
+	    $want[$j][$i] = shift (@{$row});
+	    #print "    ---- $want[$j][$i]\n";
+	}
+	if ($j == 0){#if ($j == 0){ #for the first species which contain the score 
+	    $score = shift (@{$row}); 
+	    #print "==score $j $score\n";
+	}
+    }
+    return (@want, $score);
+}    
 #--------------------------------------------
 sub preProcessRow{
     my $row =  shift ;
@@ -171,10 +202,15 @@ sub preProcessRow{
     return (@want, $score);
 }
 #--------------------------------------------
+#sub getDisplayNames {
+#    my $self = shift;
+#    return $self->getTextDisplayNames("\t");
+#}
 sub getDisplayNames {
     my $self = shift;
-    return $self->getTextDisplayNames("\t");
+    return '' ;
 }
+#---------------------------------------
 
 # subroutines from AXT.pm <alpha version>
 #--------------------------------------------
