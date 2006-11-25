@@ -2,7 +2,8 @@
 <!DOCTYPE MartRegistry>
 <MartRegistry>
 
-<virtualSchema name="test_sanger" displayName="Test Sanger" default = "1" visible="0">
+<!--<virtualSchema name="test_sanger" displayName="Test Sanger" default = "1" visible="0"> -->
+
 <MartDBLocation databaseType="mysql" host="127.0.0.1" database="ds5_ensembl_mart_41" name="ensembl" displayName="ENSEMBL 41  (TEST)" port="3309" schema="ds5_ensembl_mart_41" user="ensadmin" password="ensembl" visible="1" default="1" martUser="" includeDatasets="" />
 <MartDBLocation databaseType="mysql" host="127.0.0.1" database="ds5_snp_mart_41" name="snp" displayName="SNP 41  (TEST)" port="3309" schema="ds5_snp_mart_41" user="ensadmin" password="ensembl" visible="1" default="0" martUser="" includeDatasets="" />
 <MartDBLocation databaseType="mysql" host="127.0.0.1" database="ds5_sequence_mart_41" name="sequence" displayName="SEQUENCE 41  (TEST)" port="3309" schema="ds5_sequence_mart_41" user="ensadmin" password="ensembl" visible="0" default="1" martUser="" includeDatasets="" />
@@ -17,7 +18,7 @@
 
 <MartURLLocation path="" host="www.dictybase.org" proxy="http://wwwcache.ebi.ac.uk:8080" name="dicty" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="1" martUser="" includeDatasets="" redirect="1" />
 
-</virtualSchema>
+<!--</virtualSchema> -->
 
 
 <!--
