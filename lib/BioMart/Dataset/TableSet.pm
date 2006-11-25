@@ -22,7 +22,7 @@ Description here
 
 =head1 CONTACT
 
-This module is part of the BioMart project http://www.ebi.ac.uk/biomart
+This module is part of the BioMart project http://www.biomart.org
 
 Questions can be posted to the mart-dev mailing list:
 mart-dev@ebi.ac.uk
@@ -200,7 +200,7 @@ sub _fillAttributeTableWith {
       my $xml = $query->toXML($batch_start,$batch_size,0);    
 
      my $logger=Log::Log4perl->get_logger(__PACKAGE__);
-     $logger->info("QUERY XML:  $xml");
+     $logger->debug("QUERY XML:  $xml");
 
 
       foreach my $el($location->getResultSet("","POST",$xml)){	  
@@ -728,7 +728,7 @@ sub _generateSQL {
     }
 
 my $logger=Log::Log4perl->get_logger(__PACKAGE__);
- $logger->info("QUERY SQL:  $sql");
+ $logger->warn("QUERY SQL:  $sql");
 
     return $sql;
 }
@@ -751,7 +751,7 @@ sub _getCount {
 	my $xml = $query->toXML(0,0,1);
 
         my $logger=Log::Log4perl->get_logger(__PACKAGE__);
-        $logger->info("COUNT XML:  $xml");
+        $logger->warn("COUNT XML:  $xml");
 
       
 	my @results = $location->getResultSet("","POST",$xml);
@@ -886,7 +886,7 @@ sub _getCount {
 
 
 my $logger=Log::Log4perl->get_logger(__PACKAGE__);
- $logger->info("COUNT SQL:  $sql");
+ $logger->warn("COUNT SQL:  $sql");
 
 
    my $dbh = $self->_getDBH;

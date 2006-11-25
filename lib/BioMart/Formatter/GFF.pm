@@ -36,7 +36,7 @@ Damian Smedley
 =head1 CONTACT
 
 This module is part of the BioMart project
-http://www.ebi.ac.uk/biomart
+http://www.biomart.org
 
 Questions can be posted to the mart-dev mailing list:
 mart-dev@ebi.ac.uk

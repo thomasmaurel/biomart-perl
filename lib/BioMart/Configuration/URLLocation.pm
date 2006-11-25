@@ -38,6 +38,7 @@ package BioMart::Configuration::URLLocation;
 use strict;
 use warnings;
 use LWP::UserAgent;
+use Log::Log4perl;
 
 use base qw(BioMart::Configuration::Location);
 
@@ -66,13 +67,20 @@ sub getResultSet {
     my ($self, $qualifier,$type,$xml)=@_;
     
     if (!defined $xml){$xml=""}  # no uninitilized warning
- 
- 
+
+
+    my $logger=Log::Log4perl->get_logger(__PACKAGE__);
     my $request;
     if ($type eq "POST"){
-	$request = HTTP::Request->new($type,$self->dsn,
+
+     $logger->warn("POST: ", $self->dsn," query=$xml");
+   
+     $request = HTTP::Request->new($type,$self->dsn,
 				      HTTP::Headers->new(),'query='.$xml."\n");
     } elsif ($type eq "GET") {
+
+         $logger->warn("GET: ", $self->dsn," $qualifier");
+
 	$request = HTTP::Request->new($type,$self->dsn.$qualifier);
     } else {
 	BioMart::Exception::Query->throw("need a valid request type: GET or POST");    

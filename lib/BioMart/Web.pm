@@ -247,14 +247,14 @@ sub _new
         $vars->{webquery} = $self;
 	my $new_start_time = time();
 
-        $logger->warn("START PROCESSING TEMPLATE $template");
+        $logger->info("START PROCESSING TEMPLATE $template");
 	
 	$output ||= q{};
 	$tt_processor->process($template,$vars,ref($output) ? $output : \$output)
             || BioMart::Exception::Template->throw("Error in processing template $template: ".$tt_processor->error());
         my $time_elapsed = round(time() - $new_start_time);
  	#ref($output);  || warn "length(\$output)=".format_number(length($output));
-	$logger->warn("!!!! $time_elapsed to get process template $template and print to ".(ref($output) || 'string'));
+	$logger->info("!!!! $time_elapsed to get process template $template and print to ".(ref($output) || 'string'));
 	ref($output) || return $output; # return string if this wasn't a filehandle-thingie that was passed in
 	return;
     }
@@ -1458,7 +1458,7 @@ sub _new
 	$session->clear('get_count_button'); # so we don't get stuck at this stage
 	 
 	$qtime = round(time - $qtime, 4);
-	$logger->warn("All Mart counts and main Mart-query executed in ".$qtime);						  
+	$logger->info("All Mart counts and main Mart-query executed in ".$qtime);						  
 
 	# Render main query-building interface page
 	print $session->header(); # adds the required session-ID cookie to the header

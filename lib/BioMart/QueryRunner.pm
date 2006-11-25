@@ -47,7 +47,7 @@ BioMart::QueryRunner
 
 =head1 CONTACT
 
-This module is part of the BioMart project http://www.ebi.ac.uk/biomart
+This module is part of the BioMart project http://www.biomart.org
 
 Questions can be posted to the mart-dev mailing list:
 mart-dev@ebi.ac.uk
@@ -129,11 +129,11 @@ sub execute {
         
         if (defined $query->getAllAttributes()){
         foreach my $att (@{$query->getAllAttributes()}){
-	$logger->info("ATTRIBUTE: ", $att->dataSetName,"\t",$att->name,"\t",$att->table);
+	$logger->warn("ATTRIBUTE: ", $att->dataSetName,"\t",$att->name,"\t",$att->table);
 } 
 } else {
 
-$logger->info("NO ATTRIBUTES");
+$logger->warn("NO ATTRIBUTES");
 
 }
 
@@ -142,11 +142,11 @@ $logger->info("NO ATTRIBUTES");
   
         if (defined $query->getAllFilters()){
         foreach my $filt (@{$query->getAllFilters()}){
-        $logger->info("FILTER: ", $filt->dataSetName,"\t",$filt->name,"\t",$filt->table);
+        $logger->warn("FILTER: ", $filt->dataSetName,"\t",$filt->name,"\t",$filt->table);
 }       
 } else {   
            
-$logger->info("NO FILTERS");
+$logger->warn("NO FILTERS");
              
 }            
        
