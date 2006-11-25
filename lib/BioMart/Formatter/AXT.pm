@@ -73,6 +73,7 @@ sub processQuery {
     $self->set('original_attributes',[@{$query->getAllAttributes()}]) if ($query->getAllAttributes());
     $self->set('query',$query);
     return $query;
+    $aln_nb = 0 ;
 }
 
 sub nextRow {
