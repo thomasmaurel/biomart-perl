@@ -12,7 +12,6 @@
                     default      = ""
                      includeDatasets = ""
                     martUser     = ""
-                    serverVirtualSchema="test_sanger"
 />
 </MartRegistry>
 
