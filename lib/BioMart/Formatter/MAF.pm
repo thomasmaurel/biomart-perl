@@ -78,6 +78,7 @@ sub processQuery {
     $self->set('original_attributes',[@{$query->getAllAttributes()}]) if ($query->getAllAttributes());
     $self->set('query',$query);
     return $query;
+    $aln_nb = 0 ;
 }
 
 sub nextRow {
@@ -103,7 +104,7 @@ sub nextRow {
     if ( ( ($$row[0]=~/^(A|C|G|T|N)/) && ($$row[0]!~/^(Chr)/) ) && ( ($$row[1]=~/^(A|C|G|T|N)/) && ($$row[1]!~/^(Chr)/) )   ){  # 15/08/06 removed /i
 	                                                                   # added a hack for 'Ch'
 	@data = &preProcessRowMlagan(\@{$row});
-	 print "MLAGAN data : 2 sequences ...\n";
+	# print "MLAGAN data : 2 sequences ...\n";
 	my $score = pop @data;
 	$SCORE2 = "a score=$score\n";
 	my $nb_species = @data;
