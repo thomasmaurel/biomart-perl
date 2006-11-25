@@ -70,6 +70,7 @@ use warnings;
 
 # Extends BioMart::FormatterI
 use base qw(BioMart::FormatterI);
+my $aln_nb = 0 ;
 
 sub _new {
     my ($self) = @_;
@@ -85,39 +86,58 @@ sub processQuery {
 
 sub nextRow {
     my $self = shift;
+    my @data ;
+    my @array;
+    my $PROCESSED_SEQS ;
+    
     my $rtable = $self->get('result_table');
     my $row = $rtable->nextRow;
     if (!$row){
         return;
     }
-    # on a line you have spe1(8entries), spe2(7entries), speN(7entries),and so on... 
-    #
-    #spe1_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line Score 
-    #spe2_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line
     
-    #my $lenght =  @{$row}; # get size f array
-    #return ("$lenght\n");
+    if ( ( ($$row[0]=~/^(A|C|G|T|N)/) && ($$row[0]!~/^(Chr)/) ) && ( ($$row[1]=~/^(A|C|G|T|N)/) && ($$row[1]!~/^(Chr)/) )   ){  # 15/08/06 removed /i
+	# added a hack for 'Ch'
+	@data = &preProcessRowMlagan(\@{$row});
+	
+	my $score = pop @data;
+	my $nb_species = @data;
+	
+#-- was needed for MAF, but not for AXT
+#	my $size_chro = 0 ; # calculate the size of the longuest chro # for sprintf
+#	for  (my $i=0;$i<=$nb_species-1;$i++){ 
+#	    my $chr    = $data[$i][1];
+#	    if ($size_chro < length $chr){$size_chro = length $chr;} 
+#	}
+	
+	for  (my $i=0;$i<=$nb_species-1;$i++){
+	    my $seq    = $data[$i][0] ;
+	    my $chr    = $data[$i][1] ;
+	    my $start  = $data[$i][2] ;
+	    my $end    = $data[$i][3] ;
+	    my $strand = $data[$i][4] ;
+	    my $length = $data[$i][5] ;
+	    my $genome = $data[$i][6] ;
+	    my $cigar  = $data[$i][7] ;
+	    my @prearray = ($seq,$chr,$start,$end,$strand,$length,$cigar);
+	    ## Can be better coded ## need to change that like, add another for ($j=0..$j<=7){ push (@array, $data[$i][$j] )
+	    push (@array, @prearray);
+	    if ($seq ne 'N'){
+		# do something
+	    }
+	}
+	push (@array, $score, $aln_nb);
+	
+	$PROCESSED_SEQS =  &returnAXTPLUSline(@array);
+	$aln_nb++;
+	return $PROCESSED_SEQS ;
+    }
+    
+}
+#----------------------
+sub returnAXTPLUSline{
+    my ($seq1,$chr1,$start1,$end1,$strand1,$length1,$cigar1,$seq2,$chr2,$start2,$end2,$strand2,$length2,$cigar2,$score1,$aln_nb) = @_;
 
-       my $seq1    = $row->[0] ;
-    my $chr1    = $row->[1] ;
-    my $start1  = $row->[2] ;
-    my $end1    = $row->[3] ;
-    my $strand1 = $row->[4] ;
-    #my $score1  = $row->[5] ;
-    my $length1 = $row->[5] ;
-    my $cigar1  = $row->[6] ;
-    my $score1  = $row->[7] ;
-    
-    my $seq2    = $row->[8] ;
-    my $chr2    = $row->[9] ;
-    my $start2  = $row->[10] ;
-    my $end2    = $row->[11] ;
-    my $strand2 = $row->[12] ;
-    my $length2 = $row->[13] ;
-    my $cigar2  = $row->[14] ;
-    my $aln_nb = 0 ;
-    
-    
     my ($hstart1, $hend1, $hstrand1, $hstart2, $hend2, $hstrand2);
     if ($strand1 < 0 ){
 	$hstrand1 = "-";
@@ -143,11 +163,37 @@ sub nextRow {
     my $line2 =   sprintf( _get_aligned_sequence_from_original_sequence_and_cigar_line($seq1, $cigar1));
     my $line3 =   sprintf( _get_aligned_sequence_from_original_sequence_and_cigar_line($seq2, $cigar2));
     return ("$line1\n$line2\n$line3\n\n");
-    
-    $aln_nb++;
-    
 }
-
+#--------------------------------------------
+sub preProcessRowMlagan{
+    my $row =  shift ;
+    my @want ;
+    my $score;
+    my $k = 0;
+    my $size_row = @{$row};
+    #print "size_row subroutine :  $size_row\n";
+    
+    while ( ($$row[0]=~/^(A|C|G|T|N)/i) && ($$row[0]!~/^Chr/i) ) { # get all seq out
+	$want[$k][0] = shift (@{$row});
+	$k++;
+    }
+    
+    # $k-1 is equal to the number of seqs (=nb of species)
+    for  (my $j=0;$j<=$k-1;$j++){ 
+	#print "== $j 0 ";print "    ---- $want[$j][0]\n";
+	for (my $i=1;$i<=7;$i++){
+	    #print "== $j $i ";
+	    $want[$j][$i] = shift (@{$row});
+	    #print "    ---- $want[$j][$i]\n";
+	}
+	if ($j == 0){#if ($j == 0){ #for the first species which contain the score 
+	    $score = shift (@{$row}); 
+	    #print "==score $j $score\n";
+	}
+    }
+    return (@want, $score);
+}
+#------------------------------------------
 sub getDisplayNames {
     my $self = shift;
     return $self->getTextDisplayNames("\t");
