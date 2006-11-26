@@ -92,7 +92,7 @@ if(-e $httpdconfFile)
 		#$ARGUMENTS{recompile} = "--recompile";	## forcing templates compiling as you switch between baked registries, 
 										## however templates could be different			
 	}
-	$Configure = &promptUser("\nDO YOU WANT TO USE EXISTING SERVER CONFIGURATION [y/n]\t", 'y');
+	$Configure = &promptUser("\n\nDO YOU WANT TO USE EXISTING SERVER CONFIGURATION [y/n]\t", 'y');
 }
 if($Configure eq 'n' || ! -e $httpdconfFile)
 {

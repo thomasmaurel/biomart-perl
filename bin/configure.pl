@@ -113,7 +113,8 @@ sub configureMartView
 	my $counter=1;
 	my $allOK = 'true';
 
-	print "\nChecking prerequisites [required perl Modules], shouldnt take a moment ..... \n";
+	print "\nChecking prerequisites ...";
+        my @missing;
 	foreach my $moduleName (keys %modules_status)
 	{
 		if ($modules_status{$moduleName} ne '[OK]')
@@ -121,20 +122,30 @@ sub configureMartView
 			# so it can be copied and pasted directly for 'cpan -i'           
 			my $printModule =$moduleName;
 			$printModule=~s/\//::/g;
-	    
-		    print $counter++, "\tMODULE: ", $printModule,"\t\t", $modules_status{$moduleName} , "\n";		
+
+$counter++;	    
+#		    print $counter++, "\tMODULE: ", $printModule,"\t\t", $modules_status{$moduleName} , "\n";		
+		push @missing, $printModule;
 		}	
 	}
 
 	if($counter > 1)
 	{
 
-     	print "\n\nPrerequisites missing .... Please install the above mentioned modules\n\n"; 
+     	print " please install the following modules:\n\n";
+
+       foreach my $module (@missing){
+
+print "$module\n";
+
+}
+
+print "\n"; 
           exit;
 	}
 
 
-		print "\n[Done].. Looks you are fully equipped to install MartView\n";	
+		print "[Looks good] \n";	
 		my $mode = undef;
 		my $action = undef;
 		my $registryFile = undef;
