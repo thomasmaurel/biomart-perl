@@ -226,6 +226,31 @@ sub description {
   return $self->getParam(DESCRIPTION);
 }
 
+
+
+=head2 table
+
+  Usage      :
+  Description: returns the table name associated with this filter;
+  Returntype : String table name
+  Exceptions : none
+  Caller     : caller
+
+=cut
+
+sub table {
+
+  #my $self = shift;
+  #my $attribute = $self->get('attribute');
+  #return $attribute->table;
+return "";
+
+
+}
+
+
+
+
 =head2 dependsOn
 
   Usage      : Arg [1] - (optional) string $dependsOn delimited by commas

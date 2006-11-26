@@ -142,7 +142,8 @@ $logger->warn("NO ATTRIBUTES");
   
         if (defined $query->getAllFilters()){
         foreach my $filt (@{$query->getAllFilters()}){
-        $logger->warn("FILTER: ", $filt->dataSetName,"\t",$filt->name,"\t",$filt->table);
+        $logger->warn("FILTER TABLE: ", $filt->dataSetName,"\t",$filt->name,"\t",$filt->table);
+
 }       
 } else {   
            
