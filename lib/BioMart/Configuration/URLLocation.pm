@@ -73,7 +73,7 @@ sub getResultSet {
     my $request;
     if ($type eq "POST"){
 
-     $logger->warn("POST: ", $self->dsn," query=$xml");
+     $logger->warn("POST: ", $self->dsn," query=\n$xml");
    
      $request = HTTP::Request->new($type,$self->dsn,
 				      HTTP::Headers->new(),'query='.$xml."\n");
@@ -108,7 +108,10 @@ sub getResultSet {
 	    if ($el =~/^Proxy/) {next;}
             if ($el =~/^X-Cache/) {next;}
             if ($el =~/^Via/) {next;}
-	    push (@results,$el);
+         
+	    $logger->warn("RESPONSE:  $el");
+          
+          push (@results,$el);
 	}
 	
     }  else {
