@@ -73,7 +73,7 @@ sub getResultSet {
     my $request;
     if ($type eq "POST"){
 
-     $logger->warn("POST: ", $self->dsn," query=\n$xml");
+     $logger->warn("POST: ", $self->dsn," query=$xml");
    
      $request = HTTP::Request->new($type,$self->dsn,
 				      HTTP::Headers->new(),'query='.$xml."\n");

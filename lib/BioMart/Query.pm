@@ -438,12 +438,19 @@ $filter->getExcluded.qq|"/>|;
 			}
 		}  		
   	}
+
+
+        my $ds;
   	foreach (keys %vDataset)
   	{
   		$vDataset{$_} .= qq |
 		</Dataset>|;
+                $ds=$vDataset{$_};
 	}
-	
+
+       # so it does not forget to stick dataset for counts
+       if ($count == 1) { $xml .= qq |$ds|}
+
 	# ------ Determine correct order of datasets in the query without calling QueryRunner
 	# ------ using getAllAttributes to find corresponding datasets and then ascertain
 	# ------ which dataset comes first in XML representation

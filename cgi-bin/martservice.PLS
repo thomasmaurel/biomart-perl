@@ -507,7 +507,7 @@ sub run_query {
     my ($registry,$xml) = @_;
     my $query;	
    
-    $LOGGER->warn("RECEIVED QUERY:\n$xml\n");
+    $LOGGER->warn("RECEIVED QUERY:$xml\n");
       
 	eval{
 	    $query = BioMart::Query->new(
