@@ -315,7 +315,7 @@ sub init_cached
      }
      else
      {
-          print  "\nCached Registry Unavailable...!!!\n";          
+          print  "\nCached Registry Unavailable...\n";          
           my $cachefile_min = undef;
           #my $cachefile_min_disk = $params{'registryFile'}.".min_cached_disk";          
           my $cachefile_min_disk = $registryFile.".min_cached_disk";
@@ -339,7 +339,7 @@ sub init_cached
 
           if(!$previous_mode)
           {
-               print  "\nRunning Complete Clean...!!!\n";               
+               print  "\nRunning Complete Clean...\n";               
                $mart_registry = $self->init_clean(@params);                  
           }
           else
