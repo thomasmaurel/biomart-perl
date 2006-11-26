@@ -524,7 +524,8 @@ sub run_query {
     		}
     		else{	
 
-			$query_planner->printHeader();
+# switched this off, needs to be settable in Query.xml
+#			$query_planner->printHeader();
 			$query_planner->printResults();
 			$query_planner->printFooter();
 	    	}
