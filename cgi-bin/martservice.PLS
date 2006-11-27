@@ -238,7 +238,7 @@ sub get_datasets {
     
     my ($registry,$vschema_name,$mart_name,$mart_user)=@_;
     my $output; 
-    if ($vschema_name eq ''){
+    if (!$vschema_name || $vschema_name eq ''){
 	my $seen;
 	foreach my $virtualSchema (@{$registry->getAllVirtualSchemas}){
 	    foreach my $location (@{$virtualSchema->getAllLocations}){
@@ -339,7 +339,7 @@ sub _find_mart {
  my $found_location;
     my $seen;
     foreach my $virtualSchema (@{$registry->getAllVirtualSchemas}){
-	next unless ($vschema_name eq '' || $virtualSchema->name eq $vschema_name);
+	next unless (!$vschema_name || $vschema_name eq '' || $virtualSchema->name eq $vschema_name);
 	foreach my $location (@{$virtualSchema->getAllLocations}){
 	    next unless ($location->name eq $mart_name);
 	    if ($seen){
@@ -368,7 +368,7 @@ sub get_configuration {
     my ($registry,$vschema_name,$dataset_name,$interface,$mart_user)=@_;
     
     
-    if ($vschema_name eq ''){
+    if (!$vschema_name || $vschema_name eq ''){
 	my $seen;
 	foreach my $virtualSchema (@{$registry->getAllVirtualSchemas}){
 	    foreach my $dsetName (@{$registry->getAllDatasetNames($virtualSchema->name)}){
@@ -402,7 +402,7 @@ sub get_filters {
     my ($registry,$vschema_name,$dataset_name,$interface,$mart_user)=@_;
     
     
-    if ($vschema_name eq ''){
+    if (!$vschema_name || $vschema_name eq ''){
 	my $seen;
 	foreach my $virtualSchema (@{$registry->getAllVirtualSchemas}){
 	    foreach my $dsetName (@{$registry->getAllDatasetNames($virtualSchema->name)}){
@@ -464,7 +464,7 @@ sub get_attributes {
     
     my ($registry,$vschema_name,$dataset_name,$interface,$mart_user)=@_;
         
-    if ($vschema_name eq ''){
+    if (!$vschema_name || $vschema_name eq ''){
 	my $seen;
 	foreach my $virtualSchema (@{$registry->getAllVirtualSchemas}){
 	    foreach my $dsetName (@{$registry->getAllDatasetNames($virtualSchema->name)}){
