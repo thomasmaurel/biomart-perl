@@ -66,6 +66,7 @@ my $aln_nb = 0 ;
 sub _new {
     my ($self) = @_;
     $self->SUPER::_new();
+    $aln_nb = 0 ;
 }
 
 sub processQuery {
@@ -73,13 +74,13 @@ sub processQuery {
     $self->set('original_attributes',[@{$query->getAllAttributes()}]) if ($query->getAllAttributes());
     $self->set('query',$query);
     return $query;
-    $aln_nb = 0 ;
 }
 
 sub nextRow {
     my $self = shift;
     my @data ;
     my @array;
+    #my $aln_nb = 0 ;
     my $PROCESSED_SEQS ;
     my $rtable = $self->get('result_table');
     my $row = $rtable->nextRow;

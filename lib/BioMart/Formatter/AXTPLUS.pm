@@ -75,6 +75,7 @@ my $aln_nb = 0 ;
 sub _new {
     my ($self) = @_;
     $self->SUPER::_new();
+    $aln_nb = 0 ;
 }
 
 sub processQuery {
