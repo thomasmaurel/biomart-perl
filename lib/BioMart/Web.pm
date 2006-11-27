@@ -1218,7 +1218,7 @@ sub _new
 	if(defined($query_main)) {
 	    # Then save info to session
 	    my %lastquery_info;
-	    $lastquery_info{xml} = $query_main->toXML();
+	    $lastquery_info{xml} = $query_main->toXML(1,1,1,1);
 	    $lastquery_info{timestamp} = strftime "%Y-%m-%d %H:%M:%S", localtime;
 	    $session->param('lastquery_info', \%lastquery_info);
 	}
@@ -1229,7 +1229,7 @@ sub _new
 	if(defined ($showQuery) && defined($query_main) && $showQuery ne '0')
 	{
                 # do not want to show internals of BioMart ;-) 
-		my $tempered_xml = $query_main->toXML();
+		my $tempered_xml = $query_main->toXML(1,1,1,1);
 		$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"//g;
 		$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
 		print $tempered_xml;

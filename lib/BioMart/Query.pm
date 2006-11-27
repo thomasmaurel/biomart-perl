@@ -119,7 +119,7 @@ sub _new {
 =cut
 
 sub toXML {
-	my ($self,$limit_start,$limit_size,$count) = @_;
+	my ($self,$limit_start,$limit_size,$count, $webClientTempering) = @_;
 
 	my $registry = $self->getRegistry;
 	### incase this query has been declared via QR, or its a martservice query where NO version
@@ -141,15 +141,26 @@ sub toXML {
 	}   
 	
 
-	if($self->get('softwareVersion') eq '0.4') 
+	if($webClientTempering) # only for display purpose of Martview
+	{
+		undef $limit_start;
+		undef $limit_size;
+		undef $count;
+		if($self->get('softwareVersion') eq '0.4') 
+		{
+			my $xml =  $self->_toXML_old($limit_start,$limit_size,$count); 		 
+			return $xml;
+		}
+		else ## latest xml query
+		{
+			my $xml =  $self->_toXML_latest($limit_start,$limit_size,$count); 
+			return $xml;
+		}
+	}
+	else	### for rest of the API calls; Query, QueryRunner, Tableset and family
 	{
 		my $xml =  $self->_toXML_old($limit_start,$limit_size,$count); 		 
-		return $xml;
-	}
-	else ## latest xml query
-	{
-		my $xml =  $self->_toXML_latest($limit_start,$limit_size,$count); 
-		return $xml;
+		return $xml;	
 	}
 
 }
