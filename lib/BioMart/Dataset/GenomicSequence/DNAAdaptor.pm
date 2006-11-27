@@ -35,6 +35,7 @@ use warnings;
 use DBI;
 use base qw(BioMart::Root);
 use Log::Log4perl;
+my $logger=Log::Log4perl->get_logger(__PACKAGE__);
 
 use constant SEQNAME => "seq_name";
 use constant SEQTABLENAME => "dna_tablename";
@@ -189,13 +190,8 @@ sub _fetchFullChunk {
     my ($self, $chr, $chunkStart) = @_;
     
     my $sth = $self->get('fullSth');
+    $logger->info("QUERY FULL SQL CHR CHUNKSTART:  $chr\t$chunkStart");
     $sth->execute($chunkStart, $chr);
-
-   
-
-my   $logger=Log::Log4perl->get_logger(__PACKAGE__);
-     $logger->info("QUERY FULL SQL CHR CHUNKSTART:  $chr\t$chunkStart");
-
  
     my $ret = $sth->fetchrow;
     
@@ -209,6 +205,7 @@ sub _fetchChunkSubstring {
     
     my $coord = $start - $chunkStart + 1;
     my $sth = $self->get('subSth');
+    $logger->info("QUERY SUBSTRING SQL CHR CHUNKSTART:  $chr\t$chunkStart\t$len (start $start coord $coord)");
     $sth->execute($coord, $len, $chunkStart, $chr);
     
     my $ret = $sth->fetchrow;
