@@ -8,8 +8,8 @@ this stylesheet (possibly combined with customizing of HTML templates).
 
 div#mart_containerpanel
 { 
-	font-family: [theme_font_family];
-	font-size: [theme_font_size];
+	font-family: sans-serif;
+	font-size: 11pt;
 	height: 100%;
 	width: 100%;
 	background-color: white;
@@ -26,14 +26,14 @@ div#mart_containerpanel
 	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/						
 	max-width: inherit; /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
 	padding: 16px 30px 16px 30px;
-	height: [left_right_panel_height];
+	height: 365px;
 	clear: both;
 	overflow: auto;
 }
 
 div#mart_mainpanel
 {
-	height: [left_right_panel_height];
+	height: 365px;
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
 	margin: 12px 0px 12px 6px;
@@ -78,8 +78,8 @@ div#mart_main_menubar_outer
 	/*text-align: left;*/
 	/*padding: 8px;*/
 	padding: 7px 0px 7px 0px;	
-	border-color: [top_menubar_colour];
-	background-color: [top_menubar_colour];
+	border-color: [top_bottom_menubar_bgcolour];
+	background-color: [top_bottom_menubar_bgcolour];
 }
 
 div#mart_bottom_bar
@@ -88,13 +88,13 @@ div#mart_bottom_bar
 	padding: 3px 3px 4px 30px;
 	border-style: solid;
 	border-width: 1px;
-	color: white;
+	color: [font_colour_top_bottom_menubar];
 	font-weight: bold;
 	width: inherit;
-	border-color: [top_menubar_colour];
-	background-color: [top_menubar_colour];
-	font-size: [theme_font_size]; 
-	font-family: [theme_font_family];
+	border-color: [top_bottom_menubar_bgcolour];
+	background-color: [top_bottom_menubar_bgcolour];
+	font-size: 11pt; 
+	font-family: sans-serif;
 }
 
 .mart_datasetpanel
@@ -111,8 +111,9 @@ div#mart_bottom_bar
 
 div#mart_export_menubar	
 {
+	color: [font_colour_rest];
 	border: solid;
-	font-size: [theme_font_size];
+	font-size: 11pt;
 	clear: both;
 	background-color: [main_panel_bgcolour];                            
 	border-width: 0px 0px 3px 0px;
@@ -124,6 +125,7 @@ div#mart_export_menubar
 
 div#mart_export_data
 { 
+	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	/* border-style: solid; */
 	/* border-width: 1px; */
@@ -142,56 +144,58 @@ div#mart_export_data
 /* button and hover on functions */					
 .mart_btn
 {
-	font-family: [theme_font_family];	
-	font-size: [buttons_font_size];
+	font-family: sans-serif;	
+	font-size: 14pt;
 	border:1px solid;
 	font-weight: bold;
-	color:[button_text_colour];
-   	background-color:[button_background_colour];
-	border-color: [button_border_colour];
+	color:[font_colour_top_bottom_menubar];
+   	background-color:[top_bottom_menubar_bgcolour];
+	border-color: [top_bottom_menubar_bgcolour];
 }
       				
 .mart_btnhov			
 {
-	font-family: [theme_font_family];
-	font-size: [buttons_font_size];
+	font-family: sans-serif;
+	font-size: 14pt;
 	font-weight: bold;	
-	color:[button_text_colour_hover];
-   	background-color:[button_background_colour_hover];
-	border-color: [button_border_colour_hover];
+	color:[top_bottom_menubar_bgcolour];
+   	background-color:[font_colour_top_bottom_menubar];
+	border-color: [font_colour_top_bottom_menubar];
 }
 .mart_btn_go
 {
-	font-family: [theme_font_family];	
-	font-size: [theme_font_size];
+	font-family: sans-serif;	
+	font-size: 11pt;
 	border:1px solid;
 	font-weight: bold;
-	color:[button_text_colour];
-   	background-color:[button_background_colour];
-	border-color: [button_border_colour];
+	color:[font_colour_top_bottom_menubar];
+   	background-color:[top_bottom_menubar_bgcolour];
+	border-color: [top_bottom_menubar_bgcolour];
 }
       				
 .mart_btnhov_go			
 {
-	font-family: [theme_font_family];
-	font-size: [theme_font_size];
+	font-family: sans-serif;
+	font-size: 11pt;
 	font-weight: bold;	
-	color:[button_text_colour_hover];
-   	background-color:[button_background_colour_hover];
-	border-color: [button_border_colour_hover];
+	color:[top_bottom_menubar_bgcolour];
+   	background-color:[font_colour_top_bottom_menubar];
+	border-color: [font_colour_top_bottom_menubar];
 }
 
 /* Other Input fields such drop downs and text field and hover on functions */					
 .mart_input				
 {
-	font-size: [menu_font_size];
-	font-family: [theme_font_family];
+	color: [font_colour_rest];
+	font-size: 10pt;
+	font-family: sans-serif;
 }
       				
 .mart_inputhov			
 {	
-	font-size: [menu_font_size]; 
-	font-family: [theme_font_family];
+	color: [font_colour_rest];
+	font-size: 10pt; 
+	font-family: sans-serif;
 }
 
 .email_notification
@@ -212,6 +216,7 @@ div#mart_export_data
 .mart_schemamenu,	
 .mart_datasetlinkmenu
 {
+	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
 	border-width: 0px 0px 4px 0px;
@@ -219,12 +224,13 @@ div#mart_export_data
 	padding: 0px 0px 16px 0px;
 	height: 100%;
 	clear: both;
-	font-size: [theme_font_size];
+	font-size: 11pt;
 	overflow: auto;
 }
 
 .mart_databasemenu
 {
+	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
 	border-width: 0px 0px 4px 0px;
@@ -232,12 +238,13 @@ div#mart_export_data
 	/*padding: 16px 0px 16px 0px; To be handles in datasetpanel.tt based on if we have a schema menu or not*/
 	height: 100%;
 	clear: both;
-	font-size: [theme_font_size];                            
+	font-size: 11pt;                            
 	overflow: auto;
 }
 .mart_interfacemenu,
 .mart_datasetmenu
 {
+	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
 	border-width: 0px 0px 4px 0px;
@@ -245,7 +252,7 @@ div#mart_export_data
 	padding: 16px 0px 16px 0px;
 	height: 100%;
 	clear: both;
-	font-size: [theme_font_size];                            
+	font-size: 11pt;                            
 	overflow: auto;
 }
 
@@ -268,6 +275,7 @@ div#mart_export_data
 .mart_compression_list,
 .mart_compression
 {
+	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
 	border-width: 1px 0px 1px 1px;
@@ -297,7 +305,7 @@ div#mart_export_data
 .mart_attributecollection
 {
 	border-width: 1px 0px 0px 0px;
-	font-size: [theme_font_size];	
+	font-size: 11pt;	
 }
 .mart_filtercollection
 {
@@ -335,7 +343,7 @@ div#mart_export_data
 }
 .mart_attributepage_selection_col
 {
-	font-size: [theme_font_size];
+	font-size: 11pt;
 	font-weight: bold;
 	float: left;
 }
@@ -357,14 +365,14 @@ div#mart_export_data
 
 .mart_summarypanel_dataset_entrycount 
 {
-	font-size : [theme_font_size];
-	color: [summarypanel_dataset_entrycount_colour];
-	font-style: [summarypanel_dataset_entrycount_style];
+	font-size : 11pt;
+	color: [font_colour_rest];
+	font-style: normal;
 }
 
 .mart_summarypanel_list_disabled
 {
-	color: grey;
+	color: [font_colour_rest];
 }
 
 .mart_summarypanel_listheader,
@@ -372,8 +380,9 @@ div#mart_export_data
 .mart_summarypanel_listheader_highlighted
 {
 	cursor: pointer;
+	color: [font_colour_rest];
 	font-weight: bold;                            
-	font-size: [theme_font_size]; 
+	font-size: 11pt; 
 	clear: both;
 	margin: 0px 0px 2px 0px;
 	padding: 0px 5px 0px 0px;	
@@ -382,8 +391,8 @@ div#mart_export_data
 
 .mart_summarypanel_listheader_highlighted
 {
-	border: 1px solid [summary_panel_highlight_border];
-	background-color: 	[summary_panel_highlight_background];
+	border: 1px solid [summary_panel_highlight_border_colour];
+	background-color: 	[summary_panel_highlight_bgcolour];
 	
 }
 
@@ -392,35 +401,37 @@ div#mart_export_data
 { 
 
 	margin: 0px 0px 0px 0px;
-	font-size: [theme_font_size]; 
+	font-size: 11pt; 
 }
 
 .el_visible,
 .ctl_visible,
 .mart_dataset_noneSelected
 { 						
+	color: [font_colour_rest];
 	margin: 1px 0px 1px 13px;
-	font-size: [theme_font_size]; 		
+	font-size: 11pt; 		
 }
 
 .el_hidden_AttFiltPanel,
 .ctl_hidden_AttFiltPanel 
 {
 	margin: 0px 0px 0px 0px;
-	font-size: [theme_font_size];
+	font-size: 11pt;
 }
 
 .el_visible_AttFiltPanel,
 .ctl_visible_AttFiltPanel,
 {
 	margin: 1px 0px 1px 0px;
-     font-size: [theme_font_size];
+     font-size: 11pt;
 }
 
 .mart_summarypanel_AttFiltHeader,
 .mart_summarypanel_AttFiltHeader_highlighted
 {
-	font-size: [theme_font_size]; 
+	font-size: 11pt; 
+	color: [font_colour_rest];
 	cursor: pointer;
 	font-weight: bold;                            	
 	margin: 1px 0px 1px 13px;
@@ -432,14 +443,15 @@ div#mart_export_data
 .mart_summarypanel_AttFiltHeader_highlighted
 {
 
-	border: 1px solid [summary_panel_highlight_border];
-	background-color: 	[summary_panel_highlight_background] ;
+	border: 1px solid [summary_panel_highlight_border_colour];
+	background-color: 	[summary_panel_highlight_bgcolour] ;
 }
 						
 .mart_summarypanel_list_disabled,
 .mart_summarypanel_list
 { 
-	font-size: [theme_font_size]; 
+	color: [font_colour_rest];
+	font-size: 11pt; 
 	clear: both;
 	width: inherit;
 	margin: 1px 0px 1px 0px;
@@ -448,42 +460,43 @@ div#mart_export_data
 .mart_summarypanel_listitem_disabled,
 .mart_summarypanel_listitem 
 {
-	font-size: [theme_font_size]; 
-	font-style: [summarypanel_att_filt_font_style];
+	color: [font_colour_rest];
+	font-size: 11pt; 
+	font-style: normal;
 	margin: 1px 0px 1px 26px;
 	width: inherit;
 	clear: both;
-	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
+
 }
 
 .mart_summarypanel_listitem2
 {
-	font-size: [theme_font_size]; 
-	font-style: [summarypanel_att_filt_font_style];
+	font-size: 11pt; 
+	font-style: normal;
 	margin: 1px 0px 1px 26px;
 	width: inherit;
 	clear: both;
-	color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
+	color: [font_colour_rest];
 }
 
 .mart_summarypanel_listitem3
 {
-	font-size: [theme_font_size]; 
-	font-style: [summarypanel_att_filt_font_style];
+	font-size: 11pt; 
+	font-style: normal;
 	margin: 1px 0px 1px 26px;
 	width: inherit;
 	clear: both;
-	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
+	color: [font_colour_rest];
 }
 
 .mart_summarypanel_listitem4 
 {
-	font-size: [theme_font_size];
-	font-style: [summarypanel_att_filt_font_style];
+	font-size: 11pt;
+	font-style: normal;
 	margin: 1px 0px 1px 26px;
 	width: inherit;
 	clear: both;
-	color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
+	color: [font_colour_rest];
 }
 
 .mart_summarypanel_listitem_disabled 
@@ -496,7 +509,7 @@ div#mart_export_data
 .mart_attributepanel_title,
 .mart_joineddsetpanel_title
 {
-	font-size: [theme_font_size];
+	font-size: 11pt;
 	font-weight: bold;
 }
 
@@ -524,8 +537,8 @@ div#mart_export_data
 
 .mart_results
 {
-	font-family: [FASTA_CSV_TSV_font];
-	font-size : [FASTA_CSV_TSV_font_size];
+	font-family: Courier;
+	font-size : 11pt;
 }
 
 .mart_table
@@ -536,44 +549,45 @@ div#mart_export_data
 
 .mart_th
 { 
-	font-size: [HTML_formatter_header_font_size];
-	font-family: [HTML_formatter_header_font_type];
+	font-size: 10pt;
+	font-family: Arial;
 	border: solid 2px; 
 	white-space: nowrap;
 	border-color: black;
-	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
+	color: [font_colour_rest];
 }
 
 .mart_th2
 { 
-	font-size: [HTML_formatter_header_font_size];
-	font-family: [HTML_formatter_header_font_type];	
+	font-size: 10pt;
+	font-family: Arial;	
 	border: solid 2px; 
 	white-space: nowrap;
 	border-color: black;
-	color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];
+	color: [font_colour_rest];
 }
 
 .mart_tr1
 { 
-	font-size: [HTML_formatter_rows_font_size];
-	font-family: [HTML_formatter_rows_font_type];
+	font-size: 11pt;
+	font-family: Courier;
 	border: solid 1px; 
 	background-color: white;
+	
 }
 
 .mart_tr2
 { 	
-	font-size: [HTML_formatter_rows_font_size];
-	font-family: [HTML_formatter_rows_font_type];	
+	font-size: 11pt;
+	font-family: Courier;	
 	border: solid 1px; 
 	background-color: white; 
 }
 
 .mart_td
 { 
-	font-size: [HTML_formatter_rows_font_size];
-	font-family: [HTML_formatter_rows_font_type]; 	
+	font-size: 11pt;
+	font-family: Courier; 	
 
 	border-width: 1px 2px 1px 2px; 
 	border-style: solid; 
@@ -582,8 +596,8 @@ div#mart_export_data
 }
 .mart_td_hyperlinks
 { 
-	font-size: [HTML_formatter_rows_font_size];
-	font-family: [HTML_formatter_rows_font_type];	
+	font-size: 11pt;
+	font-family: Courier;	
 
 	white-space: nowrap;
 	/*color: black; */
