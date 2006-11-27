@@ -1050,7 +1050,7 @@ function expandListCompactSiblings(listId) {
     for(j=0; j< subListDivs.length; j++){
 	subListDivs[j].style.display = 'block';
     }
-    targetListDiv.style.display = 'block';
+    targetListDiv.style.display = 'inline';
 }
 
 /*

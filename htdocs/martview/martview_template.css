@@ -376,11 +376,15 @@ div#mart_export_data
 	font-size: [theme_font_size]; 
 	clear: both;
 	margin: 0px 0px 2px 0px;
+	padding: 0px 5px 0px 0px;	
+	border: 1px solid [summary_panel_bgcolour];	
 }
 
 .mart_summarypanel_listheader_highlighted
 {
-	background-color: 	[summary_panel_highlight] ;
+	border: 1px solid [summary_panel_highlight_border];
+	background-color: 	[summary_panel_highlight_background];
+	
 }
 
 .el_hidden,
@@ -420,21 +424,25 @@ div#mart_export_data
 	cursor: pointer;
 	font-weight: bold;                            	
 	margin: 1px 0px 1px 13px;
+	padding: 0px 5px 0px 0px;
+	border: 1px solid [summary_panel_bgcolour];
 	clear: both;
 }                     
 
 .mart_summarypanel_AttFiltHeader_highlighted
 {
-	background-color: 	[summary_panel_highlight] ;
+
+	border: 1px solid [summary_panel_highlight_border];
+	background-color: 	[summary_panel_highlight_background] ;
 }
 						
 .mart_summarypanel_list_disabled,
-.mart_summarypanel_list   
+.mart_summarypanel_list
 { 
 	font-size: [theme_font_size]; 
 	clear: both;
 	width: inherit;
-	margin: 1px 0px 1px 26px;
+	margin: 1px 0px 1px 0px;
 }
 
 .mart_summarypanel_listitem_disabled,
@@ -442,7 +450,7 @@ div#mart_export_data
 {
 	font-size: [theme_font_size]; 
 	font-style: [summarypanel_att_filt_font_style];
-	margin: 1px 0px 1px 0px;
+	margin: 1px 0px 1px 26px;
 	width: inherit;
 	clear: both;
 	color: [ds_1_summarypanel_att_filt_and_HTML_results_header_colour];
@@ -452,7 +460,7 @@ div#mart_export_data
 {
 	font-size: [theme_font_size]; 
 	font-style: [summarypanel_att_filt_font_style];
-	margin: 1px 0px 1px 0px;
+	margin: 1px 0px 1px 26px;
 	width: inherit;
 	clear: both;
 	color: [ds_2_summarypanel_att_filt_and_HTML_results_header_colour];

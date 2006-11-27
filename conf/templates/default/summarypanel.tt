@@ -107,7 +107,7 @@
   [% NEXT IF attributetree.hideDisplay().defined && attributetree.hideDisplay == 'true' %]
 	<div id="${dset_name}__[% attributetree.name() %]__attributelist" style="display: none">
   	[% IF attTreeCount > 1%]
-  	<span id="${dset_name}__summarypanel_attributebranch__[% attributetree.name %]">[% attributetree.displayName() %]</span>
+  	<span id="${dset_name}__summarypanel_attributebranch__[% attributetree.name %]">([% attributetree.displayName() %])</span>
 	<br />
 	[% END %]
 
