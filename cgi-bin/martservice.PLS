@@ -523,9 +523,9 @@ sub run_query {
 			print "\n$count\n"; 
     		}
     		else{	
-
-# switched this off, needs to be settable in Query.xml
-#			$query_planner->printHeader();
+		        if ($query->header == 1) {
+			    $query_planner->printHeader();
+			}
 			$query_planner->printResults();
 			$query_planner->printFooter();
 	    	}

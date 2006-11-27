@@ -75,6 +75,7 @@ sub _new {
   $self->attr('limitStart',undef);
   $self->attr('limitSize',undef);
   $self->attr('count',undef);
+  $self->attr('header',undef);
   $self->attr('virtualSchema', undef);    
   $self->attr('attribute_lists', []);
   $self->attr('links', []);
@@ -1682,6 +1683,25 @@ sub orderBy {
   return $self->get('orderby');
 }
 
+=head2 header
+
+  Usage      : my $header = $query->header(); $query->header($header);
+  Description: get/sets the current header settings on the Query 
+  Returntype : scalar $header
+  Exceptions : none
+  Caller     : caller
+
+=cut
+
+sub header {
+  my ($self, $header) = @_;
+
+  if (defined $header) {
+    $self->set('header', $header);
+  }
+  return $self->get('header');
+}
+
 =head2 count
 
   Usage      : my $count = $query->count(); $query->count($count);
@@ -1827,7 +1847,13 @@ sub _populateFromXML {
 	}
     
     $self->count($config->{'count'});
-   
+
+    if ($config->{'header'} && $config->{'header'} ne '1')
+    {	    BioMart::Exception::Usage->throw ("INVALID HEADER VALUE");
+
+    } 
+    $self->header($config->{'header'});
+
     my ($sourceDataset, $sourceInterface, $targetDataset, $targetInterface);
 
     foreach my $dataset (@{$config->{'Dataset'}}) {
