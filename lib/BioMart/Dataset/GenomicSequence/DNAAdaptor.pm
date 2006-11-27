@@ -151,7 +151,7 @@ sub _initialize {
 
      my $logger=Log::Log4perl->get_logger(__PACKAGE__);
      $logger->info("QUERY FULL SQL:  $fullSQL");
-     $logger->info("QUERY FULL SQL:  $subSQL");
+     $logger->info("QUERY SUB SQL:  $subSQL");
 
 
 
@@ -275,6 +275,7 @@ sub getSequence {
     }
 
     unless ($seqLen) {
+    $logger->info("Padding with Ns");
 	return $self->_Npad($len);
     }
 
