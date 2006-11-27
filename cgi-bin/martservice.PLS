@@ -88,35 +88,38 @@ $registry = $main::BIOMART_REGISTRY;
 
 
 eval{
-    if ($type eq "registry") {
-	&get_registry($registry,$server_host,$server_port,$path);
-    }  
-    elsif ($type eq "datasets") {
-	&get_datasets($registry,$vschema_name,$mart_name,$martuser);
-    }  
-    elsif ($type eq "interfaces"){
-	&get_interfaces($registry,$vschema_name,$mart_name,$martuser,$dataset_name);
-    }
-    elsif ($type eq "configuration") {
-	&get_configuration($registry,$vschema_name,$dataset_name,$interface,$martuser);
-    } 
-    elsif ($type eq "filters") {
-	&get_filters($registry,$vschema_name,$dataset_name,$interface,$martuser);
-    }
-    elsif ($type eq "attributes") {
-	&get_attributes($registry,$vschema_name,$dataset_name,$interface,$martuser);
-    }
-    elsif ($type eq "versioncheck") {
-	&version_check($registry,$vschema_name,$mart_name,$version);
-    } 
-    elsif ($type eq "version") {
-	&version($registry,$vschema_name,$mart_name);
-    } 
-    else{
-	my $xml = $CGI->param('query');
-	&createLog($xml);
-	&run_query($registry,$xml);
-    }
+	if($type)
+	{	
+    		if ($type eq "registry") {
+			&get_registry($registry,$server_host,$server_port,$path);
+		}	  
+		elsif ($type eq "datasets") {
+			&get_datasets($registry,$vschema_name,$mart_name,$martuser);
+		}  
+		elsif ($type eq "interfaces"){
+			&get_interfaces($registry,$vschema_name,$mart_name,$martuser,$dataset_name);
+		}
+		elsif ($type eq "configuration") {
+			&get_configuration($registry,$vschema_name,$dataset_name,$interface,$martuser);
+		} 
+		elsif ($type eq "filters") {
+			&get_filters($registry,$vschema_name,$dataset_name,$interface,$martuser);
+		}
+		elsif ($type eq "attributes") {
+			&get_attributes($registry,$vschema_name,$dataset_name,$interface,$martuser);
+		}
+		elsif ($type eq "versioncheck") {	
+			&version_check($registry,$vschema_name,$mart_name,$version);
+		} 
+		elsif ($type eq "version") {
+			&version($registry,$vschema_name,$mart_name);
+		}
+	} 
+    	else{
+		my $xml = $CGI->param('query');
+		&createLog($xml);
+		&run_query($registry,$xml);
+    	}
 
 };
 if($@) {
@@ -215,7 +218,7 @@ sub _reset_attributes {
     
     foreach my $dblc (@{ $lr->{'MartURLLocation'} })
     {
-	unless ($dblc->{'redirect'}==1){
+	unless ($dblc->{'redirect'} && $dblc->{'redirect'}==1){
 	    
 	    $dblc->{'host'}=$server_host;
 	    $dblc->{'port'}=$server_port;
@@ -518,7 +521,7 @@ sub run_query {
     		my $query_planner = BioMart::QueryRunner->new();
     		$query_planner->execute($query);
     
-    		if ($query->count == 1){
+    		if ($query->count eq '1'){
 			my $count = $query_planner->getCount();
 			print "\n$count\n"; 
     		}
