@@ -526,7 +526,7 @@ sub run_query {
 			print "\n$count\n"; 
     		}
     		else{	
-		        if ($query->header == 1) {
+		        if ($query->header eq '1') {
 			    $query_planner->printHeader();
 			}
 			$query_planner->printResults();
@@ -557,9 +557,10 @@ sub createLog
 	
 	my $theTime = strftime "%Y-%m-%d %H:%M:%S", localtime;
 	
-	print STDREQLOG $theTime;
-	print STDREQLOG "\t $1 \n";
-	print STDREQLOG $xml, "\n";
+	
+	print STDREQLOG $theTime 	if ($theTime);
+	print STDREQLOG "\t $1 \n" 	if ($1);
+	print STDREQLOG $xml, "\n"	if ($xml);
 	
 	close(STDREQLOG);
 }
