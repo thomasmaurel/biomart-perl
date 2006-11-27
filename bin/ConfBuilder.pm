@@ -94,7 +94,7 @@ sub makehttpdConf
 		}
 	
 		print STDHTTPD qq/	
-		warn "MartView:: Initializing master Mart registry";
+		#warn "MartView:: Initializing master Mart registry";
 		eval { my \$init = BioMart::Initializer->new(registryFile => '$OPTIONS{conf}');
 		\$main::BIOMART_REGISTRY = \$init->getRegistry() || die "Can't get registry from initializer";
 		};
