@@ -526,7 +526,7 @@ sub run_query {
 			print "\n$count\n"; 
     		}
     		else{	
-		        if ($query->header eq '1') {
+		        if ($query->header && $query->header eq '1') {
 			    $query_planner->printHeader();
 			}
 			$query_planner->printResults();
