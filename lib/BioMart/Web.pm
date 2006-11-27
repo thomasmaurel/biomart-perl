@@ -783,8 +783,10 @@ sub _new
 	##-------- correct and updated dsname
 	##-------- hint: where ever we have [%session->param(somehting)%], this gets replaced not just on first parse
 	##-------- but the moment session's value of param changes, this changes magically. 
-	if ($session->param("mart_mainpanel__current_visible_section") eq "__infopanel"
-		|| $session->param("summarypanel__current_highlighted_branch") eq "__summarypanel_datasetbranch" )
+	if (($session->param("mart_mainpanel__current_visible_section") && 
+		$session->param("mart_mainpanel__current_visible_section") eq "__infopanel")
+		|| ($session->param("summarypanel__current_highlighted_branch") && 
+			$session->param("summarypanel__current_highlighted_branch") eq "__summarypanel_datasetbranch"))
 	{
 		$session->clear("mart_mainpanel__current_visible_section");
 		$session->clear("summarypanel__current_highlighted_branch");
@@ -901,7 +903,7 @@ sub _new
 				$dsDisplayName =~ s/____/\|/;
 				$dsDisplayName .= '\|'.$dsHint3;			
 			}
-		
+			my ($tempRemoveSpaces, $tempdsDisplayName);
 			foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
 				if($schema->name eq $def_schema) {
 					foreach my $mart (@{$schema->getAllMarts()}) {
@@ -909,8 +911,8 @@ sub _new
 					    		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
 					    			# ----- Effort 1 - to see if we can find out the ds_internalName from displayName
 					    			# ----- with menu1.menu2.menu3
-					    			my $tempRemoveSpaces = $dataset->displayName;
-					    			my $tempdsDisplayName = $dsDisplayName;
+					    			$tempRemoveSpaces = $dataset->displayName;
+					    			$tempdsDisplayName = $dsDisplayName;
 					    			$tempRemoveSpaces =~ s/\s//mg; # space cause trouble in matching regex
 					    			$tempdsDisplayName =~ s/\s//mg;
 					    			$tempRemoveSpaces =~ s/\|//mg; # pipe pretends to be OR cause trouble in matching regex
@@ -932,17 +934,23 @@ sub _new
 						    			$def_ds_OBJ ||= $dataset;
 						    			$reverseName = 2;
 			    					}
-					    			# ----- Effort 2 - to see if we can find out the ds_internalName from displayName
-					    			# ----- with menu2.menu1.menu3
-								if(!$reverseName)
-								{
+			    				}
+				    			if(!$reverseName) {
+						    		foreach my $dataset (@{$mart->getAllDatasets(1)}) {     		
+					    				# ----- Effort 2 - to see if we can find out the ds_internalName from displayName
+					    				# ----- with menu2.menu1.menu3
 									my @unitsArray = split('\|', $dsDisplayName);
 									$tempdsDisplayName = $unitsArray[1].'|'.$unitsArray[0].'|'.$unitsArray[2];
-									
 									$tempdsDisplayName =~ s/\s//mg;						    			
 						    			$tempdsDisplayName =~ s/\|//mg;						    			
 						    			$tempdsDisplayName =~ s/\(//mg;						    			
 						    			$tempdsDisplayName =~ s/\)//mg;
+						    			$tempRemoveSpaces = $dataset->displayName;
+						    			$tempRemoveSpaces =~ s/\s//mg; # space cause trouble in matching regex
+						    			$tempRemoveSpaces =~ s/\|//mg; # pipe pretends to be OR cause trouble in matching regex	
+						    			$tempRemoveSpaces =~ s/\(//mg; # ( pretends to be OR cause trouble in matching regex	
+						    			$tempRemoveSpaces =~ s/\)//mg; # ) pretends to be OR cause trouble in matching regex
+	
 
 						    			if($tempRemoveSpaces =~ m/^$tempdsDisplayName/) {
 				    						foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}){
@@ -955,7 +963,41 @@ sub _new
 							    			$def_ds ||= $dataset->name();
 							    			$def_ds_OBJ ||= $dataset;
 					    					$reverseName = 1;
-				    					}	
+				    					}
+				    				}
+				    			}
+					    		if(!$reverseName) {
+						    		foreach my $dataset (@{$mart->getAllDatasets(1)}) {     		
+		    							#### last case, even when reverse doesnt work, that means
+				    					#### this value in menu one itself has no corresponding dataset 
+				    					#### where name begins with it, so it a second portion of some other
+				    					#### dataset/datasets only
+						    			$tempRemoveSpaces = $dataset->displayName;
+						    			$tempdsDisplayName = $dsDisplayName;
+						    			$tempRemoveSpaces =~ s/\s//mg; # space cause trouble in matching regex
+						    			$tempdsDisplayName =~ s/\s//mg;
+						    			$tempRemoveSpaces =~ s/\|//mg; # pipe pretends to be OR cause trouble in matching regex
+						    			$tempdsDisplayName =~ s/\|//mg;
+						    			$tempRemoveSpaces =~ s/\(//mg; # ( pretends to be OR cause trouble in matching regex
+						    			$tempdsDisplayName =~ s/\(//mg;
+						    			$tempRemoveSpaces =~ s/\)//mg; # ) pretends to be OR cause trouble in matching regex
+						    			$tempdsDisplayName =~ s/\)//mg;
+
+									#open (STDME, ">>/homes/syed/Desktop/temp6/biomart-perl/lib/BioMart/HALO");
+				    					#print STDME "\n", $tempRemoveSpaces, "\t ",$tempdsDisplayName;
+				    					#close(STDME);
+				    					if($tempRemoveSpaces =~ m/$tempdsDisplayName/) {
+					    					foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}){
+				    							if($configurationTree->defaultDataset())
+				    							{
+							    					$def_ds = $dataset->name();
+							    					$def_ds_OBJ = $dataset;
+							    				}
+							    			}
+								    		$def_ds ||= $dataset->name();
+								    		$def_ds_OBJ ||= $dataset;
+						    				$reverseName = 1;
+					    				}
 								}
 					    		}
 					    	}
@@ -1039,10 +1081,13 @@ sub _new
 	foreach my $dataset_name(@dataset_names) {
 	    
 	    	# Pull out filter & attribute params for this dataset and prepare the query
-	    	my $filterlist_string    = $session->param($dataset_name.'__filterlist');
-	    	my $attributepage        = $session->param($dataset_name.'__attributepage');
+	    	my $filterlist_string    = $session->param($dataset_name.'__filterlist') if ($session->param($dataset_name.'__filterlist'));
+	    	my $attributepage        = $session->param($dataset_name.'__attributepage') if ($session->param($dataset_name.'__attributepage'));
 	    	my $attributelist_string = $session->param($dataset_name.'__'.($attributepage||'').'__attributelist');
-	    	$logger->debug("FILTERLIST_STRING IS $filterlist_string");
+	    	
+		if ($filterlist_string){ $logger->debug("FILTERLIST_STRING IS $filterlist_string"); }
+		else {$logger->debug("FILTERLIST_STRING IS *EMPTY*"); }
+	    	
 	    
 		my @filterlist = !defined($filterlist_string) ? ()
 	                   		: ref($filterlist_string) ? @$filterlist_string 
@@ -1208,8 +1253,9 @@ sub _new
 		# return nicely with exception in session parameter.
 		my $return_after_eval = 0;
 		eval {			    
-	    		if (($session->param('get_results_button') eq 'Results') # this doesnt work on Mac-safari
-	    			|| ( $session->param("mart_mainpanel__current_visible_section") eq "resultspanel") )
+	    		if ( ($session->param('get_results_button') && $session->param('get_results_button') eq 'Results') # this doesnt work on Mac-safari
+	    			|| ($session->param("mart_mainpanel__current_visible_section") &&
+	    				 $session->param("mart_mainpanel__current_visible_section") eq "resultspanel") )
 			{    			
 			
 				$session->clear('get_results_button'); # don't get stuck here

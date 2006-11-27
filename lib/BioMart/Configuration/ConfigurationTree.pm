@@ -282,7 +282,7 @@ sub getAttributeTreeByName {
   my $attTs = $self->get('attTs');
 
   foreach my $attT (@{$attTs}) {
-    if ($attT->name() eq $name) {
+    if (($attT->name() && $name) && $attT->name() eq $name) {
       $retTree = $attT;
       last;
 	}

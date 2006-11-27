@@ -449,7 +449,7 @@ $filter->getExcluded.qq|"/>|;
 	}
 
        # so it does not forget to stick dataset for counts
-       if ($count == 1) { $xml .= qq |$ds|}
+       if ($count eq '1') { $xml .= qq |$ds|}
 
 	# ------ Determine correct order of datasets in the query without calling QueryRunner
 	# ------ using getAllAttributes to find corresponding datasets and then ascertain
