@@ -503,7 +503,8 @@ sub _toXML_old
 	my $softwareVersion = $self->get('softwareVersion');
 	my $xml = qq|<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Query>
-<Query  virtualSchemaName = "|.$self->virtualSchema.qq|" limitStart = "|. $limit_start.qq|" limitSize = "|.$limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq|" >|;
+<Query  virtualSchemaName = "|.$self->virtualSchema.qq|" limitStart = "|. $limit_start.qq|" limitSize = "|.
+$limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq|" requestId= "biomart-client">|;
 
 	my $datasets = $self->getDatasetNames;
  	foreach my $dataset(@$datasets)
