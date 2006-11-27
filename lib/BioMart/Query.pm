@@ -1558,37 +1558,61 @@ sub finalProcess {
     # dataset added and 2nd and links 2nd->1st
     
     my ($sourceDataset,$targetDataset);
-    my $attributes = $self->getAllAttributes();
-    foreach my $attribute (@$attributes){
-	my $datasetName = $attribute->pointedFromDataset() 
-	    || $attribute->dataSetName();
-	my $dataset = $registry->getDatasetByName($virtualSchema,$datasetName);
-	next if (!$dataset->visible);
-	if ($targetDataset && $datasetName ne $targetDataset){
-	    $sourceDataset = $datasetName;
-	} 
-	else{
-	    $targetDataset = $datasetName;
-	}
-	last if ($sourceDataset && $targetDataset);
-    }
-    if (!($sourceDataset && $targetDataset)){
-	    my $filters = $self->getAllFilters();
-	    foreach my $filter (@$filters){
-		my $datasetName = $filter->pointedFromDataset() 
-		    || $filter->dataSetName();
-		my $dataset = $registry->getDatasetByName($virtualSchema,
+
+# removed the dataset order switching code - order should be that set on query->{'dataset_names'}
+# driven by the api,webservices or interface code
+
+#    my $attributes = $self->getAllAttributes();
+#    foreach my $attribute (@$attributes){
+#	my $datasetName = $attribute->pointedFromDataset() 
+#	    || $attribute->dataSetName();
+#	my $dataset = $registry->getDatasetByName($virtualSchema,$datasetName);
+#	next if (!$dataset->visible);
+#	if ($targetDataset && $datasetName ne $targetDataset){
+#	    $sourceDataset = $datasetName;
+#	} 
+#	else{
+#	    $targetDataset = $datasetName;
+#	}
+#	last if ($sourceDataset && $targetDataset);
+#    }
+#    if (!($sourceDataset && $targetDataset)){
+#	    my $filters = $self->getAllFilters();
+#	    foreach my $filter (@$filters){
+#		my $datasetName = $filter->pointedFromDataset() 
+#		    || $filter->dataSetName();
+#		my $dataset = $registry->getDatasetByName($virtualSchema,
+#							  $datasetName);
+#		next if (!$dataset->visible);
+#		if ($targetDataset && $datasetName ne $targetDataset){
+#		    $sourceDataset = $datasetName;
+#		} 
+#		else{
+#		    $targetDataset = $datasetName;
+#		}
+#		last if ($sourceDataset && $targetDataset);
+#	    }
+#    }
+#
+
+#    if (!($sourceDataset && $targetDataset)){
+#	# may have a two dataset query with one of them having no filts/atts
+#	$sourceDataset = '';
+#	$targetDataset = '';
+	my $datasets = $self->getDatasetNames; 
+	foreach my $datasetName (@{$datasets}) {
+	    	my $dataset = $registry->getDatasetByName($virtualSchema,
 							  $datasetName);
 		next if (!$dataset->visible);
-		if ($targetDataset && $datasetName ne $targetDataset){
+		if ($sourceDataset eq ''){
 		    $sourceDataset = $datasetName;
-		} 
+		}
 		else{
 		    $targetDataset = $datasetName;
 		}
-		last if ($sourceDataset && $targetDataset);
-	    }
-    }
+	}
+#    }
+#     warn("NOW TRY TO ADD A LINK FROM $sourceDataset TO $targetDataset");
     if ($sourceDataset && $targetDataset && 
 	!$self->getLinks($sourceDataset,$targetDataset) && 
 	!$self->getLinks($targetDataset,$sourceDataset)){
