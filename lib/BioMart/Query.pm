@@ -1604,7 +1604,7 @@ sub finalProcess {
 	    	my $dataset = $registry->getDatasetByName($virtualSchema,
 							  $datasetName);
 		next if (!$dataset->visible);
-		if ($sourceDataset eq ''){
+		if (!$sourceDataset || $sourceDataset eq ''){
 		    $sourceDataset = $datasetName;
 		}
 		else{
