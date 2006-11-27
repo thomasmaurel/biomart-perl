@@ -117,7 +117,8 @@ eval{
 	} 
     	else{
 		my $xml = $CGI->param('query');
-		&createLog($xml);
+		my $ip = $CGI->remote_host();
+		&createLog($registry, $xml, $ip);
 		&run_query($registry,$xml);
     	}
 
@@ -546,23 +547,43 @@ sub run_query {
 
 sub createLog
 {
+	my ($registry,$xml, $ip) = @_;
 	## extraction of requestid, not removing it from query as its ignored even if it
 	## travels down to the query engine
+	my ($mode, $log_query, $log_ip);
+
+	my $hash = $registry->settingsParams();
+     foreach(keys %$hash) {     	
+	     if($_ eq "webserviceLogging") {
+	     	foreach my $param (keys %{$hash->{$_}}) {
+     			#print "\n\t\t\t$param \t", $hash->{$_}->{$param};
+     			$mode = 1 	if($param eq 'mode' && $hash->{$_}->{$param} eq 'ON');
+	    			$log_query = 1 if($param eq 'log_query' && $hash->{$_}->{$param} eq 'ON');
+     			$log_ip = 1  	if($param eq 'log_IP' && $hash->{$_}->{$param} eq 'ON');     			
+     		}
+     	}
+     }
+
+	if($mode) ## do logging
+	{
+		open(STDME, ">>/homes/syed/Desktop/temp6/biomart-perl/cgi-bin/HAALO");
+		print STDME "\n$mode    $log_query    $log_ip --- $ip";
+		close(STDME);
+
+		my $reqLogFile = $log_Dir."requestLog";
+		open(STDREQLOG, ">>$reqLogFile");
 	
-	my $xml = shift;
-	my $reqLogFile = $log_Dir."requestLog";
-	open(STDREQLOG, ">>$reqLogFile");
+		$xml =~ m/.*?<requestid.*?"(.*)".*?\/>.*?/i;
 	
-	$xml =~ m/.*?<requestid.*?"(.*)".*?\/>.*?/i;
+		my $theTime = strftime "%Y-%m-%d %H:%M:%S", localtime;
 	
-	my $theTime = strftime "%Y-%m-%d %H:%M:%S", localtime;
+		print STDREQLOG "\nIP ADDRESS: $ip" 		if ($ip && $log_ip);
+		print STDREQLOG "\n$theTime" 	if ($theTime);
+		print STDREQLOG "\n$1"	 	if ($1);
+		print STDREQLOG "\n$xml"		if ($xml && $log_query); ## only log xml query if told to do so
 	
-	
-	print STDREQLOG $theTime 	if ($theTime);
-	print STDREQLOG "\t $1 \n" 	if ($1);
-	print STDREQLOG $xml, "\n"	if ($xml);
-	
-	close(STDREQLOG);
+		close(STDREQLOG);
+	}
 }
 
 
