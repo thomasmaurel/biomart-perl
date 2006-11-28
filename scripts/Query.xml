@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Query>
-<Query  virtualSchemaName = "default" count = "0">
-          <Dataset name = "hsapiens_gene_ensembl">
-              <Attribute name = "ensembl_gene_id" />
-              <Attribute name = "chromosome_name" />
-              <Filter name = "chromosome_name" value="1" />
-          </Dataset>
-
-          <Dataset name = "msd">
-              <Attribute name = "pdb_id" />
-              
-          </Dataset>
+<Query  virtualSchemaName = "default" Header = "1" count = "" softwareVersion = "0.5" >
+			
+		<Dataset name = "uniprot" interface = "default" >
+	      		<Attribute name = "sptr_ac" />
+	     		<Filter name = "has_pdb_info" excluded = "0"/>
+		</Dataset>
+			
+		<Dataset name = "msd" interface = "default" >
+	      		<Attribute name = "pdb_id" />
+	      		<Attribute name = "experiment_type" />
+	     		<Filter name = "experiment_type" value = "NMR"/>
+		</Dataset>
 </Query>

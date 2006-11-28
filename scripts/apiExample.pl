@@ -6,10 +6,10 @@ use BioMart::Query;
 use BioMart::QueryRunner;
 
 
-my $confFile = Cwd::cwd."/conf/defaultMartRegistry.xml";
+my $confFile = "apiExampleRegistry.xml";
 die ("Cant find configuration file $confFile\n") unless (-f $confFile);
 
-my $initializer = BioMart::Initializer->new('registryFile'=>$confFile);
+my $initializer = BioMart::Initializer->new('registryFile'=>$confFile, 'action'=>'clean');
 my $registry = $initializer->getRegistry;
 
 
@@ -28,10 +28,9 @@ sub setup_and_run_query {
     
     my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
      
-    $query->setDataset("hsapiens_gene_ensembl");
-    $query->addAttribute("ensembl_transcript_id");
-    $query->addAttribute("chromosome_name");
-    $query->addFilter("chromosome_name", ["22"]);
+    $query->setDataset("uniprot");
+    $query->addAttribute("sptr_ac");
+    $query->addFilter("has_pdb_info", ["excluded"]);
     
     $query->setDataset('msd');
     $query->addAttribute("pdb_id");
