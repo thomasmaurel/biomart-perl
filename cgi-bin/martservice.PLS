@@ -569,7 +569,7 @@ sub createLog
 		my $reqLogFile = $log_Dir."requestLog";
 		open(STDREQLOG, ">>$reqLogFile");
 	
-		$xml =~ m/.*?<requestid.*?"(.*)".*?\/>.*?/i;
+		$xml =~ m/.*?requestid.*?\"(.*?)\".*/im;
 	
 		my $theTime = strftime "%Y-%m-%d %H:%M:%S", localtime;
 	
