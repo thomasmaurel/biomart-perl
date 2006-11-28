@@ -8,11 +8,17 @@ use BioMart::QueryRunner;
 my $confFile = (grep { m/biomart-perl\/lib+$/ } @INC)[0]."/../conf/apiExampleRegistry.xml";
 die ("Cant find configuration file $confFile\n") unless (-f $confFile);
 
-# change action to 'cached' if you do not want to skip the configuraiton step on subsequent runs
-my $action='clean';
 
+#
+# NB: change action to 'cached' if you want 
+# to skip the configuraiton step on subsequent runs
+# from the same registry
+#
+
+my $action='clean';
 my $initializer = BioMart::Initializer->new('registryFile'=>$confFile, 'action'=>$action);
 my $registry = $initializer->getRegistry;
+
 
 
 # you can check for the available filters and attributes here
@@ -32,12 +38,8 @@ sub setup_and_run_query {
      
     $query->setDataset("hsapiens_gene_ensembl");
     $query->addAttribute("ensembl_transcript_id");
+    $query->addAttribute("chromosome_name");
     $query->addFilter("chromosome_name", ["22"]);
-    
-    $query->setDataset('msd');
-    $query->addAttribute("pdb_id");
-    $query->addAttribute("experiment_type");
-    $query->addFilter("experiment_type", ["NMR"]);
     
     # $query->formatter('HTML'); leave this blank for tab delimited
 
