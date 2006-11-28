@@ -2,7 +2,7 @@
 <!DOCTYPE MartRegistry>
 <MartRegistry>
 
-<virtualSchema name="default">
+<virtualSchema name="default" default="1">
 <MartDBLocation
                     name         = "mysqldb"
                     displayName  = "mysqldb"
