@@ -1,90 +1,28 @@
 -----------------------------------------------------------------
-###############  Installing & Configuring MartView  #############
+Quick Install
 -----------------------------------------------------------------
-To configure the installation, check out the 'biomart-web' folder
-and from the root of biomart-web directory, run:
 
-[your biomart-web directory]$ perl ./bin/configure.pl
+Before starting you'll need apache and mod_perl installed. You are 
+also advised to read the full installation instructions available on 
+www.biomart.org. 
 
-Follow the interactive process and you are done.
-
-This would use the defaultMartRegistry.xml from directory biomart-web/conf/
-
-If you wish to you use a different registry file, simply place the registry 
-file in directory 
-[your biomart-web directory]/conf/yourMartRegistry.xml
-and run:
-[your biomart-web directory]$ perl ./bin/configure.pl -r yourMartRegistry.xml
-
-#####################  Run Apache ###############################
-Once you are done, simple run your standalone apache instance as
-e.g 
-for APACHE 1.3 [path to Apache]/bin/httpd -d $PWD
-for APACHE 2.x [path to Apache]/sbin/httpd -d $PWD
-
-where $PWD should be your 'biomart-web' directory
-
-Then point your browser to http://localhost:8080/cgi-bin/martview
-
------------------------------------------------------------------
-#########################  Advanced Options  #####################
------------------------------------------------------------------
-At some point, you may wish to use the following optional switches 
-as you configure.
-
-[your biomart-web directory]$ perl bin/configure.pl [ACTION optional] [MODE optional] [REGISTRYFILE]
-
-REGISTRYFILE: -r registryFile.xml
--r 	path/name of registry file. should live in conf directory. if no registry is specified,
-	conf/defaultMartRegistry.xml will be used
-
-ACTION: --clean, --cached, --update
---clean
-	Removes all existing xmls from the local disk being used, and fetch 
-	all of them again from target MartLocations as per martRegistryFile.xml
---cached (default)
-	Checks if there is already a pre-configured registry object associated
-	with this registry file. If there exists one pre-configured registry, 
-	simply retruns that, and doesnt redo all the configuration 	process. 
-	The process is simply based on the name of registry file. Incase you 
-	have chaged the contents of registry file, try either  --clean or 
-	--update, which ever suits you.
---update
-	Updates the registry object, incase the xml files representing your
-	datasets have been updated. Can also be used to switch between MODES
-	[--memory and --lazyload]
---recompile
-	Recompiles templates for all visible datasets and default templates.
-	This switch is related to inhouse development only. If you fancy changing 
-	master templates knowing what you are doing in order to fiddle with cosmetics
-	of Martview - most welcome.
-
-MODE: --memory, --lazyload
---memory (default)
-	Recommended for user with healthy amount of memory available.
---lazyload
-	If you want your installation\/configuration process and Apache to utilise 
-	minimum possible memory, try this option. Keeps all the information on disk and 
-	brings only the required amount of information to memory as and when needed.
-
-OPTIONAL:
---help
-	list all of the above switches on user's terminal.
+# configure biomart
+cd biomart-perl
+perl bin/configure.pl -r conf/exampleMartURLLocation.xml
+Follow the prompts, if you unsure what to answer hit return. 
 
 
+# run your standalone apache instance 
+cd biomart-perl
+[path to Apache]/bin/httpd -d $PWD
+(the path needs to be the same as chosen in step one of your configuration)
 
-Examples:
-[your biomart-web directory]$ perl ./bin/configure.pl --update --lazylaod -r yourMartRegistry.xml
-[your biomart-web directory]$ perl ./bin/configure.pl --update --memory -r yourMartRegistry.xml
+Point your browser to http://localhost:5555
+(or change the port if you chosen a different option in the configuration step)
 
-In the following case, defaultMartRegistry.xml will be used.
-[your biomart-web directory]$ perl ./bin/configure.pl --clean --lazyload
 
-Following two statements are equivalent:
-[your biomart-web directory]$ perl ./bin/configure.pl --clean --memory -r defaultMartRegistry.xml
-[your biomart-web directory]$ perl ./bin/configure.pl --clean
+If you are having problems or need more information consult the documentation
+available on www.biomart.org. You can also contant BioMart development team
+on mart-dev@ebi.ac.uk
 
-Following two statements are equivalent:
-[your biomart-web directory]$ perl ./bin/configure.pl --cached --lazyload -r yourMartRegistry.xml
-[your biomart-web directory]$ perl ./bin/configure.pl --lazyload -r yourMartRegistry.xml
 
