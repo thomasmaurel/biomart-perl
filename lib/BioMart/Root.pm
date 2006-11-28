@@ -21,7 +21,7 @@ sub _new {
     $self->attr('params', {});
     
    	 Log::Log4perl->init(\ qq{
-log4perl.logger                               	  = WARN, Screen
+log4perl.logger                               	  = FATAL, Screen
 log4perl.appender.Screen                          = Log::Log4perl::Appender::Screen
 log4perl.appender.Screen.layout                   = Log::Log4perl::Layout::PatternLayout
 log4perl.appender.Screen.layout.ConversionPattern = %c:%L:%p> %m%n
