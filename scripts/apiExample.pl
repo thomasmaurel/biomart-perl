@@ -30,7 +30,7 @@ sub setup_and_run_query {
      
     $query->setDataset("uniprot");
     $query->addAttribute("sptr_ac");
-    $query->addFilter("has_pdb_info", ["excluded"]);
+    $query->addFilter("has_pdb_info", ["only"]);
     
     $query->setDataset('msd');
     $query->addAttribute("pdb_id");
