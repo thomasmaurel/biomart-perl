@@ -5,8 +5,7 @@ use BioMart::Initializer;
 use BioMart::Query;
 use BioMart::QueryRunner;
 
-
-my $confFile = "apiExampleRegistry.xml";
+my $confFile = Cwd::cwd."/conf/centralRegistryURLPointer.xml";
 die ("Cant find configuration file $confFile\n") unless (-f $confFile);
 
 my $initializer = BioMart::Initializer->new('registryFile'=>$confFile, 'action'=>'clean');
