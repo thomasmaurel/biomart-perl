@@ -76,9 +76,12 @@ sub _new {
 
 sub getDatasetConfigXML{
 
-    my ($self,$virtualSchema,$dataSetName,$interfaceType,$dsCounter)=@_;
+    my ($self,$virtualSchema,$dataSetName,$interfaceType,$dsCounter,$noMessage)=@_;
 
-    $self->configureMessage($virtualSchema,$dataSetName,"RDBMS",$dsCounter);
+	if(!$noMessage)
+	{
+	    	$self->configureMessage($virtualSchema,$dataSetName,"RDBMS",$dsCounter);
+	}
 
 	my $dbh=$self->dbh();
 	if (!$dbh)

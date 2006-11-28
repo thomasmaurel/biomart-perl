@@ -1059,7 +1059,7 @@ sub _populateRegistry {
 				$xml = $dataset->getConfigurator->get('location')->getDatasetConfigXML($virtualSchema->name,
 							  $dataset->name,
 							  $interface,
-							  0);
+							  0,1);	#last one is for not printing configure message
          		}
          		
 			my $tempXMLHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 

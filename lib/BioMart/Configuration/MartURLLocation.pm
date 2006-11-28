@@ -67,11 +67,14 @@ sub _new {
 =cut
 
 sub getDatasetConfigXML{
-    my ($self,$virtualSchema,$dataSetName,$interface,$dsCounter)=@_;
+    my ($self,$virtualSchema,$dataSetName,$interface,$dsCounter, $noMessage)=@_;
     $virtualSchema = $self->serverVirtualSchema;
     my $dbhost = $self->host; 
     my $dbport = $self->port;
-    $self->configureMessage($virtualSchema,$dataSetName,"WEB",$dsCounter);
+	if (!$noMessage)
+	{
+	    $self->configureMessage($virtualSchema,$dataSetName,"WEB",$dsCounter);
+	}
      
     my $qualifier="type=configuration&virtualschema=".$virtualSchema.
 	"&dataset=".$dataSetName."&interface=".$interface."&martuser=".
