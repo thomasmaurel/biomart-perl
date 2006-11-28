@@ -573,9 +573,10 @@ sub createLog
 	
 		my $theTime = strftime "%Y-%m-%d %H:%M:%S", localtime;
 	
-		print STDREQLOG "\nIP ADDRESS: $ip" 		if ($ip && $log_ip);
-		print STDREQLOG "\n$theTime" 	if ($theTime);
-		print STDREQLOG "\n$1"	 	if ($1);
+		print STDREQLOG "\n";
+		print STDREQLOG "$ip\t" 		if ($ip && $log_ip);
+		print STDREQLOG "$theTime\t" 	if ($theTime);
+		print STDREQLOG "$1"	 	if ($1);
 		print STDREQLOG "\n$xml"		if ($xml && $log_query); ## only log xml query if told to do so
 	
 		close(STDREQLOG);
