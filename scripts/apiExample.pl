@@ -8,7 +8,10 @@ use BioMart::QueryRunner;
 my $confFile = (grep { m/biomart-perl\/lib+$/ } @INC)[0]."/../conf/apiExampleMartURLLocation.xml";
 die ("Cant find configuration file $confFile\n") unless (-f $confFile);
 
-my $initializer = BioMart::Initializer->new('registryFile'=>$confFile, 'action'=>'clean');
+# change action to 'cached' if you do not want to skip the configuraiton step on subsequent runs
+my $action='clean';
+
+my $initializer = BioMart::Initializer->new('registryFile'=>$confFile, 'action'=>$action);
 my $registry = $initializer->getRegistry;
 
 
