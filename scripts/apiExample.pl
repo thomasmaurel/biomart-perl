@@ -5,7 +5,7 @@ use BioMart::Initializer;
 use BioMart::Query;
 use BioMart::QueryRunner;
 
-my $confFile = (grep { m/biomart-perl\/lib+$/ } @INC)[0]."/../conf/apiExampleMartURLLocation.xml";
+my $confFile = (grep { m/biomart-perl\/lib+$/ } @INC)[0]."/../conf/apiExampleRegistry.xml";
 die ("Cant find configuration file $confFile\n") unless (-f $confFile);
 
 # change action to 'cached' if you do not want to skip the configuraiton step on subsequent runs

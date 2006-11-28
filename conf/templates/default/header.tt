@@ -1,5 +1,70 @@
-<br><br><br>
+<script language = "javascript">
+var currentTab="Query";
+</script>
 
-&nbsp&nbsp&nbsp&nbsp&nbsp YOUR SITE HEADER HERE
 
-<br><br><br><br>
+
+<!--link rel="stylesheet" href="/martview/../include/stylesheet.css" type="text/css" /-->
+
+
+ <script language="javascript" type="text/javascript">
+<!--
+
+
+if (top != self)
+   {
+    top.location.href=location.href;
+   }
+	function colourTab(){
+		if((document.getElementById(currentTab))){
+			(document.getElementById(currentTab)).className='menuh';
+		}
+	}
+
+	function rollOver(overTab){
+		if(currentTab!=overTab){
+			(document.getElementById(overTab)).className='menuh';
+		}
+	}
+	function rollOut(overTab){
+		if(currentTab!=overTab){
+			(document.getElementById(overTab)).className='menu';
+		}
+	}
+// -->
+</script>
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabletop">
+	<tr>
+		
+    <td width="270" align="right">
+    <a href="index.html">
+    		<img style = "margin: 20px 0px 20px 8px;" height="33" width="105" src="/martview/images/biomart-logo.gif" alt="EBI Home Page" border="0" />
+    </a>
+    </td>
+		 <td valign="top" align="right" width="100%">
+
+  	</td>
+	</tr>
+</table>
+
+
+<table class="menutable" border="0"  cellpadding="2" cellspacing="0" bordercolor="#ECEEF0" height="30" width="800" rows="*, *, *, *, *, *, *, *">
+        <tr>
+
+          <td align="center" valign="middle" width="16%"  nowrap="true"  class="menu" id="BioMart Home" onClick="location='/martview/../index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">HOME</td> 
+
+          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Documentation" onClick="location='/martview/../install.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">DOCS</td> 
+         
+
+		  <td align="center" valign="middle" width="16%" nowrap="true"  class="menu"  id="News" onClick="location='/martview/../news.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">NEWS</td> 
+
+          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Contact" onClick="location='/martview/../contact.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CONTACT</td> 
+
+          <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Credits" onClick="location='/martview/../credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CREDITS</td> 
+
+      <td align="center" valign="middle" width="17%" nowrap="true"  class="menuh"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">QUERY</td>    
+
+		</tr>
+</table>
