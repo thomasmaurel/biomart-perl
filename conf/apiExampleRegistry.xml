@@ -6,7 +6,7 @@
 <MartURLLocation
                     name         = "ensembl"
                     displayName  = "ensembl"
-                    host         = "dev.biomart.org"
+                    host         = "www.biomart.org"
                     port         = "80"
                     visible      = "1"
                     default      = ""
@@ -19,7 +19,7 @@
 <MartURLLocation
                     name         = "sequence"
                     displayName  = "sequence"
-                    host         = "dev.biomart.org"
+                    host         = "www.biomart.org"
                     port         = "80"
                     visible      = "0"
                     default      = ""
@@ -34,7 +34,7 @@
 <MartURLLocation
                     name         = "msd"
                     displayName  = "msd"
-                    host         = "dev.biomart.org"
+                    host         = "www.biomart.org"
                     port         = "80"
                     visible      = "1"
                     default      = ""

@@ -12,7 +12,7 @@ while (<FH>){
 close(FH);
 
 
-my $path="http://dev.biomart.org/biomart/martservice?";
+my $path="http://www.biomart.org/biomart/martservice?";
 my $request = HTTP::Request->new("POST",$path,HTTP::Headers->new(),'query='.$xml."\n");
 my $ua = LWP::UserAgent->new;
 
