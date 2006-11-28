@@ -945,7 +945,7 @@ sub _setLocation {
     foreach (@optional){
 	$name = defined $dbloc->{'name'} ? $dbloc->{'name'} : '';
 	# replace warn with die for 0_4 release
-	warn("Optional setting for $_ in $type location:$name not defined - using default\n") if (!defined($dbloc->{$_}));
+	warn("Optional setting for $_ in $type location:$name not defined - setting to default values \n") if (!defined($dbloc->{$_}));
     }
     my $location;
       eval {
@@ -965,7 +965,7 @@ sub _setLocation {
 	password =>$dbloc->{'password'},
         proxy  => $dbloc->{'proxy'} || $proxy,
         path  => $dbloc->{'path'} || $self->get('path'),
-				   serverVirtualSchema  => $dbloc->{'serverVirtualSchema'} || '',);
+				   serverVirtualSchema  => $dbloc->{'serverVirtualSchema'} || 'default',);
   };
   if($@ || !$location) {
       warn("COULD NOT CONNECT TO DATABASE ".$dbloc->{'database'}.".CHECK YOUR SETTINGS\n");
