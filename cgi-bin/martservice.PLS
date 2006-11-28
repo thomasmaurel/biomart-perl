@@ -566,10 +566,6 @@ sub createLog
 
 	if($mode) ## do logging
 	{
-		open(STDME, ">>/homes/syed/Desktop/temp6/biomart-perl/cgi-bin/HAALO");
-		print STDME "\n$mode    $log_query    $log_ip --- $ip";
-		close(STDME);
-
 		my $reqLogFile = $log_Dir."requestLog";
 		open(STDREQLOG, ">>$reqLogFile");
 	
