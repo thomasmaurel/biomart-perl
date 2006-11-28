@@ -5,7 +5,7 @@ use BioMart::Initializer;
 use BioMart::Query;
 use BioMart::QueryRunner;
 
-my $confFile = Cwd::cwd."/conf/centralRegistryURLPointer.xml";
+my $confFile = (grep { m/biomart-perl+$/ } @INC)[0]."conf/apiExampleMartURLLocation.xml";
 die ("Cant find configuration file $confFile\n") unless (-f $confFile);
 
 my $initializer = BioMart::Initializer->new('registryFile'=>$confFile, 'action'=>'clean');
@@ -27,14 +27,14 @@ sub setup_and_run_query {
     
     my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
      
-    $query->setDataset("uniprot");
-    $query->addAttribute("sptr_ac");
-    $query->addFilter("has_pdb_info", ["only"]);
+    $query->setDataset("hsapiens_gene_ensembl");
+    $query->addAttribute("ensembl_transcript_id");
+    $query->addFilter("chromosome_name", ["22"]);
     
     $query->setDataset('msd');
     $query->addAttribute("pdb_id");
     $query->addAttribute("experiment_type");
-
+    $query->addFilter("experiment_type", ["NMR"]);
     
     # $query->formatter('HTML'); leave this blank for tab delimited
 
