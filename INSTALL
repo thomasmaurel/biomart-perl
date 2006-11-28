@@ -1,10 +1,10 @@
 -----------------------------------------------------------------
-                        Quick Install
+                    Quick and Dirty Install
 -----------------------------------------------------------------
 
-Before starting you'll need apache and mod_perl installed. You are 
-strongly advised to read the full installation instructions available on 
-www.biomart.org. 
+Before starting you'll need apache and mod_perl installed (ideally version 2)
+You are strongly advised to read the full installation instructions available 
+on  www.biomart.org. 
 
 # configure biomart
 cd biomart-perl
