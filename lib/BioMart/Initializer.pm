@@ -994,8 +994,7 @@ sub _populateRegistry {
 			my %configurators_1;
 			my @dataSets = $location->retrieveDatasetInfo($virtualSchema->name, $virtualSchema->default);
 			my %pointerDS;
-		    my $registry = $self->get('registry');
-		    my %configurators;
+		    
     	   	
      	if(!scalar (@dataSets))
          {    my $name=$location->name;
