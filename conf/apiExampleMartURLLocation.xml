@@ -16,6 +16,20 @@
 
 
 
+<MartURLLocation
+                    name         = "sequence"
+                    displayName  = "My BioMart Database"
+                    host         = "dev.biomart.org"
+                    port         = "80"
+                    visible      = "0"
+                    default      = ""
+                     includeDatasets = "hsapiens_genomic_sequence"
+                    martUser     = ""
+/>
+
+
+
+
 
 <MartURLLocation
                     name         = "msd"
