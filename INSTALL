@@ -1,14 +1,14 @@
 -----------------------------------------------------------------
-Quick Install
+                        Quick Install
 -----------------------------------------------------------------
 
 Before starting you'll need apache and mod_perl installed. You are 
-also advised to read the full installation instructions available on 
+strongly advised to read the full installation instructions available on 
 www.biomart.org. 
 
 # configure biomart
 cd biomart-perl
-perl bin/configure.pl -r conf/exampleMartURLLocation.xml
+perl bin/configure.pl -r conf/conf/registryURLPointer.xml 
 Follow the prompts, if you unsure what to answer hit return. 
 
 
