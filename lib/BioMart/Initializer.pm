@@ -72,6 +72,7 @@ use warnings;
 use IO::File;
 use BioMart::Configurator;
 use BioMart::Registry;
+use Data::Dumper;
 
 use BioMart::Configuration::VirtualSchema;
 
@@ -413,13 +414,13 @@ sub init_clean
 
      if (defined($params{'mode'}) && ($params{'mode'} eq 'lazyload'))
      {
-          print  "[NEW CONFIGURATION] .... WITH LAZYLOADING\n";
+          print  "\n[NEW CONFIGURATION] .... WITH LAZYLOADING\n";
           $mart_registry->setMode('LAZYLOAD');  ### should be implemented here, rather registry
           store($mart_registry, $cachefile_min_disk);
      }
      else ### default to --memory option
      {
-          print  "[NEW CONFIGURATION] .... WITH MEMORY [default]\n";		
+          print  "\n[NEW CONFIGURATION] .... WITH MEMORY [default]\n";		
           store($mart_registry, $cachefile_min_mem);
      }
 		
@@ -573,14 +574,14 @@ sub init_update
 	    
           if ((defined($params{'mode'}) && ($params{'mode'} eq 'lazyload')))
           {
-    			print  "[UPDATING] .... WITH LAZYLOADING\n";
+    			print  "\n[UPDATING] .... WITH LAZYLOADING\n";
     			$mart_registry->setMode('LAZYLOAD');           ### needs to be shifted here, I guess rather in registry
   			store($mart_registry, $cachefile_min_disk);
           }
 			
           else ### default to --memory option
           {
-               print  "[UPDATING] .... WITH MEMORY [default]\n";		
+               print  "\n[UPDATING] .... WITH MEMORY [default]\n";		
                store($mart_registry, $cachefile_min_mem);
           }
           $mart_registry->configure; # need to do this to load all dset links
@@ -984,6 +985,172 @@ sub _populateRegistry {
 	# below stops ref problems if locations get removed during loop
 	my $locations = [ @{$virtualSchema->getAllLocations} ];
 	foreach my $location (@{$locations}){
+
+
+############################################### hack to change include datasets list to include invisible ones too
+############################################### For 0.6, simply shift delete this code in # OR the following if block
+		if($location->includeDatasets())
+		{
+			my %configurators_1;
+			my @dataSets = $location->retrieveDatasetInfo($virtualSchema->name, $virtualSchema->default);
+			my %pointerDS;
+		    my $registry = $self->get('registry');
+		    my %configurators;
+    	   	
+     	if(!scalar (@dataSets))
+         {    my $name=$location->name;
+               BioMart::Exception::Configuration->throw("\n
+               No datasets available with given parameters for Location: $name\n");
+          }
+	 foreach my $datasetData (@dataSets){
+		my $dataSetName = lc($datasetData->{'dataset'});
+		if ($virtualSchema->getDatasetByName($dataSetName)){
+		    BioMart::Exception::Configuration->throw("
+               Dataset '${dataSetName}' is duplicated in virtualSchema '$virtualSchema->name'
+               Please rename datasets in meta_conf tables or separate conflicting datasets 
+               into different virtual schemas in defaultMartRegistry.xml\n\n");
+		}
+
+		my $configuratorKey_1;
+		if($location->database)
+		{
+		     $configuratorKey_1 = $location->database.'_'.$location->host.'_'.$location->port;
+		}
+		else ## dicty case
+		{
+		     $configuratorKey_1 = $location->name.'_'.$location->host.'_'.$location->port;
+		}
+		
+		my $configurator_1 = $configurators_1{$configuratorKey_1};
+		if (!defined $configurator_1) {
+		    $configurator_1 = BioMart::Configurator->new($registry,
+							       $location);
+		    $configurators_1{$configuratorKey_1} = $configurator_1;
+		}
+		my $datasetModule =
+		    sprintf("BioMart::Dataset::%s", $datasetData->{'type'});
+
+		$self->loadModule($datasetModule);
+		my $dataset = $datasetModule->new(
+		  'name'              => $datasetData->{'dataset'},
+                  'display_name'      => $datasetData->{'displayName'} || '',
+                  'configurator'      => $configurator_1,
+                  'initial_batchsize' => $datasetData->{'initialBatchSize'} || 
+					 $self->get('init_batchsize'),
+                  'max_batchsize'     => $datasetData->{'maxBatchSize'} || 
+					 $self->get('max_batchsize'),
+                  'visible'           => $datasetData->{'visible'} || 0,
+	 	  'version'           => $datasetData->{'version'} || '',
+		  'interfaces'        => $datasetData->{'interfaces'} || 
+					 'default',
+                  'modified'          => $datasetData->{'modified'} || 
+					 'MODIFIED_UNAVAILABLE',
+		  'locationDisplayName' => $location->displayName,
+		  'locationName'            => $location->name,
+                  'virtualSchema'     => $virtualSchema->name);
+
+	
+	
+	
+			my $configTree;
+			my $xml;
+			my @interfaces = split(/\,/,$dataset->interfaces);
+			foreach my $interface(@interfaces){
+				#$configTree = $dataset->getConfigurationTree($interface,'CREATE_ALL_LINKS');
+				$xml = $dataset->getConfigurator->get('location')->getDatasetConfigXML($virtualSchema->name,
+							  $dataset->name,
+							  $interface,
+							  0);
+         		}
+         		
+			my $tempXMLHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 
+                  AttributeCollection AttributeDescription FilterPage FilterGroup 
+                  FilterCollection FilterDescription Importable Exportable Key 
+                MainTable BatchSize SeqModule Option PushAction)], keyattr => []);
+
+          	my $softwareVersion = $tempXMLHash->{'softwareVersion'};
+               if (!$softwareVersion || ($softwareVersion eq '0.4')) 
+                {       
+                    print STDERR "->  upgrading to 0.5 ... ";
+     	          my $params=BioMart::Web::CGIXSLT::read_https();
+	               open(STDOUTTEMP, ">temp.xml");
+               	print STDOUTTEMP $xml;
+          	     close(STDOUTTEMP);               
+     	          $params->{'source'} = 'temp.xml';              
+	               $params->{'style'} = $self->get('confDir').'/mart_0_4_0_5.xsl';
+               	my $new_xml;
+          	     eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
+     	          if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
+	               #Now, we are printing and saving what we get
+          	     $xml = BioMart::Web::CGIXSLT::print_output($new_xml);
+               	if (-e 'temp.xml')
+     	          {
+	                    unlink 'temp.xml';           
+               	}                          
+                           
+          	}
+
+	my $xmlHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 
+		AttributeCollection AttributeDescription AttributeList FilterPage FilterGroup 
+		FilterCollection FilterDescription Importable Exportable Key 
+        	MainTable BatchSize SeqModule Option PushAction)], keyattr => []);              
+     
+
+	foreach my $xmlAttributeTree (@{ $xmlHash->{'AttributePage'} }) {
+		next if ($xmlAttributeTree->{'hidden'} && $xmlAttributeTree->{'hidden'} eq 'true');
+     	foreach my $xmlAttributeGroup (@{ $xmlAttributeTree->{'AttributeGroup'} }) {
+		next if ($xmlAttributeGroup->{'hidden'} && $xmlAttributeGroup->{'hidden'} eq 'true');
+          	foreach my $xmlAttributeCollection(@{ $xmlAttributeGroup->{'AttributeCollection'} }) {
+               	next if ($xmlAttributeCollection->{'hidden'} && $xmlAttributeCollection->{'hidden'}eq 'true');
+				foreach my $xmlAttribute (@{ $xmlAttributeCollection->{'AttributeDescription'} }) {
+					next if ($xmlAttribute->{'hidden'} && $xmlAttribute->{'hidden'} eq 'true');                    	
+		    			if ($xmlAttribute->{'pointerDataset'})  ## ACTION TIME
+		    			{ 
+						$pointerDS{$xmlAttribute->{'pointerDataset'}}++;	# increamenting for debugggni purpose only
+		    			}
+		    		}
+		    	}
+		}
+	}
+
+    	foreach my $xmlFilterTree (@{ $xmlHash->{'FilterPage'} }) {
+        	next if ($xmlFilterTree->{'hidden'}  && $xmlFilterTree->{'hidden'} eq 'true');
+		foreach my $xmlFilterGroup (@{ $xmlFilterTree->{'FilterGroup'} }) {
+          	next if ($xmlFilterGroup->{'hidden'} && $xmlFilterGroup->{'hidden'} eq 'true');
+	          foreach my $xmlFilterCollection (@{ $xmlFilterGroup->{'FilterCollection'} }) {
+	          	next if ($xmlFilterCollection->{'hidden'}  && $xmlFilterCollection->{'hidden'} eq 'true');
+	               foreach my $xmlFilter (@{ $xmlFilterCollection->{'FilterDescription'} }) {
+	               	next if ($xmlFilter->{'hidden'}     && $xmlFilter->{'hidden'} eq 'true');
+	    			 	if ($xmlFilter->{'pointerDataset'}) ## ACTION TIME
+				    	{
+						$pointerDS{$xmlFilter->{'pointerDataset'}}++;# increamenting for debugggni purpose only
+				    	}	
+				}
+			}
+		}
+	}
+
+	} ## end of for loop each dataset
+
+
+
+			if (%pointerDS) {
+				## first add the ones which already exists
+				my @oldList = split (/\,/,$location->includeDatasets());
+				foreach (@oldList){
+					$pointerDS{$_}++; # increamenting for debugggni purpose only
+				}				
+				my $includeList;
+				foreach (keys %pointerDS) {
+					if($includeList){ $includeList .= ','.$_ ;	}
+					else {$includeList .= $_ ;}
+				}
+				
+				$location->includeDatasets($includeList);				
+			}
+			
+		}	## end of if block - hack for tempering includeDataset list
+##################################################################################
 	    my @datasets = $location->retrieveDatasetInfo($virtualSchema->name, $virtualSchema->default);
           if(!@datasets)
           {    my $name=$location->name;
@@ -1044,6 +1211,9 @@ sub _populateRegistry {
 		    $dataset->serverType("rdbms");
 		    $dataset->schema($location->schema);
 		}
+		
+		
+		
 		$location->addDataset($dataset);
 	    }
 	    if (@{$location->getAllDatasets} == 0){
@@ -1064,6 +1234,153 @@ sub _registryXML {
      $self->{'registryXML'}=$registryXML;
   }
   return $self->{'registryXML'};
+}
+
+sub _includeDatasetaddInvisibles
+{
+	my ($self, $virtualSchema, $location, $datasets ) = @_;
+     my %pointerDS;
+
+    my $registry = $self->get('registry');
+    my %configurators;
+    
+    	
+     #if(!scalar (@$datasets))
+      #    {    my $name=$location->name;
+       #        BioMart::Exception::Configuration->throw("\n
+       #        No datasets available with given parameters for Location: $name\n");
+      #    }
+	 foreach my $datasetData (@$datasets){
+		my $dataSetName = lc($datasetData->{'dataset'});
+		if ($virtualSchema->getDatasetByName($dataSetName)){
+		    BioMart::Exception::Configuration->throw("
+               Dataset '${dataSetName}' is duplicated in virtualSchema '$virtualSchema->name'
+               Please rename datasets in meta_conf tables or separate conflicting datasets 
+               into different virtual schemas in defaultMartRegistry.xml\n\n");
+		}
+
+		my $configuratorKey;
+		if($location->database)
+		{
+		     $configuratorKey = $location->database.'_'.$location->host.'_'.$location->port;
+		}
+		else ## dicty case
+		{
+		     $configuratorKey = $location->name.'_'.$location->host.'_'.$location->port;
+		}
+		
+		my $configurator = $configurators{$configuratorKey};
+		if (!defined $configurator) {
+		    $configurator = BioMart::Configurator->new($registry,
+							       $location);
+		    $configurators{$configuratorKey} = $configurator;
+		}
+		my $datasetModule =
+		    sprintf("BioMart::Dataset::%s", $datasetData->{'type'});
+
+		$self->loadModule($datasetModule);
+		my $dataset = $datasetModule->new(
+		  'name'              => $datasetData->{'dataset'},
+                  'display_name'      => $datasetData->{'displayName'} || '',
+                  'configurator'      => $configurator,
+                  'initial_batchsize' => $datasetData->{'initialBatchSize'} || 
+					 $self->get('init_batchsize'),
+                  'max_batchsize'     => $datasetData->{'maxBatchSize'} || 
+					 $self->get('max_batchsize'),
+                  'visible'           => $datasetData->{'visible'} || 0,
+	 	  'version'           => $datasetData->{'version'} || '',
+		  'interfaces'        => $datasetData->{'interfaces'} || 
+					 'default',
+                  'modified'          => $datasetData->{'modified'} || 
+					 'MODIFIED_UNAVAILABLE',
+		  'locationDisplayName' => $location->displayName,
+		  'locationName'            => $location->name,
+                  'virtualSchema'     => $virtualSchema->name);
+
+	
+	
+	
+			my $configTree;
+			my $xml;
+			my @interfaces = split(/\,/,$dataset->interfaces);
+			foreach my $interface(@interfaces){
+				#$configTree = $dataset->getConfigurationTree($interface,'CREATE_ALL_LINKS');
+				$xml = $dataset->getConfigurator->get('location')->getDatasetConfigXML($virtualSchema->name,
+							  $dataset->name,
+							  $interface,
+							  100);
+         		}
+         		
+			my $tempXMLHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 
+                  AttributeCollection AttributeDescription FilterPage FilterGroup 
+                  FilterCollection FilterDescription Importable Exportable Key 
+                MainTable BatchSize SeqModule Option PushAction)], keyattr => []);
+
+          	my $softwareVersion = $tempXMLHash->{'softwareVersion'};
+               if (!$softwareVersion || ($softwareVersion eq '0.4')) 
+                {       
+                    print STDERR "->  upgrading to 0.5 ... ";
+     	          my $params=BioMart::Web::CGIXSLT::read_https();
+	               open(STDOUTTEMP, ">temp.xml");
+               	print STDOUTTEMP $xml;
+          	     close(STDOUTTEMP);               
+     	          $params->{'source'} = 'temp.xml';              
+	               $params->{'style'} = $self->get('confDir').'/mart_0_4_0_5.xsl';
+               	my $new_xml;
+          	     eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
+     	          if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
+	               #Now, we are printing and saving what we get
+          	     $xml = BioMart::Web::CGIXSLT::print_output($new_xml);
+               	if (-e 'temp.xml')
+     	          {
+	                    unlink 'temp.xml';           
+               	}                          
+                           
+          	}
+
+	my $xmlHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 
+		AttributeCollection AttributeDescription AttributeList FilterPage FilterGroup 
+		FilterCollection FilterDescription Importable Exportable Key 
+        	MainTable BatchSize SeqModule Option PushAction)], keyattr => []);              
+     
+
+	foreach my $xmlAttributeTree (@{ $xmlHash->{'AttributePage'} }) {
+		next if ($xmlAttributeTree->{'hidden'} && $xmlAttributeTree->{'hidden'} eq 'true');
+     	foreach my $xmlAttributeGroup (@{ $xmlAttributeTree->{'AttributeGroup'} }) {
+		next if ($xmlAttributeGroup->{'hidden'} && $xmlAttributeGroup->{'hidden'} eq 'true');
+          	foreach my $xmlAttributeCollection(@{ $xmlAttributeGroup->{'AttributeCollection'} }) {
+               	next if ($xmlAttributeCollection->{'hidden'} && $xmlAttributeCollection->{'hidden'}eq 'true');
+				foreach my $xmlAttribute (@{ $xmlAttributeCollection->{'AttributeDescription'} }) {
+					next if ($xmlAttribute->{'hidden'} && $xmlAttribute->{'hidden'} eq 'true');                    	
+		    			if ($xmlAttribute->{'pointerDataset'})  ## ACTION TIME
+		    			{ 
+						$pointerDS{$xmlAttribute->{'pointerDataset'}}++;	# increamenting for debugggni purpose only
+		    			}
+		    		}
+		    	}
+		}
+	}
+
+    	foreach my $xmlFilterTree (@{ $xmlHash->{'FilterPage'} }) {
+        	next if ($xmlFilterTree->{'hidden'}  && $xmlFilterTree->{'hidden'} eq 'true');
+		foreach my $xmlFilterGroup (@{ $xmlFilterTree->{'FilterGroup'} }) {
+          	next if ($xmlFilterGroup->{'hidden'} && $xmlFilterGroup->{'hidden'} eq 'true');
+	          foreach my $xmlFilterCollection (@{ $xmlFilterGroup->{'FilterCollection'} }) {
+	          	next if ($xmlFilterCollection->{'hidden'}  && $xmlFilterCollection->{'hidden'} eq 'true');
+	               foreach my $xmlFilter (@{ $xmlFilterCollection->{'FilterDescription'} }) {
+	               	next if ($xmlFilter->{'hidden'}     && $xmlFilter->{'hidden'} eq 'true');
+	    			 	if ($xmlFilter->{'pointerDataset'}) ## ACTION TIME
+				    	{
+						$pointerDS{$xmlFilter->{'pointerDataset'}}++;# increamenting for debugggni purpose only
+				    	}	
+				}
+			}
+		}
+	}
+
+	} ## end of for loop each dataset
+
+	return %pointerDS;
 }
 
 1;
