@@ -1032,12 +1032,16 @@ sub _new
 					    			if($def_ds eq $dataset->name)
 			    					{
 			    						$def_ds_OBJ = $dataset;
+			    						### only for compara to maintain the reverse naming logic when dataset panel is redrawn
+			    						### when count, results or linked dataset menu is invoked
+			    						if ($session->param ("reverseName") && $session->param ("reverseName") eq '1')
+			    						{	$reverseName = 1;	} # keep  the reverse logic alive
 			    					}
 					    		}
 					    	}
 					}
 				}
-			}
+			}			
 		}
 	}
 
@@ -1059,9 +1063,6 @@ sub _new
 	#print " ", $session->param('dataset'), "    ";
 	#print " OBJECT's name: ", $def_ds_OBJ->name();	
 	#===========================================	
-	
-
-	#======================================
 	
 	# If one or more datasets are selected by now, get initial counts and build query
 	my $datasets_string = $session->param('dataset');
@@ -1653,14 +1654,15 @@ sub _new
 	$session->clear('dataBase');
 
 	$self->process_template("main.tt",
-				      {session       => $session, 
-				       wq            => $self,
-				       form_action   => $form_action,
-				       sessionDBNAME	 => $dbName,
-				       datasetOBJ           => $def_ds_OBJ,
-				       #entry_count   => $entry_count,
-				       result_string => $result_string},
-				        \*STDOUT);
+				      {	session       	=> $session, 
+				       	wq            	=> $self,
+				     	form_action	=> $form_action,
+				     	sessionDBNAME	=> $dbName,
+				     	datasetOBJ	=> $def_ds_OBJ,
+						reverseNAME	=> $reverseName,
+				       	#entry_count   => $entry_count,
+				       	result_string 	=> $result_string},
+				        	\*STDOUT);
 
 
      return;
