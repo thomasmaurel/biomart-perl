@@ -1,4 +1,4 @@
-# $Id$
+
 
 =head1 NAME
 
@@ -62,9 +62,9 @@ use BioMart::Web::SiteDefs;
 use base qw(BioMart::Root);
 
 our $VERSION = '0.4.9.0';
-Readonly our $revision => substr(q$Revision$, 10);
 
-		my $logger;						 # master logger
+
+	my $logger;						 # master logger
     	my $tt_processor;                # template processor
     	my $config;                      # configuration object
     	my $conf_dir;                    # configuration directory
@@ -1704,6 +1704,5 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 =head1 CVSINFO
 
-$Id$ 
 
 =cut
