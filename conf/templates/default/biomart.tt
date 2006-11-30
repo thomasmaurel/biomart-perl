@@ -155,9 +155,10 @@
 	<input type="hidden" name="savequery" value="0" />
 	<input type="hidden" name="showquery" value="0" />
 	<input type="hidden" name="countButton" value="0" />
+	<input type="hidden" name="reverseName" value="[% reverseNAME %]" />
 	<input type="hidden" name="summarypanel_filter_count_1" value="[%session.param('ds_1_count')%]" />
 	<input type="hidden" name="summarypanel_filter_count_2" value="[%session.param('ds_2_count')%]" />
-	
+		
 	<input type="hidden" name="track_visible_section" value="0" />
 	<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
 
