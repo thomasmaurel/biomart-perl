@@ -407,7 +407,8 @@ sub __processNewQuery {
 	$self->set('ignore_row', "pkey");
 	$self->set('recipe', '_exonSequences');
     } 
-    elsif ($seq_name =~ m/utr$/) {
+    elsif ($seq_name =~ m/utr$/ or
+           $seq_name =~ m/intergenic$/) {
 	$self->set('recipe', '_utrSequences');
     } 
     elsif ($seq_name =~ m/snp$/) {
@@ -1038,7 +1039,7 @@ sub _utrSequences {
 	    } 
 	    else {
 		$self->_addRow($atable, $outRow, 
-			       "No UTR is annotated for this transcript");
+			       "Sequence unavailable");
 		$outRow = undef;
 	    }
 	}
