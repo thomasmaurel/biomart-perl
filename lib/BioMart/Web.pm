@@ -1,4 +1,4 @@
-
+# $Id$
 
 =head1 NAME
 
@@ -1704,5 +1704,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 =head1 CVSINFO
 
+$Id$
 
 =cut
