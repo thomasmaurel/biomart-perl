@@ -883,22 +883,29 @@ sub _new
 			my $dsHint1 = $session->param('datasetmenu_1');
 			my $dsHint2 = $session->param('datasetmenu_2');
 			my $dsHint3 = $session->param('datasetmenu_3');
-			#print $dsHint1, " ^^ ",$dsHint2, " ^^ ", $dsHint3;
-			#print " ==MENU NUMBER: ", $session->param('menuNumber'), " == ";
 
 			## find out whihc number is triggered
 			my $dsDisplayName;
 			if($session->param('menuNumber') eq '1') # most difficult to resolve
 			{
-				$dsDisplayName = $dsHint1;
+				# remove schema____dbName____ prefix
+				$dsHint1 =~ m/.*?____.*?____(.*)/;
+				$dsHint1 = $1;
+				$dsDisplayName = $dsHint1;				
 			}
 			if($session->param('menuNumber') eq '2') # second menu
 			{
+				# remove schema____dbName____ prefix
+				$dsHint2 =~ m/.*?____.*?____(.*)/;
+				$dsHint2 = $1;
 				$dsDisplayName = $dsHint2;
 				$dsDisplayName =~ s/____/\|/;
 			}
 			if($session->param('menuNumber') eq '3') #last menu triggered
 			{
+				# remove schema____dbName____ prefix
+				$dsHint2 =~ m/.*?____.*?____(.*)/;
+				$dsHint2 = $1;
 				$dsDisplayName = $dsHint2;
 				$dsDisplayName =~ s/____/\|/;
 				$dsDisplayName .= '\|'.$dsHint3;			
@@ -1531,6 +1538,7 @@ sub _new
        	DATABASE:
 	    	foreach my $database_name(@$databases) {
 		    	$multiMenuDS = 0;
+		    	$unitsHash = ();
 			push @database_names, $database_name;
 			my $schema__dbName = $schema_name.'____'.$database_name;
 			# Add this database to pushaction-hash
@@ -1577,27 +1585,28 @@ sub _new
 			} # foreach datasets closes
 			if($multiMenuDS == 1)
 			{
-				#open (STDME, ">>/homes/syed/Desktop/temp3/biomart-web/conf/templates/HELLLOO");
+				#open (STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/HELLLOO");
 				foreach my $one(sort keys %$unitsHash) {
-					#print STDME "\n$one"; 
-					push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_1' } }, 
-														[$one,$one]);
+				#	print STDME "\n$one"; 
+					my $temp_one = $schema__dbName.'____'.$one;
+					push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_1' } },	[$temp_one,$one]);
+					
 					foreach my $two (sort keys %{$unitsHash->{$one}}) {
-						#print STDME "\n\t$two"; 
-						my $temp_two = $one.'____'.$two;
-						push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_1' }->{ $one }->{ 'datasetmenu_2' } }, 
-														[$temp_two, $two]);
+				#		print STDME "\n\t$two"; 
+						my $temp_two = $temp_one.'____'.$two;
+						push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_1' }->{ $temp_one }->{ 'datasetmenu_2' } },	[$temp_two, $two]);
+					
 						foreach my $three (sort keys %{$unitsHash->{$one}->{$two}}) {
-							#print STDME "\n\t\tKEY: $three \t VALUE: "; 
+				#			print STDME "\n\t\tKEY: $three \t VALUE: "; 
 							my @dsName = ();
 							my $index = 0;
+					
 							foreach (@{$unitsHash->{$one}->{$two}->{$three}}) {
 								#print STDME $_," ---- ";	
 								$dsName[$index++] = $_;
 							}	
 							my $temp_three = $temp_two.'____'.$three;
-							push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_2' }->{ $temp_two }->{ 'datasetmenu_3' } }, 
-														[$three, $three]);
+							push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_2' }->{ $temp_two }->{ 'datasetmenu_3' } }, [$three, $three]);
 							
 						}	
 					}	
