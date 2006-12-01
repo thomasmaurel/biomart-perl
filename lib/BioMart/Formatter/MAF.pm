@@ -104,13 +104,8 @@ sub nextRow {
     if ( ( ($$row[0]=~/^(A|C|G|T|N)/) && ($$row[0]!~/^(Chr)/) ) && ( ($$row[1]=~/^(A|C|G|T|N)/) && ($$row[1]!~/^(Chr)/) )   ){  # 15/08/06 removed /i
 	                                                                   # added a hack for 'Ch'
 	@data = &preProcessRowMlagan(\@{$row});
-#	#my $score = pop @data;
+
 	my $score ; # score is now in data[$i][8]
-#	#$SCORE2 = "a score=$score\n";
-#	###my $nb_species = @data;
-#	my $nb_species = scalar(@data);
-#	my $nb = ($nb_species-2); #remove 1 in nb species
-#	print "+++++ $nb_species +++++ NB SPE: $nb\n\n";
 
 	my $size_chro = 0 ; # calculate the size of the longuest chro # for sprintf
 	foreach my $value (@data){
@@ -118,13 +113,7 @@ sub nextRow {
 	    if ($size_chro < length($chr) ){$size_chro = length($chr);} 
 	}
 
-#	#my $size_chro = 0 ; # calculate the size of the longuest chro # for sprintf
-#	for  (my $i=0;$i<=$nb;$i++){ 
-#	    my $chr    = $data[$i][1];
-#	    if ($size_chro < length($chr) ){$size_chro = length($chr);} 
-#	}
-#	for  (my $i=0;$i<=$nb;$i++){
-
+	
 	foreach my $foo (@data){
 	    my $seq    = $foo->[0] ;
 	    my $chr    = $foo->[1] ;
@@ -136,6 +125,10 @@ sub nextRow {
 	    my $cigar  = $foo->[7] ;
 	    $score     = $foo->[8] ;
 
+	    if (($score) && (!$SCORE2)){
+		$SCORE2 = "a score=$score\n";
+	    }
+
 	    if ($seq ne 'N'){ # means that there is no data for that species 
 		$PROCESSED_SEQS .=  &returnMAFline4Mlagan($seq,$chr,$start,$end,$strand,$length,$genome,$size_chro,$cigar);
 	    }
@@ -144,7 +137,8 @@ sub nextRow {
 	$aln_nb++; #print "\n\n===================  $aln_nb   \n\n";
 	#return "\n"; # print "\n";  ??
 	
-	$SCORE2 = "a score=$score\n";
+	#-- if score is undefined, put 0 instead of nothing
+	if (!$SCORE2){ $SCORE2 .= "a score=0\n";}
 	return $HEADER . $SCORE2 . $PROCESSED_SEQS . "\n";
 	
     }
