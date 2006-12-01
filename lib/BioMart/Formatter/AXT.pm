@@ -92,33 +92,26 @@ sub nextRow {
 	# added a hack for 'Ch'
 	@data = &preProcessRowMlagan(\@{$row});
 	
-	my $score = pop @data;
-	my $nb_species = @data;
+	foreach my $foo (@data){
+	    my $seq    = $foo->[0] ;
+	    my $chr    = $foo->[1] ;
+	    my $start  = $foo->[2] ;
+	    my $end    = $foo->[3] ;
+	    my $strand = $foo->[4] ;
+	    my $length = $foo->[5] ;
+	    my $genome = $foo->[6] ;
+	    my $cigar  = $foo->[7] ;
+	    my $score  = $foo->[8] ;
 	
-#-- was needed for MAF, but not for AXT
-#	my $size_chro = 0 ; # calculate the size of the longuest chro # for sprintf
-#	for  (my $i=0;$i<=$nb_species-1;$i++){ 
-#	    my $chr    = $data[$i][1];
-#	    if ($size_chro < length $chr){$size_chro = length $chr;} 
-#	}
-	
-	for  (my $i=0;$i<=$nb_species-1;$i++){
-	    my $seq    = $data[$i][0] ;
-	    my $chr    = $data[$i][1] ;
-	    my $start  = $data[$i][2] ;
-	    my $end    = $data[$i][3] ;
-	    my $strand = $data[$i][4] ;
-	    my $length = $data[$i][5] ;
-	    my $genome = $data[$i][6] ;
-	    my $cigar  = $data[$i][7] ;
-	    my @prearray = ($seq,$chr,$start,$end,$strand,$length,$cigar);
+	    my @prearray = ($seq,$chr,$start,$end,$strand,$length,$cigar,$score);
 	    ## Can be better coded ## need to change that like, add another for ($j=0..$j<=7){ push (@array, $data[$i][$j] )
 	    push (@array, @prearray);
-	    if ($seq ne 'N'){
-		# do something
-	    }
+#	    if ($seq ne 'N'){
+#		# do something
+#		# in pairwise seq alignment you should always have a seq	       
+#	    }
 	}
-	push (@array, $score, $aln_nb);
+	push (@array, $aln_nb);
 	
 	$PROCESSED_SEQS =  &returnAXTline(@array);
 	$aln_nb++;
@@ -128,7 +121,7 @@ sub nextRow {
 
 #------------------------
 sub returnAXTline{
-    my ($seq1,$chr1,$start1,$end1,$strand1,$length1,$cigar1,$seq2,$chr2,$start2,$end2,$strand2,$length2,$cigar2,$score1,$aln_nb) = @_;
+    my ($seq1,$chr1,$start1,$end1,$strand1,$length1,$cigar1,$score1,$seq2,$chr2,$start2,$end2,$strand2,$length2,$cigar2,$score2,$aln_nb) = @_;
     
     if ($strand1 > 0){                    ## If the qy specie is forward
 	
@@ -190,27 +183,20 @@ sub preProcessRowMlagan{
     my $score;
     my $k = 0;
     my $size_row = @{$row};
-    #print "size_row subroutine :  $size_row\n";
     
+    #-- Get all the seq in $want[$k][0]
     while ( ($$row[0]=~/^(A|C|G|T|N)/i) && ($$row[0]!~/^Chr/i) ) { # get all seq out
 	$want[$k][0] = shift (@{$row});
 	$k++;
     }
     
-    # $k-1 is equal to the number of seqs (=nb of species)
+    #-- then put the rest of it into $want[$j][??]
     for  (my $j=0;$j<=$k-1;$j++){ 
-	#print "== $j 0 ";print "    ---- $want[$j][0]\n";
-	for (my $i=1;$i<=7;$i++){
-	    #print "== $j $i ";
+	for (my $i=1;$i<=8;$i++){       #IMPORTANT changed from 7 to 8, as I have now a score for all species
 	    $want[$j][$i] = shift (@{$row});
-	    #print "    ---- $want[$j][$i]\n";
-	}
-	if ($j == 0){#if ($j == 0){ #for the first species which contain the score 
-	    $score = shift (@{$row}); 
-	    #print "==score $j $score\n";
 	}
     }
-    return (@want, $score);
+    return (@want);
 }
 #--------------------------------------------
 #sub getDisplayNames {
