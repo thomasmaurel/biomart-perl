@@ -90,20 +90,19 @@ sub nextRow {
     if ( ( ($$row[0]=~/^(A|C|G|T|N)/) && ($$row[0]!~/^(Chr)/) ) && ( ($$row[1]=~/^(A|C|G|T|N)/) && ($$row[1]!~/^(Chr)/) )   ){  # 15/08/06 removed /i
 	# added a hack for 'Ch'
 	@data = &preProcessRowMlagan(\@{$row});
-	
-	my $score = pop @data;
-	my $nb_species = @data;
-	
-	for  (my $i=0;$i<=$nb_species-1;$i++){
-	    my $seq    = $data[$i][0] ;
-	    my $chr    = $data[$i][1] ;
-	    my $start  = $data[$i][2] ;
-	    my $end    = $data[$i][3] ;
-	    my $strand = $data[$i][4] ;
-	    my $length = $data[$i][5] ;
-	    my $genome = $data[$i][6] ;
-	    my $cigar  = $data[$i][7] ;
-	    my @prearray = ($seq,$chr,$start,$end,$strand,$length,$cigar);
+
+	foreach my $foo (@data){
+	    my $seq    = $foo->[0] ;
+	    my $chr    = $foo->[1] ;
+	    my $start  = $foo->[2] ;
+	    my $end    = $foo->[3] ;
+	    my $strand = $foo->[4] ;
+	    my $length = $foo->[5] ;
+	    my $genome = $foo->[6] ;
+	    my $cigar  = $foo->[7] ;
+	    my $score  = $foo->[8] ;	
+
+	    my @prearray = ($seq,$chr,$start,$end,$strand,$length,$genome,$cigar,$score);
 	    ## Can be better coded ## need to change that like, add another for ($j=0..$j<=7){ push (@array, $data[$i][$j] )
 	    
 	    $PROCESSED_SEQS .=  &returnMFAline(@prearray);
@@ -113,7 +112,7 @@ sub nextRow {
 }
 #--------------------------------------------
 sub returnMFAline{
-    my ($seq,$chr,$start,$end,$strand,$length,$cigar) = @_;
+    my ($seq,$chr,$start,$end,$strand,$length,$genome,$cigar,$score) = @_;
     my ($length_seq,$hstrand,$hstart,$hend);
     my $fasta_seq;
     if ($strand > 0){                   
@@ -130,7 +129,7 @@ sub returnMFAline{
 	
     } else { warn "\n\n\nProblem in returning mfa formated lines \n\n\n";}
     
-    my $header = ">" . join("|",("chr:".$chr),"start:".$start,"end:".$end,"strand:".$strand);
+    my $header = ">" . join("|",("chr:".$chr),"start:".$start,"end:".$end,"strand:".$strand,"score:".$score,$genome);
     my $formated_seq = _get_aligned_sequence_from_original_sequence_and_cigar_line($seq, $cigar);
    
     while ($formated_seq =~ /(.{1,80})/g) {
@@ -146,28 +145,21 @@ sub preProcessRowMlagan{
     my $score;
     my $k = 0;
     my $size_row = @{$row};
-    #print "size_row subroutine :  $size_row\n";
     
+    #-- Get all the seq in $want[$k][0]
     while ( ($$row[0]=~/^(A|C|G|T|N)/i) && ($$row[0]!~/^Chr/i) ) { # get all seq out
 	$want[$k][0] = shift (@{$row});
 	$k++;
     }
     
-    # $k-1 is equal to the number of seqs (=nb of species)
+    #-- then put the rest of it into $want[$j][??]
     for  (my $j=0;$j<=$k-1;$j++){ 
-	#print "== $j 0 ";print "    ---- $want[$j][0]\n";
-	for (my $i=1;$i<=7;$i++){
-	    #print "== $j $i ";
+	for (my $i=1;$i<=8;$i++){       #IMPORTANT changed from 7 to 8, as I have now a score for all species
 	    $want[$j][$i] = shift (@{$row});
-	    #print "    ---- $want[$j][$i]\n";
-	}
-	if ($j == 0){#if ($j == 0){ #for the first species which contain the score 
-	    $score = shift (@{$row}); 
-	    #print "==score $j $score\n";
 	}
     }
-    return (@want, $score);
-}    
+    return (@want);
+}  
 #--------------------------------------------
 sub preProcessRow{
     my $row =  shift ;
