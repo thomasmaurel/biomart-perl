@@ -70,6 +70,7 @@ sub _new {
 
   # empty/default settings for all constructed Query objects
   $self->attr('dataset_names', {});
+  $self->attr('ordered_dataset_names', []);
   $self->attr('attributes', []);
   $self->attr('filters', []);    
   $self->attr('limitStart',undef);
@@ -877,6 +878,24 @@ sub getDatasetNames {
   return \@datasetNames;
 }
 
+=head2 getOrderedDatasetNames
+  
+  Usage      :  my $dataSets = $query->getOrderedDatasetNames; 
+                foreach my $subName (@{$dataSets}) { ... }
+  Description:  Returns an ordered list_ref of names for all Datasets required to 
+                resolve this Query.
+  Returntype :  list_ref of scalar dataSet names.
+  Exceptions :  none
+  Caller     :  caller
+
+=cut
+
+
+sub getOrderedDatasetNames {
+  my $self = shift;
+  my $datasets = $self->get('ordered_dataset_names');
+  return @$datasets ? $datasets:undef;
+}
 
 =head2 getAllAttributes
 
@@ -1612,8 +1631,8 @@ sub finalProcess {
 #	# may have a two dataset query with one of them having no filts/atts
 #	$sourceDataset = '';
 #	$targetDataset = '';
-	my $datasets = $self->getDatasetNames; 
-	foreach my $datasetName (@{$datasets}) {
+	my $datasets = $self->getOrderedDatasetNames; 
+	foreach my $datasetName (reverse @{$datasets}) {
 	    	my $dataset = $registry->getDatasetByName($virtualSchema,
 							  $datasetName);
 		next if (!$dataset->visible);
@@ -1771,7 +1790,15 @@ sub addDatasetName {
     my $dataSetNames = $self->get('dataset_names');
     $dataSetNames->{$dataSetName} = $interface;
     $self->set('dataset_names',$dataSetNames);
-      
+    
+    my $orderedDatasetNames = $self->get('ordered_dataset_names');
+    my $seen = 0;
+    foreach (@{$orderedDatasetNames}){
+	$seen = 1 if ($_ eq $dataSetName);
+    }
+    push @{$orderedDatasetNames}, $dataSetName if ($seen == 0);
+    $self->set('ordered_dataset_names',$orderedDatasetNames);
+    
 }
 
 =head2 finalDatasetOrder
