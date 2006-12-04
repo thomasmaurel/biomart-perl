@@ -840,9 +840,10 @@ sub _codingCdnaPeptideSequences {
 	# Requesting for phase info as well, to fix the bug of additional 
 	# Ns in the beginning - syed
 	my $location = $self->_getLocationFrom($curRow, "chr", "start", "end", 
-					       "strand", "phase", "codon_table_id"); 
+					       "strand", "phase", "codon_table_id", "seq_edits"); 
     
 	$self->set('codon_table_id',$location->{"codon_table_id"});	
+	$self->set('seq_edits',$location->{"seq_edits"});	
 
 	$location = $self->_modFlanks($location, 0);
 	$locations->{$rank} = $location if ($location->{"start"});
