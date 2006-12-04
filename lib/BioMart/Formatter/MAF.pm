@@ -61,17 +61,22 @@ package BioMart::Formatter::MAF;
 
 use strict;
 use warnings;
+use Log::Log4perl;
+
 #use Readonly;
 
 # Extends BioMart::FormatterI
 use base qw(BioMart::FormatterI);
 
+my $logger;	 # master logger
 my $aln_nb = 0 ;
 
 sub _new {
     my ($self) = @_;
     $self->SUPER::_new();
     $aln_nb = 0 ;
+    # Get reference to logger
+    $logger = Log::Log4perl->get_logger(__PACKAGE__);
 }
 
 sub processQuery {
@@ -87,6 +92,8 @@ sub nextRow {
     my $HEADER = "";
     my $PROCESSED_SEQS ;
     my $SCORE2 ;
+    my $new_start_time = time();
+    $logger->debug("START NEXT ROW ");
     my $rtable = $self->get('result_table');
     my $row = $rtable->nextRow;
     if (!$row){
@@ -126,53 +133,24 @@ sub nextRow {
 	    $score     = $foo->[8] ;
 
 	    if (($score) && (!$SCORE2)){
-		$SCORE2 = "a score=$score\n";
+		$SCORE2 .= "a score=$score\n";
 	    }
 
 	    if ($seq ne 'N'){ # means that there is no data for that species 
 		$PROCESSED_SEQS .=  &returnMAFline4Mlagan($seq,$chr,$start,$end,$strand,$length,$genome,$size_chro,$cigar);
 	    }
 	}
-	#print "\n";  
-	$aln_nb++; #print "\n\n===================  $aln_nb   \n\n";
-	#return "\n"; # print "\n";  ??
+	$aln_nb++; 
 	
 	#-- if score is undefined, put 0 instead of nothing
 	if (!$SCORE2){ $SCORE2 .= "a score=0\n";}
 	return $HEADER . $SCORE2 . $PROCESSED_SEQS . "\n";
 	
+    } else {
+	warn "MAF.pm -- Error processing data (attribute list)\n";
     }
-    # or if the data comes from Pairwise Alignement
-    # in that case you have spe1(8entries), spe2(7entries), speN(7entries),and so on..
-    # line 1: spe1_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line Score 
-    # line 2: spe2_raw_sequence Name  Dnafrag start  Dnafrag end  Dnafrag strand  Length  Cigar line
-    else {
-	print "PAIRWISE data  ...\n";
-	@data = &preProcessRow(\@{$row});
-	# next - \@{$row} can dereferenced by using @$row
-	# or be passed by reference using \
-	# my @data = &preProcessRow2(@$row); OR (\@{$row})
-	my $score = pop @data;
-        print "a score=$score\n";
-	my $nb_species = @data; 
-	
-	for  (my $i=0;$i<=$nb_species-1;$i++){
-	    my $seq    = $data[$i][0] ;
-	    my $chr    = $data[$i][1] ;
-	    my $start  = $data[$i][2] ;
-	    my $end    = $data[$i][3] ;
-	    my $strand = $data[$i][4] ;
-	    my $length = $data[$i][5] ;
-	    my $cigar  = $data[$i][6] ;
-	    
-	    if ($seq ne 'N'){
-		print &returnMAFline($seq,$chr,$start,$end,$strand,$length,$cigar);
-	    }
-	}
-	return "\n"; # print "\n";  ??
-	$aln_nb++; 
-    }
-    
+    my $time_elapsed = round(time() - $new_start_time);
+    $logger->debug("END NEXT ROW : $time_elapsed to format in MAF ");
 }
 #--------------------------------------------
 sub returnMAFline4Mlagan{
