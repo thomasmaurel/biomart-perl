@@ -223,6 +223,7 @@ sub _new
         # Initalize a single BioMart query runner (for reuse, don't need to always make new one)
         #$query_runner_of{ $ident } = BioMart::QueryRunner->new();
         #$self->attr('QR', BioMart::QueryRunner->new());
+        
 }
 
 =head2 process_template
@@ -333,12 +334,24 @@ sub _new
 	    || BioMart::Exception::Session->throw(CGI::Session->errstr);
      	
 	if($session->is_new()) {
+   		#### The reason we do this is taht when there doesnt find an existing session to be restored, a
+   		#### new session gets created and program exists and comes back and again and tries to restore again,
+   		#### and this time around it finds  an existing session. weirdoooo
    		# Galaxy.
-	    if ($cgi->param("GALAXY_URL") and !$session->param("GALAXY_URL")) {
-    		$session->param("GALAXY_URL",$cgi->param("GALAXY_URL")); 
-	    	$session->param('export_saveto','text');
-	    	$session->param('outputformat','tsv');
-    	}    	
+	    	if ($cgi->param("GALAXY_URL") and !$session->param("GALAXY_URL")) {
+    			$session->param("GALAXY_URL",$cgi->param("GALAXY_URL")); 
+		    	$session->param('export_saveto','text');
+		    	$session->param('outputformat','tsv');
+	    	}    	
+	    	# URL request e.g ensembl URL request for contigView
+    		if ($cgi->param('VIRTUALSCHEMANAME') || $cgi->param('ATTRIBUTES'))
+		{		
+			$session->param("url_VIRTUALSCHEMANAME",$cgi->param('VIRTUALSCHEMANAME'));
+			$session->param("url_ATTRIBUTES", $cgi->param('ATTRIBUTES'));
+			if ($cgi->param('FILTERS')) {	$session->param('url_FILTERS', $cgi->param('FILTERS')); }
+			else {	$session->clear("url_FILTERS"); }
+		}
+		
     	# Expiry.
     	my %sessions = $self->getSettings('sessions');
     	$session->expire($sessions{'expire'});
@@ -729,7 +742,355 @@ sub _new
         }
 	return $query;	
     }
+    
+=head2 handleURLRequest
 
+  Usage      : 
+  Purpose    : handles URL requests and populates the session object accordingly
+  Returns    : Nothing
+  Arguments  : URL params
+  Throws     : BioMart::Exception::* exceptions not caught somewhere deeper.
+  Status     : Public
+  Comments   : This method is called by handle_request.
+  See Also   :
+
+=cut
+
+sub handleURLRequest
+{
+	my ($self, $session) = @_;
+	my $registry = $self->get_mart_registry();
+	
+	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/shaZi_URL");
+	#print STDME "\nVIRTUAL SCHEMA NAME: ", $session->param("url_VIRTUALSCHEMANAME");
+	#print STDME "\nATTRIBUTES:  ", $session->param("url_ATTRIBUTES");
+	#print STDME "\nFILTERS: ", $session->param("url_FILTERS");
+	#close(STDME);
+	
+	eval {
+
+		BioMart::Exception::Usage->throw("please specify both VIRTUALSCHEMANAME and ATTRIBUTES in URL in correct format")
+		if (!$session->param("url_VIRTUALSCHEMANAME") || !$session->param("url_ATTRIBUTES"));
+
+	my $schema = $session->param("url_VIRTUALSCHEMANAME");
+	my @DS;
+	my $datasets;
+	my @attributes;
+	my @attributeList = split (/\|/, $session->param("url_ATTRIBUTES") );
+
+
+	foreach(@attributeList)
+	{
+		my @temp_portions = split (/\./, $_);
+		# <DatasetName>.<Interface>.<ATTRIBUTES>.<AttributePage>.<AttributeInternalName>."<Optional: attributevalue incase its an AttributeFilter>"
+		if ($temp_portions[4]) {
+			$temp_portions[4] =~ s/\"//g; # remove double quotes
+			$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'ATTRIBUTES'}->{$temp_portions[2].'.'.$temp_portions[3]}  = $temp_portions[4];
+		}
+		else{
+			$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'ATTRIBUTES'}->{$temp_portions[2].'.'.$temp_portions[3]}  = "NULL";
+		}			
+		
+		# adding dataset names in array to maintain the order of datasets for query execution
+		my $dsFlag = 0;
+		foreach my $dsExists (@DS){
+			$dsFlag = 1 if($dsExists eq $temp_portions[0])
+		}
+		push @DS, $temp_portions[0] if (!$dsFlag);
+	}
+	
+	my @filterList = split (/\|/, $session->param("url_FILTERS") ) if $session->param("url_FILTERS");
+	foreach(@filterList)
+	{
+		my @temp_portions = split (/\./, $_,5); # strictly splitting into five as the values in ""quotes might have dots e.g human band p36.33
+		# <DatasetName>.<Interface>.<FITLERS>.<FilterPAGE>.<FilterInternalName>."<commaSeperatedValues>"
+		$temp_portions[4] =~ s/\"//g; # remove double quotes
+		$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'FILTERS'}->{$temp_portions[2].'.'.$temp_portions[3]} = $temp_portions[4];
+	}		
+	
+	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/shaZi_URL");
+	#print STDME "\n\n", Dumper($datasets);
+	#close(STDME);
+	
+
+	BioMart::Exception::Usage->throw("You cannot have 0 of more than 2 datasets")
+		if (scalar (@DS) == 0 || scalar (@DS) > 2);
+
+	
+	##### START SETTNG THE SESSSION manually before the handle requests starts it business
+	#----------------------------------- SCHEMA, DB, DS
+	$session->param('schema', $schema);
+	$session->param('dataset', \@DS );
+	foreach my $vSchema (@{$registry->getAllVirtualSchemas()}) {
+		if ($vSchema->name eq $schema){
+			foreach my $mart (@{$vSchema->getAllMarts()}) {					
+				foreach my $dataset (@{$mart->getAllDatasets()}) {
+					if ($dataset->name eq $DS[0]) {	#use first DS name for DSPanel to set
+						$session->param('dataBase', $mart->displayName); ## should always come here to set session DB naem
+					}
+				}
+			}
+		}
+	}
+
+	#print "**SCHEMA: ", $session->param('schema');
+	#print "**DB: ", $session->param('dataBase');
+	#print "**DS: ", $session->param('dataset');
+	#--------------------------------------------------
+	#----------------------------------- query Params
+	# ATTRIBUTES
+	my $atts;
+	foreach my $dsName(keys %$datasets) {
+		foreach my $interface(keys %{$datasets->{$dsName}}) {
+			foreach my $ATTRIBUTES (keys %{$datasets->{$dsName}->{$interface}}) {
+				if ($ATTRIBUTES eq 'ATTRIBUTES') {
+					foreach my $attTreeAttribute (keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}}) {
+						# set AttTree
+						my @portions = split(/\./,$attTreeAttribute);
+						$session->param($dsName.'__attributepage', $portions[0]) if (!$session->param($dsName.'__attributepage'));
+						
+						# make a AttName ds__AttTree__attribute.internalName   FOR __attributelist
+						my $attributeString = $dsName.'__'.$portions[0].'__attribute'.'.'.$portions[1];
+						push @{$atts->{$dsName}}, $attributeString;
+						
+						# it has a value- assuming its attributeFilter, then add DS_attPage_attributefilter.internalName = 'value'
+						my $val = $datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}->{$attTreeAttribute};
+						if ($val ne "NULL")	{
+							$attributeString =~ s/attribute\./attributefilter\./;
+							$session->param($attributeString, $val);								
+						}
+					}
+				}
+			}			
+		}
+		# adding _attributelist foreach dataset
+		my $currentPage = $session->param($dsName.'__attributepage');
+		$session->param($dsName.'__'.$currentPage.'__attributelist', \@{$atts->{$dsName}} );
+	}
+	
+	# FILTERS
+	my $filts;
+	my $filterCollections;
+	foreach my $dsName(keys %$datasets) {
+		foreach my $interface(keys %{$datasets->{$dsName}}) {
+			foreach my $FILTERS (keys %{$datasets->{$dsName}->{$interface}}) {
+				if ($FILTERS eq 'FILTERS') {
+					foreach my $filtTreeFilter (keys %{$datasets->{$dsName}->{$interface}->{'FILTERS'}}) {
+
+						my @portions = split(/\./,$filtTreeFilter);
+						# make a FiltName ds__filter.internalName FOR __filterlist
+						my $filterString = $dsName.'__filter'.'.'.$portions[1];
+						push @{$filts->{$dsName}}, $filterString;
+						
+						# finding out filter's value/values
+						my $val = $datasets->{$dsName}->{$interface}->{'FILTERS'}->{$filtTreeFilter};
+						my @temp_values;
+						foreach my $val1 (split (/\,/, $val) ) {
+							push @temp_values, $val1;
+						}
+						
+						if ($self->filterDisplayType($dsName, $interface, $portions[1], $session) =~ m/(.*?)\.?container__LIST/ ) {
+							# original filterName as the one received is just options Name
+							# add filter with value  <ds>__filter.<filterInternalName>__list = array of values
+							my $realFilterName = $1;
+							$session->param($dsName.'__filter.'.$1.'__list', $val) if ($1); # for display of radio buttons
+							$session->param($dsName.'__filter.'.$1, $portions[1]) if ($1); # for display of select Menu
+							# add OptionName (thats the one which comes in URL) with value just as in XML query  
+							# <ds>__filter.<OptionInternalName>__list = array of values
+							$filterString .= '__list';
+						}
+						elsif ($self->filterDisplayType($dsName, $interface, $portions[1], $session) =~ m/(.*?)\.?container__TEXT/ ) {
+
+							# original filterName as the one received is just options Name
+							# add filter with value  <ds>__filter.<filterInternalName>__text = array of values
+							my $realFilterName = $1;
+							$session->param($dsName.'__filter.'.$1.'__text', $val) if ($1); # for display of textBox
+							$session->param($dsName.'__filter.'.$1, $portions[1]) if ($1); # for display of select Menu
+
+							# add OptionName (thats the one which comes in URL) with value just as in XML query  
+							# <ds>__filter.<OptionInternalName>__list = array of values
+							$filterString .= '__text';
+						}
+						else {
+							# add filter with value  <ds>__filter.<filterInternalName> = array of values							
+						}
+						
+						if (scalar (@temp_values) > 1) { $session->param($filterString, \@temp_values); }
+						else { $session->param($filterString, $temp_values[0]);	}
+						
+						# find filterCollectionName for ds__filtercollections
+						my $collectionName = $self->getFilterCollectionName($dsName, $interface, $portions[1], $session);
+						my $filtCollectionString = $dsName.'__filtercollection.'.$collectionName;
+						$filterCollections->{$dsName}->{$filtCollectionString}++; # counting for debugging only
+					}
+				}
+			}			
+		}
+		# adding __filterlist foreach dataset
+		$session->param($dsName.'__filterlist', \@{$filts->{$dsName}} );
+		
+		# adding __filtercollections
+		my @collectionsArray;
+		foreach (keys %{$filterCollections->{$dsName}}) {
+			push @collectionsArray, $_;
+		}
+		$session->param($dsName.'__filtercollections', \@collectionsArray);
+	}
+	#--------------------------------- Setting visible sections of attribute pages radio buttons
+	#--------------------------------- and results pages nad etc etc
+	foreach my $dsName(keys %$datasets) {
+		foreach my $interface(keys %{$datasets->{$dsName}}) {
+			foreach my $ATTRIBUTES (keys %{$datasets->{$dsName}->{$interface}}) {
+				if ($ATTRIBUTES eq 'ATTRIBUTES') {
+					foreach my $attTreeAttribute (keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}}) {
+						my @portions = split(/\./,$attTreeAttribute);
+						$session->param($dsName.'__attributepages__current_visible_section', $dsName.'__attributepanel__'.$portions[0])
+							if (!$session->param($dsName.'__attributepages__current_visible_section'));
+					}
+				}
+			}
+		}
+	}
+	$session->param('get_results_button', 'Results'); 
+	$session->param("mart_mainpanel__current_visible_section", "resultspanel");
+	$session->param('outputformat', 'html');
+	#--------------------------------------------------
+	
+
+	
+	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/shaZi_SESSION");
+	#print STDME "\nINCOMING SESSION PARAMS: \n ", Dumper($session);
+	#close(STDME);
+
+	$session->clear("url_VIRTUALSCHEMANAME");
+	$session->clear("url_ATTRIBUTES");
+	$session->clear("url_FILTERS");
+	}; #end of eval block
+	
+	my $ex;
+ 	if ( $ex = Exception::Class->caught() )
+	{
+    		my $errmsg = $ex->error();
+		$logger->debug("URL Access error: ".$errmsg);
+			UNIVERSAL::can($ex, 'rethrow') ? $ex->rethrow : die $ex;
+		return 'exit'; 
+	}	
+}
+=head2 getFilterCollectionName
+  Usage      : 
+  Purpose    : helper method to handleURLRequest
+  Returns    : 
+  Arguments  : 
+  Throws     : 
+  Status     : 
+  Comments   : 
+  See Also   :
+
+=cut
+
+sub getFilterCollectionName
+{
+	my ($self, $dsName, $interface, $filterName, $session) = @_;
+	
+	my $registry = $self->get_mart_registry();
+	foreach my $vSchema (@{$registry->getAllVirtualSchemas()}) {
+		if ($vSchema->name eq $session->param('schema')){
+			foreach my $mart (@{$vSchema->getAllMarts()}) {
+				foreach my $dataset (@{$mart->getAllDatasets()}) {
+					if ($dataset->name eq $dsName) {	#use first DS name for DSPanel to set
+						## find the fileterCollectionName now
+						foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}) {
+						    	foreach my $filterTree (@{$configurationTree->getAllFilterTrees()}) {
+								foreach my $group(@{$filterTree->getAllFilterGroups()}) {
+									foreach my $collection (@{$group->getAllCollections()}) {
+										foreach my $filter (@{$collection->getAllFilters()}) {
+											if ($filter->name eq $filterName)
+											{
+												#print "Collection FOUND through Filters : ", $collection->name;
+												return $collection->name;
+											}
+										}
+										# now look into options of filters - case: 'container' type fitler 
+										foreach my $filter (@{$collection->getAllFilters()}) {
+											if ($filter->getAllOptions()) {
+												foreach ( @{$filter->getAllOptions()} ) {	
+													if ($_->name eq $filterName)
+													{
+														#print "Collection FOUND through Options : ", $collection->name;
+														return $collection->name;
+													}
+												}
+											}
+										}										
+									}
+								}
+							}
+						}			
+					}
+				}
+			}
+		}
+	}
+	
+}
+=head2 filterDisplayType
+  Usage      : 
+  Purpose    : helper method to handleURLRequest
+  Returns    : 
+  Arguments  : 
+  Throws     : 
+  Status     : 
+  Comments   : 
+  See Also   :
+
+=cut
+
+sub filterDisplayType
+{
+	my ($self, $dsName, $interface, $filterName, $session) = @_;
+	my $registry = $self->get_mart_registry();
+	foreach my $vSchema (@{$registry->getAllVirtualSchemas()}) {
+		if ($vSchema->name eq $session->param('schema')){
+			foreach my $mart (@{$vSchema->getAllMarts()}) {
+				foreach my $dataset (@{$mart->getAllDatasets()}) {
+					if ($dataset->name eq $dsName) {	#use first DS name for DSPanel to set
+						foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}) {
+						    	foreach my $filterTree (@{$configurationTree->getAllFilterTrees()}) {
+								foreach my $group(@{$filterTree->getAllFilterGroups()}) {
+									foreach my $collection (@{$group->getAllCollections()}) {
+										foreach my $filter (@{$collection->getAllFilters()}) {
+											if ($filter->name eq $filterName)	{												
+												if($filter->displayType  eq 'container')	{
+													foreach ( @{$filter->getAllOptions()} ) {																							#print "FOUND in Filters : ", $filter->name;
+														return "container__LIST" if ($_->filter()->displayType() eq 'list');
+														return "container__TEXT" if ($_->filter()->displayType() eq 'text');																}													
+												}												
+											}
+										}
+										# find in the options
+										foreach my $filter (@{$collection->getAllFilters()}) {
+											if ($filter->getAllOptions()) {
+												foreach ( @{$filter->getAllOptions()} ) {	
+													if ($_->name eq $filterName && $filter->displayType  eq 'container')	{
+														#print "FOUND in options : ", $_->name;	
+														return $filter->name.".container__LIST" 
+															if ($_->filter()->displayType() eq 'list');
+														return $filter->name.".container__TEXT" 
+															if ($_->filter()->displayType() eq 'text');				
+													}
+												}
+											}
+										}										
+									}
+								}
+							}
+						}			
+					}
+				}
+			}
+		}
+	}
+}
 
 =head2 handle_request
 
@@ -746,22 +1107,35 @@ sub _new
 
     sub handle_request {
 	my ($self, $CGI) = @_;
-
+	
 	my $qtime = time();
 	my $registry = $self->get_mart_registry();
 	my $confPATH = $self->get_conf_Dir();
 	$self->set_errstr(''); # Reset errstring, might be some leftover from previous request.	
 
 	# Retrieve session information
-	my $session = $self->restore_session($CGI) || return;
-
+	my $session = $self->restore_session($CGI) || return;	
+	
 	# Unset any validation errors.
 	$session->clear("__validationError");
 
 	my $form_action = $CGI->url(-absolute => 1) . '/' . $session->id();
 	$logger->is_debug() 
-	    and $logger->debug("Incoming CGI-params:\n",Dumper(\%{$CGI->Vars()}));   
+	    and $logger->debug("Incoming CGI-params:\n",Dumper(\%{$CGI->Vars()}));
 
+	#-------------------------------------------------------------------------
+	#--------- TO HANDLE URL REQUEST specially for ensembl ContigView etc etc
+	## testing if its  a URL request, then need to temper the session object to make it look alike of URL request	
+	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/main_SESSION");
+	#print STDME "\nINCOMING SESSION PARAMS: \n ", Dumper($session);
+	#close(STDME);
+
+	if($session->param("url_VIRTUALSCHEMANAME") ||  $session->param("url_ATTRIBUTES"))
+	{	my $returnVal = $self->handleURLRequest($session);
+		return if ($returnVal eq 'exit'); ## exception thrown				
+	}
+	
+	#-------------------------------------------------------------------------
 
 	# Save parameters in this request to session, where they are combined with other
 	# parameters from (potential) previous requests. Combined parameters are required
@@ -908,7 +1282,7 @@ sub _new
 				$dsHint2 = $1;
 				$dsDisplayName = $dsHint2;
 				$dsDisplayName =~ s/____/\|/;
-				$dsDisplayName .= '\|'.$dsHint3;			
+				$dsDisplayName .= '|'.$dsHint3;			
 			}
 			my ($tempRemoveSpaces, $tempdsDisplayName);
 			foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
