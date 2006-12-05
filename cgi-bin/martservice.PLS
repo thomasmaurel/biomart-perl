@@ -207,6 +207,17 @@ sub _set_location {
 	push (@new_location,\%new_location_atts);
     }
     
+    # keep existing MartURLLocations as it is, just remove proxy 
+    foreach my $dblc (@{ $lr->{'MartURLLocation'} }) {
+		unless ($dblc->{'redirect'} && $dblc->{'redirect'}==1){
+		    	$dblc->{'host'}=$server_host;
+	    		$dblc->{'port'}=$server_port;
+		    	$dblc->{'path'}=$path;
+		}
+		delete $dblc->{'proxy'} if ($dblc->{'proxy'});
+		push (@new_location,$dblc);
+	}
+    
     if (@new_location > 0) {
 	$lr->{'MartURLLocation'}=\@new_location;
     }
