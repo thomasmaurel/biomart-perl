@@ -1441,6 +1441,13 @@ sub _new
 			    			if($formatter->isBinary()) {		
 								$result_string = "<br/>Cannot display binary output in this panel.<br/>Choose the target from the menu above & press Go.";
 			    			} 
+
+			    			# Can't show HUGE MAF output for PECAN 7 & 9 species
+			    			if(($query_main->formatter($formatter_name)) eq 'MAF_NOPREVIEW') {		
+								$result_string = "<br/>Cannot preview multiple genomic alignments due to the huge amount of data.<br/>Choose the target from the menu above & press Go.<br/>The size of the output expected will be between tens of Mb to a few Gb depending on your filtering";
+			    			} 
+
+
 			    			# But can show everything else.
 			    			else {			    				
 								$logger->debug("Showing ".($export_subset||'all')." entries in main panel");
@@ -1713,6 +1720,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 =head1 CVSINFO
 
-$Id$ 
+$Id$
 
 =cut
