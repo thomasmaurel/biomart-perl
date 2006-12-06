@@ -147,8 +147,8 @@ sub preProcessRowMlagan{
     my $size_row = @{$row};
     
     #-- Get all the seq in $want[$k][0]
-    while ( ($$row[0]=~/^(A|C|G|T|N)/i) && ($$row[0]!~/^Chr/i) ) { # get all seq out
-	$want[$k][0] = shift (@{$row});
+     while ( ($$row[0]=~/^(A|C|G|T|N)/) && ($$row[0]!~/^Chr/i) && ($$row[0]!~/\_/) ){ # get all seq out
+	 $want[$k][0] = shift (@{$row});
 	$k++;
     }
     
