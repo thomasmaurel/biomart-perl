@@ -65,6 +65,9 @@
 		
 			[% IF filters.size > 1 %]
 				[% # incase we have more than one filter, we are sending only the first one as thats what it expects in the function. %]
+
+				[% filtercollection_paramname = "\${param_prefix}filtercollection." _ filtercollection.name %] 
+
 				[% render_filtercollection_checkbox(filters.0, filtercollection) %]
 				[% IF filtercollection.description %]
 				  <a title="[% filtercollection.description | replace('"','&quot;') %]">$filtercollection.displayName</a>
@@ -75,6 +78,10 @@
 
 				[% FOREACH filter = filtercollection.getAllFilters() %]
 					[% render_filter(filter) %]
+					[% IF filter.defaultOn.defined() && filter.defaultOn == "true"  %]
+	  					[% default_filters.push("\"$filtercollection_paramname\"") # add to list to set as default filter %]
+  					[% END %]
+					
 				[% END %]
 				<br />
 			[% ELSIF filters.size == 1 %]
@@ -117,8 +124,9 @@ var \${param_prefix}sessionValueOfFiltermenu = [* wq.perlhash2js(js_session_valu
   //  foreach menu in big pushaction-info hash
 for(var pa_menuname in \${param_prefix}pushActionsOfFiltermenu) {
    var pa_menu = document.mainform.elements[pa_menuname];
-   //alert("getting pa-info for menu " + pa_menuname + ", obj " + pa_menu);
+   
    if(pa_menu) {
+	 //  alert("getting pa-info for menu " + pa_menuname + ", obj " + pa_menu);
       updateMenuPushactions(pa_menu, \${param_prefix}pushActionsOfFiltermenu, \${param_prefix}sessionValueOfFiltermenu);
    }
 }

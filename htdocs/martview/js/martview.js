@@ -20,7 +20,7 @@ secondary menu and calls itself to also process downstream menus if needed.
 
 */
 function updateMenuPushactions(menu, pushActionsOfMenu, prevValueOfMenu) {   
-    // Get pushaction-info corresponding to the selected value of this menu, if any
+    // Get pushaction-info corresponding to the selected value of this menu, if any	
     if(menu.selectedIndex < 0) {
 	//alert("ATTN, no value selected for menu " + menu.name + ", selectedIndex = " + menu.selectedIndex + ", can't do pushaction-thing now");
 	return false;
@@ -79,6 +79,18 @@ function updateMenuPushactions(menu, pushActionsOfMenu, prevValueOfMenu) {
 		}
     }
 }
+
+function addOnceTouchedParam (onceTouchedParamName)
+{
+	//alert (onceTouchedParamName);
+	
+	var hiddenParam = document.createElement("input");
+	hiddenParam.type  = "hidden";
+   	hiddenParam.name  = onceTouchedParamName;
+
+     document.mainform.appendChild(hiddenParam);
+}
+
 
 /* 
 
