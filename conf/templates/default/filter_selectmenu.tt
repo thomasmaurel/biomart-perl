@@ -21,6 +21,7 @@ for(var i=0; i<this.options.length; i++) {
 " %]
 [% END %]
 [% onchange_js = "
+addOnceTouchedParam('${param_name}__onceTouched');
 updateMenuPushactions(this, $pushactionhash_name, $sessionvaluehash_name);
 $onchange_js_extraloop
 checkFilterCollectionCheckbox('${filtercollection_param_name}');" %]
@@ -48,23 +49,34 @@ document['${param_name}__image'].src='${filter.imageURL}';
 [* END *]
 
 
+[* defaultFilterOn *]
+
 <select name="$param_name" 
 [%  IF filter.multipleValues %]
  multiple  size="5" 
 [%  END %]
  onchange="[% onchange_js %]" />
 
+	[* defaultFilterOn = "[% filter.defaultValue %]" *]
+
+
 [% FOREACH option = filter.getAllOptions() %]
   [% # Gotta do some funky stuff here so quotes in strings don't mess up HTML or JavaScript %]
   [% option_value = option.value() || option.name() %]
   [% option_value_escaped = option_value | replace('"','&quot;')  #" %]
   [% option_displayname = option.displayName() | replace('"','&quot;') #" %]
+
+
   <option value="[% option_value_escaped %]"
   [* option_value = "[% option_value_escaped %]" *]
-  [* IF (( session.param("[% param_name %]").defined() || ((session.param("[% param_name %]").size) && (session.param("[% param_name %]").size > 0) )) 
-  	&&  filtervalues_lookup.\$option_value.defined()) *]
- selected="selected" 
-  [* END *]
+
+  	[* IF (( session.param("[% param_name %]").defined() || ((session.param("[% param_name %]").size) && 
+  		(session.param("[% param_name %]").size > 0) )) 	&&  filtervalues_lookup.\$option_value.defined()) *]
+		selected="selected"
+	[* ELSIF defaultFilterOn == "[% option_value_escaped %]" &&  !session.param("[% param_name %]__onceTouched").defined() *]
+		selected="selected"
+	[* END *]
+
 >[% option_displayname || option_value_escaped %]</option>
 
   [% # Process pushactions for this option, if any %]
