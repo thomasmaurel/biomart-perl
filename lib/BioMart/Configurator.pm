@@ -775,6 +775,7 @@ sub _addOption {
                             'imageURL' => $xmlOption->{'imageURL'},
                    'dataSetName' => $dataSetName,
                    'interface' => $interfaceType,
+				'buttonURL'   => $xmlOption->{'buttonURL'},
                    'type'        => $xmlOption->{'type'},
 			    'dependsOnType' => $xmlOption->{'dependsOnType'},      
 			    'dependsOn' => $xmlOption->{'dependsOn'},  
