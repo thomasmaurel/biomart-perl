@@ -97,7 +97,7 @@ use base qw(BioMart::Root);
 use vars qw($REGISTRY);
 
 use constant DEFAULTSCHEMANAME => 'default';
-use constant INITBATCHSIZE =>100;
+use constant INITBATCHSIZE =>10;
 use constant MAXBATCHSIZE => 50000;
 use constant VERSION => '0.5';
 
