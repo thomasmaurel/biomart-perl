@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MartRegistry>
+<MartRegistry>
+
+<MartDBLocation
+                    name         = "ensembl"
+                    displayName  = "ensembl 42"
+                    databaseType = "mysql"
+                    host         = "127.0.0.1"
+                    port         = "3309"
+                    database     = "ensembl_mart_42"
+                    schema       = "ensembl_mart_42"
+                    user         = "ensro"
+                    password     = ""
+                    visible      = "1"
+                    default      = "1"
+                    includeDatasets = ""
+                    martUser     = ""
+                    includeMarts = ""
+
+/>
+
+
+
+
+<MartDBLocation
+                    name         = "snp"
+                    displayName  = "snp 42"
+                    databaseType = "mysql"
+                    host         = "127.0.0.1"
+                    port         = "3309"
+                    database     = "snp_mart_42"
+                    schema       = "snp_mart_42"
+                    user         = "ensro"
+                    password     = ""
+                    visible      = "1"
+                    default      = ""
+                    includeDatasets = ""
+                    martUser     = ""
+                    includeMarts = ""
+
+/>
+
+
+
+
+<MartDBLocation
+                    name         = "vega"
+                    displayName  = "vega 42"
+                    databaseType = "mysql"
+                    host         = "127.0.0.1"
+                    port         = "3309"
+                    database     = "vega_mart_42"
+                    schema       = "vega_mart_42"
+                    user         = "ensro"
+                    password     = ""
+                    visible      = "1"
+                    default      = ""
+                    includeDatasets = ""
+                    martUser     = ""
+                    includeMarts = ""
+
+/>
+
+
+<MartDBLocation
+                    name         = "sequence"
+                    displayName  = "sequence 42"
+                    databaseType = "mysql"
+                    host         = "127.0.0.1"
+                    port         = "3309"
+                    database     = "sequence_mart_42"
+                    schema       = "sequence_mart_42"
+                    user         = "ensro"
+                    password     = ""
+                    visible      = "0"
+                    default      = ""
+                    includeDatasets = ""
+                    martUser     = ""
+                    includeMarts = ""
+
+/>
+
+
+
+
+<MartDBLocation
+                    name         = "Homologues"
+                    displayName  = "Ensembl Homologues 42 (SANGER)"
+                    databaseType = "mysql"
+                    host         = "127.0.0.1"
+                    port         = "3309"
+                    database     = "compara_mart_homology_42"
+                    schema       = "compara_mart_homology_42"
+                    user         = "ensro"
+                    password     = ""
+                    visible      = "1"
+                    default      = ""
+                    includeDatasets = ""
+                    martUser     = ""
+                    includeMarts = ""
+
+/>
+<MartDBLocation
+                    name         = "Multiple_Alignments_42"
+                    displayName  = "Ensembl Multiple Genomic Alignment 42 (SANGER)"
+                    databaseType = "mysql"
+                    host         = "127.0.0.1"
+                    port         = "3309"
+                    database     = "compara_mart_multiple_ga_42"
+                    schema       = "compara_mart_multiple_ga_42"
+                    user         = "ensro"
+                    password     = ""
+                    visible      = "1"
+                    default      = ""
+                    includeDatasets = ""
+                    martUser     = ""
+                    includeMarts = ""
+
+/>
+
+<MartDBLocation
+                    name         = "Pairwise_Alignments_42"
+                    displayName  = "Ensembl Pairwise Genomic Alignment 42 (SANGER)"
+                    databaseType = "mysql"
+                    host         = "127.0.0.1"
+                    port         = "3309"
+                    database     = "compara_mart_pairwise_ga_42"
+                    schema       = "compara_mart_pairwise_ga_42"
+                    user         = "ensro"
+                    password     = ""
+                    visible      = "1"
+                    default      = ""
+                    includeDatasets = ""
+                    martUser     = ""
+                    includeMarts = ""
+
+/>
+
+
+</MartRegistry>
+
+
