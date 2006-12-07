@@ -42,26 +42,38 @@ if(filterEltHasValue(this)) {
 
 
 [% autocomplete = filter.autoCompletion() %]
-[% IF autocomplete %]
-  [% min_wordsize    = autocomplete.split(';').0 %]
-  [% max_resultcount = autocomplete.split(';').1 %]
- autocomplete="off" onkeyup="preAutocomplete(this, '[* session.param('schema') *]', '$dataset_name', '[% filter.name() %]','[% filter.attribute().name() %]', '[% min_wordsize %]','[% max_resultcount %]'); return true;" onblur="var acNode; if(acNode = document.getElementById(this.name+'__acresults')){document.body.removeChild(acNode);}; $onblur_js" />
-<span id="[% param_name %]__acprogress">&nbsp;</span>
-[% # NOTE TO SELF: add JS to initialize AutoSuggestControl object and attach to textfield %]
-[% ELSE %]
-onblur="[% onblur_js %]" />
-[% END %]
+	[% IF autocomplete %]
+		onblur="[% onblur_js %]" />
+	[% # NOTE TO SELF: add JS to initialize AutoSuggestControl object and attach to textfield %]
+	[% ELSE %]
+		onblur="[% onblur_js %]" />
+	[% END %]
 
 [% buttonURL = filter.buttonURL %]
+
+[% functionName  = param_name %]
+
+[% functionName = functionName.replace ('\.','__') %]
+
 [% IF buttonURL %]
 <input type='button' 
                name="[% param_name %]__button"
-	       value='<browse>' ONCLICK='javascript:
-                                          var nW = window.open("[% buttonURL  %]", "[% filter.internalName %]",
+	       value="browse" onclick="func__[% functionName %]__button();"
+					/>
+
+	<script language="JavaScript" type="text/javascript" >
+	//<![CDATA[
+		function func__[% functionName %]__button()
+		{
+		 	var nW = window.open("[% buttonURL  %]", "[% filter.internalName %]",
                                                                "menubar=no,scrollbars=yes,width=800,height=800");
-                                          if( nW.opener == null ){
-                                          nW.opener = window;
-                                         }' >
+                                       if( nW.opener == null ){
+                                       nW.opener = window;
+                	}
+		}
+
+	//]]>
+	</script>
 	
 [% END %]
 

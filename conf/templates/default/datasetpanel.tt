@@ -163,7 +163,7 @@ var sessionValueOfDatasetmenu = { 'schema'       : "[% schema2focus   || '' %]",
 <div class="mart_datasetmenu">
 <table cellpadding="0" width="100%" style="table-layout: fixed;">
 <tr>
-<td align="left" width="15%" valign="center">	
+<td align="left" width="15%" valign="middle">	
 	[* session.param("__Dataset") *]:
 </td>
 	

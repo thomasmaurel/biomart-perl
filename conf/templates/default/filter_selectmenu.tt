@@ -53,12 +53,13 @@ document['${param_name}__image'].src='${filter.imageURL}';
 
 <select name="$param_name" 
 [%  IF filter.multipleValues %]
- multiple  size="5" 
+ multiple = "multiple"  size="5" 
 [%  END %]
- onchange="[% onchange_js %]" />
+ onchange="[% onchange_js %]" >
 
 	[* defaultFilterOn = "[% filter.defaultValue %]" *]
 
+[% IF filter.getAllOptions.defined && filter.getAllOptions().size > 0 %]
 
 [% FOREACH option = filter.getAllOptions() %]
   [% # Gotta do some funky stuff here so quotes in strings don't mess up HTML or JavaScript %]
@@ -82,6 +83,10 @@ document['${param_name}__image'].src='${filter.imageURL}';
   [% # Process pushactions for this option, if any %]
   [% process_pushactions(option, option_value, param_name, dataset_name) %]
 
+[% END %]
+
+[% ELSE %]
+	<option></option>
 [% END %]
 </select>
 

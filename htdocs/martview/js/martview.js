@@ -7,7 +7,6 @@ but a few are called on page load as well.
 
 =cut
 
-
 =head2 updateMenuPushactions()
 
 Main function for doing pushaction-updating of secondary menus when
@@ -78,6 +77,27 @@ function updateMenuPushactions(menu, pushActionsOfMenu, prevValueOfMenu) {
 		    updateMenuPushactions(menu2, pushActionsOfMenu, prevValueOfMenu);
 		}
     }
+}
+
+function changeRadioStatus (siblingNodes, thisName,  attListName)
+{
+        alert ('here ahahah');
+        for(var i=0; i<siblingNodes.length; i++)
+        {
+                if (siblingNodes[i] == thisName) continue;
+                if(siblingNodes[i].tagName == 'input' && siblingNodes[i].type == 'hidden' && siblingNodes[i].value == 'on')
+                {
+                        siblingNodes[i].value = 'off';
+                        removeFromSummaryPanelList(attListName, siblingNodes[i].name);
+                }
+                else if(siblingNodes[i].type == 'radio')
+                {
+                        removeFromSummaryPanelList(attListName, siblingNodes[i].name);
+                        siblingNodes[i].checked = false;
+                        siblingNodes[i].onchange();
+                }
+        }
+
 }
 
 function addOnceTouchedParam (onceTouchedParamName)
@@ -898,7 +918,10 @@ function getFiltersInContainer(containerEltId) {
 							{
 					    			//alert('Modifier-bool for select-list is checked, setting to value='+boolModifierElts[z].value);
 								//[TAG]//filterValues.push(boolModifierElts[z].value);
-								filterValues.push(boolModifierElts[z].id); // id to display in summaryPanel for List radio buttons
+								var filterBoolValue = boolModifierElts[z].id; // id to display in summaryPanel for radio buttons
+					                        var portions = filterBoolValue.split("____"); // filtername____Only convention as w3c forces unique id values
+                                				filterBoolValue = portions[1];
+								filterValues.push(portions[1]); // id to display in summaryPanel for List radio buttons
 							}
 				    		}
 				    		// Tricky: need to add the bool-filter info as a hidden param, since it is not
@@ -969,7 +992,9 @@ function getFiltersInContainer(containerEltId) {
 			    //alert('Bool checkbox is checked, setting to value='+filterValueElt.value);
 			    //[TAG]//filterValue = filterValueElt.value;
 			    filterValue = filterValueElt.id; // id to display in summaryPanel for radio buttons
-			    //alert (filterValue);
+			var portions = filterValue.split("____"); // filtername____Only convention as w3c forces unique id values
+				filterValue = portions[1];
+				//alert (portions[0]);
 			    //filterValue = filterValueElt.innerHTML;
 			    filterInfoOf[filterName] = [filterDisplayName, filterValue];
 			    continue;
