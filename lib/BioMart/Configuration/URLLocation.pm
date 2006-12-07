@@ -98,6 +98,8 @@ sub getResultSet {
 	
 	foreach my $el(@arr){
 
+
+		if ($el =~ /^Keep-Alive/) {next;}
 	    if ($el =~ /^Client/) {next;}
 	    if ($el eq '') {next;}
 	    if ($el =~/^HTTP/) { next;}
