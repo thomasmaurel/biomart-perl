@@ -336,7 +336,7 @@ sub version {
     my ($registry,$vschema_name,$mart_name)=@_;
     
     my $mart=&_find_mart($registry,$vschema_name,$mart_name);
-    print "\n".$mart->version()."\n";
+    print $mart->version()."\n";
     return;
        
 }
