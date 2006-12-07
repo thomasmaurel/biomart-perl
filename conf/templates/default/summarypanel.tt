@@ -30,7 +30,7 @@
 
 <span id="${dset_name}__summarypanel_datasetbranch" class="mart_summarypanel_listheader" 
 	onclick="showPanelHideSiblings('${dset_name}__infopanel'); 
-	setHighlightedSummaryPanelBranch(this.id);" Title="Choose a main dataset to query">
+	setHighlightedSummaryPanelBranch(this.id);" title="Choose a main dataset to query">
 	&raquo;&nbsp;[% session.param("__Dataset") %]:</span> 
 
 	[% #### display count adjacent to DATASET TITLE %]
@@ -93,7 +93,7 @@
 		}
 	} 
 	expandListCompactSiblings(currentAttpage+'__attributelist'); " 
-	TITLE="Choose data you want to view or save">
+	title="Choose data you want to view or save">
 	&raquo;&nbsp;Attributes</span>
 
 [% #special case, dont display attribute tree name if there is only one. eg MSD %]
@@ -135,7 +135,7 @@
 -->
 
 
-<span class="mart_summarypanel_AttFiltHeader" id="${dset_name}__summarypanel_filterbranch"  onclick="showPanelHideSiblings('${dset_name}__filterpanel'); setHighlightedSummaryPanelBranch(this.id);" TITLE="Restrict your query by filtering">&raquo;&nbsp;Filters</span>
+<span class="mart_summarypanel_AttFiltHeader" id="${dset_name}__summarypanel_filterbranch"  onclick="showPanelHideSiblings('${dset_name}__filterpanel'); setHighlightedSummaryPanelBranch(this.id);" title="Restrict your query by filtering">&raquo;&nbsp;Filters</span>
 <br />
 <!-- No actual content here, summary list gets populated entirely via Javascript -->
 [% IF dset_count == 1 %]
@@ -176,7 +176,7 @@
 -->
 
 
-<span id="show_linked_datasetpanel" class="mart_summarypanel_listheader" onclick="showPanelHideSiblings('add_linked_datasetpanel'); setHighlightedSummaryPanelBranch(this.id); " Title="Optional second dataset to combine in queries">&raquo;&nbsp;[% session.param("__Dataset") %]: 
+<span id="show_linked_datasetpanel" class="mart_summarypanel_listheader" onclick="showPanelHideSiblings('add_linked_datasetpanel'); setHighlightedSummaryPanelBranch(this.id); " title="Optional second dataset to combine in queries">&raquo;&nbsp;[% session.param("__Dataset") %]: 
 </span> 
 <br/>
 <span class="mart_dataset_noneSelected">[None Selected]</span>

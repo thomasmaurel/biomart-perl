@@ -17,7 +17,7 @@
 
 </head>
 
-<body marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" rightmargin="0" bottommargin="0" onload="setVisibleStatus()">
+<body style="margin: 0px;" onload="setVisibleStatus()">
     
 <div class="mart_header">
 [% PROCESS 'header.tt' %]

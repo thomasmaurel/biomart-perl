@@ -34,7 +34,7 @@
   			window.location = currentPath; 
   			return false; 
   			" 
-  			Title="Start a new query"/>	    
+  			title="Start a new query"/>	    
 	
 	
 		     <input type="submit" value="XML" name="submit.showquery" 
@@ -48,7 +48,7 @@
           	document.mainform.do_export.value = 0; 
 			document.mainform.savequery.value = 0; 
 			document.mainform.target = 'newwindow'; 
-			document.mainform.submit(); " Title ="Show query in XML Web Service Format"/>
+			document.mainform.submit(); " title ="Show query in XML Web Service Format"/>
 
 	
 			<input type="submit" value="Help" name="submit.help" 
@@ -75,7 +75,7 @@
 
           	
           	javascript:void(window.open('/help.html','martview','width=600,height=500,resizable,scrollbars'));	
-          	 " Title ="Get Help"/>
+          	 " title ="Get Help"/>
 
 	
 			<input type="submit" value="Count" name="get_count_button" 
@@ -91,7 +91,7 @@
 			document.mainform.countButton.value = 1;
 			document.mainform.target = '_self'; 
 			document.mainform.submit();
-			" Title="Get result count for the query with any filters applied"/>
+			" title="Get result count for the query with any filters applied"/>
 
 	
 			<input type="submit" value="Results" name="get_results_button" 
@@ -124,12 +124,12 @@
 	
 			document.mainform.target = '_self'; 
 			document.mainform.submit();" 
-			Title="Preview the results of the query"/>
+			title="Preview the results of the query"/>
 	
 			<!--
 			<div style="clear: both; width: inherit; line-height: 0; height: 0;">&nbsp;</div>
 			-->
-	
+	</td>
 	</tr>
 	</table>
 	
@@ -147,23 +147,21 @@
 	</td>		
 	
 
-	
-	<input type="hidden" name="menuNumber" value="0" />
-	<input type="hidden" name="newsession" value="0" /> 	 
-	<input type="hidden" name="do_export" value="0" />
-	<input type="hidden" name="do_export2resultspage" />
-	<input type="hidden" name="savequery" value="0" />
-	<input type="hidden" name="showquery" value="0" />
-	<input type="hidden" name="countButton" value="0" />
-	<input type="hidden" name="reverseName" value="[% reverseNAME %]" />
-	<input type="hidden" name="summarypanel_filter_count_1" value="[%session.param('ds_1_count')%]" />
-	<input type="hidden" name="summarypanel_filter_count_2" value="[%session.param('ds_2_count')%]" />
-		
-	<input type="hidden" name="track_visible_section" value="0" />
-	<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
-
-	
 	<td align="left" width="65%" valign="top" >			
+
+        <input type="hidden" name="menuNumber" value="0" />
+        <input type="hidden" name="newsession" value="0" />
+        <input type="hidden" name="do_export" value="0" />
+        <input type="hidden" name="do_export2resultspage" />
+        <input type="hidden" name="savequery" value="0" />
+        <input type="hidden" name="showquery" value="0" />
+        <input type="hidden" name="countButton" value="0" />
+        <input type="hidden" name="reverseName" value="[% reverseNAME %]" />
+        <input type="hidden" name="summarypanel_filter_count_1" value="[%session.param('ds_1_count')%]" />
+        <input type="hidden" name="summarypanel_filter_count_2" value="[%session.param('ds_2_count')%]" />
+
+        <input type="hidden" name="track_visible_section" value="0" />
+        <input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
 	
 	<div id="mart_mainpanel">
 	
@@ -412,7 +410,7 @@
 			
 				</div>
 		[% END %]	
-		 </div>
+		
 		<script language="JavaScript" type="text/javascript" >
 		//<![CDATA[
 		// Various startup/initialization related things for the main panel and
