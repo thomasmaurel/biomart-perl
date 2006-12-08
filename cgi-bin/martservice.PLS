@@ -577,7 +577,7 @@ sub createLog
 
 	if($mode) ## do logging
 	{
-		my $reqLogFile = $log_Dir."requestLog";
+		my $reqLogFile = $log_Dir."request_log";
 		open(STDREQLOG, ">>$reqLogFile");
 	
 		$xml =~ m/.*?requestid.*?\"(.*?)\".*/im;
