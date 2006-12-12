@@ -59,6 +59,7 @@ use BioMart::Dataset::TableSet;
 use BioMart::Dataset::GenomicSequence;
 use BioMart::Dataset::GenomicAlign;
 use BioMart::Web::SiteDefs;
+use BioMart::Web::PageStub; ## Quick hack...!
 use base qw(BioMart::Root);
 
 our $VERSION = '0.4.9.0';
@@ -2042,20 +2043,24 @@ sub filterDisplayType
 	#------------------------------------------------------------
 	my $dbName = $session->param('dataBase');
 	$session->clear('dataBase');
-
-	$self->process_template("main.tt",
-				      {	session       	=> $session, 
-				       	wq            	=> $self,
-				     	form_action	=> $form_action,
-				     	sessionDBNAME	=> $dbName,
-				     	datasetOBJ	=> $def_ds_OBJ,
-						reverseNAME	=> $reverseName,
-				       	#entry_count   => $entry_count,
-				       	result_string 	=> $result_string},
-				        	\*STDOUT);
-
-
-     return;
+## E! hack
+        my $PS = new BioMart::Web::PageStub( $session );
+        $PS->start();
+## End of hack
+	$self->process_template( "main.tt", {
+         	session       	=> $session, 
+	       	wq            	=> $self,
+	     	form_action	=> $form_action,
+	     	sessionDBNAME	=> $dbName,
+	     	datasetOBJ	=> $def_ds_OBJ,
+		reverseNAME	=> $reverseName,
+	       	#entry_count   => $entry_count,
+	       	result_string 	=> $result_string
+   	}, \*STDOUT );
+## E! hack
+        $PS->end();
+## End of hack
+        return;
     }					  
 #}
 1;
