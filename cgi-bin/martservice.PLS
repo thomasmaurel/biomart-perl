@@ -589,6 +589,7 @@ sub createLog
 		print STDREQLOG "$theTime\t" 	if ($theTime);
 		print STDREQLOG "$1"	 	if ($1);
 		print STDREQLOG "\n$xml"		if ($xml && $log_query); ## only log xml query if told to do so
+                #print STDREQLOG "\n$xml" if ($xml);
 	
 		close(STDREQLOG);
 	}
