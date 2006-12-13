@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE DASDSN SYSTEM "http://www.biodas.org/dtd/dasdsn.dtd">
+<DASDSN>
+  <DSN>
+    <SOURCE id="BioMart_ENS_HUMAN" version="default">biomart_ens_human</SOURCE>
+    <MAPMASTER>http://test.biomart.org/biomart/das/BioMart_ENS_HUMAN/</MAPMASTER>
+    <DESCRIPTION>BioMart_ENS_HUMAN</DESCRIPTION>
+  </DSN>
+<DASDSN>

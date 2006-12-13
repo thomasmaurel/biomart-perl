@@ -1,0 +1,16 @@
+the directory structure should like this:
+
+...../cgi-bin/das/BioMart_ENS_HUMAN/features
+...../cgi-bin/das/dsn
+
+where the directoryNAME [DSN] => BioMart_ENS_HUMAN is specified in /das/dsn
+
+
+for internal testing and debugging 
+
+
+GeneView Query:
+.../das/DSN/features?segment=ENSGid
+
+ContigView Query:
+.../das/DSN/features?segment=13:31787617,31871805

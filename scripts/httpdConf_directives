@@ -1,0 +1,10 @@
+
+<Location /biomart/das/BioMart_ENS_HUMAN/features>
+        AllowOverride None
+        Options None
+        Order allow,deny
+        Allow from all
+        SetHandler perl-script
+                PerlResponseHandler ModPerl::Registry
+        Options +ExecCGI
+</Location>
