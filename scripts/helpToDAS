@@ -5,6 +5,9 @@ the directory structure should like this:
 
 where the directoryNAME [DSN] => BioMart_ENS_HUMAN is specified in /das/dsn
 
+global replace dir 'test' server root to your dir in features and dsn
+global replace test.biomart.org to your server in features and dsn
+
 
 for internal testing and debugging 
 
