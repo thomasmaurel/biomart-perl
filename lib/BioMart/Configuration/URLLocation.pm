@@ -79,6 +79,7 @@ sub getResultSet {
 				      HTTP::Headers->new(),'query='.$xml."\n");
     } elsif ($type eq "GET") {
 
+         $qualifier=$qualifier."&requestid=biomart-client";
          $logger->warn("GET: ", $self->dsn," $qualifier");
 
 	$request = HTTP::Request->new($type,$self->dsn.$qualifier);
