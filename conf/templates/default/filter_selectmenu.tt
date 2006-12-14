@@ -59,7 +59,7 @@ document['${param_name}__image'].src='${filter.imageURL}';
 
 	[* defaultFilterOn = "[% filter.defaultValue %]" *]
 
-[% IF filter.getAllOptions.defined && filter.getAllOptions().size > 0 %]
+[% IF filter.getAllOptions() && filter.getAllOptions().size > 0 %]
 
 [% FOREACH option = filter.getAllOptions() %]
   [% # Gotta do some funky stuff here so quotes in strings don't mess up HTML or JavaScript %]
