@@ -24,20 +24,21 @@
   [% IF attribute.imageURL.defined() %]
   document['[% attributecollection_parname %]__image'].src='[% attribute.imageURL() %]'; 
   [% END %]  
-  var siblingNodes = getElements(this.parentNode.parentNode.parentNode); 
+  var siblingNodes = getElements_mart(this.parentNode.parentNode.parentNode); 
   for(var i=0; i<siblingNodes.length; i++) 
   { 
-  	if (siblingNodes[i]==this) continue;
-  	if(siblingNodes[i].tagName == 'INPUT' && siblingNodes[i].type == 'hidden' && siblingNodes[i].value == 'on') 
+	var sN=siblingNodes[i];
+  	if (sN==this) continue;
+  	if(sN.tagName == 'INPUT' && sN.type == 'hidden' && sN.value == 'on') 
   	{ 
-  		siblingNodes[i].value = 'off'; 
-  		removeFromSummaryPanelList('\${param_prefix}[% attributetree.name() %]__attributelist', siblingNodes[i].name); 
+  		sN.value = 'off'; 
+  		removeFromSummaryPanelList('\${param_prefix}[% attributetree.name() %]__attributelist', sN.name); 
   	} 
-  	else if(siblingNodes[i].type == 'radio')
+  	else if(sN.type == 'radio')
   	{ 
-		removeFromSummaryPanelList('\${param_prefix}[% attributetree.name() %]__attributelist', siblingNodes[i].name); 
-		siblingNodes[i].checked = false;
-		siblingNodes[i].onchange();
+		removeFromSummaryPanelList('\${param_prefix}[% attributetree.name() %]__attributelist', sN.name); 
+		sN.checked = false;
+		sN.onchange();
   	} 
   } 
   onchange();" 

@@ -28,7 +28,7 @@
   [% IF attribute.imageURL.defined() %]
   document['[% attributecollection_parname %]__image'].src='[% attribute.imageURL() %]'; 
   [% END %]
-  var siblingNodes = getElements(this.parentNode.parentNode.parentNode); 
+  var siblingNodes = getElements_mart(this.parentNode.parentNode.parentNode); 
   for(var i=0; i<siblingNodes.length; i++) 
   { 
   	if (siblingNodes[i]==this) continue;

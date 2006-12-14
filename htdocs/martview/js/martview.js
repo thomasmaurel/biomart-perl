@@ -851,7 +851,7 @@ function getFiltersInContainer(containerEltId) {
 	    // Gotta find the form-element with the filtername same as ID of the filterval-container 
 	    //var childElts = divs[i].childNodes;
 	    //var childElts = divs[i].getElementsByTagName('select');
-	    var childElts = getElements(divs[i]);
+	    var childElts = getElements_mart(divs[i]);
 	    //alert('Iterating over childElts list obj='+childElts+', length='+childElts.length);
 	    var loop_length_1 = childElts.length;
 	    var myFilterValues = [];
@@ -1139,7 +1139,7 @@ Recursively find all child elements of the given element and return as list.
 =cut
 
 */
-function getElements(elt) {
+function getElements_mart(elt) {
     var descElts = [];
     var loop_length = elt.childNodes.length;
     for(var i=0;i < loop_length;i++) {
@@ -1151,7 +1151,7 @@ function getElements(elt) {
 	// Only get grandchildren if they're not inside select-menus or whatever
 	if(elt.childNodes[i].type != 'select-one'
 	   && elt.childNodes[i].type != 'select-multiple') {
-	    var grandChildNodes = getElements(elt.childNodes[i]);
+	    var grandChildNodes = getElements_mart(elt.childNodes[i]);
 	    //alert('Got grandchildnodes list of length='+grandChildNodes.length);
 	    if(grandChildNodes.length > 0) {
 		descElts = descElts.concat(grandChildNodes);
