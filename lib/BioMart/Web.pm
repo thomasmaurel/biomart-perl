@@ -2045,7 +2045,7 @@ sub filterDisplayType
 	$session->clear('dataBase');
 ## E! hack
         my $PS = new BioMart::Web::PageStub( $session );
-        #$PS->start();
+        $PS->start();
 ## End of hack
 	$self->process_template( "main.tt", {
          	session       	=> $session, 
@@ -2058,7 +2058,7 @@ sub filterDisplayType
 	       	result_string 	=> $result_string
    	}, \*STDOUT );
 ## E! hack
-        #$PS->end();
+        $PS->end();
 ## End of hack
         return;
     }					  
