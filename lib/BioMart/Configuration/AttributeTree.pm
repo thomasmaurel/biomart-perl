@@ -242,6 +242,45 @@ sub getAllAttributeGroups {
   return $self->get('attGs');
 }
 
+
+=head2 getFilterByName
+
+  Usage        :  my $filt = $filt->getFilterByName($name);
+  Description  :  Get a specific BioMart::Filter object named by $name.
+                  May return undef if no object is contained within 
+                  this AttributerTree with the given name.
+  Returntype   :  BioMart::Filter or undef if none found with given name
+  Exceptions   :  none
+  Caller       :  caller
+
+=cut
+
+sub getFilterByName {
+  my ($self, $name) = @_;
+
+  my $retFilt;
+
+  my $attGs = $self->get('attGs');
+  GROUP: foreach my $attG (@{$attGs}) {
+    my $attColls = $attG->getAllCollections;
+
+    foreach my $attCol (@{$attColls}) {
+      my $filts = $attCol->getAllAttributes;# attributeFilters are just added
+	                                    # as attributes on start-up
+
+      foreach my $filt (@{$filts}) {
+        if ($filt->name eq $name) {
+          $retFilt = $filt;
+          last GROUP;
+		}
+	  }
+	}
+  }
+
+  return $retFilt;
+}
+
+
 =head2 getAttributeByName
 
   Usage        :  my $att = $at->getAttributeByName($name);
