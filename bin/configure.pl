@@ -94,9 +94,38 @@ sub checkAPIDependencies
 	}
 	push @api_modules, &getLibModules("t");
 
-	&check_modules(@api_modules);
+	#&check_modules(@api_modules);
+	
 
-		print "\nLooks good.... you are done.\n\n";	
+	my %modules_status = &check_modules(@api_modules);
+	
+	my $counter=1;
+
+	print "\nChecking prerequisites ...";
+        my @missing;
+	foreach my $moduleName (keys %modules_status) {
+		if ($modules_status{$moduleName} ne '[OK]') {
+		    # so it can be copied and pasted directly for 'cpan -i'           
+		    my $printModule =$moduleName;
+		    $printModule=~s/\//::/g;
+
+		    $counter++;	    
+#		    print $counter++, "\tMODULE: ", $printModule,"\t\t", $modules_status{$moduleName} , "\n";		
+		    push @missing, $printModule;
+		}	
+	}
+	
+	if($counter > 1) {
+	    print " please install the following modules:\n\n";
+	    foreach my $module (@missing){
+		print "$module\n";
+
+	    }
+	    print "\n"; 
+	    exit;
+	}
+	
+	print "\nLooks good.... you are done.\n\n";	
 }
 #-----------------------------------------------------------------------------
 sub configureMartView
@@ -128,7 +157,7 @@ $counter++;
 		push @missing, $printModule;
 		}	
 	}
-
+	
 	if($counter > 1)
 	{
 
