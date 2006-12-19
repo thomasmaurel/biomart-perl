@@ -367,12 +367,16 @@ sub getFilterByName {
     }
     last if ($retFilt);
   }
+
   return $retFilt if ($retFilt);
   # if not found may be a filter in an attributePage
   my $attTs = $self->get('attTs');
   foreach my $attT (@{$attTs}) {
-    $retFilt = $attT->getFilterByName($name);
-    last if ($retFilt);
+    my $potFilt = $attT->getFilterByName($name);
+    if ($potFilt && $potFilt->isa("BioMart::Configuration::ValueFilter")){
+	$retFilt = $potFilt;
+	last;
+    }
   }
 
   return $retFilt;
