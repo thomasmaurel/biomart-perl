@@ -64,7 +64,7 @@ if (top != self)
 
           <td align="center" valign="middle" width="17%" nowrap="true"  class="menu"  id="Credits" onClick="location='/martview/../credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CREDITS</td> 
 
-      <td align="center" valign="middle" width="17%" nowrap="true"  class="menuh"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">QUERY</td>    
+      <td align="center" valign="middle" width="17%" nowrap="true"  class="menuh"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTVIEW</td>    
 
 		</tr>
 </table>
