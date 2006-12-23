@@ -2,29 +2,38 @@
 <!DOCTYPE MartRegistry>
 <MartRegistry>
 
-<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="ensembl_mart_42" name="ensembl" displayName="ENSEMBL GENE 42  (SANGER)" port="3306" schema="ensembl_mart_42" user="anonymous" password="" visible="1" default="1" martUser="" includeDatasets="" /><MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="sequence_mart_42" name="sequence" displayName="SEQUENCE 42  (SANGER)" port="3306" schema="sequence_mart_42" user="anonymous" password="" visible="0" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="ensembl_mart_42" name="ensembl" displayName="ENSEMBL 42 GENE (SANGER)" port="3306" schema="ensembl_mart_42" user="anonymous" password="" visible="1" default="1" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="compara_mart_homology_42" name="compara_mart_homology_42" displayName="ENSEMBL HOMOLOGY (SANGER)" port="3306" schema="compara_mart_homology_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="compara_mart_homology_42" name="compara_mart_homology_42" displayName="ENSEMBL 42 HOMOLOGY (SANGER)" port="3306" schema="compara_mart_homology_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="compara_mart_pairwise_ga_42" name="compara_mart_pairwise_ga_42" displayName="ENSEMBL PAIRWISE ALIGNMENTS (SANGER)" port="3306" schema="compara_mart_pairwise_ga_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="compara_mart_pairwise_ga_42" name="compara_mart_pairwise_ga_42" displayName="ENSEMBL 42 PAIRWISE ALIGNMENTS (SANGER)" port="3306" schema="compara_mart_pairwise_ga_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
 <!--
-<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="compara_mart_multiple_ga_42" name="compara_mart_multiple_ga_42" displayName="ENSEMBL MULTIPLE ALIGNMENTS (SANGER)" port="3306" schema="compara_mart_multiple_ga_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="compara_mart_multiple_ga_42" name="compara_mart_multiple_ga_42" displayName="ENSEMBL 42 MULTIPLE ALIGNMENTS (SANGER)" port="3306" schema="compara_mart_multiple_ga_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 -->
 
+<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="snp_mart_42" name="snp" displayName="ENSEMBL 42 VARIATION  (SANGER)" port="3306" schema="snp_mart_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
+<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="sequence_mart_42" name="sequence" displayName="ENSEMBL 42 SEQUENCE (SANGER)" port="3306" schema="sequence_mart_42" user="anonymous" password="" visible="0" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="snp_mart_42" name="snp" displayName="SNP 42  (SANGER)" port="3306" schema="snp_mart_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" /><MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="vega_mart_42" name="vega" displayName="VEGA 21  (SANGER)" port="3306" schema="vega_mart_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
-
-
-
-<MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="uniprot_mart_17" name="uniprot" displayName="UNIPROT PROTOTYPE 4-5  (EBI)" port="3306" schema="uniprot_mart_17" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" /><MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="msd_mart_4" name="msd" displayName="MSD PROTOTYPE 4  (EBI)" port="3306" schema="msd_mart_4" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="ensembldb.ensembl.org" database="vega_mart_42" name="vega" displayName="VEGA 21  (SANGER)" port="3306" schema="vega_mart_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
 
 
 
-<!--<MartDBLocation databaseType="mysql" host="aceserver.cshl.org" database="wormmart_current" name="wormbase" displayName="WORMBASE CURRENT (CSHL)" port="3306" schema="wormmart_current" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" /> -->
+<MartDBLocation databaseType="mysql" host="aceserver.cshl.org" database="wormmart_current" name="wormbase" displayName="WORMBASE (CSHL)" port="3306" schema="wormmart_current" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" /> 
 
 <MartURLLocation path="" host="www.dictybase.org" name="dicty" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="1" martUser="" includeDatasets="" redirect="1" />
+
+
+
+
+<MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="uniprot_mart_17" name="uniprot" displayName="UNIPROT PROTOTYPE (EBI)" port="3306" schema="uniprot_mart_17" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+
+<MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="msd_mart_4" name="msd" displayName="MSD PROTOTYPE (EBI)" port="3306" schema="msd_mart_4" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+
+
+
+
 
 </MartRegistry>
