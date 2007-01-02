@@ -206,8 +206,11 @@ sub _fillAttributeTableWith {
       foreach my $el($location->getResultSet("","POST",$xml)){	  
   	  if ($el =~ /^\s/) {next;}
 	  $rows_added++;
-	  my @clean=split(/\t/,$el);             
-	  $table->addRow([@clean]);
+	  # add false end to stop loss of trailing tab-sep empty strings
+	  # vital for attribute merging
+	  $el .= "\tend";
+	  my @clean=split(/\t/,$el);
+	  $table->addRow([@clean[0..scalar(@clean)-2]]);
       }
       return $rows_added;
             
