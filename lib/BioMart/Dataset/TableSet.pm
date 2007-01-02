@@ -206,8 +206,9 @@ sub _fillAttributeTableWith {
       foreach my $el($location->getResultSet("","POST",$xml)){	  
   	  if ($el =~ /^\s/) {next;}
 	  $rows_added++;
+	  $el .= "\tend";
 	  my @clean=split(/\t/,$el);             
-	  $table->addRow([@clean]);
+	  $table->addRow([@clean[0..scalar(@clean)-2]]);
       }
       return $rows_added;
             
