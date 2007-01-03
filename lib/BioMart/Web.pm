@@ -1590,7 +1590,7 @@ sub filterDisplayType
 		$session->param('ds_2_count', $session->param('summarypanel_filter_count_2'));
 	#}
 	$session->clear('get_count_button'); # don't get stuck here
-	$session->clear('countButton'); # don't get stuck here
+	#$session->clear('countButton'); # don't get stuck here
 	###########	
 	
 	# Check if there are any datasets on our list which did not make it into the query, and
