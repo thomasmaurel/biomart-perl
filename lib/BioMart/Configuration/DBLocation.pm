@@ -68,6 +68,9 @@ sub _new {
 
 sub openConnection {
   my $self = shift; 
+  
+  # Already open? Return without reopening it.
+  if ($self->get('dbh')) { return; }
 
   unless (defined($self->host ) && defined ($self->databaseType)  
 	    && defined($self->database) && defined($self->user)) { 
@@ -99,7 +102,7 @@ sub openConnection {
 			  $dsn,
 			  $self->user,
 			  $self->password,
-			  {InactiveDestroy => 1}
+			  {InactiveDestroy => 1, RaiseError => 1, PrintError => 1}
 			  );
   };
   if($@ || !$dbh) {
