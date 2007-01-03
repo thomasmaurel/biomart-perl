@@ -227,17 +227,18 @@ sub _fillAttributeTableWith {
       }
     
       my $dbh = $self->_getDBH;
-      my $sth = $dbh->prepare($sql);
-	
-      unless ($sth) {
-	  BioMart::Exception::Database->throw("Couldnt connect to Database: ".
-					      $dbh->errstr."\n");
-      }
-      $sth->{RaiseError} = 0;
-      $sth->execute || die($sth->errstr."\n");# && return -1;
+      my $batch;
+      eval {
+      	my $sth = $dbh->prepare($sql);
+	      
+      	$sth->execute;
       
-      my $batch = $sth->fetchall_arrayref;
-      $sth->finish;
+      	$batch = $sth->fetchall_arrayref;
+      	$sth->finish;
+      };
+      BioMart::Exception::Database->throw("Error during query execution: ".
+      			$dbh->errstr."\n") if $@;
+      			
       $dbh->disconnect;
 
       foreach my $row (@{$batch}){

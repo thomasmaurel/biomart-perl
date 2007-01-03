@@ -1698,50 +1698,63 @@ sub filterDisplayType
 						# Fork and run in background.
 	    				$SIG{CHLD} = 'IGNORE';
    						defined (my $pid = fork) or die "Cannot fork: $!\n";
-				   		unless ($pid) {  	
-				   			# Run query.			    
-				   			$logger->debug("Sending query for execution to get full resultset");
-	    					$query_main->formatter($formatter_name);
-	    					$query_main->count(0);# do don't get count below
-							$qrunner->execute($query_main);
-							
-				   			# Create results.
-				   			if ($export_saveto eq 'gz_bg') {
-				   				my $results_data;
-    							open(my $result_buffer, '>', \$results_data);
-								$qrunner->printHeader($result_buffer);
-								$qrunner->printResults($result_buffer, $export_subset);
-								$qrunner->printFooter($result_buffer);
-								close($result_buffer);
-								my $dest = Compress::Zlib::memGzip($results_data);
-								$logger->debug("Writing results to ".$background_file_dir.$background_file);
-								open(FH,'>'.$background_file_dir.$background_file);	
-								binmode FH;		
-								print FH $dest;
-								close(FH);
-				   			} else {				   		
-								$logger->debug("Writing results to ".$background_file_dir.$background_file);
-								open(FH,'>'.$background_file_dir.$background_file);	
-								if ($formatter->isBinary()) {	
-									binmode FH;						
-								}	
-								$qrunner->printHeader(\*FH);
-								$qrunner->printResults(\*FH, $export_subset);
-								$qrunner->printFooter(\*FH);
-								close(FH);
-				   			}					   			
-				   		
-							# Send email with link to file.
+				   		unless ($pid) {    	
+				   			# Ready for mail.
 							my %mailSettings = $self->getSettings('mailSettings');
 							my $mailer = new Mail::Mailer $mailSettings{'mailerType'};  
 							my %mail_headers = (); 
   							$mail_headers {From} = $mailSettings{'from'}; 
 							$mail_headers {To}  = $session->param("background_email"); 
 							$mail_headers {Subject}  = $mailSettings{'subject'}; 
-							$mailer->open(\%mail_headers); 
-							print $mailer "Your results are ready and can be downloaded by following this link:\n\n$background_file_url";
-  							$mailer->close; 
 
+				   			# Run query.			    
+				   			$logger->debug("Sending query for execution to get full resultset");
+	    					$query_main->formatter($formatter_name);
+	    					$query_main->count(0);# do don't get count below
+							
+							eval {
+								$qrunner->execute($query_main);
+							};
+							if ($@) {
+								# Send failure email.
+								$mailer->open(\%mail_headers); 
+								print $mailer "Your results file FAILED:\n\n$background_file_url\n\n".
+								"Here is the reason why:\n\n".Exception::Class->caught()."\n\n".
+								"Please try your request again, or alternatively contact mart-dev\@ebi.ac.uk.";
+	  							$mailer->close; 
+							} else {							
+					   			# Create results.
+					   			if ($export_saveto eq 'gz_bg') {
+					   				my $results_data;
+	    							open(my $result_buffer, '>', \$results_data);
+									$qrunner->printHeader($result_buffer);
+									$qrunner->printResults($result_buffer, $export_subset);
+									$qrunner->printFooter($result_buffer);
+									close($result_buffer);
+									my $dest = Compress::Zlib::memGzip($results_data);
+									$logger->debug("Writing results to ".$background_file_dir.$background_file);
+									open(FH,'>'.$background_file_dir.$background_file);	
+									binmode FH;		
+									print FH $dest;
+									close(FH);
+					   			} else {				   		
+									$logger->debug("Writing results to ".$background_file_dir.$background_file);
+									open(FH,'>'.$background_file_dir.$background_file);	
+									if ($formatter->isBinary()) {	
+										binmode FH;						
+									}	
+									$qrunner->printHeader(\*FH);
+									$qrunner->printResults(\*FH, $export_subset);
+									$qrunner->printFooter(\*FH);
+									close(FH);
+					   			}					   			
+					   		
+								# Send email with link to file.
+								$mailer->open(\%mail_headers); 
+								print $mailer "Your results are ready and can be downloaded by following this link:\n\n$background_file_url";
+	  							$mailer->close; 
+							}
+							
    							# Child is done so should stop here.		 			
 	   						CORE::exit(0);
 	   					} # end background process
