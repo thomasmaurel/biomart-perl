@@ -1289,7 +1289,7 @@ sub _hashAttributes {
     }
 
     $tempTable->setRows(\@new_rows);
-    $tempTable->hashedResults(\%datasetAttributeHash);
+    $tempTable->hashedResults(\%datasetAttributeHash) if (%datasetAttributeHash);
     return $tempTable;
 }
 
