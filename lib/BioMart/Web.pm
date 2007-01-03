@@ -597,7 +597,7 @@ sub _new
                # Second case: ID-list upload filter type, where the filter indicates against which db-table column
                # The list of uploaded identifiers should be matched. IDs can come from either textarea or uploaded file
                $logger->debug("Modifying ID-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value (list from uploaded file)");
-               $real_value = $value_of_param->{$real_value}; # redirected value.
+               $real_value = $value_of_param->{$real_value}; # redirected value.               
               # $filtername = $filtervalue;
                my @values = split(/[\n+\s+\,]+/, $real_value); # split paste-in text into a list of identifiers
                map { s/\A\s+//xms; s/\s+\z//xms; } @values;        # clean out leading & trailing spaces
@@ -1589,6 +1589,7 @@ sub filterDisplayType
 		$session->param('ds_2_count', $session->param('summarypanel_filter_count_2'));
 	#}
 	$session->clear('get_count_button'); # don't get stuck here
+	$session->clear('countButton'); # don't get stuck here
 	###########	
 	
 	# Check if there are any datasets on our list which did not make it into the query, and
