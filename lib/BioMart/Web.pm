@@ -1706,23 +1706,13 @@ sub filterDisplayType
   							$mail_headers {From} = $mailSettings{'from'}; 
 							$mail_headers {To}  = $session->param("background_email"); 
 							$mail_headers {Subject}  = $mailSettings{'subject'}; 
-
-				   			# Run query.			    
-				   			$logger->debug("Sending query for execution to get full resultset");
-	    					$query_main->formatter($formatter_name);
-	    					$query_main->count(0);# do don't get count below
 							
 							eval {
-								$qrunner->execute($query_main);
-							};
-							if ($@) {
-								# Send failure email.
-								$mailer->open(\%mail_headers); 
-								print $mailer "Your results file FAILED:\n\n$background_file_url\n\n".
-								"Here is the reason why:\n\n".Exception::Class->caught()."\n\n".
-								"Please try your request again, or alternatively contact mart-dev\@ebi.ac.uk.";
-	  							$mailer->close; 
-							} else {							
+				   				# Run query.			    
+				   				$logger->debug("Sending query for execution to get full resultset");
+	    						$query_main->formatter($formatter_name);
+	    						$query_main->count(0);# do don't get count below
+								$qrunner->execute($query_main);	
 					   			# Create results.
 					   			if ($export_saveto eq 'gz_bg') {
 					   				my $results_data;
@@ -1747,14 +1737,23 @@ sub filterDisplayType
 									$qrunner->printResults(\*FH, $export_subset);
 									$qrunner->printFooter(\*FH);
 									close(FH);
-					   			}					   			
-					   		
+					   			}					   		
+							};
+							if ($@) {
+								# Send failure email.
+								my $ex = Exception::Class->caught();
+				    			$logger->debug("Serious error: ".$ex);
+								$mailer->open(\%mail_headers); 
+								print $mailer "Your results file FAILED:\n\n$background_file_url\n\n".
+								"Here is the reason why:\n\n$ex\n\n".
+								"Please try your request again, or alternatively contact mart-dev\@ebi.ac.uk.";
+	  							$mailer->close; 
+     						} else {							   		
 								# Send email with link to file.
 								$mailer->open(\%mail_headers); 
 								print $mailer "Your results are ready and can be downloaded by following this link:\n\n$background_file_url";
 	  							$mailer->close; 
 							}
-							
    							# Child is done so should stop here.		 			
 	   						CORE::exit(0);
 	   					} # end background process
