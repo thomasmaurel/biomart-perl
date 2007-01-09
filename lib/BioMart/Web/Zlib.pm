@@ -5,7 +5,7 @@
 # it and/or modify it under the same terms as Perl itself.
 # Seriously modified by Richard Holland.
 
-package BioMart::Zlib;
+package BioMart::Web::Zlib;
 
 $VERSION = "1.04";
 
