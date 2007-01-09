@@ -58,7 +58,7 @@ use BioMart::Dataset::GenomicSequence;
 use BioMart::Dataset::GenomicAlign;
 use BioMart::Web::SiteDefs;
 use BioMart::Web::PageStub; ## Quick hack...!
-use BioMart::Zlib;
+use BioMart::Web::Zlib;
 use base qw(BioMart::Root);
 
 our $VERSION = '0.4.9.0';
@@ -1726,7 +1726,7 @@ sub filterDisplayType
 					   			if ($export_saveto eq 'gz_bg') {
 									$logger->debug("Writing results to ".$background_file_dir.$background_file);
 									open(FH,">".$background_file_dir.$background_file);
-					   				my $fh = BioMart::Zlib->new(\*FH);
+					   				my $fh = BioMart::Web::Zlib->new(\*FH);
 									$qrunner->printHeader($fh);
 									$qrunner->printResults($fh, $export_subset);
 									$qrunner->printFooter($fh);
@@ -1751,7 +1751,7 @@ sub filterDisplayType
 								$mailer->open(\%mail_headers); 
 								print $mailer "Your results file FAILED.\n\n".
 								"Here is the reason why:\n\n$ex\n\n".
-								"Please try your request again, or alternatively contact mart-dev\@ebi.ac.uk\nincluding a copy of this email and quoting this reference: $background_file.";
+								"Please try your request again, or alternatively contact your service provider\nincluding a copy of this email and quoting this reference: $background_file.";
 	  							$mailer->close;
 							} else {	
 								# Send email with link to file.
@@ -1799,7 +1799,7 @@ sub filterDisplayType
 							
 				   			# Create results.
 				   			if ($export_saveto eq 'gz') {
-				   				my $fh = BioMart::Zlib->new(\*STDOUT);
+				   				my $fh = BioMart::Web::Zlib->new(\*STDOUT);
 								$qrunner->printHeader($fh);
 								$qrunner->printResults($fh, $export_subset);
 								$qrunner->printFooter($fh);
