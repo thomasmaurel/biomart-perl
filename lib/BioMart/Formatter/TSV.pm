@@ -84,7 +84,7 @@ sub nextRow {
     }
     # Escape delimiters in value-strings
     foreach(@{$row}) {
-	$_ ||= q{};
+	$_ = q{} unless defined ($_);
 	$_ =~ s/$FIELD_DELIMITER/\$FIELD_DELIMITER/g;
     }
     

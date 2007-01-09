@@ -1,4 +1,3 @@
-# $Id$
 
 =head1 NAME
 
@@ -44,7 +43,6 @@ use POSIX qw(strftime);
 use Template;
 use Time::HiRes qw/time/;
 use Template::Constants qw( :debug );
-use Compress::Zlib;
 use Storable qw(store retrieve freeze nfreeze thaw);
 local $Storable::Deparse = 1;
 $Storable::forgive_me = 1;
@@ -60,6 +58,7 @@ use BioMart::Dataset::GenomicSequence;
 use BioMart::Dataset::GenomicAlign;
 use BioMart::Web::SiteDefs;
 use BioMart::Web::PageStub; ## Quick hack...!
+use BioMart::Zlib;
 use base qw(BioMart::Root);
 
 our $VERSION = '0.4.9.0';
@@ -406,11 +405,14 @@ sub _new
         #               check for error after processing uploaded file?
         FILE:
         foreach my $file_param($cgi->param('upload_file_params')) {
-	    my $fh = $cgi->upload($file_param) || next FILE;
+	    my $fh = $cgi->param($file_param);
+	    next FILE unless ($fh && (ref($fh) eq 'Fh'));
             local $INPUT_RECORD_SEPARATOR = undef;
             my $file_contents = <$fh>; 
             $logger->debug("Read content from upload-file $fh (param $file_param):\n$file_contents");
-            $cgi->param($file_param, $file_contents);
+            $file_param =~ m/(.*)__file/;
+            $cgi->param($1, $file_contents);
+            $cgi->delete($file_param);
         }
 
         # Save all request parameters in the simplest CGI::Session manner. The darn module works
@@ -505,20 +507,23 @@ sub _new
               # $filtername  = $filtervalue;# name of the actual filter (bool-list thing)
                $filtervalue = $real_value; # and the real value, stored in the secondary parameter
             }
-            elsif($real_value = $value_of_param->{ $filtername.'__text' }) {
+            elsif($real_value = $value_of_param->{ $filtername.'__text__file' }) {
                # Second case: ID-list upload filter type, where the filter indicates against which db-table column
                # The list of uploaded identifiers should be matched. IDs can come from either textarea or uploaded file
-               $logger->debug("Modifying ID-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value (list from textarea)");
+                 if (ref($real_value) eq 'ARRAY') { $real_value = @$real_value[0]; }
+			   $real_value =~ m/(.*)__file/;
+               $real_value = $value_of_param->{$1}; # redirected value.               
+               $logger->debug("Modifying ID-list filter name/value pair $filtername to $real_value (list from uploaded file)");
               # $filtername = $filtervalue;
                my @values = split(/[\n+\s+\,]+/, $real_value); # split paste-in text into a list of identifiers
                map { s/\A\s+//xms; s/\s+\z//xms; } @values;        # clean out leading & trailing spaces
                $filtervalue = \@values;
              }
-            elsif($real_value = $value_of_param->{ $filtername.'__text__file' }) {
+            elsif($real_value = $value_of_param->{ $filtername.'__text' }) {
                # Second case: ID-list upload filter type, where the filter indicates against which db-table column
                # The list of uploaded identifiers should be matched. IDs can come from either textarea or uploaded file
-               $logger->debug("Modifying ID-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value (list from uploaded file)");
-               $real_value = $value_of_param->{$real_value}; # redirected value.               
+               if (ref($real_value) eq 'ARRAY') { $real_value = @$real_value[0]; }
+               $logger->debug("Modifying ID-list filter name/value pair $filtername to $real_value (list from textarea)");
               # $filtername = $filtervalue;
                my @values = split(/[\n+\s+\,]+/, $real_value); # split paste-in text into a list of identifiers
                map { s/\A\s+//xms; s/\s+\z//xms; } @values;        # clean out leading & trailing spaces
@@ -585,20 +590,23 @@ sub _new
               # $filtername  = $filtervalue;# name of the actual filter (bool-list thing)
                $filtervalue = $real_value; # and the real value, stored in the secondary parameter
             }
-            elsif($real_value = $value_of_param->{ $filtername.'__text' }) {
+            elsif($real_value = $value_of_param->{ $filtername.'__text__file' }) {
                # Second case: ID-list upload filter type, where the filter indicates against which db-table column
                # The list of uploaded identifiers should be matched. IDs can come from either textarea or uploaded file
-               $logger->debug("Modifying ID-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value (list from textarea)");
+               if (ref($real_value) eq 'ARRAY') { $real_value = @$real_value[0]; }
+			   $real_value =~ m/(.*)__file/;
+               $real_value = $value_of_param->{$1}; # redirected value.    
+               $logger->debug("Modifying ID-list filter name/value pair $filtername to $real_value (list from uploaded file)");
               # $filtername = $filtervalue;
                my @values = split(/[\n+\s+\,]+/, $real_value); # split paste-in text into a list of identifiers
                map { s/\A\s+//xms; s/\s+\z//xms; } @values;        # clean out leading & trailing spaces
                $filtervalue = \@values;
              }
-            elsif($real_value = $value_of_param->{ $filtername.'__text__file' }) {
+            elsif($real_value = $value_of_param->{ $filtername.'__text' }) {
                # Second case: ID-list upload filter type, where the filter indicates against which db-table column
                # The list of uploaded identifiers should be matched. IDs can come from either textarea or uploaded file
-               $logger->debug("Modifying ID-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value (list from uploaded file)");
-               $real_value = $value_of_param->{$real_value}; # redirected value.
+               if (ref($real_value) eq 'ARRAY') { $real_value = @$real_value[0]; }
+               $logger->debug("Modifying ID-list filter name/value pair $filtername to $real_value (list from textarea)");
               # $filtername = $filtervalue;
                my @values = split(/[\n+\s+\,]+/, $real_value); # split paste-in text into a list of identifiers
                map { s/\A\s+//xms; s/\s+\z//xms; } @values;        # clean out leading & trailing spaces
@@ -1693,7 +1701,8 @@ sub filterDisplayType
 						$session->param("mart_mainpanel__current_visible_section","resultspanel");
 						$session->param("summarypanel__current_highlighted_branch","show_results"); 
 						$result_string = 
-						"<br/>Your results will be available <a href=\"$background_file_url\">here</a>.".
+						"<br/>Your results are being compiled in the background.".
+						"<br/>Your reference is $background_file.".
 						"<br/><br/>An email will be sent to you when they are ready.";
 						
 						# Fork and run in background.
@@ -1715,17 +1724,13 @@ sub filterDisplayType
 								$qrunner->execute($query_main);						
 					   			# Create results.
 					   			if ($export_saveto eq 'gz_bg') {
-					   				my $results_data;
-	    							open(my $result_buffer, '>', \$results_data);
-									$qrunner->printHeader($result_buffer);
-									$qrunner->printResults($result_buffer, $export_subset);
-									$qrunner->printFooter($result_buffer);
-									close($result_buffer);
-									my $dest = Compress::Zlib::memGzip($results_data);
 									$logger->debug("Writing results to ".$background_file_dir.$background_file);
-									open(FH,'>'.$background_file_dir.$background_file);	
-									binmode FH;		
-									print FH $dest;
+									open(FH,">".$background_file_dir.$background_file);
+					   				my $fh = BioMart::Zlib->new(\*FH);
+									$qrunner->printHeader($fh);
+									$qrunner->printResults($fh, $export_subset);
+									$qrunner->printFooter($fh);
+									$fh->close();
 									close(FH);
 					   			} else {				   		
 									$logger->debug("Writing results to ".$background_file_dir.$background_file);
@@ -1744,9 +1749,9 @@ sub filterDisplayType
 								my $ex = Exception::Class->caught();
 				    			$logger->debug("Serious error: ".$ex);
 								$mailer->open(\%mail_headers); 
-								print $mailer "Your results file FAILED:\n\n$background_file_url\n\n".
+								print $mailer "Your results file FAILED.\n\n".
 								"Here is the reason why:\n\n$ex\n\n".
-								"Please try your request again, or alternatively contact mart-dev\@ebi.ac.uk.";
+								"Please try your request again, or alternatively contact mart-dev\@ebi.ac.uk\nincluding a copy of this email and quoting this reference: $background_file.";
 	  							$mailer->close;
 							} else {	
 								# Send email with link to file.
@@ -1794,15 +1799,11 @@ sub filterDisplayType
 							
 				   			# Create results.
 				   			if ($export_saveto eq 'gz') {
-					   			my $results_data;
-		    					open(my $result_buffer, '>', \$results_data);
-								$qrunner->printHeader($result_buffer);
-								$qrunner->printResults($result_buffer, $export_subset);
-								$qrunner->printFooter($result_buffer);
-								close($result_buffer);
-								my $dest = Compress::Zlib::memGzip($results_data);
-								binmode STDOUT;						
-								print STDOUT $dest;
+				   				my $fh = BioMart::Zlib->new(\*STDOUT);
+								$qrunner->printHeader($fh);
+								$qrunner->printResults($fh, $export_subset);
+								$qrunner->printFooter($fh);
+								$fh->close();
 				   			} else {				   									
 								if ($formatter->isBinary()) {	
 									binmode STDOUT;						

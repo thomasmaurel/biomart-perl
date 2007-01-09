@@ -113,7 +113,7 @@ sub nextRow {
    if (!$row){
        return;
    }
-   map { $_ ||= q{}; } @$row;
+   map { $_ = q{} unless defined ($_); } @$row;
    my $attribute_positions = $self->get('attribute_positions');
    my $attribute_url_positions = $self->get('attribute_url_positions');
    my $attribute_url = $self->get('attribute_url');
@@ -134,7 +134,7 @@ sub nextRow {
 
    $current_rowcount++;
    my $fields_string = '';
-   map{ $fields_string .= sprintf $NORMALFIELD_TMPL1, $_||''; } @{$new_row};
+   map{ $fields_string .= sprintf ($NORMALFIELD_TMPL1, defined ($_) ? $_ : ''); } @{$new_row};
    return ($current_rowcount % 2 == 0 ? $ROW_START_TMPL1 : $ROW_START_TMPL2)
 	                              . $fields_string
                                       . $ROW_END_TMPL;

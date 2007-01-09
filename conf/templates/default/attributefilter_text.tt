@@ -22,7 +22,8 @@ if(filterEltHasValue(this)) {
 [* session.param("[% param_name %]") || '' *]
 </textarea>
 <br />
-<input type="file" name="[% param_name %]__file" value="" size="16" onblur="[% onblur_js %]" />
+[% # Note use of onchange for files, as onblur works before filename is populated %]
+<input type="file" name="[% param_name %]__file" value="" size="16" onchange="[% onblur_js %]" />
 <input type="hidden" name="upload_file_params" value="[% param_name %]__file" />
 
 [% ELSE %]

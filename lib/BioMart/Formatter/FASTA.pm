@@ -79,7 +79,7 @@ sub nextRow {
         return;
     }
     my $array_length = @{$row};
-    map { $_ ||= ''; } @$row; # get rid of unitialized-value warning message
+    map { $_ = '' unless defined ($_); } @$row; # get rid of unitialized-value warning message
     my $header_atts = join "|",@{$row}[1..$array_length-1];
     
     #chop $header_atts;
