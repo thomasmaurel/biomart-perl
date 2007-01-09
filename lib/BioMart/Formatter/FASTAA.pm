@@ -188,7 +188,7 @@ sub nextRow {
     my $j = 0;
     foreach my $attribute  (@$row){
 	#print "attribute: $attribute\n";
-	if (!$attribute){$attribute = "NULL"}
+	if (not defined $attribute){$attribute = "NULL"}
 	if ($attribute =~ m/tagPeptide/){
 	    $j++;
 	    if ($j == 1){

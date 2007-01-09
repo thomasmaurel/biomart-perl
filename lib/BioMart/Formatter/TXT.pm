@@ -87,7 +87,7 @@ sub nextRow {
 
     # Enclose non-numeric values in double quotes & escape the quotes already in them
     foreach(@{$row}) {
-	$_ ||= q{};
+	$_ = q{} unless defined ($_);
 	if($_ !~ /\A[\d\.]+\z/ && $_ =~ /$FIELD_DELIMITER/) {
 	    $_ =~ s/$FIELD_ENCLOSER/\$FIELD_ENCLOSER/g;
   	    $_ = $FIELD_ENCLOSER . $_ . $FIELD_ENCLOSER;
