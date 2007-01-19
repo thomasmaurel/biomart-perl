@@ -535,7 +535,7 @@ sub run_query {
     
     		if ($query->count eq '1'){
 			my $count = $query_planner->getCount();
-			print "\n$count\n"; 
+			print "$count\n"; 
     		}
     		else{	
 		        if ($query->header && $query->header eq '1') {
