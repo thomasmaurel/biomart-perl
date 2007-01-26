@@ -200,7 +200,7 @@ sub _new {
 
     $self->attr('sequence', undef);
     $self->attr('attribute_merge_required', 0);
-}
+ }
 
 #private methods
 
@@ -373,7 +373,6 @@ sub _initializeDNAAdaptor {
 
 sub __processNewQuery {
     my ($self, $query) = @_;
-
     my $attribute = $query->getAllAttributes($self->name)->[0];
     my $seq_name = $attribute->name;
 
@@ -417,7 +416,6 @@ sub __processNewQuery {
     else {
 	BioMart::Exception::Configuration->throw("Unsupported sequence name $seq_name recieved by GenomicSequence\n");
     }
-
     $self->set('downstream_flank', 0);
     $self->set('upstream_flank', 0);
     $self->set('importable', undef);
@@ -598,60 +596,86 @@ sub _getLocationFrom {
 }
 
 sub _modFlanks {
-    my ($self, $location, $shift) = @_;
+    my ($self, $location, $shift, $rank) = @_;
     
     $location->{start} || return $location; # Sanity check
     $location->{end}   || return $location; # Sanity check
-	
-   	if ($shift) 
-    	{
-		#shift for flanks only - if user accidentally chooses both flanks, 
-		# assume upstream as the original martview
-		if ($self->get('upstream_flank')) 
-		{
-	    		if ($location->{"strand"} < 0) 
-	    		{
-				$location->{"start"} = $location->{"end"} + 1;
-				$location->{"end"} += $self->get('upstream_flank');
-	    		} 
-	    		else 
-	    		{
-				$location->{"end"} = $location->{"start"} - 1;
-				$location->{"start"} -= $self->get('upstream_flank');
-	    		}
-		} 
-		elsif ($self->get('downstream_flank')) 
-		{
-	    		if ($location->{"strand"} < 0) 
-	    		{
-				$location->{"end"} = $location->{"start"} - 1;
-				$location->{"start"} -= $self->get('downstream_flank'); 
-	    		} 
-	    		else 
-	    		{
-				$location->{"start"} = $location->{"end"} + 1;
-				$location->{"end"} += $self->get('downstream_flank');
-	    		}
-		} 
-		else 
-		{
-	    		BioMart::Exception::Usage->throw("Requests for flank sequence must be accompanied by an upstream_flank or downstream_flank request\n");
-		}
-    	} 
-    	else 
+ 
+    if ($shift == 1) 
+    {
+	# shift for flanks only - if user accidentally chooses both flanks, 
+	# assume upstream as the original martview
+	if ($self->get('upstream_flank')) 
 	{
-		if ($location->{"strand"} < 0) 
-		{
-	    		$location->{"start"} -= $self->get('downstream_flank');
-	    		$location->{"end"} += $self->get('upstream_flank');
-		} 
-		else 
-		{
-	    		$location->{"start"} -= $self->get('upstream_flank');
-	    		$location->{"end"} += $self->get('downstream_flank');
-		}
+	    if ($location->{"strand"} < 0) 
+	    {
+		$location->{"start"} = $location->{"end"} + 1;
+		$location->{"end"} += $self->get('upstream_flank');
+	    } 
+	    else 
+	    {
+		$location->{"end"} = $location->{"start"} - 1;
+		$location->{"start"} -= $self->get('upstream_flank');
+	    }
+	} 
+	elsif ($self->get('downstream_flank')) 
+	{
+	    if ($location->{"strand"} < 0) 
+	    {
+		$location->{"end"} = $location->{"start"} - 1;
+		$location->{"start"} -= $self->get('downstream_flank'); 
+	    } 
+	    else 
+	    {
+		$location->{"start"} = $location->{"end"} + 1;
+		$location->{"end"} += $self->get('downstream_flank');
+	    }
+	} 
+	else 
+	{
+	    BioMart::Exception::Usage->throw("Requests for flank sequence must be accompanied by an upstream_flank or downstream_flank request\n");
+	  }
+    } 
+    elsif ($shift == 2) #-- this is specific for: flanks + coding|cdna  [ben]
+    {
+	if ($self->get('upstream_flank') && $rank == 1 ) {
+	    #-- the rank is used here, in case the user ask for both upstream 
+	    #-- and downstream flank. With the rank you are sure, you  don't enter in 
+	    #-- the upstream loop when you should get in the downstream loop. 
+	    if ($location->{"strand"} < 0) 
+	    {
+		$location->{"end"} += $self->get('upstream_flank');
+	    } 
+	    else 
+	    {
+		$location->{"start"} -= $self->get('upstream_flank');
+	    }
+	}
+	elsif ($self->get('downstream_flank')) {
+	    if ($location->{"strand"} < 0) 
+	    {
+		$location->{"start"} -= $self->get('downstream_flank');
+	    } 
+	    else 
+	    {
+		$location->{"end"} += $self->get('downstream_flank');
+	    }
+	}
     }
-
+    else #-- if shift = 0
+    {
+	if ($location->{"strand"} < 0) 
+	{
+	    $location->{"start"} -= $self->get('downstream_flank');
+	    $location->{"end"} += $self->get('upstream_flank');
+	} 
+	else 
+	{
+	    $location->{"start"} -= $self->get('upstream_flank');
+	    $location->{"end"} += $self->get('downstream_flank');
+	}
+    }
+    
     #sometimes users request more flanking sequence than is avaiable
     $location->{"start"} = 1 if ($location->{"start"} < 1);
     return $location;
@@ -659,7 +683,6 @@ sub _modFlanks {
 
 sub _processSequence {
     my ($self, $locations) = @_;
-
     my $seq = '';
     my $temp_Seq = '';
     my $first_coding_exon_flag = 0;
@@ -800,7 +823,6 @@ sub _getResultTable {
 
 sub _codingCdnaPeptideSequences {
     my ($self, $atable, $curRow) = @_;
-    
     # Determine this and last primary keys
     my $importable_indices = $self->get('importable_indices');
     # Get the primary sequence ID from this row. Use DUMMY if missing
@@ -814,19 +836,44 @@ sub _codingCdnaPeptideSequences {
     
     if( ( ! defined $pkey ) or ( $pkey ne $lastPkey ) ){
 	# Start of new row, or end of results; Dump the current sequence
-  
+	#-- NOTE:
+	#-- upstream and downstream sequences are added only once, and 
+	#-- not for every exons, as it used to be before. So _modFlank is
+	#-- ran only at the very end, and once (once if upsream, once if 
+	#-- downstream) to modify $locations. [ben]
+	
+	#-- get exons rank info 
+	my @ranks = sort { $a <=> $b } keys %{$locations};
+	my $firstExon = shift @ranks; #get first exon
+	my $lastExon = pop @ranks;    #get last exon
+	
+	#-- then run _modflank for the first and/or last exons
+	if ($self->get('upstream_flank'))
+	{
+	    my $location = $locations->{$firstExon};
+	    $location = $self->_modFlanks($location, 2, $firstExon);
+	    $locations->{$firstExon} = $location if ($location->{"start"});	
+	} 
+	if ($self->get('downstream_flank')) 
+	{
+	    my $location = $locations->{$lastExon}; 
+	    $location = $self->_modFlanks($location, 2, $lastExon);
+	    $locations->{$lastExon} = $location if ($location->{"start"});
+	}
+	
 	my $sequence;
 	if( grep{ $locations->{$_}->{"start"} } keys %$locations ) {
 	    $sequence = $self->_processSequence($locations);
 	    $sequence = $self->_translate($sequence) 
 		if ($self->get('translate'));
 	    $self->_editSequence(\$sequence);
+
 	}
     
 	if ($sequence) { 
 	    $self->_addRow($atable, $outRow, $sequence);
 	} 
-	else {      
+	else {    
 	    $self->_addRow($atable, $outRow, "Sequence unavailable");
 	}
 	$locations = {};
@@ -836,30 +883,31 @@ sub _codingCdnaPeptideSequences {
     if ($curRow) {
 	# Update the location corresponding to this row
 	my $rank = $curRow->[ $importable_indices->{"rank"} ];
-
 	# Requesting for phase info as well, to fix the bug of additional 
 	# Ns in the beginning - syed
 	my $location = $self->_getLocationFrom($curRow, "chr", "start", "end", 
 					       "strand", "phase", "codon_table_id", "seq_edits"); 
-    
+	
 	$self->set('codon_table_id',$location->{"codon_table_id"});	
-	$self->set('seq_edits',$location->{"seq_edits"});	
-
-	$location = $self->_modFlanks($location, 0);
+	$self->set('seq_edits',$location->{"seq_edits"});
+	
+	# $location = $self->_modFlanks($location, 0);
+	#-- This was soo wrong - it added a flank (upstream and/or downstream) 
+	#-- for every exons, instead of once, at the 5' or 3' end  - [ben]
+	
 	$locations->{$rank} = $location if ($location->{"start"});
     } 
-    
     $outRow ||= $self->_initializeReturnRow($curRow);
     $self->set('locations', $locations);
     $self->set('lastPkey', $pkey);
     $self->set('outRow', $outRow);
 }
 
+
 sub _exonIntronFlankSequences {
     my ($self, $atable, $curRow) = @_;
     
     my $rank = 1;
-    
     # Determine this and last primary keys
     my $importable_indices = $self->get('importable_indices');
     # Get the primary sequence ID from this row. Use DUMMY if missing
@@ -872,6 +920,7 @@ sub _exonIntronFlankSequences {
     if( ( ! defined $pkey ) or ( $pkey ne $lastPkey ) ){
 	# Start of new row, or end of results; Dump the current sequence
 	my $shift = ($self->get('seq_name') =~ m/flank/);
+
 	my $location = $self->_modFlanks( $self->get('calc_location'), 
 					  $shift );
 	$self->set('calc_location', undef); # Reset location cache
@@ -880,6 +929,7 @@ sub _exonIntronFlankSequences {
 	if ($location->{"start"}) {
 	    my $locations = { $rank => $location };
 	    $sequence = $self->_processSequence($locations);
+
 	    $self->_editSequence(\$sequence);
 	}
 
