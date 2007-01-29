@@ -240,8 +240,8 @@ var sessionValueOfDatasetmenu = { 'schema'       : "[% schema2focus   || '' %]",
 </div>
 
 <br>
-Choose a <b>Dataset</b> above, then use the left panel to navigate through the <b>Attributes</b> and <b>Filters</b> making your selections in this main panel. To preview the results click the <b>Results<
-/b> button in the top panel.
+Choose a <b>Dataset</b> above, then use the left panel to navigate through the <b>Attributes</b> and <b>Filters</b> making your selections in this main panel. To preview the results click the 
+<b>Results</b> button in the top panel.
 
 
 
