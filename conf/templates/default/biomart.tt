@@ -339,7 +339,7 @@
   							[% IF !session.param("GALAXY_URL") %]
 								<option value="file">File</option>	
 	  							<option value="gz">Compressed file (.gz)</option>
-  								<option value="text">Text in browser</option>
+  								<option value="text">Browser</option>
   								[% IF session.param("__enable_background")==1 %]
   									<option value="file_bg">Web File (notify by email)</option>
 	  								<option value="gz_bg">Compressed web file (notify by email)</option>
