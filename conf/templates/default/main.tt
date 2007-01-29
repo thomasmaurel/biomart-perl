@@ -10,7 +10,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <title>MartView: web interface to BioMart</title>
+  <title>BioMart - MartView</title>
   <link rel="stylesheet" type="text/css" href="/martview/martview.css" />
 
 <script src="/martview/js/martview.js"  type="text/javascript" ></script> 
