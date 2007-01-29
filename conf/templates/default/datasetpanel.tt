@@ -242,6 +242,10 @@ var sessionValueOfDatasetmenu = { 'schema'       : "[% schema2focus   || '' %]",
 <br>
 Choose a <b>Dataset</b> above, then use the left panel to navigate through the <b>Attributes</b> and <b>Filters</b> making your selections in this main panel. To preview the results click the 
 <b>Results</b> button in the top panel.
+<br>
+<br>
+<a href="http://www.ebi.ac.uk/~gspudich/Ensembl_online_workshops/biomart_basic_01_29/biomart_basic_01_29.html">Tutorial</a>
+
 
 
 
