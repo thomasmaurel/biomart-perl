@@ -160,8 +160,9 @@ div#mart_export_data
 	font-family: sans-serif;
 	font-size: 1em;
 	font-weight: bold;	
-	color:[font_colour_top_bottom_menubar];
-   	background-color:[top_bottom_menubar_bgcolour];
+	/*color:[font_colour_top_bottom_menubar];*/
+   	color: [button_shade];
+	background-color:[top_bottom_menubar_bgcolour];
 	padding: 0.3em 1em 0.1em 1em;
 	border-color: [button_shade] [main_panel_bgcolour] [main_panel_bgcolour] [button_shade] ;
 }
