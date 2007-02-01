@@ -424,9 +424,9 @@ sub libModules
       	#print "$temp_name\n" if ((-f ("$dirname/$entry")) && ("$dirname/$entry" =~ /\.pm/));
 		if ((-f ("$dirname/$entry")) && ("$dirname/$entry" =~ /\.pm\Z/))
 		{
-			$temp_name =~ m/.*?biomart-perl\/(?:lib|conf)\/(.*)/;		
+			$temp_name =~ m/.*?\/(?:lib|conf)\/(.*)/;		
 			push @{$OPTIONS{modules_in_dist}}, $1;
-		}
+                }
    	}
 }  
 
