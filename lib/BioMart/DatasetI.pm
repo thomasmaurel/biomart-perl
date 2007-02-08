@@ -1279,7 +1279,7 @@ sub _hashAttributes {
 	  my $row_to_add = [@{$row}[$exportable_size..@{$row}-1]];
 	  if ($hashed_rows){# make sure unique before add
 	     foreach my $prev_row (@{$hashed_rows}){
-		 next HASHROW if ("@{$prev_row}" eq "@{$row_to_add}");
+		 next HASHROW if ($row_to_add && "@{$prev_row}" eq "@{$row_to_add}");
 	     }
 	  }
 	  #warn($key_string." => ".join ",",@$row_to_add);

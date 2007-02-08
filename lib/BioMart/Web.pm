@@ -586,9 +586,10 @@ sub _new
 	    
             if($real_value = $value_of_param->{ $filtername.'__list' }) {
                # First case: boolean-list type, where the filter indicates which db-table column has the boolean flag
-               $logger->debug("Modifying bool-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value");
-              # $filtername  = $filtervalue;# name of the actual filter (bool-list thing)
                $filtervalue = $real_value; # and the real value, stored in the secondary parameter
+			$logger->debug("Modifying bool-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value");
+              	# $filtername  = $filtervalue;# name of the actual filter (bool-list thing)
+
             }
             elsif($real_value = $value_of_param->{ $filtername.'__text__file' }) {
                # Second case: ID-list upload filter type, where the filter indicates against which db-table column
@@ -621,7 +622,7 @@ sub _new
             # We might have an empty list of values, so skip filter entirely if this is the  case
             #if($filtervalue eq q{}) {
             if ((not defined($filtervalue)) || $filtervalue eq q{}) {
-                $logger->debug("Empty list of values ('$filtervalue') for filter '$filtername', skipping this filter");
+                $logger->debug("Empty list of values ('') for filter '$filtername', skipping this filter");
                 next FILTER;
             }
 	    $logger->debug("#### $filtername HAS VALUE $filtervalue####");
@@ -1841,7 +1842,7 @@ sub filterDisplayType
 								$logger->debug("Showing ".($export_subset||'all')." entries in main panel");
 		    						   			
 				    			# Run query.			    
-					   			$logger->debug("Sending query for execution to get full resultset FORMATTER: $formatter_name");
+				    				$logger->debug("Sending query for execution to get full resultset");
 	    							$query_main->formatter($formatter_name);
 		    						$query_main->count(0);# do don't get count below
 								$qrunner->execute($query_main);
