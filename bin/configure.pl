@@ -297,7 +297,7 @@ sub check_modules
 		#---
 		foreach my $req (@reqs)
 		{
-			if($req !~ m/lib|BioMart|constant|vars|local|strict|English|warnings|SiteDefs/) ## ignoring usual build in perl mods
+			if($req !~ m/lib|BioMart|constant|vars|local|strict|English|warnings|SiteDefs/) ## ignoring usual built in perl mods
 			{
 				#------------ removing qw(freeze thaw) type of arguments which comes after the name
 				#------------ e.g Number::Format qw(:subs)

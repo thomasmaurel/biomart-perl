@@ -424,9 +424,17 @@ sub libModules
       	#print "$temp_name\n" if ((-f ("$dirname/$entry")) && ("$dirname/$entry" =~ /\.pm/));
 		if ((-f ("$dirname/$entry")) && ("$dirname/$entry" =~ /\.pm\Z/))
 		{
-			$temp_name =~ m/.*?\/(?:lib|conf)\/(.*)/;		
-			push @{$OPTIONS{modules_in_dist}}, $1;
-                }
+			#$temp_name =~ m/.*?\/(?:lib|conf)\/(.*)/;
+			my $module_name;
+			while ($temp_name =~ m/.*?\/(?:lib|conf)\/(.*)/ )	{
+				$temp_name = $1;
+				$module_name = $1;
+				#print "\n", $module_name;
+			}
+			#print "\n", $module_name;
+			push @{$OPTIONS{modules_in_dist}}, $module_name;
+
+		}
    	}
 }  
 
