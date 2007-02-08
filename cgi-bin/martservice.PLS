@@ -100,7 +100,7 @@ eval{
 			&get_interfaces($registry,$vschema_name,$mart_name,$martuser,$dataset_name);
 		}
 		elsif ($type eq "configuration") {
-			&get_configuration($registry,$vschema_name,$dataset_name,$interface,$martuser);
+			&get_configuration($registry,$vschema_name,$mart_name,$dataset_name,$interface,$martuser);
 		} 
 		elsif ($type eq "filters") {
 			&get_filters($registry,$vschema_name,$dataset_name,$interface,$martuser);
@@ -154,20 +154,20 @@ sub get_registry {
 	
 	if ($mr->{'virtualSchema'}){	
 	    foreach my $lr (@{$mr->{'virtualSchema'}}){
-		&_set_location($lr);
+		&_set_location($lr, $path);
 	    }
 	} else {
-	    &_set_location($mr);
+	    &_set_location($mr, $path);
 	}
 }
     
     
     if ($mr->{'virtualSchema'}){
 	foreach my $lr (@{$mr->{'virtualSchema'}}){
-	    &_reset_attributes($lr);
+	    &_reset_attributes($lr, $path);
 	} 	
     } else {
-	&_reset_attributes($mr);
+	&_reset_attributes($mr, $path);
     }
     
 
@@ -186,7 +186,7 @@ sub get_registry {
 
 sub _set_location {
     
-    my ($lr)=@_;
+    my ($lr, $path)=@_;
     
     my $serverVirtualSchema = 'default';
     
@@ -226,7 +226,7 @@ sub _set_location {
 
 
 sub _reset_attributes {
-    my ($lr)=@_;
+    my ($lr, $path)=@_;
     
     foreach my $dblc (@{ $lr->{'MartURLLocation'} })
     {
@@ -377,7 +377,7 @@ sub _find_mart {
 
 sub get_configuration {
     
-    my ($registry,$vschema_name,$dataset_name,$interface,$mart_user)=@_;
+	my ($registry,$vschema_name, $mart_name, $dataset_name,$interface,$mart_user)=@_;
     
     
     if (!$vschema_name || $vschema_name eq ''){
