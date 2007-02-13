@@ -307,11 +307,13 @@
 						<option value="tsv">TSV</option>
 					[% ELSE %]
 					[% FOREACH outputformat = session.param("export_outputformats") %]
+						[% IF outputformat != "txt" %]
   						<option value="$outputformat"
-						[% IF session.param("outputformat").defined() && session.param("outputformat") == outputformat %]
- selected="selected"
-						[% END %]>[% outputformat FILTER upper %]</option>
-
+							[% IF session.param("outputformat").defined() && session.param("outputformat") == outputformat %]
+ 								selected="selected"	
+							[% END %]>[% outputformat FILTER upper %]
+						</option>
+						[% END %]
 					[% END %]
 					[% END %]
 
@@ -338,10 +340,10 @@
 								">
   							[% IF !session.param("GALAXY_URL") %]
 								<option value="file">File</option>	
-	  							<option value="gz">Compressed file (.gz)</option>
   								<option value="text">Browser</option>
+	  							<option value="gz">Compressed file (.gz)</option>
   								[% IF session.param("__enable_background")==1 %]
-  									<option value="file_bg">Web File (notify by email)</option>
+  									<! -- <option value="file_bg">Web File (notify by email)</option> -->
 	  								<option value="gz_bg">Compressed web file (notify by email)</option>
 	  							[% END %]
  							[% ELSE %]
