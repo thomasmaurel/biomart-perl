@@ -23,6 +23,9 @@
 
 <MartDBLocation databaseType="mysql" host="aceserver.cshl.org" database="wormmart_current" name="wormbase" displayName="WORMBASE (CSHL)" port="3306" schema="wormmart_current" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" /> 
 
+<MartURLLocation  host="www.gramene.org" name="ENSEMBL_MART_ENSEMBL" path="/Multi/martservice" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="" displayName="GRAMENE (CSHL)" port="80" visible="1" default="1" martUser="" includeDatasets="" redirect="1" />
+
+
 <MartURLLocation path="" host="www.dictybase.org" name="dicty" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="1" martUser="" includeDatasets="" redirect="1" />
 
 
