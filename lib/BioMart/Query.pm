@@ -86,7 +86,7 @@ sub _new {
   $self->attr('finalDatasetOrder', undef);
   $self->attr('softwareVersion', undef);
   $self->attr('currentDS', undef);
-
+  $self->attr('attsAndAttListsForXMLDisplay', undef);
 
   my $virtualSchemaName =  $param{'virtualSchemaName'};  
   if (!defined $virtualSchemaName){
@@ -241,6 +241,41 @@ sub _visibleDataset
 	}   
 }
 
+sub getActualDS
+{
+	my ($self, $dataset, $vDataset) = @_ ;
+	my $actualDS;
+	my $links;
+     #$links = $registry->__Dijkstra($self->_getSchemaName($self->virtualSchema), $_);
+     ## magic to find out e.g peptide or any genomic sequence attribute, which dataset it belongs to
+     ## say if we have a query with hsapiens_gene_ensembl and hsapiens_gene_vega, and a peptide from
+     ## hsapiens_genomic_sequence
+     my $allLinks = $self->get('links');
+     foreach my $link (@$allLinks)
+     {
+     	$links->{$link->targetDataset()} = $link->sourceDataset();
+     }
+     
+	my $interface = $self->getInterfaceForDataset($dataset);
+    	if($self->_visibleDataset($dataset)) #### its already a visible dataset, so just append to this
+    	{
+    		$actualDS = $dataset;     		     		
+    	}
+    	else    	## decide which visible dataset this att/filter should go to, need to use links
+    	{
+    		foreach(keys %$vDataset)
+    		{    			
+			if ($self->_getActualDS($links, $dataset, $_) == 1)
+			{	
+				$actualDS = $_;    
+			}    				
+    				 				
+    		}
+    	}
+     return $actualDS;
+}
+
+
 =head2 _getActualDS
 
   Usage      : internal function, called by _toXML_latest
@@ -304,164 +339,130 @@ sub _toXML_latest
 $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq|" requestId= "biomart-client">|;
 
 	my $datasets = $self->getDatasetNames;
+
 	## open dataset tags for visible datasets only first and then 
 	## append the filters and atts to the block they belong to.
 	## the is done on the naming convention which biomart follows
 	## datasetName_content_type
  	my $visibleDSCount=0;
+	my $actualDS;
  	my %vDataset;
  	foreach my $dataset(@$datasets) 
 	{
 		my $interface = $self->getInterfaceForDataset($dataset);
      	if($self->_visibleDataset($dataset)) ## only for visible datasets,
      	{
-			$vDataset{$dataset} = qq |
-		<Dataset name = "|.$dataset.qq|" interface = "|.$interface.qq|" >|; 
-			$visibleDSCount++;
+		$vDataset{$dataset} = qq |
+	<Dataset name = "|.$dataset.qq|" interface = "|.$interface.qq|" >|; 
+			$visibleDSCount++;			
 			
      	}    	
 	}
 	
-	my $actualDS;	
- 	my $links;
-     #$links = $registry->__Dijkstra($self->_getSchemaName($self->virtualSchema), $_);
-     ## magic to find out e.g peptide or any genomic sequence attribute, which dataset it belongs to
-     ## say if we have a query with hsapiens_gene_ensembl and hsapiens_gene_vega, and a peptide from
-     ## hsapiens_genomic_sequence
-     my $allLinks = $self->get('links');
-     foreach my $link (@$allLinks)
+	## Attributes and AttributeLists
+	my $attsAndAttLists = $self->get('attsAndAttListsForXMLDisplay'); ## this hash is populated in addAttribute() and _populateFromXML() only
+    	foreach my $attribute (@$attsAndAttLists)
      {
-     	$links->{$link->targetDataset()} = $link->sourceDataset();
-     }  			     			
-	
-	foreach my $dataset(@$datasets)
-	{
-		my $interface = $self->getInterfaceForDataset($dataset);
-     	if($self->_visibleDataset($dataset)) #### its already a visible dataset, so just append to this
-     	{
-     		$actualDS = $dataset;     		     		
-     	}
-     	else    	## decide which visible dataset this att/filter should go to, need to use links
-     	{
-     		foreach(keys %vDataset)
-     		{    			
-				if ($self->_getActualDS($links, $dataset, $_) == 1)
-    				{	
-    					$actualDS = $_;    
-    				}    				
-    				 				
-     		}
-     	}
-     	my $atts = $self->getAllAttributeLists($dataset);
-	     foreach my $attribute_list (@$atts)
-     	{
-			my $attributeString = $attribute_list->attributeString;
-	  		my @attributeNames = split(/,/,$attributeString);
-	  		foreach my $attributeName (@attributeNames){
-	    		$vDataset{$actualDS} .= qq |
-		 		<Attribute name = "|.$attributeName.qq|" />|;
-			}
+		foreach my $attName (keys %$attribute)
+		{
+			$actualDS = $self->getActualDS($attribute->{$attName}, \%vDataset);
+			$vDataset{$actualDS} .= qq |
+      		<Attribute name = "|.$attName.qq|" />|;
 		}
-
-	     $atts = $self->getAllAttributes($dataset);
-     	foreach my $attribute (@$atts)
-	     {
-				$vDataset{$actualDS} .= qq |
-	      		<Attribute name = "|.$attribute->name.qq|" />|;
-	     }
-
-     	my $filts = $self->getAllFilters($dataset);
-	     foreach my $filter (@$filts)
-     	{
-			if ($filter->isa("BioMart::Configuration::ValueFilter"))
-			{
-			     my @values;
-		     	my @rows;
-			     my $atable = $filter->getTable;
-			     while (my $row = $atable->nextRow)
-	    		 	{
-					push @rows,$row;
-					foreach my $col (@$row)
-					{
-				     	push @values,$col;
-			  		}
-				}
-			     # need to regenerate AttributeTable cols for subsequent calls
-			     $atable->addRows(\@rows);
-				my $value = join(',',@values);
-	    	 
-		     	$vDataset{$actualDS} .= qq |
-	     		<Filter name = "|.$filter->name.qq|" value = "|.
-                   $value.qq|"/>|;
+     }
+     
+	## Filters
+    	my $filts = $self->getAllFilters();
+     foreach my $filter (@$filts)
+    	{
+		$actualDS = $self->getActualDS($filter->dataSetName, \%vDataset);
+		if ($filter->isa("BioMart::Configuration::ValueFilter"))
+		{
+		     my @values;
+	     	my @rows;
+		     my $atable = $filter->getTable;
+		     while (my $row = $atable->nextRow)
+    		 	{
+				push @rows,$row;
+				foreach my $col (@$row)
+				{
+			     	push @values,$col;
+		  		}
 			}
-			elsif ($filter->isa("BioMart::Configuration::FilterList"))
-			{
-	    
-			    	my @values;
-			    	my $filts = $filter->get('filters');
-		    		my @filters = @$filts;
-			    	my $attribute_table = $filter->get('attribute_table');
-			    	my $rows_avail = $attribute_table->hasMoreRows();
-	    			my $value;
-	  		  	# deal with non-batching invisible datasets for webservice
-	  		  	# need to keep reusing the same values for the filterlist
-			    	if (!$rows_avail)
-			    	{
-					if (!$filter->batching || $filter->batching != 1)
-					{
-				    		my $oldFilterListValues = $self->get('oldFilterListValues');
-					    	$value = $oldFilterListValues->{$filter->name};
-					}
-			    	}
-			    	else
-			    	{	
-					while ($rows_avail && $filter->_inBatch($attribute_table))
-					{
-					    	my $row = $attribute_table->nextRow();
-					    	my $val = '';
-				    		my $separator = '';
-					    	foreach my $col (@$row)
-					    	{	
-							$val = $val.$separator.$col;
-							$separator = '|';
-				    		}
-				    		push @values,$val;
-					}
-					$value = join(',',@values);
+		     # need to regenerate AttributeTable cols for subsequent calls
+		     $atable->addRows(\@rows);
+			my $value = join(',',@values);
+	    	 
+	     	$vDataset{$actualDS} .= qq |
+     		<Filter name = "|.$filter->name.qq|" value = "|.
+	               $value.qq|"/>|;
+		}
+		elsif ($filter->isa("BioMart::Configuration::FilterList"))
+		{
+		    	my @values;
+		    	my $filts = $filter->get('filters');
+	    		my @filters = @$filts;
+		    	my $attribute_table = $filter->get('attribute_table');
+		    	my $rows_avail = $attribute_table->hasMoreRows();
+			my $value;
+		  	# deal with non-batching invisible datasets for webservice
+		  	# need to keep reusing the same values for the filterlist
+		    	if (!$rows_avail)
+		    	{
+				if (!$filter->batching || $filter->batching != 1)
+				{
+			    		my $oldFilterListValues = $self->get('oldFilterListValues');
+				    	$value = $oldFilterListValues->{$filter->name};
 				}
-				# needed for correct batching behaviour
-	    			$filter->set('exhausted', 1) unless ($rows_avail);
+		    	}
+		    	else
+		    	{	
+				while ($rows_avail && $filter->_inBatch($attribute_table))
+				{
+				    	my $row = $attribute_table->nextRow();
+				    	my $val = '';
+			    		my $separator = '';
+				    	foreach my $col (@$row)
+				    	{	
+						$val = $val.$separator.$col;
+						$separator = '|';
+			    		}
+			    		push @values,$val;
+				}
+				$value = join(',',@values);
+			}
+			# needed for correct batching behaviour
+			$filter->set('exhausted', 1) unless ($rows_avail);
          		   
-	 		   	my $oldFilterListValues = $self->get('oldFilterListValues');
-	 		   	$oldFilterListValues->{$filter->name} = $value;
-			    	$self->set('oldFilterListValues',$oldFilterListValues);
+		   	my $oldFilterListValues = $self->get('oldFilterListValues');
+		   	$oldFilterListValues->{$filter->name} = $value;
+		    	$self->set('oldFilterListValues',$oldFilterListValues);
     	 
-				unless( defined $value) {$value="";} 
-			     $vDataset{$actualDS} .= qq |
-			     <Filter name = "|.$filter->name.qq|" value = "|.
+			unless( defined $value) {$value="";} 
+		     $vDataset{$actualDS} .= qq |
+				<Filter name = "|.$filter->name.qq|" value = "|.
 $value.qq|"/>|;
 	
-			}
+		}
 	
-		     elsif ($filter->isa("BioMart::Configuration::BooleanFilter"))
-    		 	{
-				$vDataset{$actualDS} .= qq |
-	     		<Filter name = "|.$filter->name.qq|" excluded = "|.
+	     elsif ($filter->isa("BioMart::Configuration::BooleanFilter"))
+    	 	{
+			$vDataset{$actualDS} .= qq |
+	    	<Filter name = "|.$filter->name.qq|" excluded = "|.
 $filter->getExcluded.qq|"/>|;
-			}
-		}  		
-  	}
+		}
+	}  		
 
 
-        my $ds;
+	my $ds;
   	foreach (keys %vDataset)
   	{
   		$vDataset{$_} .= qq |
-		</Dataset>|;
+	</Dataset>|;
                 $ds=$vDataset{$_};
 	}
 
-       # so it does not forget to stick dataset for counts
+     # so it does not forget to stick dataset for counts
        if ($count eq '1') { $xml .= qq |$ds|}
 
 	# ------ Determine correct order of datasets in the query without calling QueryRunner
@@ -483,6 +484,7 @@ $filter->getExcluded.qq|"/>|;
 </Query>|;
 
 	return $xml;
+
 }
 
 =head2 _toXML_old
@@ -1193,14 +1195,24 @@ sub addAttribute{
 					    $schema_name, $interface);
 	$self->set('softwareVersion', $softwareVersion);
 	
+	## its an attribute list, so need to store some information about this attributeList 
+	## which would help us recover the name of AttributeList in to_XML_latest as
+	## we donot want to display the names of individual attributes there
+	## The same logic goes into _populateFromXML
+	my $tempArray = $self->get('attsAndAttListsForXMLDisplay');
+	my $tempHash;
+	$tempHash->{$attribute->name} = $attribute->dataSetName;
+	push @{$tempArray}, $tempHash;
+	$self->set('attsAndAttListsForXMLDisplay', $tempArray);
+			
 	if (UNIVERSAL::can($attribute,'getAllAttributes')) {
 		my @attributes = @{$attribute->getAllAttributes};
 		foreach my $attr (@attributes) {
-    		$self->_addAttribute($attr);
+			$self->_addAttribute($attr);
 		}
 	}
 	else {
-    	$self->_addAttribute($attribute);
+    		$self->_addAttribute($attribute);
 	}
 }
 
@@ -1435,7 +1447,6 @@ sub addAttributes{
 
 sub addAttributeListFirst{
   my ($self, $alist) = @_;
-
   my $aLists = $self->get('attribute_lists');
   unshift @{$aLists}, $alist;
   $self->set('attribute_lists', $aLists);
@@ -1456,7 +1467,6 @@ sub addAttributeListFirst{
 
 sub addAttributeList{
   my ($self, $alist) = @_;
-
   my $aLists = $self->get('attribute_lists');
   push @{$aLists}, $alist;
   $self->set('attribute_lists', $aLists);
@@ -1912,18 +1922,37 @@ sub _populateFromXML {
 	}
 		
 	
-	  foreach my $attributeNode (@{$dataset->{'Attribute'}}){
-	      my $attribute = $confTree->
-		  getAttributeByName($attributeNode->{'name'});
+		foreach my $attributeNode (@{$dataset->{'Attribute'}}){
+	     	my $attribute = $confTree->
+			getAttributeByName($attributeNode->{'name'});
 
-	      if (!$attribute) {
-		  BioMart::Exception::Usage->throw ("Attribute ".
-		       $attributeNode->{'name'}." NOT FOUND");
-	      }
-	      else{
-		  $self->_addAttribute($attribute);
-	      }
-	  }
+		     if (!$attribute) {
+				BioMart::Exception::Usage->throw ("Attribute ".
+		     	$attributeNode->{'name'}." NOT FOUND");
+			}
+		     else {			 	
+	    			## its an attribute list, so need to store some information about this attributeList 
+				## which would help us recover the name of AttributeList in to_XML_latest as
+				## we donot want to display the names of individual attributes there
+				## The same logic goes into getAttribute
+				my $tempArray = $self->get('attsAndAttListsForXMLDisplay');
+				my $tempHash;
+				$tempHash->{$attribute->name} = $attribute->dataSetName;
+				push @{$tempArray}, $tempHash;
+				$self->set('attsAndAttListsForXMLDisplay', $tempArray);
+			
+				if (UNIVERSAL::can($attribute,'getAllAttributes')) {
+					my @attributes = @{$attribute->getAllAttributes};
+					foreach my $attr (@attributes) {
+						$self->_addAttribute($attr);
+					}
+				}
+				else {
+			    		$self->_addAttribute($attribute);
+				}
+				
+	     	}	
+	     }
 	# reads Filter element
 	foreach my $filterNode (@{$dataset->{'Filter'}}){
 	    if (defined $filterNode->{'excluded'}){
