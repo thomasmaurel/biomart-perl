@@ -960,6 +960,49 @@ function getFiltersInContainer(containerEltId) {
 			}
 			//alert('Have value '+filterValue+' for filter '+filterDisplayName);
 			break;
+
+ 		case 'textarea':
+			//alert('filterValueElt.selectedIndex for select-elt '+filterValueElt.name+' is '+filterValueElt.selectedIndex);
+			//alert('Checking if I have a bool-modifier for filtername '+filterName);
+				var idListTextAreaElts = getElementsByName_local(filterName);
+				var idListFileUploadElts = getElementsByName_local(filterName+'__text__file');
+				var idListFileUploadEltName = filterName+'__text__file';
+				
+				if(idListTextAreaElts.length > 0 || idListFileUploadElts.length > 0) {
+
+					filterDisplayName = currentFilterDisplayName;
+					filterValue = '[ID-list specified]';
+					
+					if(idListTextAreaElts.length > 0 && idListTextAreaElts[0].value != '') 
+					{				    
+				    		// Tricky here also: need to add the textarea or file-upload info to a new param
+					    	// representing the real filter (from the menu).
+						//alert('Got ID-list textarea, so this is an ID-list filter, name='+filterName);
+						addOrReplaceHiddenFormParam(filterName+'__text', document.mainform, idListTextAreaElts[0].value);
+						//alert('Added name='+filterName+'__text value='+idListTextAreaElts[0].value);
+
+					}
+					else if(idListFileUploadElts.length > 0 && idListFileUploadElts[0].value != '') 
+					{
+						//alert('Got ID-list file, so this is an ID-list filter, name='+filterName);
+						addOrReplaceHiddenFormParam(filterName+'__text__file', document.mainform, idListFileUploadEltName);
+						//alert('Added name='+filterName+'__text__file value='+idListFileUploadEltName);
+						
+					}
+					
+			    	}
+			     	else {
+					//alert("just regular filter vals");
+					// just regular filter value
+					//[TAG]//filterValue = filterValueElt.options[filterValueElt.selectedIndex].value;
+					filterValue = filterValueElt.options[filterValueElt.selectedIndex].innerHTML;
+					filterName  = filterValueElt.name;
+			    	}	
+			    	filterInfoOf[filterName] = [filterDisplayName, filterValue];
+			//alert('Have value '+filterValue+' for filter '+filterDisplayName);
+			break;
+
+
 		    case 'select-multiple':
 			//alert('filterValueElt.selectedIndex for select-elt '+filterValueElt.name+' is '+filterValueElt.selectedIndex);
 			if(filterValueElt.selectedIndex >= 0) {
