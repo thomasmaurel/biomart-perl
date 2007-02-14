@@ -25,7 +25,7 @@
 
 -->
 
-<MartURLLocation default="1" displayName="WORMBASE 167" host="biomart.wormbase.org" includeDatasets="" martUser="" name="wormbase_current" path="/biomart/martservice" port="80" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="WS_CURRENT" visible="1" />
+<MartURLLocation default="1" displayName="WORMBASE 167 (CSHL)" host="biomart.wormbase.org" includeDatasets="" martUser="" name="wormbase_current" path="/biomart/martservice" port="80" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="WS_CURRENT" visible="1" />
 
 <MartURLLocation  host="www.gramene.org" name="ENSEMBL_MART_ENSEMBL" path="/Multi/martservice" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="" displayName="GRAMENE (CSHL)" port="80" visible="1" default="1" martUser="" includeDatasets="" redirect="1" />
 
