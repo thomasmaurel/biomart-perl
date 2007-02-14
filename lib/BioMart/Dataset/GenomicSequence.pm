@@ -596,7 +596,7 @@ sub _getLocationFrom {
 }
 
 sub _modFlanks {
-    my ($self, $location, $shift, $rank) = @_;
+    my ($self, $location, $shift, $flank) = @_;
     
     $location->{start} || return $location; # Sanity check
     $location->{end}   || return $location; # Sanity check
@@ -638,10 +638,12 @@ sub _modFlanks {
     } 
     elsif ($shift == 2) #-- this is specific for: flanks + coding|cdna  [ben]
     {
-	if ($self->get('upstream_flank') && $rank == 1 ) {
-	    #-- the rank is used here, in case the user ask for both upstream 
-	    #-- and downstream flank. With the rank you are sure, you  don't enter in 
+	if ($self->get('upstream_flank') && ($flank eq "up")) {
+	    #-- the flank variable is used here, in case the user ask for both upstream 
+	    #-- and downstream flank. With $flank you are sure, you don't enter in 
 	    #-- the upstream loop when you should get in the downstream loop. 
+	    #-- or you don't enter twice the upstream loop when you ask for both up+down
+	    #-- or you get a single exon gene/transcript
 	    if ($location->{"strand"} < 0) 
 	    {
 		$location->{"end"} += $self->get('upstream_flank');
@@ -651,7 +653,7 @@ sub _modFlanks {
 		$location->{"start"} -= $self->get('upstream_flank');
 	    }
 	}
-	elsif ($self->get('downstream_flank')) {
+	elsif ($self->get('downstream_flank') && ($flank eq "down")) {
 	    if ($location->{"strand"} < 0) 
 	    {
 		$location->{"start"} -= $self->get('downstream_flank');
@@ -841,23 +843,42 @@ sub _codingCdnaPeptideSequences {
 	#-- not for every exons, as it used to be before. So _modFlank is
 	#-- ran only at the very end, and once (once if upsream, once if 
 	#-- downstream) to modify $locations. [ben]
+
+	#-- This is very important especially if you ask for both up AND downstream flanks
+	#-- so you are sure that you enter only once in each _modFlank loop, and not twice 
+	#-- in the upstream as it was before. 
+	my ($up, $down);
+	if ($self->get('upstream_flank')){$up = "up"}
+	if ($self->get('downstream_flank')){$down = "down"}
 	
 	#-- get exons rank info 
 	my @ranks = sort { $a <=> $b } keys %{$locations};
-	my $firstExon = shift @ranks; #get first exon
-	my $lastExon = pop @ranks;    #get last exon
+	my $array_size = scalar @ranks;
+	my ($firstExon,$lastExon);
+	
+	if ($array_size == 1){
+	    #-- if the gene/transcript has 1 exon only
+	    #-- so you can get a downstream flank even if rank = 1
+	    $firstExon = shift @ranks; # firstExon and lastExon are both set to 1
+	    $lastExon = $firstExon ;
+	    
+	}else {
+	    #-- if the gene/transcript has more than 1 exon
+	    $firstExon = shift @ranks; #get first exon
+	    $lastExon = pop @ranks;    #get last exon
+    }
 	
 	#-- then run _modflank for the first and/or last exons
 	if ($self->get('upstream_flank'))
 	{
 	    my $location = $locations->{$firstExon};
-	    $location = $self->_modFlanks($location, 2, $firstExon);
+	    $location = $self->_modFlanks($location, 2, $up);
 	    $locations->{$firstExon} = $location if ($location->{"start"});	
 	} 
 	if ($self->get('downstream_flank')) 
 	{
 	    my $location = $locations->{$lastExon}; 
-	    $location = $self->_modFlanks($location, 2, $lastExon);
+	    $location = $self->_modFlanks($location, 2, $down);
 	    $locations->{$lastExon} = $location if ($location->{"start"});
 	}
 	
