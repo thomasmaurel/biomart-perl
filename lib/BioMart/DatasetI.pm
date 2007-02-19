@@ -1416,7 +1416,7 @@ sub getCount{
   $self->unimplemented_method();
 }
 
-=head2 getCount
+=head2 mergeCommaSeparated
 
   Usage      : 
 
