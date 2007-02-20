@@ -44,7 +44,7 @@
 			font-size: x-small;
 			color: #003300;
 			text-align: left;
-			background-image: url(biomart_nofp_bg.gif);
+			background-image: url(biomart_mini_tut_nofp_bg.gif);
 			background-repeat: no-repeat;
 			width: 210px; 
 			height: 200px;	
@@ -60,10 +60,10 @@
 	   </div>
       <script type="text/javascript">
 		  // <![CDATA[          
-         var fo = new FlashObject( "biomart_controller.swf", "biomart_controller.swf", "1280", "530", "7", "#FFFFFF", false, "best" );
-         fo.addVariable( "csConfigFile", "biomart_config.xml"  ); 
+         var fo = new FlashObject( "biomart_mini_tut_controller.swf", "biomart_mini_tut_controller.swf", "1280", "530", "7", "#FFFFFF", false, "best" );
+         fo.addVariable( "csConfigFile", "biomart_mini_tut_config.xml"  ); 
          fo.addVariable( "csColor"     , "FFFFFF"           );
-         
+         fo.addVariable( "csPreloader" , 'biomart_mini_tut_preload.swf' );
          if( args.movie )
          {
             fo.addVariable( "csFilesetBookmark", args.movie );

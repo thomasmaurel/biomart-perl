@@ -7,9 +7,9 @@
       <hasAudio type="Boolean">0</hasAudio>
       <mainVidIsFlv type="Boolean">0</mainVidIsFlv>
       <skinTheme>classic</skinTheme>
-      <autoStart type="Boolean">0</autoStart>
+      <autoStart type="Boolean">1</autoStart>
       <backgroundColor>FFFFFF</backgroundColor>
-      <showLoadingMov type="Boolean">0</showLoadingMov>
+      <showLoadingMov type="Boolean">1</showLoadingMov>
       <scaleLoadingMov type="Boolean">1</scaleLoadingMov>
       <loadingMovPercentToLoad type="Number">50</loadingMovPercentToLoad>
       <loadingMovMinDuration type="Number">3</loadingMovMinDuration>
@@ -105,7 +105,7 @@ For other distribution methods, or to understand how the Flash Player security s
          <fileset>
             <video1>
                <duration type="Number">108.20</duration>
-               <uri>biomart.swf</uri>
+               <uri>biomart_mini_tut.swf</uri>
                <frameRate type="Number">5</frameRate>
                <keyframeRate type="Number">0</keyframeRate>
                <blendingMode>Normal</blendingMode>
@@ -115,7 +115,7 @@ For other distribution methods, or to understand how the Flash Player security s
                <duration type="Number">0.00</duration>
                <frameRate type="Number">0</frameRate>
                <keyframeRate type="Number">30</keyframeRate>
-               <uri>biomart_PIP.flv</uri>   
+               <uri>biomart_mini_tut_PIP.flv</uri>   
             </pip>
             <hasPipVideo type="Boolean">0</hasPipVideo>
             <hotspotInfo>
