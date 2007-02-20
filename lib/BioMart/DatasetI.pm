@@ -1254,10 +1254,13 @@ sub _hashAttributes {
 	  my $hashed_rows = $datasetAttributeHash{$key_string};
 	  
 	  my $row_to_add = [@{$row}[0..@{$row}-1-$exportable_size]];
-	  if ($hashed_rows){# make sure unique before add
+	  if ($hashed_rows){# make sure unique before add, error_log flooding
 	     foreach my $prev_row (@{$hashed_rows}){
-		 next HASHROW1 if ("@{$prev_row}" eq "@{$row_to_add}");
+	  		if ("@{$prev_row}" && "@{$row_to_add}"){	# make sure unique before add, error_log flooding
+				next HASHROW1 if ("@{$prev_row}" eq "@{$row_to_add}");
+			}
 	     }
+	     
 	  }
 	  push @$hashed_rows,$row_to_add;
 	  $datasetAttributeHash{$key_string} = $hashed_rows;
