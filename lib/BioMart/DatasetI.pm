@@ -1472,7 +1472,7 @@ sub mergeCommaSeparated
 				}
 				else {
 					## test if its not already added. e.g ENSGxxxx should be added only once
-					if ( $finalRow->[$i] !~ $$row[0]->[$i] )
+					if ( $finalRow->[$i] !~ m/$$row[0]->[$i]/ )
 					{
 						$finalRow->[$i] .= ','.$$row[0]->[$i];	
 					}
