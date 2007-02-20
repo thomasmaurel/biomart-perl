@@ -916,7 +916,7 @@ sub _codingCdnaPeptideSequences {
 	#-- This was soo wrong - it added a flank (upstream and/or downstream) 
 	#-- for every exons, instead of once, at the 5' or 3' end  - [ben]
 	
-	$locations->{$rank} = $location if ($location->{"start"});
+	$locations->{$rank} = $location if ($location->{"start"} && $rank);
     } 
     $outRow ||= $self->_initializeReturnRow($curRow);
     $self->set('locations', $locations);
