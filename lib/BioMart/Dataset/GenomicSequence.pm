@@ -795,16 +795,24 @@ sub _getResultTable {
 
     my $importable = $self->get('importable');
     my $rtable = $importable->getTable();
-
+    
     my $attribute_count = @{$query->getAllAttributes};
     if ($rtable->hashedResults || $attribute_count > 1){
 	$self->set('attribute_merge_required','1');
     }
     
     my $has_rows = $rtable->hasMoreRows;
-    while ($has_rows && $self->_continueWithBatch($batch_size, $rtable)) {
-	$self->_processRow( $atable, $rtable->nextRow);
-    }
+    
+   	
+    	my %avoidDuplication = ();
+	NEXTROW: while ($has_rows && $self->_continueWithBatch($batch_size, $rtable)) {
+		my $curRow = $rtable->nextRow;
+		my $rowAsString = $self->toString($curRow); # avoid using "@A" eq "@B" type comparison, it floods error log
+		next NEXTROW if (!$rowAsString || exists $avoidDuplication{$rowAsString} ) ; # no point retrieving sequence for same coordinates
+		$avoidDuplication{$rowAsString} = '';
+		$self->_processRow( $atable, $curRow);
+	}
+
     # the last and final call to GenomicSequence, after the call which 
     # exhausts the importable, will result in the last sequence being 
     # processed and added to the resultTable.
@@ -817,7 +825,7 @@ sub _getResultTable {
     $self->set('importable', $importable);
 
   		$self->get('dna')->close;
-  		
+
     return $atable;
 }
 
@@ -1240,6 +1248,31 @@ sub _snpSequences {
 			   $sequence);
 	}    
     }
+}
+
+=head2 toString
+  Usage      : 
+
+  Description: Helper rouinte for Array comparison by converting
+  			it to string first. Comparing arrays as "@A" eq "@B"
+  			brings flood of warning
+
+  Returntype : String
+
+  Exceptions : none
+
+  Caller     : caller
+
+=cut
+sub toString
+{
+	my ($self, $curRow) = @_;
+	my $string;
+    	foreach (@{$curRow})
+    	{
+		$string .= $_ if ($_);
+    	}
+ 	return $string;   	
 }
 
 1;
