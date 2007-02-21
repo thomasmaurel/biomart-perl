@@ -1067,7 +1067,6 @@ sub exportableFrom {
   Caller     : caller
 
 =cut
-
 sub getResultTable {
   my ($self, @param) = @_;
 
@@ -1157,7 +1156,8 @@ sub getResultTable {
       my $has_data = $self->_getResultTable(%param);
       $logger->debug("Got results") if $has_data;
       $logger->debug("Got no results") unless $has_data;
-
+      
+     
       # DO MERGING OF ATTRIBUTES IF REQUIRED 
       if ($importable){
 	  # these lines are necessary to repopulate attributeHash as the 
@@ -1253,14 +1253,15 @@ sub _hashAttributes {
 	  my $hashed_rows = $datasetAttributeHash{$key_string};
 	  
 	  my $row_to_add = [@{$row}[0..@{$row}-1-$exportable_size]];
-	  if ($hashed_rows){# make sure unique before add, error_log flooding
+	  
+	  #next HASHROW1 if ($self->rowExists($row_to_add, $hashed_rows));
+	  if ($hashed_rows){
 	     foreach my $prev_row (@{$hashed_rows}){
-	  		if ("@{$prev_row}" && "@{$row_to_add}"){	# make sure unique before add, error_log flooding
-				next HASHROW1 if ("@{$prev_row}" eq "@{$row_to_add}");
-			}
-	     }
-	     
+		     # avoid using "@A" eq "@B" type comparison, it floods error log
+			next HASHROW1 if ( $self->toString($prev_row) eq $self->toString($row_to_add) );
+		}	     
 	  }
+	  	  
 	  push @$hashed_rows,$row_to_add;
 	  $datasetAttributeHash{$key_string} = $hashed_rows;
        }
@@ -1280,11 +1281,15 @@ sub _hashAttributes {
 	  my $hashed_rows = $datasetAttributeHash{$key_string};
 	  
 	  my $row_to_add = [@{$row}[$exportable_size..@{$row}-1]];
-	  if ($hashed_rows){# make sure unique before add
+	  
+	  #next HASHROW if ($self->rowExists($row_to_add, $hashed_rows));
+	  if ($hashed_rows){# make sure unique before add, error_log flooding
 	     foreach my $prev_row (@{$hashed_rows}){
-			next HASHROW if ($row_to_add && "@{$prev_row}" eq "@{$row_to_add}");
-	     }
+			# avoid using "@A" eq "@B" type comparison, it floods error log
+			next HASHROW if ( $self->toString($prev_row) eq $self->toString($row_to_add) );		
+		}
 	  }
+	  
 	  #warn($key_string." => ".join ",",@$row_to_add);
 	  push @$hashed_rows,$row_to_add;
 	  $datasetAttributeHash{$key_string} = $hashed_rows;
@@ -1296,36 +1301,47 @@ sub _hashAttributes {
     return $tempTable;
 }
 
+
 sub _attributeMerge {
   	my ($self,$rtable,$importable_size,$linkName) = @_;
 
 	$logger->debug("Importable size: $importable_size");
 	$logger->debug("Link name: $linkName");
 	my %this_dset_hash;
+	
 	my $rows = $rtable->getRows();
-    	foreach my $row(@{$rows}){
-	my $key_string = '';
-	my $pKey = '';
-	for (my $i = 0; $i < $importable_size; $i++)
-	{
-	    next if (!$$row[$i]);
-	    $logger->debug("Appending ".$$row[$i]);
-	    $key_string .= $$row[$i];
-	    $pKey = $$row[$i] if ($i == 0);
-	}
-	$logger->debug("Final key string is: ".$key_string);
-	next if ($key_string eq "");
-	# store hash element;
+	
+    	HASHROW:foreach my $row(@{$rows}){
+		my $key_string = '';
+		my $pKey = '';
+		for (my $i = 0; $i < $importable_size; $i++)
+		{
+		    next if (!$$row[$i]);
+		    $logger->debug("Appending ".$$row[$i]);
+		    $key_string .= $$row[$i];
+		    $pKey = $$row[$i] if ($i == 0);
+		}
+		$logger->debug("Final key string is: ".$key_string);
+		next if ($key_string eq "" );
+	
+		# store hash element;
 
-     my $hashed_rows = $this_dset_hash{$key_string}{'row'};
-	push @$hashed_rows,[@{$row}[$importable_size..@{$row}-1]];
-	$this_dset_hash{$key_string}{'row'} = $hashed_rows;
-	$this_dset_hash{$key_string}{'pkey'} = $pKey; ## just the first portion of key_string as its unique
+	     my $hashed_rows = $this_dset_hash{$key_string}{'row'};
+     
+		my $row_to_add = [@{$row}[$importable_size..@{$row}-1]];
+
+		push @$hashed_rows, $row_to_add;
+	
+		$this_dset_hash{$key_string}{'row'} = $hashed_rows;
+		$this_dset_hash{$key_string}{'pkey'} = $pKey; ## just the first portion of key_string as its unique
+
     	}
     
     	my @new_rows;
     	# loop over both hashes and produce new table
+
     	my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
+
 	foreach my $key(keys %this_dset_hash)
 	{
 		
@@ -1334,6 +1350,7 @@ sub _attributeMerge {
 		$logger->debug("Processing key: ".$key);
     		$logger->debug("This previous rows: ".scalar(@$this_dset_rows));
 		foreach my $this_dset_row(@$this_dset_rows){
+
 	    		my $prev_dset_rows = $prev_dset_hash{$key}; 		## this matching of both lower and upper case of keys
 			if(!$prev_dset_rows)						## is introduced ever since ensembl 41 has made the 
 			{										## pdb for e.g in UPPER case and in MSD its in LOWER case	
@@ -1348,11 +1365,12 @@ sub _attributeMerge {
 		    		$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
 		    		foreach my $prev_dset_row(@$prev_dset_rows)
 		    		{
+
 		    			if ($self->isa("BioMart::Dataset::GenomicSequence")) ## GS comma separated list for structure attributes
 		    			{						
-		    				my $updatedRow = $self->mergeCommaSeparated($pKey, $key, $linkName); #e.g pKey=267929 AND key=26792911522636522755-15 
-		    				push @new_rows, [@$this_dset_row,@$updatedRow];
-						#push @new_rows, [@$this_dset_row,@$prev_dset_row];
+		    				#my $updatedRow = $self->mergeCommaSeparated($pKey, $key, $linkName); #e.g pKey=267929 AND key=26792911522636522755-15 
+		    				#push @new_rows, [@$this_dset_row,@$updatedRow];
+						push @new_rows, [@$this_dset_row,@$prev_dset_row];
 		    			}
 		    			else ## normal process as it used to be
 		    			{						
@@ -1369,6 +1387,7 @@ sub _attributeMerge {
 	$logger->debug("Finished with rows: ".scalar(@new_rows));
 
     	$rtable->setRows(\@new_rows);
+    	
     	return $rtable;
 
 }
@@ -1495,5 +1514,31 @@ sub mergeCommaSeparated
 	return $finalRow;
     	
 }
+
+=head2 toString
+  Usage      : 
+
+  Description: Helper rouinte for Array comparison by converting
+  			it to string first. Comparing arrays as "@A" eq "@B"
+  			brings flood of warning
+
+  Returntype : String
+
+  Exceptions : none
+
+  Caller     : caller
+
+=cut
+sub toString
+{
+	my ($self, $curRow) = @_;
+	my $string;
+    	foreach (@{$curRow})
+    	{
+		$string .= $_ if ($_);
+    	}
+ 	return $string;   	
+}
+
 
 1;
