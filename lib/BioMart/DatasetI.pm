@@ -1068,7 +1068,6 @@ sub exportableFrom {
   Caller     : caller
 
 =cut
-
 sub getResultTable {
   my ($self, @param) = @_;
 
@@ -1174,7 +1173,7 @@ sub getResultTable {
 	  $self->get('attributeHash')->{$linkName}){
       $logger->debug("Attribute merge using linkName: $linkName");
       $logger->debug("Before merge: ".scalar(@{$has_data->get('columns')}));
-	  $table = $self->_attributeMerge($table,$importable_size,$linkName, $query);
+	  $table = $self->_attributeMerge($table,$importable_size,$linkName);
       $logger->debug("After merge: ".scalar(@{$has_data->get('columns')}));
       }
 
@@ -1217,12 +1216,10 @@ sub getResultTable {
 
       if ($to_hash){
       $logger->debug("Attribute hash");
-		
       $logger->debug("Before hash: ".scalar(@{$table->get('columns')}));
 	  $table = $self->_hashAttributes($table,$exportable_size);
       $logger->debug("After hash: ".scalar(@{$table->get('columns')}));
-
-	}
+      }
 
       # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
       $logger->debug("Returning defined has_data") if $has_data;
@@ -1248,15 +1245,13 @@ sub _hashAttributes {
 	  push @new_rows, $new_row;# do first so even empty rows get added so 
 	                           # batching behaviour not confused
 	  my $key_string = '';
-	  my $pKey = '';
 	  for (my $i = @{$row} - $exportable_size; $i < @{$row}; $i++){
 	      next if (!$$row[$i]);
 	      $key_string .= $$row[$i];
-	      $pKey = $$row[$i] if (!$pKey);
 	  }
 	  next if ($key_string eq "");
 	  # store hash element;
-	  my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
+	  my $hashed_rows = $datasetAttributeHash{$key_string};
 	  
 	  my $row_to_add = [@{$row}[0..@{$row}-1-$exportable_size]];
 	  
@@ -1269,25 +1264,22 @@ sub _hashAttributes {
 	  }
 	  	  
 	  push @$hashed_rows,$row_to_add;
-	  $datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;
+	  $datasetAttributeHash{$key_string} = $hashed_rows;
        }
     }
-    
     else{
       HASHROW:foreach my $row(@{$rows}){
 	  my $new_row = [@{$row}[0..$exportable_size-1]];
 	  push @new_rows, $new_row;# do first so even empty rows get added so 
 	                           # batching behaviour not confused
 	  my $key_string = '';
-  	  my $pKey = '';
 	  for (my $i = 0; $i < $exportable_size; $i++){
 	      next if (!$$row[$i]);
 	      $key_string .= $$row[$i];
-	      $pKey = $$row[$i] if (!$pKey);	      
 	  }
 	  next if ($key_string eq "");
 	  # store hash element;
-	  my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
+	  my $hashed_rows = $datasetAttributeHash{$key_string};
 	  
 	  my $row_to_add = [@{$row}[$exportable_size..@{$row}-1]];
 	  
@@ -1301,7 +1293,7 @@ sub _hashAttributes {
 	  
 	  #warn($key_string." => ".join ",",@$row_to_add);
 	  push @$hashed_rows,$row_to_add;
-	  $datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;
+	  $datasetAttributeHash{$key_string} = $hashed_rows;
       }
     }
 
@@ -1312,21 +1304,10 @@ sub _hashAttributes {
 
 
 sub _attributeMerge {
-  	my ($self,$rtable,$importable_size,$linkName, $query) = @_;
+  	my ($self,$rtable,$importable_size,$linkName) = @_;
 
 	$logger->debug("Importable size: $importable_size");
 	$logger->debug("Link name: $linkName");
-	my $sequenceType = 'none';
-	if ($self->isa("BioMart::Dataset::GenomicSequence") && ($query->getAllAttributes($self->name)->[0]->name()) ){
-		$sequenceType = $query->getAllAttributes($self->name)->[0]->name();
-		if ($sequenceType =~ m/(coding|cdna|peptide)$/
-			|| $sequenceType =~ m/utr$/ )
-		{
-			$sequenceType = 'ok';
-		}
-	}
-	
-	
 	my %this_dset_hash;
 	
 	my $rows = $rtable->getRows();
@@ -1339,102 +1320,71 @@ sub _attributeMerge {
 		    next if (!$$row[$i]);
 		    $logger->debug("Appending ".$$row[$i]);
 		    $key_string .= $$row[$i];
-		    $pKey = $$row[$i] if (!$pKey);
+		    $pKey = $$row[$i] if ($i == 0);
 		}
 		$logger->debug("Final key string is: ".$key_string);
 		next if ($key_string eq "" );
 	
 		# store hash element;
 
-	     #my $hashed_rows = $this_dset_hash{$key_string}{'row'};
-	     my $hashed_rows = $this_dset_hash{$pKey}{$key_string};
+	     my $hashed_rows = $this_dset_hash{$key_string}{'row'};
+     
 		my $row_to_add = [@{$row}[$importable_size..@{$row}-1]];
 
 		push @$hashed_rows, $row_to_add;
 	
-		#$this_dset_hash{$key_string}{'row'} = $hashed_rows;
-		#$this_dset_hash{$key_string}{'pkey'} = $pKey; ## just the first portion of key_string as its unique
-		$this_dset_hash{$pKey}{$key_string} = $hashed_rows;
+		$this_dset_hash{$key_string}{'row'} = $hashed_rows;
+		$this_dset_hash{$key_string}{'pkey'} = $pKey; ## just the first portion of key_string as its unique
+
     	}
-    	
-#   	open (STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/NEW_DS");
-#	print STDME "\n\n\n\n ------------------------ NEW_DS--------------------------------- \n\n\n\n ";
-#	print STDME Dumper (\%this_dset_hash);
-#	close (STDME);
     
     	my @new_rows;
     	# loop over both hashes and produce new table
 
     	my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
 
-	foreach my $prkey(keys %this_dset_hash)
+	foreach my $key(keys %this_dset_hash)
 	{
-		foreach my $key(keys %{$this_dset_hash{$prkey}})
-		{		
-			my $this_dset_rows = $this_dset_hash{$prkey}{$key};
-			#my $pKey = $this_dset_hash{$key}{'pkey'};
-			my $pKey = $prkey;
-			$logger->debug("Processing key: ".$key);
-    			$logger->debug("This previous rows: ".scalar(@$this_dset_rows));
-			foreach my $this_dset_row(@$this_dset_rows){
+		
+		my $this_dset_rows = $this_dset_hash{$key}{'row'};
+		my $pKey = $this_dset_hash{$key}{'pkey'};
+		$logger->debug("Processing key: ".$key);
+    		$logger->debug("This previous rows: ".scalar(@$this_dset_rows));
+		foreach my $this_dset_row(@$this_dset_rows){
 
-		    		my $prev_dset_rows = $prev_dset_hash{$prkey}{$key};		## this matching of both lower and upper case of keys
-				if(!$prev_dset_rows)								## is introduced ever since ensembl 41 has made the 
-				{												## pdb for e.g in UPPER case and in MSD its in LOWER case	
-					$prev_dset_rows = $prev_dset_hash{lc($prkey)}{lc($key)};	## so its safe to test both the scenarios
-				}		
-				if(!$prev_dset_rows)								## is introduced ever since ensembl 41 has made the 
-				{												## pdb for e.g in UPPER case and in MSD its in UPPER case	
-					$prev_dset_rows = $prev_dset_hash{uc($prkey)}{uc($key)};	## so its safe to test both the scenarios
-				}
-			    	if ($prev_dset_rows) 
-			    	{
-			    		$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
-		    			foreach my $prev_dset_row(@$prev_dset_rows)
-		    			{
-						## GS comma separated list for structure attributes
-			    			if ($sequenceType eq 'ok') 
-			    			{						
-							#e.g pKey=267929 AND key=26792911522636522755-15 
-			    				my @allRows;
-						    	my $finalRow;
-			    				foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {
-								push @allRows, $prev_dset_hash{$pKey}{$key_string};
-							}
-			    				foreach my $row (@allRows) {	
-								if($row) 	{
-									for (my $i = 0; $i < scalar(@{@$row[0]}); $i++)	{			
-										if ( $$row[0]->[$i] ) {
-											if (!$finalRow->[$i]) {
-												$finalRow->[$i] = $$row[0]->[$i]; 	
-											}
-											else {
-												## test if its not already added. e.g ENSGxxxx should be added only once
-												if ( $finalRow->[$i] !~ m/$$row[0]->[$i]/ )	{
-													$finalRow->[$i] .= ','.$$row[0]->[$i];	
-												}
-											}
-										}	
-									}		
-								}
-							}
-							push @new_rows, [@$this_dset_row,@$finalRow];		    				
-
-							#push @new_rows, [@$this_dset_row,@$prev_dset_row];
-			    			}
-		    				else ## normal process as it used to be
-			    			{						
-							push @new_rows, [@$this_dset_row,@$prev_dset_row];
-						}
-		 	   		}
-		    		}	 
-	    			else 
-	    			{
-		    			$logger->debug("There were NO previous rows");
-			    	}
+	    		my $prev_dset_rows = $prev_dset_hash{$key}; 		## this matching of both lower and upper case of keys
+			if(!$prev_dset_rows)						## is introduced ever since ensembl 41 has made the 
+			{										## pdb for e.g in UPPER case and in MSD its in LOWER case	
+				$prev_dset_rows = $prev_dset_hash{lc($key)};	## so its safe to test both the scenarios
+			}		
+			if(!$prev_dset_rows)						## is introduced ever since ensembl 41 has made the 
+			{										## pdb for e.g in UPPER case and in MSD its in UPPER case	
+				$prev_dset_rows = $prev_dset_hash{uc($key)};	## so its safe to test both the scenarios
 			}
+		    	if ($prev_dset_rows) 
+		    	{
+		    		$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
+		    		foreach my $prev_dset_row(@$prev_dset_rows)
+		    		{
+
+		    			if ($self->isa("BioMart::Dataset::GenomicSequence")) ## GS comma separated list for structure attributes
+		    			{						
+		    				#my $updatedRow = $self->mergeCommaSeparated($pKey, $key, $linkName); #e.g pKey=267929 AND key=26792911522636522755-15 
+		    				#push @new_rows, [@$this_dset_row,@$updatedRow];
+						push @new_rows, [@$this_dset_row,@$prev_dset_row];
+		    			}
+		    			else ## normal process as it used to be
+		    			{						
+						push @new_rows, [@$this_dset_row,@$prev_dset_row];
+					}
+	 	   		}
+	    		}	 
+	    		else 
+	    		{
+	    			$logger->debug("There were NO previous rows");
+		    	}
 		}
-	}
+    }
 	$logger->debug("Finished with rows: ".scalar(@new_rows));
 
     	$rtable->setRows(\@new_rows);
@@ -1485,6 +1435,85 @@ sub getCount{
     return $self->_getCount(%param);
   }
   $self->unimplemented_method();
+}
+
+=head2 mergeCommaSeparated
+
+  Usage      : 
+
+  Description: Helper rouinte for _attributeMerge
+  			when there are multiple values against
+  			e.g Structure attributes [exon_start, exon_end]
+  			they should appear as comma separated list. This
+  			was absent for sequence requests [GenomicSequence] which
+  			used to display only one random exon_start and exon_end.
+  			The same logic goes for 3-utr, 5-utr, coding_start etc
+  	
+
+  Returntype : updated row with comma separated values
+  			for structure attributes
+
+  Exceptions : none
+
+  Caller     : caller
+
+=cut
+sub mergeCommaSeparated
+{
+	my ($self, $pKey, $key, $linkName) = @_;
+    	my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
+    	my $templateRow = $prev_dset_hash{$key};
+    	my @allRows;
+    	my $finalRow;
+    	
+    	foreach my $key_string (%prev_dset_hash)
+    	{
+    		if ($key_string =~ m/^$pKey/) ## if it belongs to the family of same transcript 
+    		{
+    			push @allRows, $prev_dset_hash{$key_string};
+    		}
+    	}
+
+	#open (STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/shazi_NEW_DARKMAGIC");
+	#print STDME "\n\n\n\n ------------------------ DARK MAGIC--------------------------------- \n\n\n\n ";
+
+    	
+    	## By now we have the rows belonging to this family, so lets merge them all as comma separated list
+	foreach my $row (@allRows)
+	{
+		
+		#print STDME "ROW: ", Dumper($row), "\n";
+		#print STDME "ROW_LENGTH: ",scalar(@{@$row[0]});
+		#print STDME "VALUE: ",$$row[0]->[0];
+		for (my $i = 0; $i < scalar(@{@$row[0]}); $i++)
+		{			
+			if ( $$row[0]->[$i] )
+			{
+				if (!$finalRow->[$i])
+				{
+					$finalRow->[$i] = $$row[0]->[$i]; 	
+				}
+				else {
+					## test if its not already added. e.g ENSGxxxx should be added only once
+					if ( $finalRow->[$i] !~ m/$$row[0]->[$i]/ )
+					{
+						$finalRow->[$i] .= ','.$$row[0]->[$i];	
+					}
+				}
+			}	
+		}		
+		
+	}
+	
+	#print STDME "",Dumper(\%prev_dset_hash), "\n";
+	#print STDME "ALL ROWS", Dumper(\@allRows), "\n";
+	#print STDME "FINAL ROW", Dumper($finalRow), "\n";
+	#print STDME "TEMPLATE ROW", Dumper($templateRow), "\n";
+		
+	#close (STDME);	
+	
+	return $finalRow;
+    	
 }
 
 =head2 toString
