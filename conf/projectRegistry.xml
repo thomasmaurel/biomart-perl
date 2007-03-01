@@ -2,21 +2,21 @@
 <!DOCTYPE MartRegistry>
 <MartRegistry>
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="ensembl_mart_42" name="ensembl" displayName="ENSEMBL 42 GENE (SANGER)" port="3316" schema="ensembl_mart_42" user="anonymous" password="" visible="1" default="1" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="ensembl_mart_43" name="ensembl" displayName="ENSEMBL 43 GENE (SANGER)" port="3316" schema="ensembl_mart_43" user="anonymous" password="" visible="1" default="1" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_homology_42" name="compara_mart_homology_42" displayName="ENSEMBL 42 HOMOLOGY (SANGER)" port="3316" schema="compara_mart_homology_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_homology_43" name="compara_mart_homology_43" displayName="ENSEMBL 43 HOMOLOGY (SANGER)" port="3316" schema="compara_mart_homology_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_pairwise_ga_42" name="compara_mart_pairwise_ga_42" displayName="ENSEMBL 42 PAIRWISE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_pairwise_ga_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_pairwise_ga_43" name="compara_mart_pairwise_ga_43" displayName="ENSEMBL 43 PAIRWISE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_pairwise_ga_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
 <!--
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_multiple_ga_42" name="compara_mart_multiple_ga_42" displayName="ENSEMBL 42 MULTIPLE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_multiple_ga_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_multiple_ga_43" name="compara_mart_multiple_ga_43" displayName="ENSEMBL 43 MULTIPLE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_multiple_ga_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 -->
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="snp_mart_42" name="snp" displayName="ENSEMBL 42 VARIATION  (SANGER)" port="3316" schema="snp_mart_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="snp_mart_43" name="snp" displayName="ENSEMBL 43 VARIATION  (SANGER)" port="3316" schema="snp_mart_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="sequence_mart_42" name="sequence" displayName="ENSEMBL 42 SEQUENCE (SANGER)" port="3316" schema="sequence_mart_42" user="anonymous" password="" visible="0" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="sequence_mart_43" name="sequence" displayName="ENSEMBL 43 SEQUENCE (SANGER)" port="3316" schema="sequence_mart_43" user="anonymous" password="" visible="0" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="vega_mart_42" name="vega" displayName="VEGA 21  (SANGER)" port="3316" schema="vega_mart_42" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="vega_mart_43" name="vega" displayName="VEGA 21  (SANGER)" port="3316" schema="vega_mart_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
 
 
