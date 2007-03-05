@@ -68,6 +68,7 @@ sub _new {
 
   $self->SUPER::_new(@param);
   $self->attr('columns', []);
+  $self->attr('noOfCols', undef);
   $self->attr('hashedResults', undef);
   #the hashCode for an AttributeTable is
   #the digest of its creation time.
@@ -108,6 +109,16 @@ sub setRows {
   my ($self,$rows) = @_;
 
   $self->set('columns',$rows);
+}
+
+sub noOfCols {
+
+    my ($self,$value) = @_;
+
+    if ($value){
+	$self->set('noOfCols',$value);
+    }
+    return $self->get('noOfCols');
 }
 
 sub hashedResults {

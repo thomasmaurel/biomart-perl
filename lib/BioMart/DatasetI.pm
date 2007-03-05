@@ -1,5 +1,4 @@
 # $Id$
-#
 # BioMart module for BioMart::DatasetI
 #
 # You may distribute this module under the same terms as perl itself
@@ -67,6 +66,7 @@ package BioMart::DatasetI;
 use strict;
 use warnings;
 use Digest::MD5;
+use Data::Dumper;
 use XML::Simple qw(:strict);
 use Storable qw(store retrieve freeze nfreeze thaw);
 local $Storable::Deparse = 1;
@@ -194,6 +194,8 @@ sub _new {
 
   $self->attr('mode', 'MEMORY'); ## defaults to MEMORY, other option is LAZYLOAD, set by Registry::setMode
   $self->attr('dirPath', undef); ## absolute path to registry file directory, set by Registry::setDirPath
+  $self->attr('LastDS', undef); ## set in QueryRunner when last DS is despatched for results
+  							## used to track for last GS object to apply strtucture att merging on only last GS
 
 }
 
@@ -1069,268 +1071,251 @@ sub exportableFrom {
 =cut
 
 sub getResultTable {
-  my ($self, @param) = @_;
+	my ($self, @param) = @_;
 
-  local($^W) = 0;  # prevent "odd number of elements" warning with -w.
-  my(%param) = @param;
+	local($^W) = 0;  # prevent "odd number of elements" warning with -w.
+	my(%param) = @param;
 
-  my $query = $param{'query'};
-  unless ($query->isa("BioMart::Query")) {
-    BioMart::Exception::Query->throw("getResultTable requires a valid BioMart::Query object\nRecieved object ".$query."\n");
-  }
+#	open (STDME, ">>/ebi/www/biomart/test/biomart-perl/allDATA");
 
-  my $table = $param{'table'};
-  my $firstbatch;
-  unless ($table) {
-    $firstbatch = 1;
-    $self->_processNewQuery($query); # resets for all new queries
+#	print  "<BR>_getResultTable ", $self->name();
 
-    if ($param{'batch_size'}) {
-      $self->set('explicit_batching',1);
-    } else {
-      #set the batch_size to the initial_batchsize. Some queries not involving
-      #importables, or not explicitly batched, will ignore this setting.
-      $param{'batch_size'} = $self->getParam(INIT_BATCHSIZE);
-    }
+	my $query = $param{'query'};
+  
+	unless ($query->isa("BioMart::Query")) {
+    		BioMart::Exception::Query->throw("getResultTable requires a valid BioMart::Query object\nRecieved object ".$query."\n");
+	}
 
-    $table = BioMart::ResultTable->new('query' => $query, 
+	my $table = $param{'table'};
+    
+	my $firstbatch;
+	unless ($table) {
+		$firstbatch = 1;
+		$self->_processNewQuery($query); # resets for all new queries
+ 		if ($param{'batch_size'}) {
+	 	     $self->set('explicit_batching',1);
+		}
+		else {
+			#set the batch_size to the initial_batchsize. Some queries not involving
+			#importables, or not explicitly batched, will ignore this setting.
+			$param{'batch_size'} = $self->getParam(INIT_BATCHSIZE);
+		}
+
+		$table = BioMart::ResultTable->new('query' => $query, 
                             'target_dataset' => $self,
                             'max_batchsize' => $self->getParam(MAX_BATCHSIZE),
                             'initial_batchsize' => $param{'batch_size'});
 
-    if ($param{'web_origin'} && $param{'web_origin'} == 1){
-	$table->webOrigin(1);
-    }
-    $param{'table'} = $table;
-  }
-
-  return undef if ($self->get('exhausted'));
-
-  # Call the DatasetI implementing object's getResultTable method
-  if ($self->can('_getResultTable')) {
-      my ($importable_size,$exportable_size,$linkName,$to_hash,$importable);
-
-      # IDENTIFY IF HAVE AN IMPORTABLE FILTERLIST AND RECOVER PREVIOUS
-      # DATASET'S HASHED RESULTS AND ADD EXTRA ATTS FOR MERGING IF REQUIRED
-      my $filters = $query->getAllFilters;
-      foreach my $filter (@$filters){
-	  if ($filter->isa("BioMart::Configuration::FilterList") 
-	      && $filter->batching) {
-	      $importable = $filter;
-
-	      $importable_size = @{$importable->getAllFilters};
-	      $linkName = $importable->linkName;
-	      # set initial hash so below extra att handling happens even 
-	      # before 1st batch
-	      my $attribute_table = $importable->getTable;
-	      my $attributeHash = $self->get('attributeHash');
-	      $attributeHash->{$linkName} = $attribute_table->hashedResults;
-	      $self->set('attributeHash',$attributeHash);
-
-	      if ($self->get('attributeHash')->{$linkName} && 
-		  !$query->getAttributeListByName($linkName)){
-		  # add an attribute at the beginning of the result table for 
-		  # each filter in the importable for attribute merging
-		  my $alist = BioMart::Configuration::AttributeList->new(
-		   'name' => $linkName,
-		   'dataSetName' => $self->name ,
-		   'interface' => $query->getInterfaceForDataset($self->name));
-		  my $attribute_string = '';
-		  my $comma = '';
-		  my $list_filters = $importable->getAllFilters;
-		  foreach (@$list_filters){
-		      $attribute_string = $attribute_string.$comma.
-			  $_->attribute->name;
-		      $comma = ',';
-		      $alist->addAttribute($_->attribute);
-		  }
-		  # add as an AttributeList so gets to start of SQL select
-		  $alist->attributeString($attribute_string);
-		  $query->addAttributeListFirst($alist);
-	      }
-	      
-	      last;
-	  }
-      }
-
-      # GET RESULTTABLE FROM DATASETI IMPLEMENTING OBJECT      
-      my $has_data = $self->_getResultTable(%param);
-      $logger->debug("Got results") if $has_data;
-      $logger->debug("Got no results") unless $has_data;
-      
-     
-      # DO MERGING OF ATTRIBUTES IF REQUIRED 
-      if ($importable){
-	  # these lines are necessary to repopulate attributeHash as the 
-	  # getResultTable call may have resulted in a new batch of the
-	  # previous dataset and hence new hashed results to be merged
- 	  my $attribute_table = $importable->getTable;
- 	  my $attributeHash = $self->get('attributeHash');
- 	  $attributeHash->{$linkName} = $attribute_table->hashedResults;
- 	  $self->set('attributeHash',$attributeHash);
-      }     
-      if ($has_data && $has_data > 0 && $linkName && 
-	  $self->get('attributeHash')->{$linkName}){
-      $logger->debug("Attribute merge using linkName: $linkName");
-      $logger->debug("Before merge: ".scalar(@{$has_data->get('columns')}));
-	  $table = $self->_attributeMerge($table,$importable_size,$linkName, $query);
-      $logger->debug("After merge: ".scalar(@{$has_data->get('columns')}));
-      }
-
-      # DO HASHING OF ATTRIBUTES IF REQUIRED 
-      if ($self->forceHash){
-	  # Dataset is being used for placeholder attributes on the first 
-	  # visible dataset of a two visible dataset query. Need to force
-	  # attribute hashing and merging
-	  $to_hash = 1;
-	  $exportable_size = $self->forceHash;
-      }     
-      elsif ($query->getAllAttributeLists && $query->getAllAttributes){
-          # have user chosen atts and an exportable - going to want to do
-	  # attribute hashing and merging to perform a join
-	  foreach my $exportable(@{$query->getAllAttributeLists}){
-	      if ($exportable->linkName){
-	         $to_hash = 1;
-		 $exportable_size =  @{$exportable->getAllAttributes};
-		 last;
-	     }
-	  }
-      }
-      else {
-	  # if table is bigger than exportable_size after merging then should 
-	  # be hashed - fixes problem of getting no seq, gene dataset merging 
-	  # if no structure atts chosen for example	  
-	  foreach my $exportable(@{$query->getAllAttributeLists}){
-	      if ($exportable->linkName){
-		  $exportable_size =  @{$exportable->getAllAttributes};
-		  last;
-	      }
-	  }
-	  my $first_row = ${$table->getRows()}[0];
-          my $col_number = @{$first_row} if ($first_row);   
-          if ($col_number && $exportable_size && 
-	      $col_number > $exportable_size){
-	      $to_hash = 1;
-	  }
-      }
-
-      if ($to_hash){
-      $logger->debug("Attribute hash");
-		
-      $logger->debug("Before hash: ".scalar(@{$table->get('columns')}));
-	  $table = $self->_hashAttributes($table,$exportable_size);
-      $logger->debug("After hash: ".scalar(@{$table->get('columns')}));
-
+		if ($param{'web_origin'} && $param{'web_origin'} == 1){
+			$table->webOrigin(1);
+		}
+		$param{'table'} = $table;
 	}
 
-      # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
-      $logger->debug("Returning defined has_data") if $has_data;
-      return $has_data if ($has_data); #always return defined result
-      $logger->debug("Returning table") if $firstbatch;
-      return $table if ($firstbatch); #returns empty table for first call. 
-                                      #Next call will be exhausted
-      $logger->debug("Returning undefined has_data") if $has_data;
-      return $has_data; #subsequent batches must return undef
-  }
-  $self->unimplemented_method();
-}
+	return undef if ($self->get('exhausted'));
+	
+	# Call the DatasetI implementing object's getResultTable method
+  	if ($self->can('_getResultTable')) 
+  	{
+		my ($importable_size,$exportable_size,$linkName,$to_hash,$importable);
 
-sub _hashAttributes {
-    my ($self,$tempTable,$exportable_size) = @_;
-    
-    my %datasetAttributeHash;
-    my @new_rows;
-    my $rows = $tempTable->getRows();
-    if ($self->forceHash){# keys atts are at the end
-      HASHROW1:foreach my $row(@{$rows}){
-	  my $new_row = [@{$row}[@{$row}-$exportable_size..@{$row}-1]];
-	  push @new_rows, $new_row;# do first so even empty rows get added so 
-	                           # batching behaviour not confused
-	  my $key_string = '';
-	  my $pKey = '';
-	  for (my $i = @{$row} - $exportable_size; $i < @{$row}; $i++){
-	      next if (!$$row[$i]);
-	      $key_string .= $$row[$i];
-	      $pKey = $$row[$i] if (!$pKey);
-	  }
-	  next if ($key_string eq "");
-	  # store hash element;
-	  my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
-	  
-	  my $row_to_add = [@{$row}[0..@{$row}-1-$exportable_size]];
-	  
-	  #next HASHROW1 if ($self->rowExists($row_to_add, $hashed_rows));
-	  if ($hashed_rows){
-	     foreach my $prev_row (@{$hashed_rows}){
-		     # avoid using "@A" eq "@B" type comparison, it floods error log
-			next HASHROW1 if ( $self->toString($prev_row) eq $self->toString($row_to_add) );
-		}	     
-	  }
-	  	  
-	  push @$hashed_rows,$row_to_add;
-	  $datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;
-       }
-    }
-    
-    else{
-      HASHROW:foreach my $row(@{$rows}){
-	  my $new_row = [@{$row}[0..$exportable_size-1]];
-	  push @new_rows, $new_row;# do first so even empty rows get added so 
-	                           # batching behaviour not confused
-	  my $key_string = '';
-  	  my $pKey = '';
-	  for (my $i = 0; $i < $exportable_size; $i++){
-	      next if (!$$row[$i]);
-	      $key_string .= $$row[$i];
-	      $pKey = $$row[$i] if (!$pKey);	      
-	  }
-	  next if ($key_string eq "");
-	  # store hash element;
-	  my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
-	  
-	  my $row_to_add = [@{$row}[$exportable_size..@{$row}-1]];
-	  
-	  #next HASHROW if ($self->rowExists($row_to_add, $hashed_rows));
-	  if ($hashed_rows){# make sure unique before add, error_log flooding
-	     foreach my $prev_row (@{$hashed_rows}){
-			# avoid using "@A" eq "@B" type comparison, it floods error log
-			next HASHROW if ( $self->toString($prev_row) eq $self->toString($row_to_add) );		
-		}
-	  }
-	  
-	  #warn($key_string." => ".join ",",@$row_to_add);
-	  push @$hashed_rows,$row_to_add;
-	  $datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;
+    	  # IDENTIFY IF HAVE AN IMPORTABLE FILTERLIST AND RECOVER PREVIOUS
+    	  # DATASET'S HASHED RESULTS AND ADD EXTRA ATTS FOR MERGING IF REQUIRED
+    	  my $filters = $query->getAllFilters;
+    	  foreach my $filter (@$filters)
+    	  {
+			  if ($filter->isa("BioMart::Configuration::FilterList") 
+		      && $filter->batching) 
+		     {
+		      $importable = $filter;
+
+		      $importable_size = @{$importable->getAllFilters};
+		      $linkName = $importable->linkName;
+		      # set initial hash so below extra att handling happens even 
+		      # before 1st batch
+		      my $attribute_table = $importable->getTable;
+		      my $attributeHash = $self->get('attributeHash');
+		      $attributeHash->{$linkName} = $attribute_table->hashedResults;
+		      $self->set('attributeHash',$attributeHash);
+
+		      if ($self->get('attributeHash')->{$linkName} && 
+			  !$query->getAttributeListByName($linkName))
+			  {
+				  # add an attribute at the beginning of the result table for 
+				  # each filter in the importable for attribute merging
+				  my $alist = BioMart::Configuration::AttributeList->new(
+				   'name' => $linkName,
+				   'dataSetName' => $self->name ,
+				   'interface' => $query->getInterfaceForDataset($self->name));
+				  my $attribute_string = '';
+				  my $comma = '';
+				  my $list_filters = $importable->getAllFilters;
+				  foreach (@$list_filters){
+				      $attribute_string = $attribute_string.$comma.
+					  $_->attribute->name;
+				      $comma = ',';
+					      $alist->addAttribute($_->attribute);
+				  }
+			  # add as an AttributeList so gets to start of SQL select
+			  $alist->attributeString($attribute_string);
+			  $query->addAttributeListFirst($alist);
+		      }
+	      
+		      last;
+		  }
       }
-    }
 
-    $tempTable->setRows(\@new_rows);
-    $tempTable->hashedResults(\%datasetAttributeHash) if (%datasetAttributeHash);
-    return $tempTable;
+      	# GET RESULTTABLE FROM DATASETI IMPLEMENTING OBJECT      
+		my $has_data = $self->_getResultTable(%param);
+		
+		#print ":  YES DATA " if $has_data;
+
+		$logger->debug("Got results") if $has_data;
+		$logger->debug("Got no results") unless $has_data;
+
+ 	    # DO MERGING OF ATTRIBUTES IF REQUIRED 
+   	   	if ($importable){
+   	   	# these lines are necessary to repopulate attributeHash as the 
+		# getResultTable call may have resulted in a new batch of the
+	 	# previous dataset and hence new hashed results to be merged
+
+	 	  my $attribute_table = $importable->getTable;
+ 		  my $attributeHash = $self->get('attributeHash');
+ 		  $attributeHash->{$linkName} = $attribute_table->hashedResults;
+ 		  
+ 		  $table->noOfCols($attribute_table->noOfCols);
+ 		  
+ 		  $self->set('attributeHash',$attributeHash);
+ 	     }     
+ 	     if ($has_data && $has_data > 0 && $linkName && 
+			  $self->get('attributeHash')->{$linkName}){
+		      $logger->debug("Attribute merge using linkName: $linkName");
+		      $logger->debug("Before merge: ".scalar(@{$has_data->get('columns')}));
+	
+#				print "\n<BR>++++++++++ BEFORE MERGING TABLE +++++++++++++++ <BR>";
+#				if($table){
+#		  			print "\nIMP: $importable_size", "   ", Dumper($table->getRows);
+#				}
+				
+			  $table = $self->_attributeMerge($table,$importable_size,$linkName, $query);
+#				print "\n<BR>++++++++++ AFTER MERGING TABLE +++++++++++++++ <BR>", Dumper($table->getRows);
+		      $logger->debug("After merge: ".scalar(@{$has_data->get('columns')}));
+	      }
+
+	      # DO HASHING OF ATTRIBUTES IF REQUIRED 
+	      if ($self->forceHash){
+			  # Dataset is being used for placeholder attributes on the first 
+			  # visible dataset of a two visible dataset query. Need to force
+			  # attribute hashing and merging
+			  $to_hash = 1;
+			  $exportable_size = $self->forceHash;
+#			  print "<BR>    if HASHING ";
+	      }     
+	      elsif ($query->getAllAttributeLists && $query->getAllAttributes){
+	          # have user chosen atts and an exportable - going to want to do
+			  # attribute hashing and merging to perform a join
+			   foreach my $exportable(@{$query->getAllAttributeLists}){
+			      if ($exportable->linkName){
+			         $to_hash = 1;
+					 $exportable_size =  @{$exportable->getAllAttributes};
+					 last;
+			     }
+			  }
+#  			  print "<BR>    elsif HASHING ";
+	      }
+	      else {
+			  # if table is bigger than exportable_size after merging then should 
+			  # be hashed - fixes problem of getting no seq, gene dataset merging 
+			  # if no structure atts chosen for example	  
+#			print "<BR> HERE -1";
+			foreach my $exportable(@{$query->getAllAttributeLists}){
+			     if ($exportable->linkName){
+					$exportable_size =  @{$exportable->getAllAttributes};
+#			print "<BR> HERE -2";					
+					last;
+				}
+			}
+			my $first_row = ${$table->getRows()}[0];
+	          my $col_number = @{$first_row} if ($first_row);   
+#			print "<BR>COL: $col_number,  EXP_SIZE: $exportable_size";
+	          if ($col_number && $exportable_size && 
+				$col_number > $exportable_size){
+#			print "<BR> HERE -1";				
+				$to_hash = 1;
+			}
+			# another special case, say Human (seq)/msd, and u donot choose human main table att(deselect: biotype)
+			# and this will stop the hashing call, even for empty DS, which will break the intermediate logic
+			# of prKeys being passed over from one DS to another one. causing complete chaos.
+			# try removing this IF and request Sequence for gene: ENSG00000188170 with MSD as second DS.
+			
+			
+			if (!$col_number && $exportable_size)
+			{
+#				print "<BR> HERE -2", "[ ", $self->name," ]";
+				$to_hash = 1;
+			}
+			
+		}
+
+	     if ($to_hash){
+			$logger->debug("Attribute hash");						
+			$logger->debug("Before hash: ".scalar(@{$table->get('columns')}));
+			$table = $self->_hashAttributes($table,$exportable_size);
+			  
+#			print  "\n<BR>++++++++++ AFTER HASHING TABLE - ROWS +++++++++++++++ <BR>",Dumper($table->getRows());
+#			print  "\n<BR>++++++++++ AFTER HASHING TABLE - HASHEDRESULTS +++++++++++++++ <BR>",Dumper($table->hashedResults);
+			
+
+			
+	      $logger->debug("After hash: ".scalar(@{$table->get('columns')}));
+	
+		}
+
+	close(STDME);
+
+	      # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
+	      $logger->debug("Returning defined has_data") if $has_data;
+	      return $has_data if ($has_data); #always return defined result
+	      $logger->debug("Returning table") if $firstbatch;
+	      return $table if ($firstbatch); #returns empty table for first call. 
+                                      #Next call will be exhausted
+	      $logger->debug("Returning undefined has_data") if $has_data;
+	      return $has_data; #subsequent batches must return undef
+	}
+  	$self->unimplemented_method();
+  	
+  	
 }
 
 
 sub _attributeMerge {
   	my ($self,$rtable,$importable_size,$linkName, $query) = @_;
-
 	$logger->debug("Importable size: $importable_size");
 	$logger->debug("Link name: $linkName");
+	my $thisDSCols=0;
+
 	my $sequenceType = 'none';
-	if ($self->isa("BioMart::Dataset::GenomicSequence") && ($query->getAllAttributes($self->name)->[0]->name()) ){
+	
+	if ($self->isa("BioMart::Dataset::GenomicSequence")
+		&& ($self->lastDS() == 1)
+		&& ($rtable->noOfCols() != -1 ) 
+		&& ($query->getAllAttributes($self->name)->[0]->name()) )
+	{
 		$sequenceType = $query->getAllAttributes($self->name)->[0]->name();
-		if ($sequenceType =~ m/(coding|cdna|peptide)$/
-			|| $sequenceType =~ m/utr$/ )
+		if ( ($sequenceType =~ m/(coding|cdna|peptide)$/ )
+			|| ( $sequenceType =~ m/utr$/ ) 
+			|| ( $sequenceType =~ m/(transcript_exon_intron|transcript_flank|coding_transcript_flank)$/ ) 
+			#|| ( $sequenceType =~ m/gene_flank/) 
+			)
 		{
 			$sequenceType = 'ok';
 		}
 	}
 	
-	
 	my %this_dset_hash;
-	
 	my $rows = $rtable->getRows();
 	
-    	HASHROW:foreach my $row(@{$rows}){
+	HASHROW:foreach my $row(@{$rows}){
 		my $key_string = '';
 		my $pKey = '';
 		for (my $i = 0; $i < $importable_size; $i++)
@@ -1345,39 +1330,37 @@ sub _attributeMerge {
 	
 		# store hash element;
 
-	     #my $hashed_rows = $this_dset_hash{$key_string}{'row'};
-	     my $hashed_rows = $this_dset_hash{$pKey}{$key_string};
+		#my $hashed_rows = $this_dset_hash{$key_string}{'row'};
+		my $hashed_rows = $this_dset_hash{$pKey}{$key_string};
 		my $row_to_add = [@{$row}[$importable_size..@{$row}-1]];
 
 		push @$hashed_rows, $row_to_add;
-	
-		#$this_dset_hash{$key_string}{'row'} = $hashed_rows;
-		#$this_dset_hash{$key_string}{'pkey'} = $pKey; ## just the first portion of key_string as its unique
+		
+		$thisDSCols = scalar(@$row_to_add) if (!$thisDSCols);# excluding importable
+		
 		$this_dset_hash{$pKey}{$key_string} = $hashed_rows;
-    	}
-    	
-#   	open (STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/NEW_DS");
-#	print STDME "\n\n\n\n ------------------------ NEW_DS--------------------------------- \n\n\n\n ";
-#	print STDME Dumper (\%this_dset_hash);
-#	close (STDME);
-    
-    	my @new_rows;
-    	# loop over both hashes and produce new table
+	}
+	    
+	my @new_rows;
+  	# loop over both hashes and produce new table
 
-    	my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
+	my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
+    	
+#	print "<BR>=================== PREV_DATASET ================ <BR>", Dumper(\%prev_dset_hash);
+#	print "<BR>=================== THIS_DATASET ================ <BR>", Dumper(\%this_dset_hash);
 
 	foreach my $prkey(keys %this_dset_hash)
 	{
 		foreach my $key(keys %{$this_dset_hash{$prkey}})
 		{		
 			my $this_dset_rows = $this_dset_hash{$prkey}{$key};
-			#my $pKey = $this_dset_hash{$key}{'pkey'};
+			
 			my $pKey = $prkey;
-			$logger->debug("Processing key: ".$key);
-    			$logger->debug("This previous rows: ".scalar(@$this_dset_rows));
-			foreach my $this_dset_row(@$this_dset_rows){
-
-		    		my $prev_dset_rows = $prev_dset_hash{$prkey}{$key};		## this matching of both lower and upper case of keys
+			$logger->warn("Processing key: ".$key);
+    		$logger->warn("This previous rows: ".scalar(@$this_dset_rows));
+			foreach my $this_dset_row(@$this_dset_rows)
+			{			
+		    	my $prev_dset_rows = $prev_dset_hash{$prkey}{$key};		## this matching of both lower and upper case of keys
 				if(!$prev_dset_rows)								## is introduced ever since ensembl 41 has made the 
 				{												## pdb for e.g in UPPER case and in MSD its in LOWER case	
 					$prev_dset_rows = $prev_dset_hash{lc($prkey)}{lc($key)};	## so its safe to test both the scenarios
@@ -1385,62 +1368,287 @@ sub _attributeMerge {
 				if(!$prev_dset_rows)								## is introduced ever since ensembl 41 has made the 
 				{												## pdb for e.g in UPPER case and in MSD its in UPPER case	
 					$prev_dset_rows = $prev_dset_hash{uc($prkey)}{uc($key)};	## so its safe to test both the scenarios
-				}
-			    	if ($prev_dset_rows) 
-			    	{
-			    		$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
-		    			foreach my $prev_dset_row(@$prev_dset_rows)
-		    			{
+				}			
+			 	if ($prev_dset_rows) 
+				{
+#				 		print "<BR> READY FOR MERGING -1";
+		    			$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
 						## GS comma separated list for structure attributes
-			    			if ($sequenceType eq 'ok') 
-			    			{						
+		    			if ($sequenceType eq 'ok') 
+		    			{						
 							#e.g pKey=267929 AND key=26792911522636522755-15 
-			    				my @allRows;
-						    	my $finalRow;
-			    				foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {
-								push @allRows, $prev_dset_hash{$pKey}{$key_string};
-							}
-			    				foreach my $row (@allRows) {	
-								if($row) 	{
-									for (my $i = 0; $i < scalar(@{@$row[0]}); $i++)	{			
-										if ( $$row[0]->[$i] ) {
-											if (!$finalRow->[$i]) {
-												$finalRow->[$i] = $$row[0]->[$i]; 	
+		    				my @allRows;
+					    	my $struct_table_cols = $rtable->noOfCols();
+				    		#$struct_table_cols = 6;
+					    	my %duplicateRows;
+				    		foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {				    			
+			    				push @allRows, $prev_dset_hash{$pKey}{$key_string};
+				    		}
+#							print "<BR> +++++++++++++++++++++ KEY: $pKey ++++++++++++++++++++++ <BR>";
+							#print "<BR>=================== PREV_ROWS ================ <BR>", Dumper($prev_dset_rows);
+							#print "<BR>=================== ALL_ROWS ================ <BR>", Dumper(\@allRows);
+				    		foreach my $prev_dset_row(@$prev_dset_rows){
+								foreach my $subrow (@allRows) {
+						    		my $finalRow;
+					   				if($subrow) {
+										foreach my $row (@$subrow) {
+											my $doMerging = 1;
+											if ( scalar(@$row) == $struct_table_cols )
+											{
+												$doMerging = 1; ## all atts are from structure only
+												}
+											else ## the remaining atts should match each other in both sets
+											{
+												for (my $i = $struct_table_cols ; $i < scalar(@$row); $i++)
+												{
+													$doMerging = 0 if ($prev_dset_row->[$i] ne $row->[$i]) ;
+												}											
 											}
-											else {
-												## test if its not already added. e.g ENSGxxxx should be added only once
-												if ( $finalRow->[$i] !~ m/$$row[0]->[$i]/ )	{
-													$finalRow->[$i] .= ','.$$row[0]->[$i];	
+										
+										if ($doMerging)
+										{
+											for (my $j=0; $j < $struct_table_cols; $j++)
+											{
+												if ($row->[$j]){
+													if (!$prev_dset_row->[$j]) {
+															$prev_dset_row->[$j] = $row->[$j];
+													}
+													else
+													{
+														if ($prev_dset_row->[$j] !~ m/$row->[$j]/)
+														{
+															$prev_dset_row->[$j] .= ';'.$row->[$j];
+														}
+													}
 												}
 											}
-										}	
-									}		
+										}
+									}
 								}
 							}
-							push @new_rows, [@$this_dset_row,@$finalRow];		    				
+				   		}
+				   		
+				   		foreach my $prev_dset_row(@$prev_dset_rows)
+		    			{		    				
+							push @new_rows, [@$this_dset_row,@$prev_dset_row];						
+		 	   			}
+	   				}
+					else 
+					{
+						my @allRows;
+						my %avoidDuplication = ();
 
-							#push @new_rows, [@$this_dset_row,@$prev_dset_row];
+						if (defined $prev_dset_hash{$pKey})
+						{
+							foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {
+		    					push @allRows, $prev_dset_hash{$pKey}{$key_string} ;
 			    			}
-		    				else ## normal process as it used to be
-			    			{						
-							push @new_rows, [@$this_dset_row,@$prev_dset_row];
-						}
-		 	   		}
-		    		}	 
-	    			else 
-	    			{
-		    			$logger->debug("There were NO previous rows");
-			    	}
+			    		}
+			    		if (!@allRows && exists $prev_dset_hash{lc($pKey)})
+			    		{
+			    			foreach my $key_string (keys %{$prev_dset_hash{lc($pKey)}}) {
+		    					push @allRows, $prev_dset_hash{lc($pKey)}{$key_string} ;
+			    			}
+			    		}
+			    		if (!@allRows && exists $prev_dset_hash{uc($pKey)})
+			    		{
+			    			foreach my $key_string (keys %{$prev_dset_hash{uc($pKey)}}) {
+		    					push @allRows, $prev_dset_hash{uc($pKey)}{$key_string} ;
+			    			}			    		
+			    		}
+#						print "<BR>  ++ ALL ROWS: [ $pKey ] ", Dumper(\@allRows) ;
+#						print "<BR>  ++ THIS DS: [ $pKey ] ", Dumper($this_dset_row) ;
+						
+						foreach my $subrow (@allRows) {
+		   					if($subrow) {
+			   					NEXTROW: foreach my $row (@$subrow) {
+		   							#print "<BR>HERE: SUB_ROW: ", Dumper($row);
+			   						# avoid using "@A" eq "@B" type comparison, it floods error log
+									my $rowAsString = $self->toString($row);
+									next NEXTROW if (!$rowAsString || exists $avoidDuplication{$rowAsString} ) ;
+									$avoidDuplication{$rowAsString} = '';
+#									print "<BR>going be merged with seq: ",Dumper($row); 			
+									push @new_rows, [@$this_dset_row,@$row];
+								}
+		   					}
+		   				}  				   	
+			    	}			    		
+		    	}
+	    		else 
+	    		{
+		    		$logger->debug("There were NO previous rows");
+			    }
 			}
 		}
 	}
 	$logger->debug("Finished with rows: ".scalar(@new_rows));
-
-    	$rtable->setRows(\@new_rows);
+	
+	if(@new_rows){
+		foreach (@new_rows){
+			#print "LENGTH: ", scalar (@$_);
+			#print "DIFFERENCE: ", (scalar (@$_) - $thisDSCols) ;
+			$rtable->noOfCols((scalar (@$_) - $thisDSCols));
+			last;
+		}
+	}
+	
+   	$rtable->setRows(\@new_rows);
     	
-    	return $rtable;
+   	return $rtable;
 
 }
+
+sub _hashAttributes {
+	my ($self,$tempTable,$exportable_size) = @_;
+    my %datasetAttributeHash;
+
+	my @new_rows;
+	my @order_of_rows;
+	my %groupSameKeyRows;
+	   
+	my $rows = $tempTable->getRows();
+	
+	if ($self->forceHash){# keys atts are at the end
+        	  
+		HASHROW1:foreach my $row(@{$rows}){
+	  		
+	  		my $new_row = [@{$row}[@{$row}-$exportable_size..@{$row}-1]];
+
+	  	 	#push @new_rows, $new_row;# do first so even empty rows get added so 
+		                           # batching behaviour not confused
+		                           
+			if (! exists $groupSameKeyRows{$new_row->[0]})
+			{
+				push @order_of_rows, $new_row->[0];
+			}
+			push @{$groupSameKeyRows{$new_row->[0]}}, $new_row;
+			
+			
+		  	my $key_string = '';
+		  	my $pKey = '';
+		  	for (my $i = @{$row} - $exportable_size; $i < @{$row}; $i++){
+		    	next if (!$$row[$i]);
+		   		$key_string .= $$row[$i];
+		      	$pKey = $$row[$i] if (!$pKey);
+		  	}
+		  	next if ($key_string eq "");
+		  	# store hash element;
+		  	my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
+		  
+		  	my $row_to_add = [@{$row}[0..@{$row}-1-$exportable_size]];
+		  
+		  	#next HASHROW1 if ($self->rowExists($row_to_add, $hashed_rows));
+		 	if ($hashed_rows){
+		    	foreach my $prev_row (@{$hashed_rows}){
+			     	# avoid using "@A" eq "@B" type comparison, it floods error log
+					next HASHROW1 if ( (($prev_row && $row_to_add) && ($self->toString($prev_row) eq $self->toString($row_to_add)))
+							|| (!$prev_row && !$row_to_add) );
+				}	     
+		  	}	  	  
+		  	push @$hashed_rows,$row_to_add;
+		 	$datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;
+	       	}
+	}
+    
+    else{
+
+		HASHROW:foreach my $row(@{$rows}){
+	  		  		
+		my $new_row = [@{$row}[0..$exportable_size-1]];
+
+		#push @new_rows, $new_row;# do first so even empty rows get added so 
+	                           # batching behaviour not confused
+		
+		if (! exists $groupSameKeyRows{$new_row->[0]})
+		{
+			push @order_of_rows, $new_row->[0];
+		}
+		push @{$groupSameKeyRows{$new_row->[0]}}, $new_row;
+
+		my $key_string = '';
+		my $pKey = '';
+		for (my $i = 0; $i < $exportable_size; $i++){
+			next if (!$$row[$i]);
+			$key_string .= $$row[$i];
+			$pKey = $$row[$i] if (!$pKey);	      
+		}
+		next if ($key_string eq "");
+		  # store hash element;
+		my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
+	  
+		my $row_to_add = [@{$row}[$exportable_size..@{$row}-1]];
+	  
+		#next HASHROW if ($self->rowExists($row_to_add, $hashed_rows));
+		if ($hashed_rows){# make sure unique before add, error_log flooding
+	    	foreach my $prev_row (@{$hashed_rows}){
+			# avoid using "@A" eq "@B" type comparison, it floods error log
+			next HASHROW if ( (($prev_row && $row_to_add) && ($self->toString($prev_row) eq $self->toString($row_to_add)))
+							|| (!$prev_row && !$row_to_add) );
+			}
+	  	}
+	  
+	  
+	  	#warn($key_string." => ".join ",",@$row_to_add);
+	 	push @$hashed_rows,$row_to_add;
+	  	$datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;	  
+	  
+    	}
+    }
+
+
+	foreach my $rowKey (@order_of_rows)
+	{
+		foreach my $row (@{$groupSameKeyRows{$rowKey}})
+		{
+			push @new_rows, $row;
+		}
+	}
+    
+    $tempTable->setRows(\@new_rows);
+    
+    #if (!%datasetAttributeHash)
+    #{
+    #	print "<BR>BIG CLEVER FINDING :", Dumper(\%datasetAttributeHash), "<BR>and old ones" , Dumper($tempTable->hashedResults) ;
+    #}
+    
+    $tempTable->hashedResults(\%datasetAttributeHash) if (%datasetAttributeHash);
+	# this is a very clever line
+	# if (!%datasetAttributeHash) = {}, while if there are previous results then they should be kept
+	# however, if previous results are undef, then hashedResults should be assigne to {} instead of undef
+	if (!%datasetAttributeHash && !$tempTable->hashedResults)
+    {
+    	$tempTable->hashedResults(\%datasetAttributeHash);
+    }
+
+   	   	my $breakAllLoops = 1;
+    	if(%datasetAttributeHash && $breakAllLoops)   {
+    		foreach my $fkey(keys %datasetAttributeHash) {
+    			foreach my $skey(keys %{$datasetAttributeHash{$fkey}}) {
+    				foreach my $arr (@{$datasetAttributeHash{$fkey}{$skey}}) {
+    					if ($arr)
+    					{
+    						# -1 one logic is just another representation of zero 0 which is considered as undef by perl
+    						my $old_length = $tempTable->noOfCols() || 0;
+    						$old_length = 0 if ($old_length == -1);
+						my $new_length = scalar (@$arr);
+						my $diff = $new_length-$old_length;
+						$diff = -1 if (!$diff);
+					     $tempTable->noOfCols($diff);
+    						$breakAllLoops = 0;
+    					}
+    					last if(!$breakAllLoops);
+    				}
+				last if(!$breakAllLoops);
+    			}
+    			last if(!$breakAllLoops);
+    		}
+    	}
+
+    
+    #print "<BR><BR>NEW LENGTH: ", $tempTable->noOfCols(); 
+    return $tempTable;
+}
+
 
 =head2 getCount
 
@@ -1511,5 +1719,13 @@ sub toString
  	return $string;   	
 }
 
+sub lastDS {
+  my ($self, $val) = @_;
+
+  if ($val) {
+    $self->set('LastDS', $val);
+  }
+  return $self->get('LastDS');
+}
 
 1;

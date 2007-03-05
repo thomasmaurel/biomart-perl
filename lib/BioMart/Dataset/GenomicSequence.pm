@@ -766,6 +766,8 @@ sub _getResultTable {
     my $query = $param{'query'};
     my $atable = $param{'table'};
 
+
+
     my $batch_size = $param{'batch_size'};
   
     if ($self->serverType eq "web"){  
@@ -795,6 +797,8 @@ sub _getResultTable {
 
     my $importable = $self->get('importable');
     my $rtable = $importable->getTable();
+    
+#	print "<BR>GS RECEIVED: <BR>", Dumper($rtable->getRows);
     
     my $attribute_count = @{$query->getAllAttributes};
     if ($rtable->hashedResults || $attribute_count > 1){
@@ -957,6 +961,7 @@ sub _exonIntronFlankSequences {
 	my $sequence;
 	if ($location->{"start"}) {
 	    my $locations = { $rank => $location };
+#	    print "<BR> LOCATIONS: <BR>",Dumper($locations);
 	    $sequence = $self->_processSequence($locations);
 
 	    $self->_editSequence(\$sequence);
