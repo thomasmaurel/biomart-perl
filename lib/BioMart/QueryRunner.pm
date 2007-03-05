@@ -43,8 +43,7 @@ BioMart::QueryRunner
 
       recurse
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London 
-
+=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London
 =head1 CONTACT
 
 This module is part of the BioMart project http://www.biomart.org
@@ -412,7 +411,11 @@ sub _processPath {
 	    }
 	    # call for a single dataset query
 	    $logger->debug("Bottom dataset ".$datasetToProcess->name." query params are: ".keys(%{$params{'query'}}));
+	   
+	    $datasetToProcess->lastDS(1); 	## to see if its GS and its the last one, so the expected results would be
+	    									## in FASTA format, and should be comma separated
 	    my $rtable = $datasetToProcess->getResultTable(%params);
+
 	    $logger->debug("Bottom dataset ".$datasetToProcess->name." gave ".scalar(@{$rtable->get('columns')}));
 
 	    # perform union if appropiate entry exists in union_tables hash
@@ -567,6 +570,8 @@ sub _processPath {
     }
 
     # execute and add exportable to Query
+
+	$datasetToProcess->lastDS(0); ## thats not the lastDS as the last one gets called from previous block
     my $tempTable = $datasetToProcess->getResultTable(%params);		
 	$logger->debug("Non-bottom dataset ".$datasetToProcess->name." gave ".scalar(@{$tempTable->get('columns')}));
     
