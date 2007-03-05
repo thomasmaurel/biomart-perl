@@ -1271,7 +1271,7 @@ sub getResultTable {
 	
 		}
 
-	close(STDME);
+#	close(STDME);
 
 	      # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
 	      $logger->debug("Returning defined has_data") if $has_data;
