@@ -814,6 +814,7 @@ sub _getResultTable {
 		my $rowAsString = $self->toString($curRow); # avoid using "@A" eq "@B" type comparison, it floods error log
 		next NEXTROW if (!$rowAsString || exists $avoidDuplication{$rowAsString} ) ; # no point retrieving sequence for same coordinates
 		$avoidDuplication{$rowAsString} = '';
+#		print "<BR>EACH ROW IN GS: ", Dumper($curRow);	
 		$self->_processRow( $atable, $curRow);
 	}
 
