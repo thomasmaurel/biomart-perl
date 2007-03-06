@@ -1173,6 +1173,11 @@ sub getResultTable {
 		$logger->debug("Got results") if $has_data;
 		$logger->debug("Got no results") unless $has_data;
 
+#		if ($self->isa("BioMart::Dataset::GenomicSequence"))
+#		{
+#			print "<BR>RS RETURNS: <BR>", Dumper($has_data->getRows) if ($has_data);
+#		}
+
  	    # DO MERGING OF ATTRIBUTES IF REQUIRED 
    	   	if ($importable){
    	   	# these lines are necessary to repopulate attributeHash as the 
@@ -1193,7 +1198,7 @@ sub getResultTable {
 		      $logger->debug("Before merge: ".scalar(@{$has_data->get('columns')}));
 	
 #				print "\n<BR>++++++++++ BEFORE MERGING TABLE +++++++++++++++ <BR>";
-#				if($table){
+#				if($table && $self->isa("BioMart::Dataset::GenomicSequence") ) {
 #		  			print "\nIMP: $importable_size", "   ", Dumper($table->getRows);
 #				}
 				
@@ -1231,7 +1236,7 @@ sub getResultTable {
 			foreach my $exportable(@{$query->getAllAttributeLists}){
 			     if ($exportable->linkName){
 					$exportable_size =  @{$exportable->getAllAttributes};
-#			print "<BR> HERE -2";					
+#			print "<BR> HERE -2";
 					last;
 				}
 			}
@@ -1271,6 +1276,7 @@ sub getResultTable {
 	
 		}
 
+#	close(STDME);
 
 	      # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
 	      $logger->debug("Returning defined has_data") if $has_data;
@@ -1297,18 +1303,18 @@ sub _attributeMerge {
 	
 	if ($self->isa("BioMart::Dataset::GenomicSequence")
 		&& ($self->lastDS() == 1)
-		&& ($rtable->noOfCols() != -1 ) 
+#		&& ($rtable->noOfCols() != -1 ) 
 		&& ($query->getAllAttributes($self->name)->[0]->name()) )
 	{
 		$sequenceType = $query->getAllAttributes($self->name)->[0]->name();
-		if ( ($sequenceType =~ m/(coding|cdna|peptide)$/ )
-			|| ( $sequenceType =~ m/utr$/ ) 
-			|| ( $sequenceType =~ m/(transcript_exon_intron|transcript_flank|coding_transcript_flank)$/ ) 
-			#|| ( $sequenceType =~ m/gene_flank/) 
-			)
-		{
+	#	if ( ($sequenceType =~ m/(coding|cdna|peptide)$/ )
+	#		|| ( $sequenceType =~ m/utr$/ ) 
+	#		|| ( $sequenceType =~ m/(transcript_exon_intron|transcript_flank|coding_transcript_flank)$/ ) 
+	#		|| ( $sequenceType =~ m/gene_flank/) 
+	#		)
+	#	{
 			$sequenceType = 'ok';
-		}
+	#	}
 	}
 	
 	my %this_dset_hash;
@@ -1351,14 +1357,15 @@ sub _attributeMerge {
 	foreach my $prkey(keys %this_dset_hash)
 	{
 		foreach my $key(keys %{$this_dset_hash{$prkey}})
-		{		
+		{
 			my $this_dset_rows = $this_dset_hash{$prkey}{$key};
 			
 			my $pKey = $prkey;
 			$logger->warn("Processing key: ".$key);
     		$logger->warn("This previous rows: ".scalar(@$this_dset_rows));
 			foreach my $this_dset_row(@$this_dset_rows)
-			{			
+			{
+#				print "<BR>  ++ THIS DS: [ $pKey ] <BR>", Dumper($this_dset_row) ;
 		    	my $prev_dset_rows = $prev_dset_hash{$prkey}{$key};		## this matching of both lower and upper case of keys
 				if(!$prev_dset_rows)								## is introduced ever since ensembl 41 has made the 
 				{												## pdb for e.g in UPPER case and in MSD its in LOWER case	
@@ -1368,69 +1375,98 @@ sub _attributeMerge {
 				{												## pdb for e.g in UPPER case and in MSD its in UPPER case	
 					$prev_dset_rows = $prev_dset_hash{uc($prkey)}{uc($key)};	## so its safe to test both the scenarios
 				}			
-			 	if ($prev_dset_rows) 
+			 	if ($prev_dset_rows)
 				{
 #				 		print "<BR> READY FOR MERGING -1";
 		    			$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
 						## GS comma separated list for structure attributes
 		    			if ($sequenceType eq 'ok') 
 		    			{						
+#							print "<BR>, Merging Here";
 							#e.g pKey=267929 AND key=26792911522636522755-15 
 		    				my @allRows;
 					    	my $struct_table_cols = $rtable->noOfCols();
 				    		#$struct_table_cols = 6;
+				    		my $finalRow;
 					    	my %duplicateRows;
 				    		foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {				    			
 			    				push @allRows, $prev_dset_hash{$pKey}{$key_string};
 				    		}
-#							print "<BR> +++++++++++++++++++++ KEY: $pKey ++++++++++++++++++++++ <BR>";
-							#print "<BR>=================== PREV_ROWS ================ <BR>", Dumper($prev_dset_rows);
-							#print "<BR>=================== ALL_ROWS ================ <BR>", Dumper(\@allRows);
-				    		foreach my $prev_dset_row(@$prev_dset_rows){
-								foreach my $subrow (@allRows) {
-						    		my $finalRow;
-					   				if($subrow) {
-										foreach my $row (@$subrow) {
-											my $doMerging = 1;
-											if ( scalar(@$row) == $struct_table_cols )
-											{
-												$doMerging = 1; ## all atts are from structure only
+
+#							print "<BR>  ++ THIS DS: [ $pKey ] <BR>", Dumper($this_dset_row) ;
+#							print "<BR>=================== PREV_ROWS ================ <BR>", Dumper($prev_dset_rows);
+#							print "<BR>=================== ALL_ROWS ================ <BR>", Dumper(\@allRows);
+							
+							foreach my $subrow (@allRows) {						    	
+				   				if($subrow) {
+									foreach my $row (@$subrow) {
+										for (my $i = 0; $i < scalar(@{$row}); $i++)	{
+											if ( $row->[$i] ) {
+												if (!$finalRow->[$i]) {
+													$finalRow->[$i] = $row->[$i];
 												}
-											else ## the remaining atts should match each other in both sets
-											{
-												for (my $i = $struct_table_cols ; $i < scalar(@$row); $i++)
-												{
-													$doMerging = 0 if ($prev_dset_row->[$i] ne $row->[$i]) ;
-												}											
-											}
-										
-										if ($doMerging)
-										{
-											for (my $j=0; $j < $struct_table_cols; $j++)
-											{
-												if ($row->[$j]){
-													if (!$prev_dset_row->[$j]) {
-															$prev_dset_row->[$j] = $row->[$j];
-													}
-													else
-													{
-														if ($prev_dset_row->[$j] !~ m/$row->[$j]/)
-														{
-															$prev_dset_row->[$j] .= ';'.$row->[$j];
-														}
+												else {
+													$row->[$i] =~ s/\[/\\[/mg;
+													$row->[$i] =~ s/\]/\\]/mg;
+													$row->[$i] =~ s/\(/\\(/mg;
+													$row->[$i] =~ s/\)/\\)/mg;
+													$row->[$i] =~ s/\{/\\{/mg;
+													$row->[$i] =~ s/\}/\\}/mg;
+													if (  $finalRow->[$i] !~ m/$row->[$i]/  )	{
+														$finalRow->[$i] .= ';'.$row->[$i]; # bcoz comma exits in some data contents
 													}
 												}
 											}
-										}
-									}
+										}	
+									}		
 								}
 							}
-				   		}
+							push @new_rows, [@$this_dset_row,@$finalRow];
+				    		#foreach my $prev_dset_row(@$prev_dset_rows){
+							#	foreach my $subrow (@allRows) {
+						    #		my $finalRow;
+					   		#		if($subrow) {
+							#			foreach my $row (@$subrow) {
+							#				my $doMerging = 1;
+										#	if ( scalar(@$row) == $struct_table_cols )
+										#	{
+										#		$doMerging = 1; ## all atts are from structure only
+										#	}
+										#	else ## the remaining atts should match each other in both sets
+										#	{
+										#		for (my $i = $struct_table_cols ; $i < scalar(@$row); $i++)
+										#		{
+										#			$doMerging = 0 if ($prev_dset_row->[$i] ne $row->[$i]) ;
+										#		}											
+										#	}
+										
+							#			if ($doMerging)
+							#			{
+										#	for (my $j=0; $j < $struct_table_cols; $j++)
+							#				{
+							#					if ($row->[$j]){
+							#						if (!$prev_dset_row->[$j]) {
+							#								$prev_dset_row->[$j] = $row->[$j];
+							#						}
+							#						else
+							#						{
+							#							if ($prev_dset_row->[$j] !~ m/$row->[$j]/)
+							#							{
+							#								$prev_dset_row->[$j] .= ';'.$row->[$j];
+							#							}
+							#						}
+							#					}
+							#				}
+							#			}
+							#		}
+							#	}
+							#}
+				   		#}
 				   		
-				   		foreach my $prev_dset_row(@$prev_dset_rows)
-		    			{		    				
-							push @new_rows, [@$this_dset_row,@$prev_dset_row];						
-		 	   			}
+				   		#foreach my $prev_dset_row(@$prev_dset_rows)
+		    			#{		    				
+						#	push @new_rows, [@$this_dset_row,@$prev_dset_row];
+		 	   			#}
 	   				}
 					else 
 					{
@@ -1457,7 +1493,7 @@ sub _attributeMerge {
 			    		}
 #						print "<BR>  ++ ALL ROWS: [ $pKey ] ", Dumper(\@allRows) ;
 #						print "<BR>  ++ THIS DS: [ $pKey ] ", Dumper($this_dset_row) ;
-						
+
 						foreach my $subrow (@allRows) {
 		   					if($subrow) {
 			   					NEXTROW: foreach my $row (@$subrow) {
@@ -1466,12 +1502,12 @@ sub _attributeMerge {
 									my $rowAsString = $self->toString($row);
 									next NEXTROW if (!$rowAsString || exists $avoidDuplication{$rowAsString} ) ;
 									$avoidDuplication{$rowAsString} = '';
-#									print "<BR>going be merged with seq: ",Dumper($row); 			
+#									print "<BR>going be merged with seq: ",Dumper($row);
 									push @new_rows, [@$this_dset_row,@$row];
 								}
 		   					}
-		   				}  				   	
-			    	}			    		
+		   				}
+			    	}
 		    	}
 	    		else 
 	    		{
