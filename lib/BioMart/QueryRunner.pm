@@ -100,6 +100,8 @@ sub _new {
   $self->attr('datasets_encountered', undef);
   $self->attr('last_visible_exportable', undef);
   $self->attr('union_tables', undef);
+  $self->attr('visibleDSCount', undef);
+  
 }
 
 =head2 execute
@@ -122,37 +124,39 @@ sub _new {
 sub execute {
 
     my ($self, $query) = @_;
-    
-
+	my $registry = $query->getRegistry;
+	if (scalar (@{$query->getDatasetNames}) > 0)
+	{
+		my $visibleDSCount = 0;
+		foreach my $ds (@{$query->getDatasetNames})
+		{
+			$visibleDSCount++ if ($registry->getDatasetByName($query->virtualSchema, $ds)->visible);
+		}
+		$self->set('visibleDSCount', $visibleDSCount);
+	}
         
-        
-        if (defined $query->getAllAttributes()){
-        foreach my $att (@{$query->getAllAttributes()}){
-	$logger->warn("ATTRIBUTE: ", $att->dataSetName,"\t",$att->name,"\t",$att->table);
-} 
-} else {
+	if (defined $query->getAllAttributes()){
+    	foreach my $att (@{$query->getAllAttributes()}){
+			$logger->warn("ATTRIBUTE: ", $att->dataSetName,"\t",$att->name,"\t",$att->table);
+		} 
+	} 
+	else 
+	{
 
-$logger->warn("NO ATTRIBUTES");
+		$logger->warn("NO ATTRIBUTES");
 
-}
-
-
-
-  
-        if (defined $query->getAllFilters()){
+	} 
+	if (defined $query->getAllFilters()){
         foreach my $filt (@{$query->getAllFilters()}){
-        $logger->warn("FILTER TABLE: ", $filt->dataSetName,"\t",$filt->name,"\t",$filt->table);
+     	   $logger->warn("FILTER TABLE: ", $filt->dataSetName,"\t",$filt->name,"\t",$filt->table);
+		}
+	}
+	else 
+	{           
+		$logger->warn("NO FILTERS");             
+	}
 
-}       
-} else {   
-           
-$logger->warn("NO FILTERS");
-             
-}            
-       
-
-
-     $self->executionPlan($query);
+	$self->executionPlan($query);
   
     my $formatterName = $query->formatter() || 'TSV';
     my $module = "BioMart::Formatter::$formatterName";
@@ -167,11 +171,11 @@ $logger->warn("NO FILTERS");
     my $rtable = $self->_getResultTable($query);
   
     if ($query->count){
-	$self->set('count',$rtable);
+		$self->set('count',$rtable);
     }
     else{
-	$formatter->resultTable($rtable);
-	$self->set('formatter',$formatter); 
+		$formatter->resultTable($rtable);
+		$self->set('formatter',$formatter); 
     }
 }
 
@@ -411,9 +415,12 @@ sub _processPath {
 	    }
 	    # call for a single dataset query
 	    $logger->debug("Bottom dataset ".$datasetToProcess->name." query params are: ".keys(%{$params{'query'}}));
-	   
-	    $datasetToProcess->lastDS(1); 	## to see if its GS and its the last one, so the expected results would be
-	    									## in FASTA format, and should be comma separated
+		
+		## to see if its GS and its the last one, so the expected results would be
+		## in FASTA format, and should be comma separated
+		$datasetToProcess->lastDS(1) if ($self->get('visibleDSCount') == 1);
+		$datasetToProcess->lastDS(2) if ($self->get('visibleDSCount') > 1);
+
 	    my $rtable = $datasetToProcess->getResultTable(%params);
 
 	    $logger->debug("Bottom dataset ".$datasetToProcess->name." gave ".scalar(@{$rtable->get('columns')}));
