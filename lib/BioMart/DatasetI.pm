@@ -1076,10 +1076,6 @@ sub getResultTable {
 	local($^W) = 0;  # prevent "odd number of elements" warning with -w.
 	my(%param) = @param;
 
-#	open (STDME, ">>/ebi/www/biomart/test/biomart-perl/allDATA");
-
-#	print  "<BR>_getResultTable ", $self->name();
-
 	my $query = $param{'query'};
   
 	unless ($query->isa("BioMart::Query")) {
@@ -1087,6 +1083,8 @@ sub getResultTable {
 	}
 
 	my $table = $param{'table'};
+	
+#	print  "<BR>_getResultTable ", $self->name();	
     
 	my $firstbatch;
 	unless ($table) {
@@ -1185,27 +1183,31 @@ sub getResultTable {
 	 	# previous dataset and hence new hashed results to be merged
 
 	 	  my $attribute_table = $importable->getTable;
+	 	  
  		  my $attributeHash = $self->get('attributeHash');
  		  $attributeHash->{$linkName} = $attribute_table->hashedResults;
  		  
  		  $table->noOfCols($attribute_table->noOfCols);
  		  
  		  $self->set('attributeHash',$attributeHash);
- 	     }     
- 	     if ($has_data && $has_data > 0 && $linkName && 
-			  $self->get('attributeHash')->{$linkName}){
-		      $logger->debug("Attribute merge using linkName: $linkName");
-		      $logger->debug("Before merge: ".scalar(@{$has_data->get('columns')}));
-	
-#				print "\n<BR>++++++++++ BEFORE MERGING TABLE +++++++++++++++ <BR>";
-#				if($table && $self->isa("BioMart::Dataset::GenomicSequence") ) {
-#		  			print "\nIMP: $importable_size", "   ", Dumper($table->getRows);
-#				}
-				
-			  $table = $self->_attributeMerge($table,$importable_size,$linkName, $query);
-#				print "\n<BR>++++++++++ AFTER MERGING TABLE +++++++++++++++ <BR>", Dumper($table->getRows);
-		      $logger->debug("After merge: ".scalar(@{$has_data->get('columns')}));
-	      }
+ 	     } 
+ 	     
+#	    print "\n<BR>++++++++++ GOT RESULTS (Before Merging) +++++++++++++++ <BR>";
+#		if($table && $self->isa("BioMart::Dataset::GenomicSequence") ) {
+#			print Dumper($table->getRows), if ($table->getRows);
+#		}
+ 	     
+		if ($has_data && $has_data > 0 && $linkName && 
+			$self->get('attributeHash')->{$linkName}){
+			$logger->debug("Attribute merge using linkName: $linkName");
+			$logger->debug("Before merge: ".scalar(@{$has_data->get('columns')}));
+					
+			$table = $self->_attributeMerge($table,$importable_size,$linkName, $query);
+			
+#			print "\n<BR>++++++++++ AFTER MERGING TABLE +++++++++++++++ <BR>", Dumper($table->getRows);
+		
+			$logger->debug("After merge: ".scalar(@{$has_data->get('columns')}));
+		}
 
 	      # DO HASHING OF ATTRIBUTES IF REQUIRED 
 	      if ($self->forceHash){
@@ -1214,7 +1216,6 @@ sub getResultTable {
 			  # attribute hashing and merging
 			  $to_hash = 1;
 			  $exportable_size = $self->forceHash;
-#			  print "<BR>    if HASHING ";
 	      }     
 	      elsif ($query->getAllAttributeLists && $query->getAllAttributes){
 	          # have user chosen atts and an exportable - going to want to do
@@ -1226,37 +1227,30 @@ sub getResultTable {
 					 last;
 			     }
 			  }
-#  			  print "<BR>    elsif HASHING ";
 	      }
 	      else {
 			  # if table is bigger than exportable_size after merging then should 
 			  # be hashed - fixes problem of getting no seq, gene dataset merging 
 			  # if no structure atts chosen for example	  
-#			print "<BR> HERE -1";
+
 			foreach my $exportable(@{$query->getAllAttributeLists}){
 			     if ($exportable->linkName){
 					$exportable_size =  @{$exportable->getAllAttributes};
-#			print "<BR> HERE -2";
 					last;
 				}
 			}
 			my $first_row = ${$table->getRows()}[0];
 	          my $col_number = @{$first_row} if ($first_row);   
-#			print "<BR>COL: $col_number,  EXP_SIZE: $exportable_size";
 	          if ($col_number && $exportable_size && 
 				$col_number > $exportable_size){
-#			print "<BR> HERE -1";				
 				$to_hash = 1;
 			}
 			# another special case, say Human (seq)/msd, and u donot choose human main table att(deselect: biotype)
 			# and this will stop the hashing call, even for empty DS, which will break the intermediate logic
 			# of prKeys being passed over from one DS to another one. causing complete chaos.
 			# try removing this IF and request Sequence for gene: ENSG00000188170 with MSD as second DS.
-			
-			
 			if (!$col_number && $exportable_size)
 			{
-#				print "<BR> HERE -2", "[ ", $self->name," ]";
 				$to_hash = 1;
 			}
 			
@@ -1265,21 +1259,21 @@ sub getResultTable {
 	     if ($to_hash){
 			$logger->debug("Attribute hash");						
 			$logger->debug("Before hash: ".scalar(@{$table->get('columns')}));
+#			print  "\n<BR>++++++++++ BEFORE HASHING +++++++++++++++ <BR>",Dumper($table->getRows());
 			$table = $self->_hashAttributes($table,$exportable_size);
 			  
 #			print  "\n<BR>++++++++++ AFTER HASHING TABLE - ROWS +++++++++++++++ <BR>",Dumper($table->getRows());
 #			print  "\n<BR>++++++++++ AFTER HASHING TABLE - HASHEDRESULTS +++++++++++++++ <BR>",Dumper($table->hashedResults);
-			
-
-			
+		
 	      $logger->debug("After hash: ".scalar(@{$table->get('columns')}));
 	
 		}
 
-#	close(STDME);
+
 
 	      # RETURN FULL TABLE, EMPTY TABLE (1st batch), UNDEF (last batch)
 	      $logger->debug("Returning defined has_data") if $has_data;
+
 	      return $has_data if ($has_data); #always return defined result
 	      $logger->debug("Returning table") if $firstbatch;
 	      return $table if ($firstbatch); #returns empty table for first call. 
@@ -1292,7 +1286,6 @@ sub getResultTable {
   	
 }
 
-
 sub _attributeMerge {
   	my ($self,$rtable,$importable_size,$linkName, $query) = @_;
 	$logger->debug("Importable size: $importable_size");
@@ -1301,21 +1294,7 @@ sub _attributeMerge {
 
 	my $sequenceType = 'none';
 	
-	if ($self->isa("BioMart::Dataset::GenomicSequence")
-		&& ($self->lastDS() == 1)
-#		&& ($rtable->noOfCols() != -1 ) 
-		&& ($query->getAllAttributes($self->name)->[0]->name()) )
-	{
-		$sequenceType = $query->getAllAttributes($self->name)->[0]->name();
-	#	if ( ($sequenceType =~ m/(coding|cdna|peptide)$/ )
-	#		|| ( $sequenceType =~ m/utr$/ ) 
-	#		|| ( $sequenceType =~ m/(transcript_exon_intron|transcript_flank|coding_transcript_flank)$/ ) 
-	#		|| ( $sequenceType =~ m/gene_flank/) 
-	#		)
-	#	{
-			$sequenceType = 'ok';
-	#	}
-	}
+	my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
 	
 	my %this_dset_hash;
 	my $rows = $rtable->getRows();
@@ -1335,7 +1314,6 @@ sub _attributeMerge {
 	
 		# store hash element;
 
-		#my $hashed_rows = $this_dset_hash{$key_string}{'row'};
 		my $hashed_rows = $this_dset_hash{$pKey}{$key_string};
 		my $row_to_add = [@{$row}[$importable_size..@{$row}-1]];
 
@@ -1346,16 +1324,77 @@ sub _attributeMerge {
 		$this_dset_hash{$pKey}{$key_string} = $hashed_rows;
 	}
 	    
+	if ($self->isa("BioMart::Dataset::GenomicSequence")
+		&& ($self->lastDS() == 1 || $self->lastDS() == 2)
+		&& ($query->getAllAttributes($self->name)->[0]->name()) )
+	{
+		$sequenceType = $query->getAllAttributes($self->name)->[0]->name();
+		$sequenceType = 'ok';
+			
+
+			#if ($this_dset_hash{'52041'})
+			#{
+			#	print "<BR>=================== PREV DS  ================== <BR>", Dumper (\%prev_dset_hash);
+			#}			
+			# The last set of rows, against a pkey in GS is ignored due to batching as 
+			# the remaining rows could possibly come in next batch.
+			# so for merging them back again to corresponding structure Atts, we store 
+			# structure atts in GS and add them to the new %prev_dset_hash, so when the 
+			# sequences is returned in next batch, it available for merging.
+			
+			
+		if ($self->get('rowsFromLastBatch'))
+		{
+			my $lastBatchRows = $self->get('rowsFromLastBatch');
+			my $doWriteBack =0;
+			foreach my $firstkey( keys %$lastBatchRows) {
+				if (exists $this_dset_hash{$firstkey}) ####### only bring into prev_hash if required and delete immediately
+				{	
+					foreach my $secondkey (keys %{$lastBatchRows->{$firstkey}}) {
+						#$prev_dset_hash{$firstkey}{$secondkey} = $lastBatchRows->{$firstkey}{$secondkey};
+						foreach my $rows (@{$lastBatchRows->{$firstkey}{$secondkey}})
+						{
+							push @{$prev_dset_hash{$firstkey}{$secondkey}}, $rows;
+						}
+					}
+					delete $lastBatchRows->{$firstkey};
+					$doWriteBack = 1;
+				}
+			}
+			$self->set('rowsFromLastBatch', $lastBatchRows) if ($doWriteBack);
+#			print "<BR>=================== THIS_DATASET ================ <BR>", Dumper(\%this_dset_hash);
+#			print "<BR>=================== RECOVERED  ================== <BR>", Dumper (\%prev_dset_hash);
+		}
+
+		my $saveForNextBatch = undef;
+		foreach my $firstkey (keys %prev_dset_hash) {
+			if (!exists $this_dset_hash{$firstkey}) {
+				$saveForNextBatch ||= $self->get('rowsFromLastBatch');
+				foreach my $secondkey (keys %{$prev_dset_hash{$firstkey}}) {
+#					print "<BR>$firstkey : $secondkey";
+#					print "<BR>Already EXISTS :", Dumper($saveForNextBatch) if(exists $saveForNextBatch->{$firstkey}{$secondkey});
+					#$saveForNextBatch->{$firstkey}{$secondkey} = $prev_dset_hash{$firstkey}{$secondkey};
+					foreach my $rows (@{$prev_dset_hash{$firstkey}{$secondkey}})
+					{
+						push @{$saveForNextBatch->{$firstkey}{$secondkey}}, $rows;
+					}
+				}					
+			}
+		}
+		$self->set('rowsFromLastBatch', $saveForNextBatch);
+	}	
+		
 	my @new_rows;
   	# loop over both hashes and produce new table
 
-	my %prev_dset_hash = %{$self->get('attributeHash')->{$linkName}};
+	
     	
 #	print "<BR>=================== PREV_DATASET ================ <BR>", Dumper(\%prev_dset_hash);
 #	print "<BR>=================== THIS_DATASET ================ <BR>", Dumper(\%this_dset_hash);
 
 	foreach my $prkey(keys %this_dset_hash)
 	{
+		
 		foreach my $key(keys %{$this_dset_hash{$prkey}})
 		{
 			my $this_dset_rows = $this_dset_hash{$prkey}{$key};
@@ -1365,132 +1404,84 @@ sub _attributeMerge {
     		$logger->warn("This previous rows: ".scalar(@$this_dset_rows));
 			foreach my $this_dset_row(@$this_dset_rows)
 			{
-#				print "<BR>  ++ THIS DS: [ $pKey ] <BR>", Dumper($this_dset_row) ;
-		    	my $prev_dset_rows = $prev_dset_hash{$prkey}{$key};		## this matching of both lower and upper case of keys
+				#print "<BR>  ++ THIS DS: [ $pKey ] <BR>", Dumper($this_dset_row) ;
+
+		    	my $prev_dset_rows = $prev_dset_hash{$prkey};	#{$key};		## this matching of both lower and upper case of keys
 				if(!$prev_dset_rows)								## is introduced ever since ensembl 41 has made the 
-				{												## pdb for e.g in UPPER case and in MSD its in LOWER case	
-					$prev_dset_rows = $prev_dset_hash{lc($prkey)}{lc($key)};	## so its safe to test both the scenarios
+				{													## pdb for e.g in UPPER case and in MSD its in LOWER case	
+					$prev_dset_rows = $prev_dset_hash{lc($prkey)}; #{lc($key)};	## so its safe to test both the scenarios
 				}		
 				if(!$prev_dset_rows)								## is introduced ever since ensembl 41 has made the 
 				{												## pdb for e.g in UPPER case and in MSD its in UPPER case	
-					$prev_dset_rows = $prev_dset_hash{uc($prkey)}{uc($key)};	## so its safe to test both the scenarios
+					$prev_dset_rows = $prev_dset_hash{uc($prkey)}; #{uc($key)};	## so its safe to test both the scenarios
 				}			
 			 	if ($prev_dset_rows)
 				{
-#				 		print "<BR> READY FOR MERGING -1";
-		    			$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
-						## GS comma separated list for structure attributes
-		    			if ($sequenceType eq 'ok') 
-		    			{						
-#							print "<BR>, Merging Here";
-							#e.g pKey=267929 AND key=26792911522636522755-15 
-		    				my @allRows;
-					    	my $struct_table_cols = $rtable->noOfCols();
-				    		#$struct_table_cols = 6;
-				    		my $finalRow;
-					    	my %duplicateRows;
-				    		foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {				    			
-			    				push @allRows, $prev_dset_hash{$pKey}{$key_string};
-				    		}
+					#if ($sequenceType eq 'ok') 
+	    			#{						
+#						print "<BR>  ++ THIS DS: [ $pKey ] <BR>", Dumper($this_dset_row) ;
+#						print "<BR>=================== GS: PREV_ROWS ================ <BR>", Dumper(\%prev_dset_hash);
+					#}
 
-#							print "<BR>  ++ THIS DS: [ $pKey ] <BR>", Dumper($this_dset_row) ;
-#							print "<BR>=================== PREV_ROWS ================ <BR>", Dumper($prev_dset_rows);
-#							print "<BR>=================== ALL_ROWS ================ <BR>", Dumper(\@allRows);
-							
-							foreach my $subrow (@allRows) {						    	
-				   				if($subrow) {
-									foreach my $row (@$subrow) {
-										for (my $i = 0; $i < scalar(@{$row}); $i++)	{
-											if ( $row->[$i] ) {
-												if (!$finalRow->[$i]) {
-													$finalRow->[$i] = $row->[$i];
-												}
-												else {
-													$row->[$i] =~ s/\[/\\[/mg;
-													$row->[$i] =~ s/\]/\\]/mg;
-													$row->[$i] =~ s/\(/\\(/mg;
-													$row->[$i] =~ s/\)/\\)/mg;
-													$row->[$i] =~ s/\{/\\{/mg;
-													$row->[$i] =~ s/\}/\\}/mg;
-													if (  $finalRow->[$i] !~ m/$row->[$i]/  )	{
-														$finalRow->[$i] .= ';'.$row->[$i]; # bcoz comma exits in some data contents
-													}
+    				my @allRows;
+		    		if (defined $prev_dset_hash{$pKey})
+					{
+						foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {
+	    					push @allRows, $prev_dset_hash{$pKey}{$key_string} ;
+		    			}
+		    		}
+		    		if (!@allRows && exists $prev_dset_hash{lc($pKey)})
+		    		{
+		    			foreach my $key_string (keys %{$prev_dset_hash{lc($pKey)}}) {
+	    					push @allRows, $prev_dset_hash{lc($pKey)}{$key_string} ;
+		    			}
+		    		}
+		    		if (!@allRows && exists $prev_dset_hash{uc($pKey)})
+		    		{
+		    			foreach my $key_string (keys %{$prev_dset_hash{uc($pKey)}}) {
+	    					push @allRows, $prev_dset_hash{uc($pKey)}{$key_string} ;
+		    			}
+		    		}
+#			 		print "<BR> READY FOR MERGING -1";
+#	    			$logger->debug("There were previous rows: ".scalar(@$prev_dset_rows));
+					## GS semi colon separated list for structure attributes
+	    			if ($sequenceType eq 'ok') 
+	    			{						
+#						print "<BR>, Merging Here";
+						#e.g pKey=267929 AND key=26792911522636522755-15 
+	    											
+			    		my $finalRow;
+#						print "<BR>=================== ALL_ROWS ================ <BR>", Dumper(\@allRows);
+						foreach my $subrow (@allRows) {						    	
+			   				if($subrow) {
+								foreach my $row (@$subrow) {
+									for (my $i = 0; $i < scalar(@{$row}); $i++)	{
+										if ( $row->[$i] ) {
+											if (!$finalRow->[$i]) {
+												$finalRow->[$i] = $row->[$i];
+											}
+											else {
+												$row->[$i] =~ s/\[/\\[/mg;
+												$row->[$i] =~ s/\]/\\]/mg;
+												$row->[$i] =~ s/\(/\\(/mg;
+												$row->[$i] =~ s/\)/\\)/mg;
+												$row->[$i] =~ s/\{/\\{/mg;
+												$row->[$i] =~ s/\}/\\}/mg;
+												if (  $finalRow->[$i] !~ m/$row->[$i]/  )	{
+													$finalRow->[$i] .= ';'.$row->[$i]; # bcoz comma exits in some data contents
 												}
 											}
-										}	
-									}		
-								}
+										}
+									}	
+								}		
 							}
-							push @new_rows, [@$this_dset_row,@$finalRow];
-				    		#foreach my $prev_dset_row(@$prev_dset_rows){
-							#	foreach my $subrow (@allRows) {
-						    #		my $finalRow;
-					   		#		if($subrow) {
-							#			foreach my $row (@$subrow) {
-							#				my $doMerging = 1;
-										#	if ( scalar(@$row) == $struct_table_cols )
-										#	{
-										#		$doMerging = 1; ## all atts are from structure only
-										#	}
-										#	else ## the remaining atts should match each other in both sets
-										#	{
-										#		for (my $i = $struct_table_cols ; $i < scalar(@$row); $i++)
-										#		{
-										#			$doMerging = 0 if ($prev_dset_row->[$i] ne $row->[$i]) ;
-										#		}											
-										#	}
-										
-							#			if ($doMerging)
-							#			{
-										#	for (my $j=0; $j < $struct_table_cols; $j++)
-							#				{
-							#					if ($row->[$j]){
-							#						if (!$prev_dset_row->[$j]) {
-							#								$prev_dset_row->[$j] = $row->[$j];
-							#						}
-							#						else
-							#						{
-							#							if ($prev_dset_row->[$j] !~ m/$row->[$j]/)
-							#							{
-							#								$prev_dset_row->[$j] .= ';'.$row->[$j];
-							#							}
-							#						}
-							#					}
-							#				}
-							#			}
-							#		}
-							#	}
-							#}
-				   		#}
-				   		
-				   		#foreach my $prev_dset_row(@$prev_dset_rows)
-		    			#{		    				
-						#	push @new_rows, [@$this_dset_row,@$prev_dset_row];
-		 	   			#}
-	   				}
+						}
+						push @new_rows, [@$this_dset_row,@$finalRow];
+   					}
 					else 
 					{
-						my @allRows;
 						my %avoidDuplication = ();
 
-						if (defined $prev_dset_hash{$pKey})
-						{
-							foreach my $key_string (keys %{$prev_dset_hash{$pKey}}) {
-		    					push @allRows, $prev_dset_hash{$pKey}{$key_string} ;
-			    			}
-			    		}
-			    		if (!@allRows && exists $prev_dset_hash{lc($pKey)})
-			    		{
-			    			foreach my $key_string (keys %{$prev_dset_hash{lc($pKey)}}) {
-		    					push @allRows, $prev_dset_hash{lc($pKey)}{$key_string} ;
-			    			}
-			    		}
-			    		if (!@allRows && exists $prev_dset_hash{uc($pKey)})
-			    		{
-			    			foreach my $key_string (keys %{$prev_dset_hash{uc($pKey)}}) {
-		    					push @allRows, $prev_dset_hash{uc($pKey)}{$key_string} ;
-			    			}			    		
-			    		}
 #						print "<BR>  ++ ALL ROWS: [ $pKey ] ", Dumper(\@allRows) ;
 #						print "<BR>  ++ THIS DS: [ $pKey ] ", Dumper($this_dset_row) ;
 
@@ -1511,7 +1502,7 @@ sub _attributeMerge {
 		    	}
 	    		else 
 	    		{
-		    		$logger->debug("There were NO previous rows");
+	    	  		$logger->debug("There were NO previous rows");
 			    }
 			}
 		}

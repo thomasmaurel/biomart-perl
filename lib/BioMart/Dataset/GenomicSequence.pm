@@ -200,7 +200,21 @@ sub _new {
 
     $self->attr('sequence', undef);
     $self->attr('attribute_merge_required', 0);
- }
+
+	# last set of structure rows in a batch are not processed as they may be incomplete
+	# set of say all exons, so store them somewhere for next time around and also store the 
+	# corresponding results for merging
+
+	$self->attr('rowsFromLastBatch', undef);
+	
+	# these help us solve the problem when gene coding and flank sequnces are requested, and 
+	# for more than one transcripts coming in different batches, it repeats the same sequence
+	# with different header if transcript atts are requested.
+	# $self->attr('rowsFromLastBatch', undef), works for this case too.
+	$self->attr('seqStorageHash', undef);
+	$self->attr('onHoldSeqsKeys', undef);
+	
+}
 
 #private methods
 
@@ -393,8 +407,11 @@ sub __processNewQuery {
 	$self->set('ignore_row', "type");
 	$self->set('recipe', '_codingCdnaPeptideSequences');
     } 
-    elsif ($seq_name =~ m/(exon_intron|flank)$/) {
-	$self->set('recipe', '_exonIntronFlankSequences');
+    elsif ($seq_name =~ m/(transcript_exon_intron|transcript_flank|coding_transcript_flank)$/) {
+	$self->set('recipe', '_transcript_exonIntronFlankSequences');
+    } 
+	elsif ($seq_name =~ m/(gene_exon_intron|gene_flank|coding_gene_flank)$/) {
+	$self->set('recipe', '_gene_exonIntronFlankSequences');
     } 
     elsif ($seq_name =~ m/raw/){
 	$self->set('recipe', '_rawSequences');
@@ -803,16 +820,19 @@ sub _getResultTable {
     
     my $has_rows = $rtable->hasMoreRows;
     
-   	
+   		
     	my %avoidDuplication = ();
-	NEXTROW: while ($has_rows && $self->_continueWithBatch($batch_size, $rtable)) {
+		NEXTROW: while ($has_rows && $self->_continueWithBatch($batch_size, $rtable)) {
 		my $curRow = $rtable->nextRow;
 		my $rowAsString = $self->toString($curRow); # avoid using "@A" eq "@B" type comparison, it floods error log
 		next NEXTROW if (!$rowAsString || exists $avoidDuplication{$rowAsString} ) ; # no point retrieving sequence for same coordinates
 		$avoidDuplication{$rowAsString} = '';
 		$self->_processRow( $atable, $curRow);
+		
+		#print "<BR> BAtch: $batch_size [ ", $self->_continueWithBatch($batch_size, $rtable), " ] [ ", $self->get('batchIndex'), " ]";
+		
 	}
-
+	
     # the last and final call to GenomicSequence, after the call which 
     # exhausts the importable, will result in the last sequence being 
     # processed and added to the resultTable.
@@ -933,7 +953,7 @@ sub _codingCdnaPeptideSequences {
 }
 
 
-sub _exonIntronFlankSequences {
+sub _transcript_exonIntronFlankSequences {
     my ($self, $atable, $curRow) = @_;
     
     my $rank = 1;
@@ -982,6 +1002,106 @@ sub _exonIntronFlankSequences {
     $self->set('lastPkey', $pkey);
     $self->set('outRow', $outRow);
 }
+
+sub _gene_exonIntronFlankSequences {
+    my ($self, $atable, $curRow) = @_;
+    
+  #  print "<BR> HERE";
+    
+    my $rank = 1;
+    # Determine this and last primary keys
+    my $importable_indices = $self->get('importable_indices');
+    # Get the primary sequence ID from this row. Use DUMMY if missing
+    my $pkey     = $curRow ? 
+	($curRow->[$importable_indices->{"pkey"}] || 'DUMMY') : undef;
+    my $lastPkey = $self->get('lastPkey') || $pkey;
+
+    my $outRow = $self->get('outRow');
+
+    if( ( ! defined $pkey ) or ( $pkey ne $lastPkey ) )
+    {
+		# Start of new row, or end of results; Dump the current sequence
+		my $shift = ($self->get('seq_name') =~ m/flank/);
+
+		my $location = $self->_modFlanks( $self->get('calc_location'), $shift );
+		$self->set('calc_location', undef); # Reset location cache
+
+		my $sequence;
+		if ($location->{"start"}) {
+		    my $locations = { $rank => $location };
+		    $sequence = $self->_processSequence($locations);
+			$self->_editSequence(\$sequence);
+		}
+
+		my $storageHash = $self->get('seqStorageHash');
+
+		# this is well tricky. lastDS is 2 when its a two DS query adn its the second DS's GS.
+		# we do not wait for all transcripts to arrive because in a two DS query HUMAN/MSD, there is a chance
+		# few transcripts are absent for not having any PDBids. So we should not stop such sequences. 
+		# The sequences are meant to stop till all the transcripts are seen when its a single DS query
+		if (($storageHash->{$lastPkey}->{'transcriptCount'} >= $storageHash->{$lastPkey}->{'totalTranscripts'}) 
+			|| $self->lastDS() == 2)
+		{
+			if ($sequence)
+			{ 
+			    $self->_addRow($atable, $outRow, $sequence);
+			}
+			else 
+			{
+			    $self->_addRow($atable, $outRow, "Sequence unavailable");
+			}
+			delete $storageHash->{$lastPkey}; # over with this Gene.			
+		}
+		else
+		{
+			# seqs keeps getting update, as and when a transcript of a gene
+			# arrives in a separate batch. In principle this should always be the same
+
+			#my $onHoldkeys = $self->get('onHoldSeqsKeys');
+					
+			$storageHash->{$lastPkey}->{'seq'} = $sequence;
+			$storageHash->{$lastPkey}->{'outRow'} = $outRow;
+
+			#$onHoldkeys->{$lastPkey} = "";
+			#$self->set('onHoldSeqsKeys', $onHoldkeys);
+			$self->set('seqStorageHash', $storageHash);
+			
+		    $self->_incrementBatch;
+		}
+		$outRow = undef;
+    } # End sequence dumping
+
+    if ($curRow) 
+    {
+		# Update the location corresponding to this row
+		my $location = $self->_getLocationFrom($curRow,"pkey","transcript_pkey","chr", "start", "end", "strand", "transcript_count");
+		$self->_calcSeqOverLocations( $location );
+		
+		my $storageHash = $self->get('seqStorageHash');
+		my $prkey = $location->{'pkey'};
+		my $transcript_key = $location->{'transcript_pkey'};	
+		#print "<BR>TRANS KEY: $transcript_key", " == ", $location->{'transcript_count'};
+		$storageHash->{$prkey}->{'totalTranscripts'} = $location->{'transcript_count'} || 1; # there are NULL vals in DB
+		if(exists $storageHash->{$prkey}->{'transcriptKeys'}) {		
+			if ($storageHash->{$prkey}->{'transcriptKeys'} !~ m/$transcript_key/) {
+				$storageHash->{$prkey}->{'transcriptKeys'} .= $transcript_key.',';
+				$storageHash->{$prkey}->{'transcriptCount'} ++;
+			#	print "<BR> I WAS HERE", $storageHash->{$prkey}->{'transcriptCount'};
+			}
+		}
+		else
+		{
+			$storageHash->{$prkey}->{'transcriptKeys'} = $transcript_key.',';
+			$storageHash->{$prkey}->{'transcriptCount'}++;
+		}
+		#print "<BR>",Dumper ($storageHash);
+		$self->set('seqStorageHash', $storageHash);
+	}
+    $outRow ||= $self->_initializeReturnRow($curRow);
+    $self->set('lastPkey', $pkey);
+    $self->set('outRow', $outRow);
+}
+
 
 sub _exonSequences {
     my ($self, $atable, $curRow) = @_;
