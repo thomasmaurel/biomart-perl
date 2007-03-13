@@ -516,7 +516,7 @@ $filter->getExcluded.qq|"/>|;
 		if (!$vDataset{$_->dataSetName})
 		{			
 			my $temp_actualDS = $self->getActualDS($_->dataSetName,\%vDataset);
-			if ($vDataset{$temp_actualDS})
+			if ($temp_actualDS && $vDataset{$temp_actualDS})
 			{
 				$xml .= qq |
 				$vDataset{$temp_actualDS}|;
