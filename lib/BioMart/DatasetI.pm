@@ -1476,7 +1476,7 @@ sub _attributeMerge {
 								}		
 							}
 						}
-						push @new_rows, [@$this_dset_row,@$finalRow];
+						push @new_rows, [@$this_dset_row,@$finalRow] ;
    					}
 					else 
 					{
@@ -1585,12 +1585,15 @@ sub _hashAttributes {
 		#push @new_rows, $new_row;# do first so even empty rows get added so 
 	                           # batching behaviour not confused
 		
-		if (! exists $groupSameKeyRows{$new_row->[0]})
+		if($new_row->[0]) # just to avoid warnings
 		{
-			push @order_of_rows, $new_row->[0];
+			if (! exists $groupSameKeyRows{$new_row->[0]})
+			{
+				push @order_of_rows, $new_row->[0];
+			}
+			push @{$groupSameKeyRows{$new_row->[0]}}, $new_row;
 		}
-		push @{$groupSameKeyRows{$new_row->[0]}}, $new_row;
-
+		
 		my $key_string = '';
 		my $pKey = '';
 		for (my $i = 0; $i < $exportable_size; $i++){
