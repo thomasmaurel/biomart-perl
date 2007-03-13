@@ -46,7 +46,7 @@ use strict;
 use warnings;
 use Digest::MD5;
 use XML::Simple qw(:strict);
-
+use Data::Dumper;
 use base qw(BioMart::Root);
 
 =head2 _new
@@ -265,11 +265,10 @@ sub getActualDS
     	{
     		foreach(keys %$vDataset)
     		{    			
-			if ($self->_getActualDS($links, $dataset, $_) == 1)
-			{	
-				$actualDS = $_;    
-			}    				
-    				 				
+				if ($self->_getActualDS($links, $dataset, $_) == 1)
+				{	
+					$actualDS = $_;    
+				}    				 				
     		}
     	}
      return $actualDS;
@@ -278,8 +277,8 @@ sub getActualDS
 
 =head2 _getActualDS
 
-  Usage      : internal function, called by _toXML_latest
-  Description: to check if datasets is visible or not
+  Usage      : internal function, called by getactualDS 
+  Description: to find the actual visible DS to shown in XML
   Returntype : true/false
   Exceptions : none
   Caller     : caller
@@ -312,6 +311,31 @@ sub _getActualDS
 		return 0;
 	}
 }
+
+
+sub getActualDS_reverseLinks
+{
+	my ($self, $dataset, $vDataset) = @_;
+	my $temp = $self->get('links');
+	my $links;
+	my $allLinks = $self->get('links');
+	foreach my $link (@$allLinks)
+	{
+		$links->{$link->sourceDataset()} = $link->targetDataset();
+	}
+	
+	if(exists $links->{$dataset})
+	{
+		foreach my $dsName (keys %$vDataset)
+		{
+			if ($dsName eq $links->{$dataset})
+			{
+				return $dsName;
+			}
+		}
+	}	
+}
+
 
 
 =head2 _toXML_latest
@@ -358,10 +382,10 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 			
      	}    	
 	}
-	
+
 	## Attributes and AttributeLists
 	my $attsAndAttLists = $self->get('attsAndAttListsForXMLDisplay'); ## this hash is populated in addAttribute() and _populateFromXML() only
-    	foreach my $attribute (@$attsAndAttLists)
+	foreach my $attribute (@$attsAndAttLists)
      {
 		foreach my $attName (keys %$attribute)
 		{
@@ -372,13 +396,22 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
      }
      
 	## Filters
-    	my $filts = $self->getAllFilters();
-     foreach my $filter (@$filts)
+	my $filts = $self->getAllFilters();
+	foreach my $filter (@$filts)
     	{
 		$actualDS = $self->getActualDS($filter->dataSetName, \%vDataset);
+		# e.g if filter is from gnf_xxx or evoc_xxx datasets which are generic for all but
+		# used for human so far. the only way to assign such filters to the corresponding dataset
+		# is to find an the representative visible dataset in reverse order in LINKS Target and source pairs
+		if(!$actualDS)
+		{
+			$actualDS = $self->getActualDS_reverseLinks($filter->dataSetName, \%vDataset);
+		}
+		
+
 		if ($filter->isa("BioMart::Configuration::ValueFilter"))
 		{
-		     my @values;
+		    my @values;
 	     	my @rows;
 		     my $atable = $filter->getTable;
 		     while (my $row = $atable->nextRow)
@@ -457,13 +490,13 @@ $filter->getExcluded.qq|"/>|;
 	my $ds;
   	foreach (keys %vDataset)
   	{
-  		$vDataset{$_} .= qq |
+  	$vDataset{$_} .= qq |
 	</Dataset>|;
-                $ds=$vDataset{$_};
+		$ds=$vDataset{$_};		
 	}
 
-     # so it does not forget to stick dataset for counts
-       if ($count eq '1') { $xml .= qq |$ds|}
+    # so it does not forget to stick dataset for counts
+	if ($count eq '1') { $xml .= qq |$ds|}
 
 	# ------ Determine correct order of datasets in the query without calling QueryRunner
 	# ------ using getAllAttributes to find corresponding datasets and then ascertain
@@ -473,10 +506,23 @@ $filter->getExcluded.qq|"/>|;
 	{
 		if ($vDataset{$_->dataSetName})
 		{
+
 			$xml .= qq |
 			$vDataset{$_->dataSetName}|;
 			delete $vDataset{$_->dataSetName}; # so this never added twice
-		}		
+		}
+		# may be its a query with only structure or GS atts. forexample peptide, transcript_id query
+		# you will only see invisible datasets
+		if (!$vDataset{$_->dataSetName})
+		{			
+			my $temp_actualDS = $self->getActualDS($_->dataSetName,\%vDataset);
+			if ($vDataset{$temp_actualDS})
+			{
+				$xml .= qq |
+				$vDataset{$temp_actualDS}|;
+				delete $vDataset{$temp_actualDS}; # so this never added twice
+			}
+		}
 	}
 	# ----------------------------------------------------------------------------------
   		
