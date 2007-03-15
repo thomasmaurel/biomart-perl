@@ -1006,8 +1006,7 @@ sub _transcript_exonIntronFlankSequences {
 sub _gene_exonIntronFlankSequences {
     my ($self, $atable, $curRow) = @_;
     
-  #  print "<BR> HERE";
-    
+	
     my $rank = 1;
     # Determine this and last primary keys
     my $importable_indices = $self->get('importable_indices');
@@ -1035,12 +1034,46 @@ sub _gene_exonIntronFlankSequences {
 
 		my $storageHash = $self->get('seqStorageHash');
 
-		# this is well tricky. lastDS is 2 when its a two DS query adn its the second DS's GS.
-		# we do not wait for all transcripts to arrive because in a two DS query HUMAN/MSD, there is a chance
-		# few transcripts are absent for not having any PDBids. So we should not stop such sequences. 
-		# The sequences are meant to stop till all the transcripts are seen when its a single DS query
-		if (($storageHash->{$lastPkey}->{'transcriptCount'} >= $storageHash->{$lastPkey}->{'totalTranscripts'}) 
-			|| $self->lastDS() == 2)
+
+		# This IF statement is just there to keep those in sink who have Ensembl 42 or earlier
+		# and this new code. They should not expect transcript_pkey and transcript_count from XML
+		if (exists $storageHash->{$lastPkey})
+		{
+			# this is well tricky. lastDS is 2 when its a two DS query adn its the second DS's GS.
+			# we do not wait for all transcripts to arrive because in a two DS query HUMAN/MSD, there is a chance
+			# few transcripts are absent for not having any PDBids. So we should not stop such sequences. 
+			# The sequences are meant to stop till all the transcripts are seen when its a single DS query
+			if (($storageHash->{$lastPkey}->{'transcriptCount'} >= $storageHash->{$lastPkey}->{'totalTranscripts'}) 
+				|| $self->lastDS() == 2)
+			{
+				if ($sequence)
+				{ 
+				    $self->_addRow($atable, $outRow, $sequence);
+				}
+				else 
+				{
+				    $self->_addRow($atable, $outRow, "Sequence unavailable");
+				}
+				delete $storageHash->{$lastPkey}; # over with this Gene.			
+			}
+			else
+			{
+				# seqs keeps getting update, as and when a transcript of a gene
+				# arrives in a separate batch. In principle this should always be the same
+
+				#my $onHoldkeys = $self->get('onHoldSeqsKeys');
+					
+				$storageHash->{$lastPkey}->{'seq'} = $sequence;
+				$storageHash->{$lastPkey}->{'outRow'} = $outRow;
+
+				#$onHoldkeys->{$lastPkey} = "";
+				#$self->set('onHoldSeqsKeys', $onHoldkeys);
+				$self->set('seqStorageHash', $storageHash);
+
+			    $self->_incrementBatch;
+			}
+		}
+		else 
 		{
 			if ($sequence)
 			{ 
@@ -1050,23 +1083,6 @@ sub _gene_exonIntronFlankSequences {
 			{
 			    $self->_addRow($atable, $outRow, "Sequence unavailable");
 			}
-			delete $storageHash->{$lastPkey}; # over with this Gene.			
-		}
-		else
-		{
-			# seqs keeps getting update, as and when a transcript of a gene
-			# arrives in a separate batch. In principle this should always be the same
-
-			#my $onHoldkeys = $self->get('onHoldSeqsKeys');
-					
-			$storageHash->{$lastPkey}->{'seq'} = $sequence;
-			$storageHash->{$lastPkey}->{'outRow'} = $outRow;
-
-			#$onHoldkeys->{$lastPkey} = "";
-			#$self->set('onHoldSeqsKeys', $onHoldkeys);
-			$self->set('seqStorageHash', $storageHash);
-			
-		    $self->_incrementBatch;
 		}
 		$outRow = undef;
     } # End sequence dumping
@@ -1077,25 +1093,31 @@ sub _gene_exonIntronFlankSequences {
 		my $location = $self->_getLocationFrom($curRow,"pkey","transcript_pkey","chr", "start", "end", "strand", "transcript_count");
 		$self->_calcSeqOverLocations( $location );
 		
-		my $storageHash = $self->get('seqStorageHash');
-		my $prkey = $location->{'pkey'};
-		my $transcript_key = $location->{'transcript_pkey'};	
-		#print "<BR>TRANS KEY: $transcript_key", " == ", $location->{'transcript_count'};
-		$storageHash->{$prkey}->{'totalTranscripts'} = $location->{'transcript_count'} || 1; # there are NULL vals in DB
-		if(exists $storageHash->{$prkey}->{'transcriptKeys'}) {		
-			if ($storageHash->{$prkey}->{'transcriptKeys'} !~ m/$transcript_key/) {
-				$storageHash->{$prkey}->{'transcriptKeys'} .= $transcript_key.',';
-				$storageHash->{$prkey}->{'transcriptCount'} ++;
-			#	print "<BR> I WAS HERE", $storageHash->{$prkey}->{'transcriptCount'};
-			}
-		}
-		else
+		
+		# This IF statement is just there to keep those in sink who have Ensembl 42 or earlier
+		# and this new code. They should not expect transcript_pkey and transcript_count from XML
+		if ($location->{'transcript_pkey'})
 		{
-			$storageHash->{$prkey}->{'transcriptKeys'} = $transcript_key.',';
-			$storageHash->{$prkey}->{'transcriptCount'}++;
+			my $storageHash = $self->get('seqStorageHash');
+			my $prkey = $location->{'pkey'};
+			my $transcript_key = $location->{'transcript_pkey'};
+			#print "<BR>TRANS KEY: $transcript_key", " == ", $location->{'transcript_count'};
+			$storageHash->{$prkey}->{'totalTranscripts'} = $location->{'transcript_count'} || 1; # there are NULL vals in DB
+			if(exists $storageHash->{$prkey}->{'transcriptKeys'}) {		
+				if ($storageHash->{$prkey}->{'transcriptKeys'} !~ m/$transcript_key/) {
+					$storageHash->{$prkey}->{'transcriptKeys'} .= $transcript_key.',';
+					$storageHash->{$prkey}->{'transcriptCount'} ++;
+				#	print "<BR> I WAS HERE", $storageHash->{$prkey}->{'transcriptCount'};
+				}
+			}
+			else
+			{
+				$storageHash->{$prkey}->{'transcriptKeys'} = $transcript_key.',';
+				$storageHash->{$prkey}->{'transcriptCount'}++;
+			}
+			#print "<BR>",Dumper ($storageHash);
+			$self->set('seqStorageHash', $storageHash);
 		}
-		#print "<BR>",Dumper ($storageHash);
-		$self->set('seqStorageHash', $storageHash);
 	}
     $outRow ||= $self->_initializeReturnRow($curRow);
     $self->set('lastPkey', $pkey);
