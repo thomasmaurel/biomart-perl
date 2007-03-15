@@ -1476,7 +1476,8 @@ sub _attributeMerge {
 								}		
 							}
 						}
-						push @new_rows, [@$this_dset_row,@$finalRow] ;
+						push @new_rows, [@$this_dset_row,@$finalRow] if ($finalRow);
+						push @new_rows, [@$this_dset_row,""] if (!$finalRow);
    					}
 					else 
 					{
