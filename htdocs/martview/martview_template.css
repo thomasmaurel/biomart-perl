@@ -286,8 +286,8 @@ div#mart_export_data
 	border-color: [blocks_outline_colour];
 	padding: 4px;
 	margin: 0px 0px 2px 0px;
-	height: inherit;
-	clear: both;
+/*	height: inherit; */
+/*	clear: both; */
 	overflow: auto;
 }
 .collectionBREAK
