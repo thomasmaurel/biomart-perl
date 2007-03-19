@@ -1371,7 +1371,7 @@ Show a previously hidden element.
 */
 function turnOn (a) {
     if(!a) return false;
-    a.style.display="inline";
+    a.style.display="block";
 }
 
 /*
