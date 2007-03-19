@@ -23,6 +23,11 @@
 [% # A bit tricky: if there's just a single filter in the collection, display the filter-collection
    # checkbox within the filter-section, and not outside as with multiple filters.
 %]
+
+<table cellpadding="0" border= "0" width="100%" style="table-layout: fixed;">
+<tr>	
+<td align="left" width="45%" valign="top">
+
 [% IF filtercollection2show %]
 <div class="mart_filtername" onmouseover="">
   [% render_filtercollection_checkbox(filter, filtercollection2show) %]  
@@ -54,6 +59,9 @@
   [% END %]	
 
 </div>
+
+</td>
+<td align="left" width="45%" valign="top">
 
 <div class="mart_filtervalue" id ="[% filter_paramname %]">
 
@@ -123,6 +131,10 @@
 	[% END %]
 
 </div>
+
+</td>
+</tr>
+</table>
 
 </div>
 
