@@ -176,7 +176,10 @@ if($attcount_half == 0 || $attcount / $attcount_half != 2) {
 $stash->set('attcount_half', $attcount_half-1);
 [% END %]
 
-<div class="mart_attribute_col">
+
+<table cellpadding="0" border= "0" width="100%" style="table-layout: fixed;">
+<tr>	
+<td align="left" width="50%" valign="top">
 
 [% FOREACH attribute = attributes.slice(0,attcount_half) %]
   [% IF attribute.displayType.defined() %]
@@ -185,10 +188,13 @@ $stash->set('attcount_half', $attcount_half-1);
 	  [% PROCESS 'attribute.tt' attribute=attribute %]
   [% END %]
 [% END %]
-</div>
+
+</td>
+
+<td align="left" width="45%" valign="top">
+
 [% attcount_half = attcount_half + 1 %]
 
-<div class="mart_attribute_col">
 
 [% FOREACH attribute = attributes.slice(attcount_half) %]
   [% IF attribute.displayType.defined() %]
@@ -197,7 +203,13 @@ $stash->set('attcount_half', $attcount_half-1);
 	  [% PROCESS 'attribute.tt' attribute=attribute %]
   [% END %]
 [% END %]
-</div>
+
+</td>
+</tr>
+</table>
+
+
+
 
 
 [% ELSE %]
