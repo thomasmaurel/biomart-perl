@@ -188,7 +188,7 @@ sub makehttpdConf
     	Allow from all
 	<\/Location>
 
-	ScriptAlias \/$OPTIONS{cgiLocation} "$OPTIONS{cgibin}"
+	ScriptAlias \/$OPTIONS{cgiLocation}\/martview "$OPTIONS{cgibin}\/martview"
 	<Location \/$OPTIONS{cgiLocation}\/martview>
 
 	AllowOverride None
@@ -230,6 +230,7 @@ sub makehttpdConf
 	/;
 	
 	print STDHTTPD qq/
+	ScriptAlias \/$OPTIONS{cgiLocation}\/martservice "$OPTIONS{cgibin}\/martservice"
 	<Location \/$OPTIONS{cgiLocation}\/martservice>
     	AllowOverride None
     	Options None
@@ -256,6 +257,7 @@ sub makehttpdConf
 	/;
 	
 	print STDHTTPD qq/
+	ScriptAlias \/$OPTIONS{cgiLocation}\/martresults "$OPTIONS{cgibin}\/martresults"
 	<Location \/$OPTIONS{cgiLocation}\/martresults>
     	AllowOverride None
     	Options None
@@ -431,13 +433,51 @@ sub makeMartResults
 	}
 	$fileContents =~ s/\[TAG:lib\]/$libPaths/m;
 
-	
 	$file = $OPTIONS{cgibin}."/martresults";	
 	open(STDMARTRES, ">$file");	
 	print STDMARTRES $fileContents;
 	close(STDMARTRES);
 
 	chmod 0755, $file;		
+}
+
+sub updateMainTemplate
+{
+	my ($self, %OPTIONS) = @_;
+	
+	undef $/; ## whole file mode for read
+	$OPTIONS{conf} =~ m/(.*\/)[^\/]*/;
+	my $confDir = $1;
+	my $file = $confDir."/templates/default/main.tt_template";
+	open(STDMAINTEMPLATE, "$file");	
+	my $fileContents = <STDMAINTEMPLATE> ;
+	close(STDMAINTEMPLATE);
+	
+	##---------------- replacing [TAG:path]
+	$fileContents =~ s/\[TAG:path\]/$OPTIONS{cgiLocation}/g;
+
+	$file = $confDir."/templates/default/main.tt";
+	open(STDMAINTEMPLATE, ">$file");	
+	print STDMAINTEMPLATE $fileContents;
+	close(STDMAINTEMPLATE);
+
+	chmod 0755, $file;
+}
+sub makeCopyDirectories
+{
+	my ($self, %OPTIONS) = @_;
+	
+	my $path = $OPTIONS{htdocs}.'/'.$OPTIONS{cgiLocation}.'/mview/';
+	
+	system("mkdir -p $path");
+		
+	my $source = $OPTIONS{htdocs}.'/martview/*';
+	my $destination = $path;
+	system("cp -r $source $destination");
+	
+#	print "\nPATH:  ",$path, "\n";
+#	print "\nSOURCE:  ",$source, "\n";
+	
 }
 
 sub printOptions

@@ -283,6 +283,8 @@ if($Configure eq 'n' || ! -e $httpdconfFile)
 		my $default_loc = "biomart";
 		my $loc2use = &promptUser("\nEnter the required script location OR default ", $default_loc);
 		$loc2use =~ s/\s+//g;
+		$loc2use =~ s/^\///g; # remove preceeding slashes
+		$loc2use =~ s/\/$//g; # remove slashes at the end
 		$OPTIONS{cgiLocation} = $loc2use;
     	}
 
@@ -314,6 +316,8 @@ if($Configure eq 'n' || ! -e $httpdconfFile)
 	bin::ConfBuilder->makeMartView(%OPTIONS);
 	bin::ConfBuilder->makeMartService(%OPTIONS);
 	bin::ConfBuilder->makeMartResults(%OPTIONS);
+	bin::ConfBuilder->updateMainTemplate(%OPTIONS);
+#	bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
 }	
 
 #---------------------------------------------------------- NEW CODE TO AVOID BUILD - ENDS
@@ -345,6 +349,12 @@ if ($@){
 	
 ## Load CSS SETTINGS from Script
 &loadCSSSettings();
+
+if($Configure eq 'n' || ! -e $httpdconfFile)
+{
+	bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
+}
+
 
 if(&whoBakedMe($init->configurationUpdated()) == 1 || $compiletemplates eq 'force')
 {
@@ -447,7 +457,7 @@ sub loadCSSSettings
 	$registryFile =~ m/(.*\/)[^\/]*/;
     	#BioMart::Web::SiteDefs::configure($1); # Load settings. $1 is absolute path to registry file Directory
 	undef $/; ## whole file mode for read
-     open(STDCSS, $cssFile_template);
+	open(STDCSS, $cssFile_template);
 	my $fileContents = <STDCSS> ;
 	close(STDCSS);
 
@@ -455,7 +465,7 @@ sub loadCSSSettings
      foreach(keys %$hash) {     	
 	     if($_ eq "cssSettings") {
 	     	foreach my $param (keys %{$hash->{$_}}) {
-     			#print "\n\t\t\t$param \t", $hash->{$_}->{$param};
+#     			print "\n\t\t\t$param \t", $hash->{$_}->{$param};
      			$fileContents =~ s/\[$param\]/$hash->{$_}->{$param}/mg;
      		}
      	}
@@ -464,7 +474,5 @@ sub loadCSSSettings
 	open(STDCSS, ">$cssFile");
 	print STDCSS $fileContents;
 	close(STDCSS);
-
-
           
 }
