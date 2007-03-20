@@ -1256,6 +1256,7 @@ sub addPlaceHolders {
 			    $new_filter->defaultOn($filter->defaultOn);
 			    $new_filter->setAttribute($filter->setAttribute);
 			    $new_filter->setNumberFlag($filter->getNumberFlag);
+			    $new_filter->addOptions($filter->getAllOptions);
 			}
 
 			elsif ($filter->isa
