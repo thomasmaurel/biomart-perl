@@ -125,14 +125,35 @@ sub execute {
 
     my ($self, $query) = @_;
 	my $registry = $query->getRegistry;
+	my $GMA_present = 0 ;
+	my $visibleDSCount = 0;
+
 	if (scalar (@{$query->getDatasetNames}) > 0)
 	{
-		my $visibleDSCount = 0;
 		foreach my $ds (@{$query->getDatasetNames})
 		{
+			# GenomicMAlign check, so Bens stuff would still keep working
+			# All the sequence requests via GenomiMAlign cant work because of new hashing logic which requires 
+			# a unique when results are being hashed. For Structure/GenomicSeq, the first attribute in the filterlist
+			# of importable and exportables should be unique. In ComparaMarts, neither they have a unique column
+			# in Mart nor they have filterList of exportable/importable accordingly.
+			# for them merging/hashing should follow the old principle of concatenation of all the coordinates
+			# to make a unique key, which may result in collisions.
+			$GMA_present = 1  if ($registry->getDatasetByName($query->virtualSchema, $ds)->isa("BioMart::Dataset::GenomicMAlign")) ;
+
+			# counting the visible DSs to use this number to avoid the merging of sequences as 
+			# semi-colon separated in case of two dataset queries both involving Genomic Sequence
 			$visibleDSCount++ if ($registry->getDatasetByName($query->virtualSchema, $ds)->visible);
 		}
 		$self->set('visibleDSCount', $visibleDSCount);
+	}
+	
+	if ($GMA_present) ## flag to follow the old hashing/merging
+	{
+		foreach my $ds (@{$query->getDatasetNames})
+		{
+			$registry->getDatasetByName($query->virtualSchema, $ds)->GenomicMAlignHack(1);
+		}
 	}
         
 	if (defined $query->getAllAttributes()){
