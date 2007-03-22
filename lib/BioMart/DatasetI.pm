@@ -197,6 +197,8 @@ sub _new {
   $self->attr('LastDS', undef); ## set in QueryRunner when last DS is despatched for results
   							## used to track for last GS object to apply strtucture att merging on only last GS
 
+  $self->attr('GenomicMAlignHack', undef); ## just for Compara Mart, follows the old hashing/merging
+
 }
 
 sub _checkValidParams {
@@ -1187,8 +1189,6 @@ sub getResultTable {
  		  my $attributeHash = $self->get('attributeHash');
  		  $attributeHash->{$linkName} = $attribute_table->hashedResults;
  		  
- 		  $table->noOfCols($attribute_table->noOfCols);
- 		  
  		  $self->set('attributeHash',$attributeHash);
  	     } 
  	     
@@ -1290,7 +1290,6 @@ sub _attributeMerge {
   	my ($self,$rtable,$importable_size,$linkName, $query) = @_;
 	$logger->debug("Importable size: $importable_size");
 	$logger->debug("Link name: $linkName");
-	my $thisDSCols=0;
 
 	my $sequenceType = 'none';
 	
@@ -1313,15 +1312,16 @@ sub _attributeMerge {
 		next if ($key_string eq "" );
 	
 		# store hash element;
+		my $hashed_rows;
+		$hashed_rows = $this_dset_hash{$pKey}{$key_string} if (!$self->GenomicMAlignHack());
+		$hashed_rows = $this_dset_hash{$key_string}{$key_string} if ($self->GenomicMAlignHack());
 
-		my $hashed_rows = $this_dset_hash{$pKey}{$key_string};
 		my $row_to_add = [@{$row}[$importable_size..@{$row}-1]];
 
 		push @$hashed_rows, $row_to_add;
 		
-		$thisDSCols = scalar(@$row_to_add) if (!$thisDSCols);# excluding importable
-		
-		$this_dset_hash{$pKey}{$key_string} = $hashed_rows;
+		$this_dset_hash{$pKey}{$key_string} = $hashed_rows if (!$self->GenomicMAlignHack());
+		$this_dset_hash{$key_string}{$key_string} = $hashed_rows if ($self->GenomicMAlignHack());		
 	}
 	    
 	if ($self->isa("BioMart::Dataset::GenomicSequence")
@@ -1510,15 +1510,6 @@ sub _attributeMerge {
 	}
 	$logger->debug("Finished with rows: ".scalar(@new_rows));
 	
-	if(@new_rows){
-		foreach (@new_rows){
-			#print "LENGTH: ", scalar (@$_);
-			#print "DIFFERENCE: ", (scalar (@$_) - $thisDSCols) ;
-			$rtable->noOfCols((scalar (@$_) - $thisDSCols));
-			last;
-		}
-	}
-	
    	$rtable->setRows(\@new_rows);
     	
    	return $rtable;
@@ -1550,7 +1541,6 @@ sub _hashAttributes {
 			}
 			push @{$groupSameKeyRows{$new_row->[0]}}, $new_row;
 			
-			
 		  	my $key_string = '';
 		  	my $pKey = '';
 		  	for (my $i = @{$row} - $exportable_size; $i < @{$row}; $i++){
@@ -1560,7 +1550,9 @@ sub _hashAttributes {
 		  	}
 		  	next if ($key_string eq "");
 		  	# store hash element;
-		  	my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
+			my $hashed_rows;
+		  	$hashed_rows = $datasetAttributeHash{$pKey}{$key_string} if (!$self->GenomicMAlignHack());
+		  	$hashed_rows = $datasetAttributeHash{$key_string}{$key_string} if ($self->GenomicMAlignHack());
 		  
 		  	my $row_to_add = [@{$row}[0..@{$row}-1-$exportable_size]];
 		  
@@ -1573,8 +1565,9 @@ sub _hashAttributes {
 				}	     
 		  	}	  	  
 		  	push @$hashed_rows,$row_to_add;
-		 	$datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;
-	       	}
+		 	$datasetAttributeHash{$pKey}{$key_string} = $hashed_rows if (!$self->GenomicMAlignHack());
+		 	$datasetAttributeHash{$key_string}{$key_string} = $hashed_rows if ($self->GenomicMAlignHack());		 	
+	   	}
 	}
     
     else{
@@ -1603,8 +1596,11 @@ sub _hashAttributes {
 			$pKey = $$row[$i] if (!$pKey);	      
 		}
 		next if ($key_string eq "");
-		  # store hash element;
-		my $hashed_rows = $datasetAttributeHash{$pKey}{$key_string};
+
+		# store hash element;
+		my $hashed_rows;
+	  	$hashed_rows = $datasetAttributeHash{$pKey}{$key_string} if (!$self->GenomicMAlignHack());
+	  	$hashed_rows = $datasetAttributeHash{$key_string}{$key_string} if ($self->GenomicMAlignHack());
 	  
 		my $row_to_add = [@{$row}[$exportable_size..@{$row}-1]];
 	  
@@ -1617,10 +1613,11 @@ sub _hashAttributes {
 			}
 	  	}
 	  
-	  
 	  	#warn($key_string." => ".join ",",@$row_to_add);
 	 	push @$hashed_rows,$row_to_add;
-	  	$datasetAttributeHash{$pKey}{$key_string} = $hashed_rows;	  
+
+	 	$datasetAttributeHash{$pKey}{$key_string} = $hashed_rows if (!$self->GenomicMAlignHack());
+	 	$datasetAttributeHash{$key_string}{$key_string} = $hashed_rows if ($self->GenomicMAlignHack());
 	  
     	}
     }
@@ -1650,32 +1647,6 @@ sub _hashAttributes {
     	$tempTable->hashedResults(\%datasetAttributeHash);
     }
 
-   	   	my $breakAllLoops = 1;
-    	if(%datasetAttributeHash && $breakAllLoops)   {
-    		foreach my $fkey(keys %datasetAttributeHash) {
-    			foreach my $skey(keys %{$datasetAttributeHash{$fkey}}) {
-    				foreach my $arr (@{$datasetAttributeHash{$fkey}{$skey}}) {
-    					if ($arr)
-    					{
-    						# -1 one logic is just another representation of zero 0 which is considered as undef by perl
-    						my $old_length = $tempTable->noOfCols() || 0;
-    						$old_length = 0 if ($old_length == -1);
-						my $new_length = scalar (@$arr);
-						my $diff = $new_length-$old_length;
-						$diff = -1 if (!$diff);
-					     $tempTable->noOfCols($diff);
-    						$breakAllLoops = 0;
-    					}
-    					last if(!$breakAllLoops);
-    				}
-				last if(!$breakAllLoops);
-    			}
-    			last if(!$breakAllLoops);
-    		}
-    	}
-
-    
-    #print "<BR><BR>NEW LENGTH: ", $tempTable->noOfCols(); 
     return $tempTable;
 }
 
@@ -1757,5 +1728,15 @@ sub lastDS {
   }
   return $self->get('LastDS');
 }
+
+sub GenomicMAlignHack {
+  my ($self, $val) = @_;
+
+  if ($val) {
+    $self->set('GenomicMAlignHack', $val);
+  }
+  return $self->get('GenomicMAlignHack');
+}
+
 
 1;
