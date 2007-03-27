@@ -444,7 +444,11 @@ sub __processNewQuery {
     $self->set('calc_location', undef);
     $self->set('sequence', undef);
 
-    #determine which BaseSequenceA object to create
+	$self->set('rowsFromLastBatch', undef);
+	$self->set('seqStorageHash', undef);
+	$self->set('onHoldSeqsKeys', undef);
+	
+ 	#determine which BaseSequenceA object to create
     my $filters = $query->getAllFilters($self->name);
 
     foreach my $filt (@{$filters}) {
