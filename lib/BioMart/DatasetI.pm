@@ -1579,14 +1579,15 @@ sub _hashAttributes {
 		#push @new_rows, $new_row;# do first so even empty rows get added so 
 	                           # batching behaviour not confused
 		
-		if($new_row->[0]) # just to avoid warnings
-		{
+#		if($new_row->[0]) # just to avoid warnings
+#		{
+		no warnings 'uninitialized';
 			if (! exists $groupSameKeyRows{$new_row->[0]})
 			{
 				push @order_of_rows, $new_row->[0];
 			}
 			push @{$groupSameKeyRows{$new_row->[0]}}, $new_row;
-		}
+#		}
 		
 		my $key_string = '';
 		my $pKey = '';
