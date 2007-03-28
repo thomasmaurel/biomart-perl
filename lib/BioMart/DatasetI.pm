@@ -1461,13 +1461,7 @@ sub _attributeMerge {
 												$finalRow->[$i] = $row->[$i];
 											}
 											else {
-												$row->[$i] =~ s/\[/\\[/mg;
-												$row->[$i] =~ s/\]/\\]/mg;
-												$row->[$i] =~ s/\(/\\(/mg;
-												$row->[$i] =~ s/\)/\\)/mg;
-												$row->[$i] =~ s/\{/\\{/mg;
-												$row->[$i] =~ s/\}/\\}/mg;
-												if (  $finalRow->[$i] !~ m/$row->[$i]/  )	{
+												if ( index ($finalRow->[$i],$row->[$i]) < 0 )	{
 													$finalRow->[$i] .= ';'.$row->[$i]; # bcoz comma exits in some data contents
 												}
 											}
