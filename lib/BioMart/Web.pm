@@ -1622,7 +1622,7 @@ sub filterDisplayType
 	{
                 # do not want to show internals of BioMart ;-) 
 		my $tempered_xml = $query_main->toXML(1,1,1,1);
-		$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/Header = \"1\"/g;
+		$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\"/g;
 		$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
 		print $tempered_xml;
 		$session->clear('showquery'); # so we don't get stuck a this stage
