@@ -1,12 +1,6 @@
 
 <!-- $Id$ -->
 
-<!--
-<br><br>
-
-&nbsp&nbsp&nbsp&nbsp&nbsp <font ="" size="1" >YOUR SITE FOOTER HERE</font> 
-
-<br>
--->
-
-
+<div id="mart_bottom_bar">
+         biomart version 0.5	
+</div>

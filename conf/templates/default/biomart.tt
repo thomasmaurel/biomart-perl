@@ -8,13 +8,15 @@
 [% USE Number.Format %]
 [% PROCESS 'collapsible_section.tt' %]
   
-  <form name="mainform" action="[% form_action %]" method="post" enctype="multipart/form-data">
-	
-	
-	<table cellpadding="0" class ="mart_main_menubar" border="0" width="100%" style="table-layout: fixed;">
-	<tr>
-	<td align="left" valign="top" >	
-				     
+  
+
+	<tr>	
+	<td width="100%" height="8%" align="left">
+	<div style=" width:100%; height:100%; overflow:hidden;">
+	<table class ="mart_main_menubar" width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0">
+		<tr>
+		<td height="100%" width="100%" align="left" valign="top" >
+					     
 			<!--
 			<img src="/martview/images/biomart-logo.gif" alt="" style="float: right; margin: 6px 4px 0px 0px"/></a> 				 
 			-->
@@ -129,43 +131,51 @@
 			<!--
 			<div style="clear: both; width: inherit; line-height: 0; height: 0;">&nbsp;</div>
 			-->
+		</td>
+		</tr>
+	</table>
+	</div>
 	</td>
 	</tr>
-	</table>
 	
+	<tr>
+	<td width="100%" height="90%" align="left">
+	<div style="width:100%; height:100%; overflow:auto; align:top;">
+		<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+		<tr>
+		<td height="100%" width="35%" align="left" valign="top">
+			<div class="mart_summarypanel_datasets" style="width:100%; height:100%; overflow:auto; text-align: top;">
+				<table width="100%" height="100%"  border="1" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+				<tr>
+				<td width="100%" height="100%" valign="top" align="left">
+					[% PROCESS 'summarypanel.tt' %]
+				</td>
+				</tr>
+				</table>
+			</div> <!-- summary box closes -->	
+		</td>		
 	
-	
-	
-	<table cellpadding="0" border= "0" width="100%" style="table-layout: fixed;">
-	<tr>	
-	<td align="left" width="35%" valign="top">		
+		<td height="100%" width="65%" valign="top" align="left">
 
-		<div class="mart_summarypanel_datasets">	
-			[% PROCESS 'summarypanel.tt' %]		       
-		</div> <!-- summary box closes -->
-	
-	</td>		
-	
+			<input type="hidden" name="menuNumber" value="0" />
+			<input type="hidden" name="newsession" value="0" />
+			<input type="hidden" name="do_export" value="0" />
+			<input type="hidden" name="do_export2resultspage" />
+			<input type="hidden" name="savequery" value="0" />
+			<input type="hidden" name="showquery" value="0" />
+			<input type="hidden" name="countButton" value="0" />
+			<input type="hidden" name="reverseName" value="[% reverseNAME %]" />
+			<input type="hidden" name="summarypanel_filter_count_1" value="[%session.param('ds_1_count')%]" />
+			<input type="hidden" name="summarypanel_filter_count_2" value="[%session.param('ds_2_count')%]" />
+			<input type="hidden" name="track_visible_section" value="0" />
+			<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
 
-	<td align="left" width="65%" valign="top" >			
-
-        <input type="hidden" name="menuNumber" value="0" />
-        <input type="hidden" name="newsession" value="0" />
-        <input type="hidden" name="do_export" value="0" />
-        <input type="hidden" name="do_export2resultspage" />
-        <input type="hidden" name="savequery" value="0" />
-        <input type="hidden" name="showquery" value="0" />
-        <input type="hidden" name="countButton" value="0" />
-        <input type="hidden" name="reverseName" value="[% reverseNAME %]" />
-        <input type="hidden" name="summarypanel_filter_count_1" value="[%session.param('ds_1_count')%]" />
-        <input type="hidden" name="summarypanel_filter_count_2" value="[%session.param('ds_2_count')%]" />
-
-        <input type="hidden" name="track_visible_section" value="0" />
-        <input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
-	
-	<div id="mart_mainpanel">
-	
-	[% IF session.param("dataset").size >= 1 %]
+			<div id="mart_mainpanel" style="width:100%; height:100%; overflow:auto;">
+			<table width="100%" height="100%"  border="1" cellpadding="0" cellspacing="0">
+			<tr>
+			<td id="mart_mainpanel" width="100%" height="100%" valign="top" align="left">	
+		
+		[% IF session.param("dataset").size >= 1 %]
 
 		[% # Set the default visible-section ID, if it's not already set in the session. Also set the branch 
    		   # in the summary-tree which should be highlighted along with it. %]
@@ -183,7 +193,7 @@
 
 		[% # Show linked dataset menu, but only if we have a single dataset by now (NEEDS MODS TO HANDLE >2 dsets!!!) %]
 		[% IF session.param('dataset').size == 1 %]
-			<div id="add_linked_datasetpanel" style="display: none">
+			<div id="add_linked_datasetpanel" style="display: none;">
 				[% PROCESS "linked_datasets_menu.tt" %]
 			</div>
 		[% END %]	
@@ -201,7 +211,7 @@
 			[% # Render small panel with info on this dataset (schema, database and such). The startup
    			# panel of schema/database/dataset is displayed for the first dataset, the linked dataset
    			# panel is shown for the other datasets. %]
-			<div id="[% dset_name %]__infopanel" style="display: none">
+			<div id="[% dset_name %]__infopanel" style="display: none;">
 				[% dataset = dset %]
 				[% IF dset_count == 1 %]
   					[% PROCESS "datasetpanel.tt" %]
@@ -235,16 +245,18 @@
 
 		[% IF !session.param("__validationError") && result_string.defined() && result_string != "" # show results if we have any at this point %]
 
-			<div id="resultspanel">
+			<div id="resultspanel" style="width:100%; height:100%; overflow:hidden;">
+			<table width="100%" height="100%"  border="1" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+			<tr>
+			<td width="100%" height="100%" valign="top" align="left">
+				<div id="mart_export_menubar" style="width:100%; height:20%; overflow:hidden;" >
 
-				<div id="mart_export_menubar">
-
-				<table cellpadding="0" width="100%" style="table-layout: fixed;">
+				<table width="100%" height="100%" border="1" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 				<tr>
-				<td align="left" width="25%" valign="bottom">
+				<td align="left" width="25%" valign="top">
 						Display maximum
 				</td>
-				<td align="left" width="75%" valign="bottom">
+				<td align="left" width="75%" valign="top">
 					<select name="export_subset" 
 					class="mart_input"
 					onmouseover="this.className='mart_input mart_inputhov'" 
@@ -323,10 +335,10 @@
 				</td>
 				</tr>
 				<tr>
-				<td align="left" width="25%" valign="bottom">
+				<td align="left" width="25%" valign="top">
 					Export all results to
 				</td>
-				<td align="left" width="75%" valign="bottom">
+				<td align="left" width="75%" valign="top">
 						<select name="export_saveto"
 								class="mart_input"
 								onmouseover="this.className='mart_input mart_inputhov'" 
@@ -335,9 +347,9 @@
 								onchange="
 								var exportOpt = document.mainform.export_saveto.options[document.mainform.export_saveto.selectedIndex].value;
 								if (exportOpt=='file_bg' || exportOpt=='gz_bg') {
-									document.getElementById('__email_section').style.display = 'block';
+									document.mainform.background_email.disabled = '';
 								} else {
-									document.getElementById('__email_section').style.display = 'none';
+									document.mainform.background_email.disabled = 'true';
 								}
 								">
   							[% IF !session.param("GALAXY_URL") %]
@@ -389,30 +401,39 @@
 							} "/>
 				</td>
 				</tr>
+				<tr>	
+				<td align="left" width="25%" valign="top">
+						Email notification to
+				</td>
+				<td align="left" width="75%" valign="top">
+					<div id="__email_section" class="email_notification">
+						<input type="text" disabled name="background_email" value="[% session.param("background_email") %]"
+						class="mart_input"
+						onmouseover="this.className='mart_input mart_inputhov'" 
+						onmouseout="this.className='mart_input'"
+						/>
+					</div>
+				</td>
+				</tr>
+
 				</table>		
-						<div id="__email_section" style="display: none;" class="email_notification">
-						<table cellpadding="0" width="100%" style="table-layout: fixed;">
-						<tr>	
-						<td align="left" width="25%" valign="bottom">
-							Email notification to
-						</td>
-						<td align="left" width="75%" valign="bottom">
-							<input type="text" name="background_email" value="[% session.param("background_email") %]"
-								class="mart_input"
-								onmouseover="this.className='mart_input mart_inputhov'" 
-								onmouseout="this.className='mart_input'"
-								/>
-						</td>
-						</tr>
-						</table>
-						</div>
 				</div>
-			
-				<div id = "mart_export_data" >
-					[% result_string %]
+
+				<div id = "mart_export_data" style="width:100%; height:75%; overflow:auto;" >
+					<table width="100%" height="100%"  border="1" cellpadding="0" cellspacing="0" style="table-layout: auto;">
+					<tr>
+					<td width="100%" height="100%" valign="top" align="left">
+						[% result_string %]
+					</td>
+					</tr>
+					</table>
 				</div>
-			
-				</div>
+				
+			</td>
+			</tr>
+			</table>
+		
+			</div>
 		[% END %]	
 		
 		<script language="JavaScript" type="text/javascript" >
@@ -432,14 +453,18 @@
   		[% PROCESS "datasetpanel.tt" %]
 	[% END %]
 
+			</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+		
 	</div>
-	
 	</td>
 	</tr>
-	</table>
 	
-	<div id="mart_bottom_bar">
-         biomart version 0.5	
-	</div>
 		
-  </form>
+

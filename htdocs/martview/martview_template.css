@@ -10,8 +10,9 @@ div#mart_containerpanel
 { 
 	font-family: sans-serif;
 	font-size: 11pt;
-	height: 100%;
+/*	height: 100%;
 	width: 100%;
+*/
 	background-color: white;
 }
 
@@ -19,32 +20,34 @@ div#mart_containerpanel
 { 
 	background-color: [summary_panel_bgcolour];
 	border-style: solid;
-	margin: 12px 6px 12px 0px;
+/*	margin: 12px 6px 12px 0px;
 	border-width: 3px 3px 3px 0px;
 	border-color: [blocks_outline_colour];
-	/*min-height: 350px; */
-	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/						
-	max-width: inherit; /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
-	padding: 16px 30px 16px 30px;
-	height: 365px;
-	clear: both;
-	overflow: auto;
+	padding: 16px 30px 16px 30px;	
+*/
+/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  */ /*FOR IE 6 and below*/						
+/*	max-width: inherit; */  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
+
+/*	clear: both; */
+	/*overflow: auto;*/
+	
+
 }
 
 div#mart_mainpanel
 {
-	height: 365px;
+
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
-	margin: 12px 0px 12px 6px;
+/*	margin: 12px 0px 12px 6px;
 	border-width: 3px 0px 3px 3px;
 	border-color: [blocks_outline_colour];
-	/*min-height: 350px; */
 	padding: 16px 20px 16px 20px;
-	max-width: inherit;  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
-	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/
+*/
+/*	max-width: inherit; */  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
+/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" ); */  /*FOR IE 6 and below*/
 	clear: both;
-	overflow: auto;
+	/*overflow: auto;*/
 }
 
 .mart_datasetselectpanel 
@@ -85,7 +88,7 @@ div#mart_main_menubar_outer
 div#mart_bottom_bar
 {	
 	/*text-align: left;*/
-	padding: 3px 3px 4px 30px;
+/*	padding: 3px 3px 4px 30px; */
 	border-style: solid;
 	border-width: 1px;
 	color: [font_colour_top_bottom_menubar];
@@ -114,13 +117,14 @@ div#mart_export_menubar
 	color: [font_colour_rest];
 	border: solid;
 	font-size: 11pt;
-	clear: both;
-	background-color: [main_panel_bgcolour];                            
-	border-width: 0px 0px 3px 0px;
+/*	clear: both;*/
+	background-color: [main_panel_bgcolour];
+	border-width: 3px 3px 3px 3px;
 	padding: 0px 0px 8px 0px;
 	border-color: [blocks_outline_colour];
-	width: inherit;                           
-	overflow: auto;							
+	width: inherit; 
+	                          
+	/*overflow: auto;*/
 }
 
 div#mart_export_data
@@ -129,16 +133,16 @@ div#mart_export_data
 	background-color: [main_panel_bgcolour];
 	/* border-style: solid; */
 	/* border-width: 1px; */
-	/* border-color: [blocks_outline_colour]; */
+	/* border-color: #CACFD5; */
 	/* This is my life time achievement, so dont fiddle with the following */
 	/* life is tough with different IE */
-	width: inherit;  /*For all browsers including IE 7*/
-	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  /*FOR IE 6 and below*/
-	height: 100%;
-	/* padding: 4px; */
-	margin: 12px 0px 2px 0px;
+/*	width: inherit;  */ /*For all browsers including IE 7*/
+/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" ); */  /*FOR IE 6 and below*/
+/*	height: 100%; */
+
+/*	margin: 12px 0px 2px 0px; */
 	/* clear: both; */
-	/* overflow: auto; */
+/*	overflow: auto; */
 }
 					
 /* button and hover on functions */					
@@ -160,7 +164,7 @@ div#mart_export_data
 	font-family: sans-serif;
 	font-size: 1em;
 	font-weight: bold;	
-	/*color:[font_colour_top_bottom_menubar];*/
+	/*color:white;*/
    	color: [button_shade];
 	background-color:[top_bottom_menubar_bgcolour];
 	padding: 0.3em 1em 0.1em 1em;
@@ -226,7 +230,7 @@ div#mart_export_data
 	border-width: 0px 0px 4px 0px;
 	border-color: [blocks_outline_colour];
 	padding: 0px 0px 16px 0px;
-	height: 100%;
+	/*	height: 100%; */
 	clear: both;
 	font-size: 11pt;
 	overflow: auto;
@@ -239,8 +243,8 @@ div#mart_export_data
 	border-style: solid;
 	border-width: 0px 0px 4px 0px;
 	border-color: [blocks_outline_colour];
-	/*padding: 16px 0px 16px 0px; To be handles in datasetpanel.tt based on if we have a schema menu or not*/
-	height: 100%;
+	/*padding: 16px 0px 16px 0px; To be handled in datasetpanel.tt based on if we have a schema menu or not*/
+	/*	height: 100%; */
 	clear: both;
 	font-size: 11pt;                            
 	overflow: auto;
@@ -254,7 +258,7 @@ div#mart_export_data
 	border-width: 0px 0px 4px 0px;
 	border-color: [blocks_outline_colour];
 	padding: 16px 0px 16px 0px;
-	height: 100%;
+	/*	height: 100%; */
 	clear: both;
 	font-size: 11pt;                            
 	overflow: auto;
@@ -266,7 +270,7 @@ div#mart_export_data
 	border-style: solid;
 	border-width: 0px 0px 4px 0px;
 	border-color: [blocks_outline_colour];
-	margin: 16px 0px 16px 0px;
+	margin: 16px;
 }
 					
 .mart_filtergroup,
@@ -370,6 +374,14 @@ div#mart_export_data
 {
 	font-size : 11pt;
 	color: [font_colour_rest];
+	font-weight: normal;
+	font-style: normal;
+}
+.mart_summarypanel_dataset_entrycount_highlighted
+{
+	font-size : 11pt;
+	color: [main_panel_bgcolour];
+	font-weight: normal;
 	font-style: normal;
 }
 
@@ -382,21 +394,24 @@ div#mart_export_data
 .mart_summarypanel_listheader_mouseover,
 .mart_summarypanel_listheader_highlighted
 {
-	cursor: pointer;
+	background-color: 	[blocks_outline_colour];
 	color: [font_colour_rest];
+	cursor: pointer;
 	font-weight: bold;                            
 	font-size: 11pt; 
 	clear: both;
 	margin: 0px 0px 2px 0px;
 	padding: 0px 5px 0px 0px;	
-	border: 1px solid [summary_panel_bgcolour];	
+/*	border: 1px solid #FFF8E7; */
+	
+	
 }
 
 .mart_summarypanel_listheader_highlighted
 {
-	border: 1px solid [summary_panel_highlight_border_colour];
+/*	border: 1px solid #FF9900;*/
 	background-color: 	[summary_panel_highlight_bgcolour];
-	
+	color: [font_colour_reverse];
 }
 
 .el_hidden,
@@ -439,15 +454,20 @@ div#mart_export_data
 	font-weight: bold;                            	
 	margin: 1px 0px 1px 13px;
 	padding: 0px 5px 0px 0px;
-	border: 1px solid [summary_panel_bgcolour];
+/*	border: 1px solid #FFF8E7;*/
 	clear: both;
+/*	width: 100%; */
 }                     
 
 .mart_summarypanel_AttFiltHeader_highlighted
 {
 
-	border: 1px solid [summary_panel_highlight_border_colour];
-	background-color: 	[summary_panel_highlight_bgcolour] ;
+/*	border: 1px solid #FF9900;
+	background-color: 	#FFF8E7 ;
+*/
+	background-color: [font_colour_rest];
+	color: [font_colour_reverse];
+
 }
 						
 .mart_summarypanel_list_disabled,
@@ -542,6 +562,7 @@ div#mart_export_data
 {
 	font-family: Courier;
 	font-size : 11pt;
+	overflow: auto;
 }
 
 .mart_table
@@ -575,7 +596,7 @@ div#mart_export_data
 	font-size: 11pt;
 	font-family: Courier;
 	border: solid 1px; 
-	background-color: white;
+	background-color: [font_colour_reverse];
 	
 }
 
@@ -584,7 +605,7 @@ div#mart_export_data
 	font-size: 11pt;
 	font-family: Courier;	
 	border: solid 1px; 
-	background-color: white; 
+	background-color: [font_colour_reverse]; 
 }
 
 .mart_td

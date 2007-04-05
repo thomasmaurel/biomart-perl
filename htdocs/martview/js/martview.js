@@ -196,6 +196,8 @@ function addToSummaryPanelList (listContainerId, name, displayName, value) {
 
 
     var firstDivChildElt = listContainerElt.getElementsByTagName('div')[0];
+    
+    
     if(firstDivChildElt && firstDivChildElt.innerHTML.match(/None selected/)) {
 	//alert('got dummy no-configured child div in container, removing: '+firstDivChildElt.innerHTML);
 	listContainerElt.removeChild(firstDivChildElt);
@@ -212,6 +214,7 @@ function addToSummaryPanelList (listContainerId, name, displayName, value) {
     // Add  entry to the visible list as div, containing both visible display namd and hidden param
     // The item needs some onclick actions to highlight the corresponding filter-container on main panel
     var listItem  = document.createElement("div");
+    
     if(value) {
 	listItem.innerHTML = displayName + ': '+value;
     }
@@ -261,6 +264,8 @@ function addToSummaryPanelList (listContainerId, name, displayName, value) {
 	//showPanelHideSiblings(parentPanelId);
 	//highlightPanelSection(name+'__container'); 
     	//}
+    	
+    //alert("LIST ITEM = "+listItem.className + "LIST CONTAINER ELT = "+listContainerElt.id);
     	listContainerElt.appendChild(listItem);
 
     // Add hidden parameter entry to div, to get list entry into session.
@@ -384,11 +389,12 @@ function addHiddenFormParam(paramName, parentElt, paramValue) {
 */  
  
     // Then create the param and append to the 
-//    alert('param name '+paramName+' w/ value '+paramValue+' already exists, not adding a new one');	    
+    //alert('param name '+paramName+' w/ value '+paramValue+' already exists, not adding a new one');	    
 	var hiddenParam = document.createElement("input");
 	hiddenParam.type  = "hidden";
    	hiddenParam.name  = paramName;
 	if(paramValue) { hiddenParam.value = paramValue; }
+//	alert(hiddenParam.name);
      parentElt.appendChild(hiddenParam);	
 }
 
@@ -765,8 +771,9 @@ function showPanelHideSiblings(panelId) {
     if(!targetPanelDiv) {
 	return false;
     }
-    parentPanelDiv = targetPanelDiv.parentNode;
 
+    parentPanelDiv = targetPanelDiv.parentNode;
+    
     siblingDivs = parentPanelDiv.childNodes; // get all sibling nodes
 
     // Hide all sibling div's
@@ -781,8 +788,9 @@ function showPanelHideSiblings(panelId) {
     turnOn(targetPanelDiv);
     
     // Update the hidden form-param to the ID of the currently visible panel div
-    //alert('Updating current visible section ID for parent panel '+parentPanelDiv.id);
+//    alert('Updating current visible section ID for parent panel '+parentPanelDiv.id);
     document.mainform[parentPanelDiv.id+'__current_visible_section'].value = panelId;
+   
 }
 
 // Iterate over a list of elements, check for a specific value attribute and return those that do
@@ -1130,6 +1138,7 @@ function expandListCompactSiblings(listId) {
     for(j=0; j< subListDivs.length; j++){
 	subListDivs[j].style.display = 'block';
     }
+
     targetListDiv.style.display = 'inline';
 }
 
@@ -1150,27 +1159,45 @@ function setHighlightedSummaryPanelBranch(eltId) {
     if(highlightedSummaryPanelBranchElt) {
     	//alert(highlightedSummaryPanelBranchElt);
 		if(highlightedSummaryPanelBranchElt.className == 'mart_summarypanel_listheader_highlighted' )
-		{	highlightedSummaryPanelBranchElt.className = 'mart_summarypanel_listheader'; 	}
+		{	
+			highlightedSummaryPanelBranchElt.className = 'mart_summarypanel_listheader';
+			// and change the colour of count span
+			if (highlightedSummaryPanelBranchElt.id != "show_linked_datasetpanel")
+			{	highlightedSummaryPanelBranchElt.childNodes[1].className = 'mart_summarypanel_dataset_entrycount'; }
+		}
 		if(highlightedSummaryPanelBranchElt.className == 'mart_summarypanel_AttFiltHeader_highlighted' )
 		{	highlightedSummaryPanelBranchElt.className = 'mart_summarypanel_AttFiltHeader'; }
 
+		// Also change the colour of table cell which sets the background of the strip
+		if (highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className == 'mart_summarypanel_listheader_highlighted')
+		{	highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheader';	}
     }
 	//alert('Setting summary panel branch '+eltId+' as the highlighted one');
     // Highlight this element
 	if (eltId != "show_results")/// hack to avoid highlighting of results button. as it was crashing on IE
 	{
-	    	var elt2highlight = document.getElementById(eltId);
+    	var elt2highlight = document.getElementById(eltId);
 		
 		//alert('Setting summary panel branch '+elt2highlight+' as the highlighted one');
 		if(elt2highlight.className == 'mart_summarypanel_listheader')
-		{	elt2highlight.className = 'mart_summarypanel_listheader_highlighted'; }
+		{	
+			elt2highlight.className = 'mart_summarypanel_listheader_highlighted'; 
+			// and change the colour of count span 
+			if (elt2highlight.id != "show_linked_datasetpanel")
+			{ elt2highlight.childNodes[1].className = 'mart_summarypanel_dataset_entrycount_highlighted';	}
+		}
 
 		if(elt2highlight.className == 'mart_summarypanel_AttFiltHeader')
 		{	elt2highlight.className = 'mart_summarypanel_AttFiltHeader_highlighted'; 	}
+
+		// Also change the colour of table cell which sets the background of the strip and change the colour of count span
+		if (elt2highlight.parentNode.parentNode.parentNode.parentNode.className == 'mart_summarypanel_listheader')
+		{	elt2highlight.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheader_highlighted';	}
 		
+		// set session variable accordingly
 		document.mainform['summarypanel__current_highlighted_branch'].value = eltId;
 		//alert('dear');
-	}
+	}	
 }
 
 /*

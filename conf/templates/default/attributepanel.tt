@@ -153,10 +153,10 @@
 
 	[% ELSE %]
 
-		<!--
+
 		<input type="checkbox" name="[% attributecollection_parname %]_a" id="[% attributecollection_parname %]_a" onclick="checkCheckboxesInContainer(this,1)" />Select all
 		<input type="checkbox" name="[% attributecollection_parname %]_n" id="[% attributecollection_parname %]_n" onclick="checkCheckboxesInContainer(this,0)" />Deselect all
-		-->
+
 
 	[% END %]
 	<br />
