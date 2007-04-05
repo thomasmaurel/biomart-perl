@@ -5,8 +5,6 @@
    # biomart.tt renders complete martView in its own container div
    #--------------------------------------------------------------------
 %]
-<?xml version="1.0"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
   <title>BioMart - MartView</title>
@@ -20,19 +18,39 @@
 </head>
 
 <body style="margin: 0px;" onload="setVisibleStatus()">
-    
-<div class="mart_header">
-[% PROCESS 'header.tt' %]
+
+
+
+<div class="mart_header" style=" width:100%; height:15%; overflow:auto;">
+	<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0">
+	<tr>
+	<td width="100%" height="100%" align="left">
+		[% PROCESS 'header.tt' %]
+	</td>
+	</tr>
+	</table>	
 </div>
 
-	<div id="mart_containerpanel">
+
+<div id="mart_containerpanel" style=" width:100%; height:80%; overflow:hidden;">
+<form name="mainform" action="[% form_action %]" method="post" enctype="multipart/form-data">
+	<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0">
 		[% PROCESS 'biomart.tt' %]
-	</div>
-
-<div class="mart_footer">
-[% PROCESS 'footer.tt' %]
+	</table>
+  </form>
 </div>
+	
 
+<div class="mart_footer" style=" width:100%; height:5%; overflow:auto;">
+	<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0">
+	<tr>
+	<td width="100%" height="100%" align="left">
+		[% PROCESS 'footer.tt' %]
+	</td>
+	</tr>
+	</table>	
+
+</div>
 
 
 	[% IF session.param("__validationError") %]
@@ -42,6 +60,8 @@
 		//]]>
 		</script>
 	[% END %]
-	
+
+
+
 </body>
 </html>
