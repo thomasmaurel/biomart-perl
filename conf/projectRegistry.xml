@@ -29,6 +29,11 @@
 
 <MartURLLocation path="" host="www.dictybase.org" name="dicty" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="0" martUser="" includeDatasets="" redirect="1" />
 
+<!--
+<MartURLLocation database="pepseekerGOLD_mart" default="0" displayName="PEPSEEKERGOLD (UNIVERSITY OF MANCHESTER)" host="www.ispider.manchester.ac.uk" includeDatasets="peptide_1" includeMarts="pepseekerGOLD_mart" name="pepseekerGOLD_mart" martUser="" serverVirtualSchema="pepseekerGOLD" path="/pepseeker/biomart/martservice" port="80"  proxy="http://wwwcache.ebi.ac.uk:8080" visible="1" redirect="1" />
+-->
+
+<MartURLLocation database="pride_mart_2" default="1" displayName="PRIDE (EBI)" host="www.ebi.ac.uk" includeDatasets="" martUser="" name="pride" path="/pride/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" redirect="1" />
 
 <MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="uniprot_mart_17" name="uniprot" displayName="UNIPROT PROTOTYPE (EBI)" port="3306" schema="uniprot_mart_17" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
