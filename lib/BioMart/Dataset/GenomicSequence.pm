@@ -844,6 +844,21 @@ sub _getResultTable {
     unless ($has_rows) {
 	$self->_setExhausted(1);
 	$self->_processRow($atable);
+
+		## additional logic to send all ORPHAN sequences at the end where the total number
+		## of transcripts encountered is not equal transcript_count. that may happen when you request a
+		## GENE type sequence with a filter restricting some transcripts. consequently you donot see all the
+		## transcripts and the sequence should not be kept by GS, so lets release them all at the end
+		my $storageHash = $self->get('seqStorageHash');
+		if ($storageHash)
+		{
+			foreach my $fkey (%$storageHash)
+			{
+				my $sequence = $storageHash->{$fkey}->{'seq'};
+				my $outRow = $storageHash->{$fkey}->{'outRow'};
+				$self->_addRow($atable, $outRow, $sequence);				
+			}
+		}
     }
     $importable->setTable($rtable);
     $self->set('importable', $importable);
