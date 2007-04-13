@@ -27,7 +27,9 @@
 <!--
 <img src="/martview/images/triangle_gray_small_right.png" alt="" />
 -->
-<table class="mart_summarypanel_listheader" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+
+
+<table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed; margin: 16px 0px 0px 0px;">
 <tr>
 <td onclick="document.getElementById('${dset_name}__summarypanel_datasetbranch').onclick();">
 <span id="${dset_name}__summarypanel_datasetbranch" class="mart_summarypanel_listheader" 
@@ -83,7 +85,7 @@
 <!--
 <img src="/martview/images/triangle_gray_small_right.png" alt="" />
 -->
-<table class="mart_summarypanel_listheader" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+<table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 <tr>
 <td onclick="document.getElementById('${dset_name}__summarypanel_attributebranch').onclick();">
 <span class="mart_summarypanel_AttFiltHeader" id="${dset_name}__summarypanel_attributebranch" 
@@ -115,7 +117,7 @@
 
 [% FOREACH attributetree = dset.getConfigurationTree("default").getAllAttributeTrees() %]
   [% NEXT IF attributetree.hideDisplay().defined && attributetree.hideDisplay == 'true' %]
-	<div id="${dset_name}__[% attributetree.name() %]__attributelist" >
+	<div id="${dset_name}__[% attributetree.name() %]__attributelist" style="display:none;">
   	[% IF attTreeCount > 1%]
   	<span class="mart_summarypanel_listitem"  id="${dset_name}__summarypanel_attributebranch__[% attributetree.name %]">Page: [% attributetree.displayName() %]</span>
 	[% END %]
@@ -143,7 +145,7 @@
 <img src="/martview/images/triangle_gray_small_right.png" alt="" />
 -->
 
-<table class="mart_summarypanel_listheader" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+<table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 <tr>
 <td onclick="document.getElementById('${dset_name}__summarypanel_filterbranch').onclick();">
 <span class="mart_summarypanel_AttFiltHeader" id="${dset_name}__summarypanel_filterbranch"  onclick="showPanelHideSiblings('${dset_name}__filterpanel'); setHighlightedSummaryPanelBranch(this.id);" title="Restrict your query by filtering">Filters</span>
@@ -189,7 +191,7 @@
 <img src="/martview/images/triangle_gray_small_right.png" alt="" />
 -->
 
-<table class="mart_summarypanel_listheader" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+<table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 <tr>
 <td onclick="document.getElementById('show_linked_datasetpanel').onclick();">
 <span id="show_linked_datasetpanel" class="mart_summarypanel_listheader" onclick="showPanelHideSiblings('add_linked_datasetpanel'); setHighlightedSummaryPanelBranch(this.id); " title="Optional second dataset to combine in queries">[% session.param("__Dataset") %]: 

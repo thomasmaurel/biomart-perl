@@ -1169,8 +1169,8 @@ function setHighlightedSummaryPanelBranch(eltId) {
 		{	highlightedSummaryPanelBranchElt.className = 'mart_summarypanel_AttFiltHeader'; }
 
 		// Also change the colour of table cell which sets the background of the strip
-		if (highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className == 'mart_summarypanel_listheader_highlighted')
-		{	highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheader';	}
+		if (highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className == 'mart_summarypanel_listheaderTable_highlighted')
+		{	highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheaderTable';	}
     }
 	//alert('Setting summary panel branch '+eltId+' as the highlighted one');
     // Highlight this element
@@ -1190,9 +1190,9 @@ function setHighlightedSummaryPanelBranch(eltId) {
 		if(elt2highlight.className == 'mart_summarypanel_AttFiltHeader')
 		{	elt2highlight.className = 'mart_summarypanel_AttFiltHeader_highlighted'; 	}
 
-		// Also change the colour of table cell which sets the background of the strip and change the colour of count span
-		if (elt2highlight.parentNode.parentNode.parentNode.parentNode.className == 'mart_summarypanel_listheader')
-		{	elt2highlight.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheader_highlighted';	}
+		// Also change the colour of table cell which sets the background of the strip
+		if (elt2highlight.parentNode.parentNode.parentNode.parentNode.className == 'mart_summarypanel_listheaderTable')
+		{	elt2highlight.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheaderTable_highlighted';	}
 		
 		// set session variable accordingly
 		document.mainform['summarypanel__current_highlighted_branch'].value = eltId;

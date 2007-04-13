@@ -239,21 +239,22 @@ var sessionValueOfDatasetmenu = { 'schema'       : "[% schema2focus   || '' %]",
 
 </div>
 
-<br>
+<div class="mart_howToUse">
+<br/>
 
 Using MartView
-<br>
-<br>
+<br/>
+<br/>
 
-1. Choose <b>Dataset </b>above <br>
-2. Click  <b>Attributes</b> and make your selection in this panel <br>
-3. Click <b>Results</b> in the top panel <br><br>
+1. Choose <b>Dataset </b>above <br/>
+2. Click  <b>Attributes</b> and make your selection in this panel <br/>
+3. Click <b>Results</b> in the top panel <br/><br/>
 You can further refine your query by including <b>Filters</b> and/or additional <b>Dataset</b>
 
-<br>
-<br>
+<br/>
+<br/>
 <a href="/martview/tutorial/biomart_mini_tut.html">Mini Tutorial</a>
-
+</div>
 
 
 

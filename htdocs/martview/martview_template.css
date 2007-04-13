@@ -15,12 +15,18 @@ div#mart_containerpanel
 */
 	background-color: white;
 }
-
+.mart_tableSummaryMainPanel
+{
+  	border-style: solid;
+	border-width: 1px;
+	border-color: [font_colour_rest];	
+}
 .mart_summarypanel_datasets
 { 
 	background-color: [summary_panel_bgcolour];
-	border-style: solid;
-/*	margin: 12px 6px 12px 0px;
+
+/*	border-style: solid;
+	margin: 12px 6px 12px 0px;
 	border-width: 3px 3px 3px 0px;
 	border-color: [blocks_outline_colour];
 	padding: 16px 30px 16px 30px;	
@@ -38,8 +44,10 @@ div#mart_mainpanel
 {
 
 	background-color: [main_panel_bgcolour];
+	padding: 0px 8px 8px 8px;
+/*
 	border-style: solid;
-/*	margin: 12px 0px 12px 6px;
+	margin: 12px 0px 12px 6px;
 	border-width: 3px 0px 3px 3px;
 	border-color: [blocks_outline_colour];
 	padding: 16px 20px 16px 20px;
@@ -57,7 +65,7 @@ div#mart_mainpanel
 	border-width: 0px;
 	border-color: [blocks_outline_colour];
 	/*min-height: 350px; */
-	padding: 4px;
+	/*padding: 4px;*/
 	width: inherit;
 	clear: both;
 	overflow: auto;
@@ -227,8 +235,8 @@ div#mart_export_data
 	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
-	border-width: 0px 0px 4px 0px;
-	border-color: [blocks_outline_colour];
+	border-width: 0px 0px 1px 0px;
+	border-color: [font_colour_rest];
 	padding: 0px 0px 16px 0px;
 	/*	height: 100%; */
 	clear: both;
@@ -241,8 +249,8 @@ div#mart_export_data
 	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
-	border-width: 0px 0px 4px 0px;
-	border-color: [blocks_outline_colour];
+	border-width: 0px 0px 1px 0px;
+	border-color: [font_colour_rest];
 	/*padding: 16px 0px 16px 0px; To be handled in datasetpanel.tt based on if we have a schema menu or not*/
 	/*	height: 100%; */
 	clear: both;
@@ -255,8 +263,8 @@ div#mart_export_data
 	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
 	border-style: solid;
-	border-width: 0px 0px 4px 0px;
-	border-color: [blocks_outline_colour];
+	border-width: 0px 0px 1px 0px;
+	border-color: [font_colour_rest];
 	padding: 16px 0px 16px 0px;
 	/*	height: 100%; */
 	clear: both;
@@ -268,8 +276,8 @@ div#mart_export_data
 {
 	background-color: [summary_panel_bgcolour];
 	border-style: solid;
-	border-width: 0px 0px 4px 0px;
-	border-color: [blocks_outline_colour];
+	border-width: 0px 0px 1px 0px;
+	border-color: [font_colour_rest];
 	margin: 16px;
 }
 					
@@ -298,6 +306,11 @@ div#mart_export_data
 { 
 	background-color: [main_panel_bgcolour];
 	clear: both;
+}
+
+.mart_howToUse
+{
+	font-size: 11pt;
 }
 
 .mart_datasetselectpanel,
@@ -400,19 +413,33 @@ div#mart_export_data
 	font-weight: bold;                            
 	font-size: 11pt; 
 	clear: both;
-	margin: 0px 0px 2px 0px;
+	margin: 0px 0px 2px 6px;
 	padding: 0px 5px 0px 0px;	
-/*	border: 1px solid #FFF8E7; */
-	
-	
 }
-
 .mart_summarypanel_listheader_highlighted
 {
-/*	border: 1px solid #FF9900;*/
 	background-color: 	[summary_panel_highlight_bgcolour];
 	color: [font_colour_reverse];
 }
+
+.mart_summarypanel_listheaderTable,
+.mart_summarypanel_listheaderTable_highlighted
+{
+	background-color: 	[blocks_outline_colour];
+	color: [font_colour_rest];
+	cursor: pointer;
+	font-weight: bold;                            
+	font-size: 11pt; 
+	clear: both;
+	margin: 0px 0px 2px 0px;
+	padding: 0px 5px 0px 0px;	
+}
+.mart_summarypanel_listheaderTable_highlighted
+{
+	background-color: 	[summary_panel_highlight_bgcolour];
+	color: [font_colour_reverse];
+}
+
 
 .el_hidden,
 .ctl_hidden
@@ -452,7 +479,7 @@ div#mart_export_data
 	color: [font_colour_rest];
 	cursor: pointer;
 	font-weight: bold;                            	
-	margin: 1px 0px 1px 13px;
+	margin: 1px 0px 1px 18px;
 	padding: 0px 5px 0px 0px;
 /*	border: 1px solid #FFF8E7;*/
 	clear: both;
@@ -486,7 +513,7 @@ div#mart_export_data
 	color: [font_colour_rest];
 	font-size: 11pt; 
 	font-style: normal;
-	margin: 1px 0px 1px 26px;
+	margin: 1px 0px 1px 30px;
 	width: inherit;
 	clear: both;
 
@@ -496,7 +523,7 @@ div#mart_export_data
 {
 	font-size: 11pt; 
 	font-style: normal;
-	margin: 1px 0px 1px 26px;
+	margin: 1px 0px 1px 30px;
 	width: inherit;
 	clear: both;
 	color: [font_colour_rest];
@@ -506,7 +533,7 @@ div#mart_export_data
 {
 	font-size: 11pt; 
 	font-style: normal;
-	margin: 1px 0px 1px 26px;
+	margin: 1px 0px 1px 30px;
 	width: inherit;
 	clear: both;
 	color: [font_colour_rest];
@@ -516,7 +543,7 @@ div#mart_export_data
 {
 	font-size: 11pt;
 	font-style: normal;
-	margin: 1px 0px 1px 26px;
+	margin: 1px 0px 1px 30px;
 	width: inherit;
 	clear: both;
 	color: [font_colour_rest];
