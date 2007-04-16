@@ -341,7 +341,7 @@ sub _new
 	    	if ($cgi->param("GALAXY_URL") and !$session->param("GALAXY_URL")) {
     			$session->param("GALAXY_URL",$cgi->param("GALAXY_URL")); 
 		    	$session->param('export_saveto','text');
-		    	$session->param('outputformat','tsv');
+		    	$session->param('preView_outputformat','tsv');
 	    	}    	
 	    	# URL request e.g ensembl URL request for contigView
     		if ($cgi->param('VIRTUALSCHEMANAME') || $cgi->param('ATTRIBUTES'))
@@ -962,7 +962,8 @@ sub handleURLRequest
 	}
 	$session->param('get_results_button', 'Results'); 
 	$session->param("mart_mainpanel__current_visible_section", "resultspanel");
-	$session->param('outputformat', 'html');
+	$session->param('preView_outputformat', 'html');
+	$session->param('exportView_outputformat', 'html');
 	#--------------------------------------------------
 	
 
@@ -1466,7 +1467,8 @@ sub filterDisplayType
 	my @dataset_names_in_query = ();
 	my %entrycount_of_dataset;
 	my %filtercount_of_dataset;
-	my $formatter_name;
+	my $preView_formatter_name;
+	my $exportView_formatter_name;
 	my $noFilter = "";
 
 	foreach my $dataset_name(@dataset_names) {
@@ -1529,16 +1531,21 @@ sub filterDisplayType
 			    	$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
 			    	my @outputformats = split(',', $atttree->outFormats());
 			    	$session->param("export_outputformats", \@outputformats);		    	
-				my $session_outformat = $session->param('outputformat');
+					my $preView_session_outformat = $session->param('preView_outputformat');
+					my $exportView_session_outformat = $session->param('exportView_outputformat');
 		    		foreach (@outputformats)
 		    		{
-					if (defined($session_outformat) && $session_outformat eq $_)
+					if (defined($preView_session_outformat) && $preView_session_outformat eq $_)
 					{
-			    			$formatter_name = uc($session_outformat);
-		    				last;
+			    			$preView_formatter_name = uc($preView_session_outformat);
+					}
+					if (defined($exportView_session_outformat) && $exportView_session_outformat eq $_)
+					{
+			    			$exportView_formatter_name = uc($exportView_session_outformat);
 					}
 	    			}
-	    			$formatter_name = uc($outputformats[0]) if (!$formatter_name);
+	    			$preView_formatter_name = uc($outputformats[0]) if (!$preView_formatter_name);
+	    			$exportView_formatter_name = uc($outputformats[0]) if (!$exportView_formatter_name);
 	    		}	    		
 		}
 		# need to calculate count here as adding attributes to query from GS would crash the counting
@@ -1638,9 +1645,9 @@ sub filterDisplayType
 		$logger->debug("Query has both filters and attributes by now, let's go get some results!");
 		# Figure out how many entries to print
 		my $export_subset = $session->param('export_subset') || '10';
-	    	undef $export_subset if defined($export_subset) && $export_subset eq q{};
-			undef $export_subset if ($session->param("do_export"));
-		
+    	undef $export_subset if defined($export_subset) && $export_subset eq q{};
+		undef $export_subset if ($session->param("do_export"));
+
 		# Eval next line and check to see if any exception thrown. If so,
 		# return nicely with exception in session parameter.
 		my $return_after_eval = 0;
@@ -1651,15 +1658,36 @@ sub filterDisplayType
 			{    			
 			
 				$session->clear('get_results_button'); # don't get stuck here
-				my $formatterName = $formatter_name || 'TSV';
+				
+
+				my $selectedFormatterMenu;
+				if($session->param('formatterMenu') && $session->param('formatterMenu') eq 'exportView')
+				{ $selectedFormatterMenu = $exportView_formatter_name; }
+				else 				
+				{ $selectedFormatterMenu = $preView_formatter_name; }
+
+				my $formatterName = $selectedFormatterMenu || 'TSV';
 				my $formatter_class = 'BioMart::Formatter::'.$formatterName;
 				eval "require $formatter_class" or BioMart::Exception->throw("could not load module $formatter_class: $@");
 				my $formatter = $formatter_class->new();
 				$logger->debug("Formatting data as $formatterName");
-
+	
 			    	# START NEW CODE
 			    	# Run in background?
 					my $export_saveto = $session->param('export_saveto');
+					# if its ALL option, to be redirected to Browser with preView formatter
+					if ($session->param('export_subset') eq 'All')
+					{
+						$export_saveto = 'text';
+						$exportView_formatter_name = $preView_formatter_name;
+						# change the option Menu value to 10 if it was All and then user comes back to 
+						# Atts/Filts/Ds panels and hit results again or hits the count button
+						if (!$session->param("do_export"))
+						{
+							$session->param('export_subset', '10');
+							$export_subset = 10;
+						}
+					}
 			    	if ($session->param('do_export') and ($export_saveto eq 'file_bg' or $export_saveto eq 'gz_bg')) {
 						$logger->debug("Running in background.");
 						$session->clear('do_export'); # so it only happens once
@@ -1719,7 +1747,7 @@ sub filterDisplayType
 							eval {
 				   				# Run query.			    
 				   				$logger->debug("Sending query for execution to get full resultset");
-	    						$query_main->formatter($formatter_name);
+	    						$query_main->formatter($exportView_formatter_name);
 	    						$query_main->count(0);# do don't get count below
 								$qrunner->execute($query_main);						
 					   			# Create results.
@@ -1766,6 +1794,7 @@ sub filterDisplayType
 			    	# Not in background, then is export or show-in-browser.
 			    	else {							
 			    		# Export?
+			    		
 			    		if ($session->param("do_export")) {
 			    			# Exit after eval block.
 							$return_after_eval = 1;		
@@ -1773,7 +1802,7 @@ sub filterDisplayType
 											    						   			
 				    		# Run query.			    
 					   		$logger->debug("Sending query for execution to get full resultset");
-	    						$query_main->formatter($formatter_name);
+	    						$query_main->formatter($exportView_formatter_name);
 	    						$query_main->count(0);# do don't get count below
 							$qrunner->execute($query_main);
 						
@@ -1783,7 +1812,7 @@ sub filterDisplayType
 							if ($export_saveto eq 'gz') {
 								$file .= '.gz';
 							}
-	
+
 							$logger->debug("Exporting file.");
 							
 							# Work out CGI headers
@@ -1831,7 +1860,7 @@ sub filterDisplayType
 			    			} 
 
 			    			# Can't show HUGE MAF output for PECAN 7 & 9 species
-			    			elsif(($query_main->formatter($formatter_name)) eq 'MAF_NOPREVIEW') {		
+			    			elsif(($query_main->formatter($preView_formatter_name)) eq 'MAF_NOPREVIEW') {		
 								$result_string = "<br/>Cannot preview multiple genomic alignments due to the huge amount of data.<br/>Choose the target from the menu above & press Go.<br/>The size of the output expected will be between tens of Mb to a few Gb depending on your filtering";
 			    			} 
 
@@ -1839,10 +1868,10 @@ sub filterDisplayType
 			    			# But can show everything else.
 			    			else {			    				
 								$logger->debug("Showing ".($export_subset||'all')." entries in main panel");
-		    						   			
+		    				   			
 				    			# Run query.			    
 					   			$logger->debug("Sending query for execution to get full resultset");
-	    							$query_main->formatter($formatter_name);
+	    							$query_main->formatter($preView_formatter_name);
 		    						$query_main->count(0);# do don't get count below
 								$qrunner->execute($query_main);
 					
@@ -1853,7 +1882,7 @@ sub filterDisplayType
 								$qrunner->printFooter($result_buffer);
 								close($result_buffer);
 								
-								if($formatter_name eq 'HTML') 
+								if($preView_formatter_name eq 'HTML') 
 								{
 						    		# strip out HTML stuff in case this is HTML-format
 						    		$result_string =~ s/\A\<\?xml.+\<table/\<table/xms; 

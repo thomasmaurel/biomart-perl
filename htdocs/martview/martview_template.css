@@ -127,8 +127,8 @@ div#mart_export_menubar
 	font-size: 11pt;
 /*	clear: both;*/
 	background-color: [main_panel_bgcolour];
-	border-width: 3px 3px 3px 3px;
-	padding: 0px 0px 8px 0px;
+	border-width: 0px;
+	padding: 0px 0px 0px 0px;
 	border-color: [blocks_outline_colour];
 	width: inherit; 
 	                          
@@ -139,6 +139,9 @@ div#mart_export_data
 { 
 	color: [font_colour_rest];
 	background-color: [main_panel_bgcolour];
+	height: 75%;
+	_height: 100%; /* for IE only */
+	
 	/* border-style: solid; */
 	/* border-width: 1px; */
 	/* border-color: #CACFD5; */
@@ -152,7 +155,13 @@ div#mart_export_data
 	/* clear: both; */
 /*	overflow: auto; */
 }
-					
+
+.mart_viewPanel
+{
+	color: [font_colour_rest];
+	background-color: [blocks_outline_colour];	
+}
+															
 /* button and hover on functions */					
 .mart_btn
 {

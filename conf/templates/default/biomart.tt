@@ -86,7 +86,9 @@
 			onmouseover="this.className='mart_btn mart_btnhov'" 
 			onmouseout="this.className='mart_btn'"
 
-			onclick="document.mainform.do_export.value = 0; 
+			onclick="
+			document.mainform.formatterMenu.value = 'preView';
+			document.mainform.do_export.value = 0; 
 			document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
 			document.mainform.savequery.value = 0; 
 			document.mainform.showquery.value = 0; 
@@ -102,7 +104,9 @@
 			onmouseover="this.className='mart_btn mart_btnhov';" 
 			onmouseout="this.className='mart_btn';"
 			
-			onclick="document.mainform.do_export.value = 0; 
+			onclick="
+			document.mainform.formatterMenu.value = 'preView';
+			document.mainform.do_export.value = 0; 
 			document.mainform.savequery.value = 0;
 			document.mainform.showquery.value = 0;  
 		
@@ -171,7 +175,9 @@
 			<input type="hidden" name="summarypanel_filter_count_2" value="[%session.param('ds_2_count')%]" />
 			<input type="hidden" name="track_visible_section" value="0" />
 			<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
-
+			<input type="hidden" name="formatterMenu" value="[% session.param('formatterMenuInvoked') %]" />
+			
+			
 			<div id="mart_mainpanel" style="height:100%; overflow:auto; text-align: top; position: relative;">
 			<table width="100%" height="100%"  border="0" cellpadding="6" cellspacing="0" style="table-layout: fixed;">
 			<tr>
@@ -254,91 +260,10 @@
 				<div id="mart_export_menubar" style="width:100%; height:100%; overflow:hidden;" >
 
 				<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+				
 				<tr>
 				<td align="left" width="25%" valign="top">
-						Display maximum
-				</td>
-				<td align="left" width="75%" valign="top">
-					<select name="export_subset" 
-					class="mart_input"
-					onmouseover="this.className='mart_input mart_inputhov'" 
-					onmouseout="this.className='mart_input'"
-
-					onchange="
-					document.mainform.do_export.value = 0;
-					document.mainform.showquery.value = 0;  
-				
-					var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
-					if (summaryCountElt1)
-					{				
-						document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
-					}
-					var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
-					if (summaryCountElt2)
-					{
-						document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
-					}
-	
-					document.mainform.target = '_self'; 
-					document.mainform.savequery.value = 0; 
-					document.mainform.submit(); ">
-
-					[% FOREACH c = [10,20,50,100,150,200] %]
-  						<option value="$c"
-						[% IF session.param("export_subset").defined() && session.param("export_subset") == c %]
- selected="selected"
-						[% END %]>$c</option>
-
-					[% END %]
-
-					</select>
- 					rows as 
-					<select name="outputformat" 
-					class="mart_input"
-					onmouseover="this.className='mart_input mart_inputhov'" 
-					onmouseout="this.className='mart_input'"
-				
-					onchange="
-						document.mainform.do_export.value = 0; 
-						document.mainform.showquery.value = 0; 
-						
-						var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
-						if (summaryCountElt1)
-						{				
-							document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
-						}
-						var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
-						if (summaryCountElt2)
-						{
-							document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
-						}
-	
-						document.mainform.target = '_self'; 
-						document.mainform.savequery.value = 0;  
-						document.mainform.submit();	">
-					
-					[% IF session.param("GALAXY_URL") %]
-						<option value="tsv">TSV</option>
-					[% ELSE %]
-					[% FOREACH outputformat = session.param("export_outputformats") %]
-
-  						[% IF outputformat != "txt" %]
-  						<option value="$outputformat"
-							[% IF session.param("outputformat").defined() && session.param("outputformat") == outputformat %]
- 								selected="selected"	
-							[% END %]>[% outputformat FILTER upper %]
-						</option>
-						[% END %]
-
-					[% END %]
-					[% END %]
-
-					</select>
-				</td>
-				</tr>
-				<tr>
-				<td align="left" width="25%" valign="top">
-					Export all results to
+					&nbsp;Export all results to
 				</td>
 				<td align="left" width="75%" valign="top">
 						<select name="export_saveto"
@@ -356,7 +281,7 @@
 								">
   							[% IF !session.param("GALAXY_URL") %]
 								<option value="file">File</option>	
-  								<option value="text">Browser</option>
+  								<!--	<option value="text">Browser</option> -->
 	  							<option value="gz">Compressed file (.gz)</option>
   								[% IF session.param("__enable_background")==1 %]
   									<! -- <option value="file_bg">Web File (notify by email)</option> -->
@@ -366,6 +291,33 @@
   								<option value="text">Galaxy</option>
   							[% END %]
 						</select>
+						
+						<select name="exportView_outputformat" 
+							class="mart_input"
+							onmouseover="this.className='mart_input mart_inputhov'" 
+							onmouseout="this.className='mart_input'"
+			
+							onchange=""
+						>
+					
+						[% IF session.param("GALAXY_URL") %]
+							<option value="tsv">TSV</option>
+						[% ELSE %]
+						[% FOREACH outputformat = session.param("export_outputformats") %]
+	
+  							[% IF outputformat != "txt" %]
+  							<option value="$outputformat"
+								[% IF session.param("exportView_outputformat").defined() && session.param("exportView_outputformat") == outputformat %]
+ 									selected="selected"	
+								[% END %]>[% outputformat FILTER upper %]
+							</option>
+							[% END %]
+
+						[% END %]
+						[% END %]
+
+						</select>
+						
 						<input type="submit" name="export_submit" value="Go" 
 							class="mart_btn_go"
 							onmouseover="this.className='mart_btn_go mart_btnhov_go'" 
@@ -374,6 +326,7 @@
 							onclick="
 							if(this.value != '') 
 							{ 
+								
 	  							[% IF session.param("GALAXY_URL") %]
 								[% dset = wq.get_mart_registry().getDatasetByName(session.param("schema"), dset_name) %]
 								document.mainform.action = 
@@ -382,6 +335,8 @@
 									'&name=[% dset.displayName() || dset_name %]'+
 									'&URL=http://'+location.host+'[% form_action %]?do_export=1';
 								[% END %]
+								
+								document.mainform.formatterMenu.value = 'exportView';
 								document.mainform.do_export.value = 1; 
 								document.mainform.showquery.value = 0; 
 								document.mainform.savequery.value = 0;  
@@ -400,23 +355,138 @@
 								 	document.mainform.submit(); 
 								} 
 								return false;
-							} "/>
-				</td>
-				</tr>
-
-				<tr>
-				<td align="left" width="25%" valign="top">
-						Email notification to
-				</td>
+							}							
+							
+							"/>
+					</td>
+					</tr>
+	
+					<tr>
+					<td align="left" width="25%" valign="top">
+							&nbsp;Email notification to
+					</td>
 				
+					<td align="left" width="75%" valign="top">
+						<div id="__email_section" class="email_notification">
+							<input type="text" disabled name="background_email" value="[% session.param("background_email") %]"
+								class="mart_input"
+								onmouseover="this.className='mart_input mart_inputhov'" 
+								onmouseout="this.className='mart_input'"
+							/>
+						</div>
+					</td>
+					</tr>
+					
+					<tr class="mart_viewPanel">
+					<td align="left" width="25%" valign="bottom">
+					</td>
+					<td align="left" width="75%" valign="center">
+						<b>View Panel</b>
+					</td>
+					</td>
+					</tr>
+					
+					<tr class="mart_viewPanel">
+				<td align="left" width="25%" valign="top">
+						&nbsp;Display maximum
+				</td>
 				<td align="left" width="75%" valign="top">
-					<div id="__email_section" class="email_notification">
-						<input type="text" disabled name="background_email" value="[% session.param("background_email") %]"
-						class="mart_input"
-						onmouseover="this.className='mart_input mart_inputhov'" 
-						onmouseout="this.className='mart_input'"
-						/>
-					</div>
+					<select name="export_subset" 
+					class="mart_input"
+					onmouseover="this.className='mart_input mart_inputhov'" 
+					onmouseout="this.className='mart_input'"
+
+					onchange="
+				
+					var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
+					if (summaryCountElt1)
+					{				
+						document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+					}
+					var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
+					if (summaryCountElt2)
+					{
+						document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+					}
+					
+					document.mainform.savequery.value = 0; 
+					document.mainform.showquery.value = 0; 
+
+					if(this.value == 'All' )
+					{
+						document.mainform.do_export.value = 1; 
+						document.mainform.formatterMenu.value = 'preView';
+						document.mainform.target = 'newwindow';						
+					}
+					else
+					{
+						document.mainform.do_export.value = 0; 
+						document.mainform.target = '_self'; 
+
+					}
+					document.mainform.submit(); ">
+
+					[% FOREACH c = [10,20,50,100,150,200, 'All'] %]
+  						<option value="$c"
+						[% IF session.param("export_subset").defined() && session.param("export_subset") == c %]
+							selected="selected"
+						[% END %]>$c</option>
+
+					[% END %]
+
+					</select>
+ 					rows as 
+					<select name="preView_outputformat" 
+					class="mart_input"
+					onmouseover="this.className='mart_input mart_inputhov'" 
+					onmouseout="this.className='mart_input'"
+				
+					onchange="
+						document.mainform.showquery.value = 0; 
+						
+						var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
+						if (summaryCountElt1)
+						{				
+							document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+						}
+						var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
+						if (summaryCountElt2)
+						{
+							document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+						}
+						
+						var seeAll = document.mainform.export_subset.options[document.mainform.export_subset.selectedIndex].value;
+						if(seeAll == 'All')
+						{
+							document.mainform.do_export.value = 1;
+							document.mainform.target = 'newwindow'; 
+						}
+						else
+						{
+							document.mainform.do_export.value = 0;
+							document.mainform.target = '_self'; 
+						}
+						document.mainform.formatterMenu.value = 'preView';	
+						document.mainform.savequery.value = 0;  
+						document.mainform.submit();	">
+					
+					[% IF session.param("GALAXY_URL") %]
+						<option value="tsv">TSV</option>
+					[% ELSE %]
+					[% FOREACH outputformat = session.param("export_outputformats") %]
+
+  						[% IF outputformat != "txt" &&  outputformat != "xls" %]
+  						<option value="$outputformat"
+							[% IF session.param("preView_outputformat").defined() && session.param("preView_outputformat") == outputformat %]
+ 								selected="selected"	
+							[% END %]>[% outputformat FILTER upper %]
+						</option>
+						[% END %]
+
+					[% END %]
+					[% END %]
+
+					</select>
 				</td>
 				</tr>
 
@@ -429,8 +499,8 @@
 
 			<tr>
 			<td width="100%" height="100%" valign="top" align="left">
-				<div id = "mart_export_data" style="width:100%; height:75%; overflow: auto; position: absolute;" >
-					<table width="100%" height="100%"  border="1" cellpadding="0" cellspacing="0" style="table-layout: auto;">
+				<div id = "mart_export_data" style="width:100%; overflow: auto; position: absolute; " >
+					<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: auto; ">
 					<tr>
 					<td width="100%" height="100%" valign="top" align="left" >
 						[% result_string %] 
