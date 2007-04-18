@@ -15,14 +15,14 @@
 	<div style=" width:100%; height:100%; overflow:visible; position: relative;">
 	<table class ="mart_main_menubar" width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0">
 		<tr>
-		<td height="100%" width="100%" align="left" valign="top" >
+		<td height="100%"  align="left" valign="top" >
 					     
 			<!--
 			<img src="/martview/images/biomart-logo.gif" alt="" style="float: right; margin: 6px 4px 0px 0px"/></a> 				 
 			-->
 	
 		
-			<input type="submit" value="New" style="margin: 0px 0px 0px 22px" name="submit.newsession" 
+			<input type="submit" value="New" style="margin: 0px 0px 0px 6px" name="submit.newsession" 
 
 			class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
@@ -39,45 +39,7 @@
   			title="Start a new query"/>	    
 	
 	
-		     <input type="submit" value="XML" name="submit.showquery" 
 
-			class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
-
-          	onclick="	
-          	document.mainform.showquery.value = 1; 
-          	document.mainform.do_export.value = 0; 
-			document.mainform.savequery.value = 0; 
-			document.mainform.target = 'newwindow'; 
-			document.mainform.submit(); " title ="Show query in XML Web Service Format"/>
-
-	
-			<input type="submit" value="Help" name="submit.help" 
-
-			class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
-   			
-          	onclick="
-          	document.mainform.showquery.value = 0; 
-          	document.mainform.do_export.value = 0; 
-			document.mainform.savequery.value = 0;
-			document.mainform.target = '_self'; 
-			var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
-			if (summaryCountElt1)
-			{				
-				document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
-			}
-			var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
-			if (summaryCountElt2)
-			{
-				document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
-			}
-
-          	
-          	javascript:void(window.open('/help.html','martview','width=600,height=500,resizable,scrollbars'));	
-          	 " title ="Get Help"/>
 
 	
 			<input type="submit" value="Count" name="get_count_button" 
@@ -135,6 +97,64 @@
 			<!--
 			<div style="clear: both; width: inherit; line-height: 0; height: 0;">&nbsp;</div>
 			-->
+		</td>
+		<td height="100%" align="right" valign="top" >
+		
+		   <input type="submit" value="Perl" name="submit.showquery" 
+
+			class="mart_btn"
+   			onmouseover="this.className='mart_btn mart_btnhov'" 
+   			onmouseout="this.className='mart_btn'"
+
+          	onclick="	
+          	document.mainform.showquery.value = 1; 
+          	document.mainform.do_export.value = 0; 
+			document.mainform.savequery.value = 0; 
+			document.mainform.target = 'newwindow'; 
+			document.mainform.submit(); " title ="Show query in Perl API Format"/>
+
+	
+		     <input type="submit" value="XML" name="submit.showquery" 
+
+			class="mart_btn"
+   			onmouseover="this.className='mart_btn mart_btnhov'" 
+   			onmouseout="this.className='mart_btn'"
+
+          	onclick="	
+          	document.mainform.showquery.value = 1; 
+          	document.mainform.do_export.value = 0; 
+			document.mainform.savequery.value = 0; 
+			document.mainform.target = 'newwindow'; 
+			document.mainform.submit(); " title ="Show query in XML Web Service Format"/>
+
+	
+			<input type="submit" value="Help" name="submit.help style="margin: 0px 6px 0px 0px"" 
+
+			class="mart_btn"
+   			onmouseover="this.className='mart_btn mart_btnhov'" 
+   			onmouseout="this.className='mart_btn'"
+   			
+          	onclick="
+          	document.mainform.showquery.value = 0; 
+          	document.mainform.do_export.value = 0; 
+			document.mainform.savequery.value = 0;
+			document.mainform.target = '_self'; 
+			var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
+			if (summaryCountElt1)
+			{				
+				document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+			}
+			var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
+			if (summaryCountElt2)
+			{
+				document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+			}
+
+          	
+          	javascript:void(window.open('/help.html','martview','width=600,height=500,resizable,scrollbars'));	
+          	 " title ="Get Help"/>
+
+
 		</td>
 		</tr>
 	</table>

@@ -184,7 +184,7 @@ div#mart_export_data
 	font-weight: bold;
 	color:[font_colour_top_bottom_menubar];
    	background-color:[top_bottom_menubar_bgcolour];
-	padding: 0.3em 1em 0.1em 1em;
+	padding: 0.3em 0.5em 0.1em 0.5em;
 	border-color: [main_panel_bgcolour] [button_shade] [button_shade] [main_panel_bgcolour];
 }
       				
@@ -196,7 +196,7 @@ div#mart_export_data
 	/*color:white;*/
    	color: [button_shade];
 	background-color:[top_bottom_menubar_bgcolour];
-	padding: 0.3em 1em 0.1em 1em;
+	padding: 0.3em 0.5em 0.1em 0.5em;
 	border-color: [button_shade] [main_panel_bgcolour] [main_panel_bgcolour] [button_shade] ;
 }
 .mart_btn_go
