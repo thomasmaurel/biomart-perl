@@ -144,10 +144,10 @@
 	
 	<tr>
 	<td width="100%" height="90%" align="left">
-	<div style="width:100%; height:100%; overflow:hidden; align:top; background: white; padding: 2px; position: relative;">
+	<div style="width:100%; height:100%; overflow:hidden; align:top; background: white; padding: 10px 0px 0px 0px; position: relative;">
 		<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 		<tr>
-		<td class="mart_tableSummaryMainPanel" height="100%" width="25%" align="left" valign="top">
+		<td class="mart_tableSummaryPanel" height="15%" width="25%" align="left" valign="top">
 			<div class="mart_summarypanel_datasets" style="height:100%; overflow: auto; text-align: top;">
 				<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 				<tr>
@@ -161,7 +161,7 @@
 			</div> <!-- summary box closes -->	
 		</td>		
 	
-		<td class="mart_tableSummaryMainPanel" height="100%" width="75%" valign="top" align="left">
+		<td class="mart_tableMainPanel" height="100%" width="85%" valign="top" align="left">
 
 			<input type="hidden" name="menuNumber" value="0" />
 			<input type="hidden" name="newsession" value="0" />
@@ -262,8 +262,8 @@
 				<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 				
 				<tr>
-				<td align="left" width="25%" valign="top">
-					&nbsp;Export all results to
+				<td align="right" width="25%" valign="top">
+					&nbsp;Export &nbsp;all results to&nbsp;&nbsp;
 				</td>
 				<td align="left" width="75%" valign="top">
 						<select name="export_saveto"
@@ -362,8 +362,8 @@
 					</tr>
 	
 					<tr>
-					<td align="left" width="25%" valign="top">
-							&nbsp;Email notification to
+					<td align="right" width="25%" valign="top">
+							&nbsp;Email notification to&nbsp;&nbsp;
 					</td>
 				
 					<td align="left" width="75%" valign="top">
@@ -376,19 +376,26 @@
 						</div>
 					</td>
 					</tr>
+						
 					
 					<tr class="mart_viewPanel">
-					<td align="left" width="25%" valign="bottom">
+					<td align="left" width="25%" valign="top">
+						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black;">
 					</td>
-					<td align="left" width="75%" valign="center">
-						<b>View Panel</b>
+					<td align="left" width="75%" valign="top">
+						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black;">
+						<br/>
+
 					</td>
 					</td>
 					</tr>
 					
+
+					
+								
 					<tr class="mart_viewPanel">
-				<td align="left" width="25%" valign="top">
-						&nbsp;Display maximum
+				<td align="right" width="25%" valign="top">
+						&nbsp;View&nbsp;&nbsp;
 				</td>
 				<td align="left" width="75%" valign="top">
 					<select name="export_subset" 

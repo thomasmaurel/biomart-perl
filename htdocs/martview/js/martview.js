@@ -1172,14 +1172,16 @@ function setHighlightedSummaryPanelBranch(eltId) {
 		if (highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className == 'mart_summarypanel_listheaderTable_highlighted')
 		{	highlightedSummaryPanelBranchElt.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheaderTable';	}
     }
+	
 	//alert('Setting summary panel branch '+eltId+' as the highlighted one');
     // Highlight this element
 	if (eltId != "show_results")/// hack to avoid highlighting of results button. as it was crashing on IE
 	{
     	var elt2highlight = document.getElementById(eltId);
-		
+		//alert(elt2highlight.className);
 		//alert('Setting summary panel branch '+elt2highlight+' as the highlighted one');
-		if(elt2highlight.className == 'mart_summarypanel_listheader')
+		if(elt2highlight.className == 'mart_summarypanel_listheader' || 
+	           elt2highlight.className == 'mart_summarypanel_listheader_mouseover' )
 		{	
 			elt2highlight.className = 'mart_summarypanel_listheader_highlighted'; 
 			// and change the colour of count span 
@@ -1187,7 +1189,8 @@ function setHighlightedSummaryPanelBranch(eltId) {
 			{ elt2highlight.childNodes[1].className = 'mart_summarypanel_dataset_entrycount_highlighted';	}
 		}
 
-		if(elt2highlight.className == 'mart_summarypanel_AttFiltHeader')
+		if(elt2highlight.className == 'mart_summarypanel_AttFiltHeader' || 
+		   elt2highlight.className == 'mart_summarypanel_AttFiltHeader_mouseover')
 		{	elt2highlight.className = 'mart_summarypanel_AttFiltHeader_highlighted'; 	}
 
 		// Also change the colour of table cell which sets the background of the strip
@@ -1695,6 +1698,74 @@ function updateDependentAttributes(parname) {
 }
 /*
 
+
+=head2 setMouseOutStyle(eltID)
+
+Change the style of the element with this ID, to make it underlined in the 
+summary-tree. 
+
+=cut
+
+*/
+function setMouseOutStyle(eltId) {
+    var elt2highlight = document.getElementById(eltId);
+    if (elt2highlight.className == 'mart_summarypanel_listheader_mouseover'){
+    	elt2highlight.className = 'mart_summarypanel_listheader';
+	//elt2highlight.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheaderTable';
+    }
+}
+
+/*
+
+=head2 setMouseOverStyle(eltID)
+
+Change the style of the element with this ID, to make it underlined in the 
+summary-tree. 
+
+=cut
+
+*/
+function setMouseOverStyle(eltId) {
+    var elt2highlight = document.getElementById(eltId);
+    //alert(elt2highlight.className);
+    if (elt2highlight.className == 'mart_summarypanel_listheader'){
+    	elt2highlight.className = 'mart_summarypanel_listheader_mouseover';
+	//elt2highlight.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheaderTable';
+    }
+    
+}
+
+
+function setAttFiltMouseOutStyle(eltId) {
+    var elt2highlight = document.getElementById(eltId);
+    if (elt2highlight.className == 'mart_summarypanel_AttFiltHeader_mouseover'){
+        elt2highlight.className  = 'mart_summarypanel_AttFiltHeader';
+        //elt2highlight.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheaderTable';
+    }
+}
+
+/*
+
+=head2 setAttFiltMouseOverStyle(eltID)
+
+Change the style of the element with this ID, to make it underlined in the
+summary-tree.
+
+=cut
+
+*/
+function setAttFiltMouseOverStyle(eltId) {
+    var elt2highlight = document.getElementById(eltId);
+    //alert(elt2highlight.className);
+    if (elt2highlight.className == 'mart_summarypanel_AttFiltHeader'){
+        elt2highlight.className  = 'mart_summarypanel_AttFiltHeader_mouseover';
+        //elt2highlight.parentNode.parentNode.parentNode.parentNode.className = 'mart_summarypanel_listheaderTable';
+    }
+
+}
+
+
+/*
 =head1 CVSINFO
 
 $Id$ 
