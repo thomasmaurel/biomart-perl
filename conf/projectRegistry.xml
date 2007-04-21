@@ -29,8 +29,8 @@
 
 <MartURLLocation path="" host="www.dictybase.org" name="dicty" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="0" martUser="" includeDatasets="" redirect="1" />
 
-<MartURLLocation default="" displayName="RGD GENES (MCW)" host="rote.hmgc.mcw.edu" includeDatasets="rgd_genes" martUser="" name="rgd_mart" path="/biomart/martservice" port="9999" serverVirtualSchema="default" visible="1" proxy="http://wwwcache.ebi.ac.uk:8080" />
-  <MartURLLocation default="" displayName="RGD MICROSATELLITE MARKERS (MCW)" host="rote.hmgc.mcw.edu" includeDatasets="SSLP" martUser="" name="SSLP_mart" path="/biomart/martservice" port="9999" serverVirtualSchema="default" visible="1" proxy="http://wwwcache.ebi.ac.uk:8080" />
+<MartURLLocation default="" displayName="RGD GENES (MCW)" host="rote.hmgc.mcw.edu" includeDatasets="rgd_genes" martUser="" name="rgd_mart" path="/biomart/martservice" port="9999" serverVirtualSchema="default" visible="1" proxy="http://wwwcache.ebi.ac.uk:8080" redirect="1" />
+  <MartURLLocation default="" displayName="RGD MICROSATELLITE MARKERS (MCW)" host="rote.hmgc.mcw.edu" includeDatasets="SSLP" martUser="" name="SSLP_mart" path="/biomart/martservice" port="9999" serverVirtualSchema="default" visible="1" proxy="http://wwwcache.ebi.ac.uk:8080" redirect="1" />
 
 
 
