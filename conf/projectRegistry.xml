@@ -2,21 +2,21 @@
 <!DOCTYPE MartRegistry>
 <MartRegistry>
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="ensembl_mart_43" name="ensembl" displayName="ENSEMBL 43 GENE (SANGER)" port="3316" schema="ensembl_mart_43" user="anonymous" password="" visible="1" default="1" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="ensembl_mart_44" name="ensembl" displayName="ENSEMBL 44 GENES (SANGER)" port="3316" schema="ensembl_mart_44" user="anonymous" password="" visible="1" default="1" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_homology_43" name="compara_mart_homology_43" displayName="ENSEMBL 43 HOMOLOGY (SANGER)" port="3316" schema="compara_mart_homology_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_homology_44" name="compara_mart_homology_44" displayName="ENSEMBL 44 HOMOLOGY (SANGER)" port="3316" schema="compara_mart_homology_44" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_pairwise_ga_43" name="compara_mart_pairwise_ga_43" displayName="ENSEMBL 43 PAIRWISE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_pairwise_ga_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_pairwise_ga_44" name="compara_mart_pairwise_ga_44" displayName="ENSEMBL 44 PAIRWISE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_pairwise_ga_44" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
 <!--
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_multiple_ga_43" name="compara_mart_multiple_ga_43" displayName="ENSEMBL 43 MULTIPLE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_multiple_ga_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="compara_mart_multiple_ga_44" name="compara_mart_multiple_ga_44" displayName="ENSEMBL 44 MULTIPLE ALIGNMENTS (SANGER)" port="3316" schema="compara_mart_multiple_ga_44" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 -->
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="snp_mart_43" name="snp" displayName="ENSEMBL 43 VARIATION  (SANGER)" port="3316" schema="snp_mart_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="snp_mart_44" name="snp" displayName="ENSEMBL 44 VARIATION  (SANGER)" port="3316" schema="snp_mart_44" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="sequence_mart_43" name="sequence" displayName="ENSEMBL 43 SEQUENCE (SANGER)" port="3316" schema="sequence_mart_43" user="anonymous" password="" visible="0" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="sequence_mart_44" name="sequence" displayName="ENSEMBL 44 SEQUENCE (SANGER)" port="3316" schema="sequence_mart_44" user="anonymous" password="" visible="0" default="0" martUser="" includeDatasets="" />
 
-<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="vega_mart_43" name="vega" displayName="VEGA 21  (SANGER)" port="3316" schema="vega_mart_43" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
+<MartDBLocation databaseType="mysql" host="martdb.ensembl.org" database="vega_mart_44" name="vega" displayName="VEGA 21  (SANGER)" port="3316" schema="vega_mart_44" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
 
 
@@ -29,7 +29,12 @@
 
 <MartURLLocation path="" host="www.dictybase.org" name="dicty" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="dictyMart" displayName="DICTYBASE (NORTHWESTERN)" port="80" visible="1" default="0" martUser="" includeDatasets="" redirect="1" />
 
-<MartURLLocation database="pepseekerGOLD_mart" default="0" displayName="PEPSEEKERGOLD (UNIVERSITY OF MANCHESTER)" host="www.ispider.manchester.ac.uk" includeDatasets="peptide_1" includeMarts="pepseekerGOLD_mart" name="pepseekerGOLD_mart" martUser="" serverVirtualSchema="pepseekerGOLD" path="/pepseeker/biomart/martservice" port="80"  proxy="http://wwwcache.ebi.ac.uk:8080" visible="1" redirect="1" />
+<MartURLLocation default="" displayName="RGD GENES (MCW)" host="rote.hmgc.mcw.edu" includeDatasets="rgd_genes" martUser="" name="rgd_mart" path="/biomart/martservice" port="9999" serverVirtualSchema="default" visible="1" proxy="http://wwwcache.ebi.ac.uk:8080" />
+  <MartURLLocation default="" displayName="RGD MICROSATELLITE MARKERS (MCW)" host="rote.hmgc.mcw.edu" includeDatasets="SSLP" martUser="" name="SSLP_mart" path="/biomart/martservice" port="9999" serverVirtualSchema="default" visible="1" proxy="http://wwwcache.ebi.ac.uk:8080" />
+
+
+
+<MartURLLocation database="pepseekerGOLD_mart" default="0" displayName="PEPSEEKER (UNIVERSITY OF MANCHESTER)" host="www.ispider.manchester.ac.uk" includeDatasets="peptide_1" includeMarts="pepseekerGOLD_mart" name="pepseekerGOLD_mart" martUser="" serverVirtualSchema="pepseekerGOLD" path="/pepseeker/biomart/martservice" port="80"  proxy="http://wwwcache.ebi.ac.uk:8080" visible="1" redirect="1" />
 
 <!--
 
