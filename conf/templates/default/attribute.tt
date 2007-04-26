@@ -55,7 +55,7 @@
    
   onchange="if(this.checked)
   {	
-  	document.mainform.elements['$attribute_parname'].value = 'on'; 
+  	document.mainform.elements['$attribute_parname'].value = 'on';
   	addToSummaryPanelList('\${param_prefix}[% attributetree.name() %]__attributelist', '$attribute_parname','[%  attribute_displayname.replace("'", "&lsquo;") %]'); 
   }
   else

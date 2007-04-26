@@ -1,4 +1,3 @@
-
 =head1 NAME
 
 BioMart::Web - Class for handling incoming BioMart web-requests
@@ -321,8 +320,17 @@ sub _new
 	# since CGI::Session can take our CGI object  (or create its own on the fly) and 
 	# grab the session ID parameter. We like however to have the ID in the URL.
 	my $self_url     = $cgi->self_url();
+	
+	# see if the call is sent by JS, remove the trailing identity of this call
+	$self_url =~ s/(__countByAjax|__resultsByAjax)//;
+	
 	my $full_url     = $cgi->url(-full => 1);
 	my ($session_id) = $self_url =~ m{$full_url/([^/\?]+)}xms;
+	
+#	$logger->warn("SELF URL:\n", $self_url);
+#	$logger->warn("FULL URL:\n", $full_url);
+#	$logger->warn("SESSION ID:\n", $session_id);
+	
 	$session_id    ||= "foobar"; # needed to force new-session in constructor below
 	
 	# Delete old sessions.
@@ -367,10 +375,11 @@ sub _new
 	    $logger->debug("Creating new session and rewriting URL to ".$full_url.'/'.$session->id().", then redirecting");
 	    print $cgi->redirect(-uri=>$full_url.'/'.$session->id(),
 	    		 -status=>"301 Moved Permanently");
+	    
 	    return;
 	}
 	else {
-	    $logger->debug("Restoring existing session ", $session->id());
+	    $logger->warn("Restoring existing session ", $session->id());
 	}
 	
         # NOTE TO SELF: How to handle permanent vs temporary users? Tmp-users only for now, but make 
@@ -415,8 +424,8 @@ sub _new
             $cgi->delete($file_param);
         }
 
-        # Save all request parameters in the simplest CGI::Session manner. The darn module works
-	# beatifully, I gotta say!
+		# Save all request parameters in the simplest CGI::Session manner. The darn module works
+		# beautifully, I gotta say!
         $logger->debug("Saving parameters to session.\n");
 
 	# added this as now turned off checkboxes have no CGI param rather
@@ -1124,34 +1133,61 @@ sub filterDisplayType
 	$self->set_errstr(''); # Reset errstring, might be some leftover from previous request.	
 
 	# Retrieve session information
-	my $session = $self->restore_session($CGI) || return;	
-	
-	# Unset any validation errors.
+	my $session = $self->restore_session($CGI) || return;	    
+    
+    # Unset any validation errors.
 	$session->clear("__validationError");
 
 	my $form_action = $CGI->url(-absolute => 1) . '/' . $session->id();
 	$logger->is_debug() 
-	    and $logger->debug("Incoming CGI-params:\n",Dumper(\%{$CGI->Vars()}));
-
-	#-------------------------------------------------------------------------
-	#--------- TO HANDLE URL REQUEST specially for ensembl ContigView etc etc
-	## testing if its  a URL request, then need to temper the session object to make it look alike of URL request	
-	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/main_SESSION");
-	#print STDME "\nINCOMING SESSION PARAMS: \n ", Dumper($session);
-	#close(STDME);
-
+	    and $logger->warn("Incoming CGI-params:\n",Dumper(\%{$CGI->Vars()}));
+		
+	#------------------------------------------------------------------------
+	# TO HANDLE URL REQUEST specially for ensembl ContigView etc etc
+	# testing if its  a URL request, then need to temper the session object 
+	# to make it look alike of URL request		
+	#------------------------------------------------------------------------
 	if($session->param("url_VIRTUALSCHEMANAME") ||  $session->param("url_ATTRIBUTES"))
 	{	my $returnVal = $self->handleURLRequest($session);
-		return if ($returnVal eq 'exit'); ## exception thrown				
+		return if ($returnVal eq 'exit'); ## exception thrown	
+	}
+
+	#------------------------------------------------------------------------
+	# if its a count/Results request, only save the session, and go back sending
+	# nothing back to the target = 'hiddenIFrame'
+	# for javascript to access the updated session, the form needs to be submitted
+	# and the target should be some sort of dummyTarget so the actual window stays
+	# as it was with out getting updated
+	#------------------------------------------------------------------------
+	my $returnaAfterSave = 0;
+	if (($CGI->Vars()->{'countButton'}) && $CGI->Vars()->{'countButton'} eq '5')
+	{	
+		$CGI->Vars()->{'countButton'} = '0';
+		$returnaAfterSave = 1;
+		## sending the results back in HTML formatting with html, body div tags is important
+		## otherwise Safari doesnt call onload() of hiddenIFrame
+		print "<html><body><div id =\"countDivIFrameId\" style=\"display:none;\">ToCountHiddenIFrame</div></body></html>";
 	}
 	
-	#-------------------------------------------------------------------------
-
+	if (($CGI->Vars()->{'resultsButton'}) && $CGI->Vars()->{'resultsButton'} eq '5')
+	{	
+		$CGI->Vars()->{'resultsButton'} = '0';
+		$returnaAfterSave = 1;
+		## sending the results back in HTML formatting with html, body div tags is important
+		## otherwise Safari doesnt call onload() of hiddenIFrame
+		print "<html><body><div id =\"resultsDivIFrameId\" style=\"display:none;\">ToResultsHiddenIFrame</div></body></html>";
+	}
+	
 	# Save parameters in this request to session, where they are combined with other
 	# parameters from (potential) previous requests. Combined parameters are required
 	# from here on, to build the full Mart query and more.
 	$self->save_session($session, $CGI);
-
+	return if ($returnaAfterSave);
+	
+	# determine if its a count request by JS	
+	$session->param('countButton', '1')  if ($CGI->self_url() =~ m/__countByAjax\z/) ;
+	$session->param('resultsButton', '1')  if ($CGI->self_url() =~ m/__resultsByAjax\z/) ;
+		
 	my( $def_schema, $def_db, $def_ds, $def_ds_OBJ);
 	my $reverseName = 0;# Incase of Compara Menus, determines whether its a dataset as in DB or its a dataste with reverse naming convention	
 	#======================================
@@ -1470,6 +1506,12 @@ sub filterDisplayType
 	my $preView_formatter_name;
 	my $exportView_formatter_name;
 	my $noFilter = "";
+	my $countStringForJS="";
+	my $all_formatters="";
+
+	# Turn on/off background jobs option in interface.
+	my %backgroundSettings = $self->getSettings('background');
+	$session->param('__enable_background', ($backgroundSettings{'enable'} eq 'yes') ? 1 : 0);
 
 	foreach my $dataset_name(@dataset_names) {
 	    
@@ -1525,16 +1567,17 @@ sub filterDisplayType
 		if (@dataset_names_in_query == 1)
 		{
 			my $atttree = $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->getAttributeTreeByName($attributepage);
-			# || BioMart::Exception::Configuration->throw("Can't find attpage $attributepage for $schema_name\.$dataset_name");
+			# || BioMart::Exception::Configuration->throw("Can't find attpage $attributepage for $schema_name\.$dataset_name");			
 			if (defined($atttree))
 			{ 
-			    	$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
-			    	my @outputformats = split(',', $atttree->outFormats());
-			    	$session->param("export_outputformats", \@outputformats);		    	
-					my $preView_session_outformat = $session->param('preView_outputformat');
-					my $exportView_session_outformat = $session->param('exportView_outputformat');
-		    		foreach (@outputformats)
-		    		{
+			   	$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
+			   	my @outputformats = split(',', $atttree->outFormats());
+			   	$all_formatters = $atttree->outFormats();
+			   	$session->param("export_outputformats", \@outputformats);		    	
+				my $preView_session_outformat = $session->param('preView_outputformat');
+				my $exportView_session_outformat = $session->param('exportView_outputformat');
+			 	foreach (@outputformats)
+		    	{
 					if (defined($preView_session_outformat) && $preView_session_outformat eq $_)
 					{
 			    			$preView_formatter_name = uc($preView_session_outformat);
@@ -1543,11 +1586,25 @@ sub filterDisplayType
 					{
 			    			$exportView_formatter_name = uc($exportView_session_outformat);
 					}
-	    			}
-	    			$preView_formatter_name = uc($outputformats[0]) if (!$preView_formatter_name);
-	    			$exportView_formatter_name = uc($outputformats[0]) if (!$exportView_formatter_name);
-	    		}	    		
+	    		}
+				$preView_formatter_name = uc($outputformats[0]) if (!$preView_formatter_name);
+	    		$exportView_formatter_name = uc($outputformats[0]) if (!$exportView_formatter_name);
+	    	}
+			else
+			{
+		    	# this is just for setting the export_outputformats session param for the first time since
+				# we have AJAX working now, so this param should be set right from the beginning so the
+				# results panel menus would turn up populated right from the beginning.
+				my $allAttributeTrees = $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->getAllAttributeTrees();
+				my $atttree = $allAttributeTrees->[0]; # first one is supposed to be the default one
+				$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
+			   	my @outputformats = split(',', $atttree->outFormats());
+			   	$all_formatters = $atttree->outFormats();
+			   	$session->param("export_outputformats", \@outputformats);
+			}	    	    		
 		}
+		
+		
 		# need to calculate count here as adding attributes to query from GS would crash the counting
 		# so better do counting with out any attributes and this involves less processing by QRunner
 		if (($session->param('get_count_button') && $session->param('get_count_button') eq 'Count') # this doesnt work on Mac-safari
@@ -1577,11 +1634,20 @@ sub filterDisplayType
 			$entry_count = $qrunner_count->getCount();		
 			$filtercount_of_dataset{$dataset_name} = $entry_count || 0;
 			$session->param('filtercount_of_dataset', \%filtercount_of_dataset);	
-		    	$logger->debug("COUNT: $entry_count out of TOTAL: $total_count");
-	    	}
+	    	$logger->debug("COUNT: $entry_count out of TOTAL: $total_count");
+	    	
+			$countStringForJS .= '__' if ($countStringForJS); # used as separator for TWO DS counts 
+			$countStringForJS .= $entry_count || 0;
+			$countStringForJS .= ' / ';
+			$countStringForJS .= $total_count || 0;
+			$countStringForJS .= ' ';
+			$countStringForJS .= $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->entryLabel || 'Entries';
 
-	    	# Add filters & atts to main query as well, if any		
-	    	$query_main = $self->prepare_martquery({query      => $query_main,
+			
+	    }
+
+	    # Add filters & atts to main query as well, if any		
+	    $query_main = $self->prepare_martquery({query      => $query_main,
 						    schema     => $schema_name,
 						    dataset    => $dataset_name,
 						    filters    => $values_of_filter,
@@ -1651,12 +1717,11 @@ sub filterDisplayType
 		# Eval next line and check to see if any exception thrown. If so,
 		# return nicely with exception in session parameter.
 		my $return_after_eval = 0;
-		eval {			    
-	    		if ( ($session->param('get_results_button') && $session->param('get_results_button') eq 'Results') # this doesnt work on Mac-safari
+		eval {
+				if ( ($session->param('get_results_button') && $session->param('get_results_button') eq 'Results') # this doesnt work on Mac-safari
 	    			|| ($session->param("mart_mainpanel__current_visible_section") &&
 	    				 $session->param("mart_mainpanel__current_visible_section") eq "resultspanel") )
 			{    			
-			
 				$session->clear('get_results_button'); # don't get stuck here
 				
 
@@ -1683,9 +1748,9 @@ sub filterDisplayType
 						# change the option Menu value to 10 if it was All and then user comes back to 
 						# Atts/Filts/Ds panels and hit results again or hits the count button
 						if (!$session->param("do_export"))
-						{
+						{	
 							$session->param('export_subset', '10');
-							$export_subset = 10;
+							#$export_subset = 10;
 						}
 					}
 			    	if ($session->param('do_export') and ($export_saveto eq 'file_bg' or $export_saveto eq 'gz_bg')) {
@@ -1727,12 +1792,12 @@ sub filterDisplayType
 						
 						# Tell user where file will be.
 						$session->param("mart_mainpanel__current_visible_section","resultspanel");
-						$session->param("summarypanel__current_highlighted_branch","show_results"); 
+						$session->param("summarypanel__current_highlighted_branch","show_results");
 						$result_string = 
 						"<br/>Your results are being compiled in the background.".
 						"<br/>Your reference is $background_file.".
 						"<br/><br/>An email will be sent to you when they are ready.";
-						
+												
 						# Fork and run in background.
 	    				$SIG{CHLD} = 'IGNORE';
    						defined (my $pid = fork) or die "Cannot fork: $!\n";
@@ -1836,7 +1901,8 @@ sub filterDisplayType
 				   			} else {				   									
 								if ($formatter->isBinary()) {	
 									binmode STDOUT;						
-								}	
+								}
+								
 								$qrunner->printHeader(\*STDOUT);
 								$qrunner->printResults(\*STDOUT, $export_subset);
 								$qrunner->printFooter(\*STDOUT);
@@ -1874,7 +1940,8 @@ sub filterDisplayType
 	    							$query_main->formatter($preView_formatter_name);
 		    						$query_main->count(0);# do don't get count below
 								$qrunner->execute($query_main);
-					
+								
+								undef $export_subset if ($export_subset eq 'All');
 								# Get results
 								open(my $result_buffer, '>', \$result_string);
 								$qrunner->printHeader($result_buffer);
@@ -1896,8 +1963,8 @@ sub filterDisplayType
 			    			}
 			    												    			
 			    			# Turn on/off background jobs option in interface.
-							my %backgroundSettings = $self->getSettings('background');
-							$session->param('__enable_background', ($backgroundSettings{'enable'} eq 'yes') ? 1 : 0);
+							#my %backgroundSettings = $self->getSettings('background');
+							#$session->param('__enable_background', ($backgroundSettings{'enable'} eq 'yes') ? 1 : 0);
 			    		}
 			    	}
 			    	# END NEW CODE
@@ -1991,7 +2058,7 @@ sub filterDisplayType
 		    			
 		    		}		    		
 				#-------------------------------------------
-		    		#######------------ MULTI MENU FOR DS datastructure	
+				#######------------ MULTI MENU FOR DS datastructure	
 		    		else
 		    		{
 					$multiMenuDS = 1;
@@ -2050,10 +2117,6 @@ sub filterDisplayType
             return 0;
      }
 
-	#open(STDME, ">>/homes/syed/Desktop/temp6/biomart-perl/HEY_U_1");
-	#print STDME $reverseName ;
-	#close(STDME);
-
 	
 	my $dsOLD = $self->get_conf_Dir()."/templates/default/datasetpanel.ttc";
 	if (-e $dsOLD) {unlink $dsOLD;}
@@ -2089,20 +2152,49 @@ sub filterDisplayType
         my $PS = new BioMart::Web::PageStub( $session );
         $PS->start();
 ## End of hack
+	my $completePage = "";
 	$self->process_template( "main.tt", {
-         	session       	=> $session, 
-	       	wq            	=> $self,
-	     	form_action	=> $form_action,
-	     	sessionDBNAME	=> $dbName,
-	     	datasetOBJ	=> $def_ds_OBJ,
-		reverseNAME	=> $reverseName,
-	       	#entry_count   => $entry_count,
-	       	result_string 	=> $result_string
-   	}, \*STDOUT );
+			session       	=> $session, 
+			wq            	=> $self,
+			form_action	=> $form_action,
+			sessionDBNAME	=> $dbName,
+			datasetOBJ	=> $def_ds_OBJ,
+			reverseNAME	=> $reverseName,
+			#entry_count   => $entry_count,
+			result_string 	=> $result_string
+#   	}, \*STDOUT );
+   	}, \$completePage );
 ## E! hack
+		if ( $session->param('countButton') && $session->param('countButton') eq '1')
+		{
+			$session->param('countButton', '0') ;
+			# only countString
+			print "$countStringForJS";			
+		}
+		elsif ($session->param('resultsButton') && $session->param('resultsButton') eq '1')
+		{
+			$session->param('resultsButton', '0') ;
+			# should return 5 values
+			
+			print lc($preView_formatter_name);
+			print '____';
+			print uc($all_formatters);
+			print '____';			
+			print lc($exportView_formatter_name);			
+			print '____';
+			print uc($all_formatters);
+			print '____';
+			print $result_string;
+			# only resultsString
+		}
+		else
+		{
+			# complete HTML page as in 0.5
+			print $completePage;
+		}
         $PS->end();
 ## End of hack
-        return;
+
     }					  
 #}
 1;

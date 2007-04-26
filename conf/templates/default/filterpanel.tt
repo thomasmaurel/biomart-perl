@@ -16,7 +16,10 @@
 [* param_prefix = param_prefix || '' # just so we don't get undef-errors if no prefix is specified *]
 [* js_session_value_of_filtermenu = {} *]
 
-<div id="[% dataset.name %]__filterpanel" style="display: none">
+<div id="[% dataset.name %]__filterpanel" style="display: none; width:100%; height:100%; overflow:auto; position: relative;">
+<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+<tr>
+<td width="100%" height="100%" valign="top" align="left">
 
 <div class="mart_filterpanel">
 
@@ -162,4 +165,9 @@ for(var pa_menuname in \${param_prefix}pushActionsOfFiltermenu) {
 
 </div>
 
+</td>
+</tr>
+</table>
+
 </div>
+

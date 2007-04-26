@@ -81,8 +81,7 @@ function updateMenuPushactions(menu, pushActionsOfMenu, prevValueOfMenu) {
 
 function changeRadioStatus (siblingNodes, thisName,  attListName)
 {
-        alert ('here ahahah');
-        for(var i=0; i<siblingNodes.length; i++)
+	for(var i=0; i<siblingNodes.length; i++)
         {
                 if (siblingNodes[i] == thisName) continue;
                 if(siblingNodes[i].tagName == 'input' && siblingNodes[i].type == 'hidden' && siblingNodes[i].value == 'on')
@@ -160,7 +159,22 @@ function resetResultsPanel() {
     var resultsPanelElt = document.getElementById('resultspanel');
     if(resultsPanelElt) {
 	//alert('Removing resultspanel node '+resultsPanelElt);
-	resultsPanelElt.parentNode.removeChild(resultsPanelElt);
+	
+	//	resultsPanelElt.parentNode.removeChild(resultsPanelElt);
+	document.getElementById('resultsTableId').innerHTML = '';
+	
+	// set the exportsubset menu to 10 if its set to 'All'
+	var subsetMenu = getElementsByName_local('export_subset');
+	for (var i=0; i<subsetMenu.length; i++)
+	{
+		if (subsetMenu[i].value == 'All')
+		{
+			subsetMenu[i].value = '10';
+		}
+	}
+	
+	
+	
 	visibility('get_results', 'show');
 	visibility('show_results', 'hide');
     }
@@ -180,51 +194,49 @@ in the list itself. Items only get added to the list if they aren't on it alread
 
 */
 function addToSummaryPanelList (listContainerId, name, displayName, value) {
-    resetResultsPanel(); // existing results no longer valid, as user changed query parameters
+	resetResultsPanel(); // existing results no longer valid, as user changed query parameters
+
+	// alert('Adding item '+name+' Container: '+listContainerId+' DISPL: ' + displayName +' VALUE: ' + value );
+
+	// Get element containing the list we want to update
+	var listContainerElt = document.getElementById(listContainerId);
+
+	// Check if the 'no items configured' dummy listitme is present, remove if needed
+	var spans = listContainerElt.getElementsByTagName('span');
+	if(spans.length > 1) {
+		//alert('Removing existing count-note w/ innerHTML='+spans[1].innerHTML);
+		listContainerElt.removeChild(spans[1]);
+	}
+
+	var firstDivChildElt = listContainerElt.getElementsByTagName('div')[0];
     
-    // alert('Adding item '+name+' Container: '+listContainerId+' DISPL: ' + displayName +' VALUE: ' + value );
-
-    // Get element containing the list we want to update
-    var listContainerElt = document.getElementById(listContainerId);
-
-    // Check if the 'no items configured' dummy listitme is present, remove if needed
-    var spans = listContainerElt.getElementsByTagName('span');
-    if(spans.length > 1) {
-	//alert('Removing existing count-note w/ innerHTML='+spans[1].innerHTML);
-	listContainerElt.removeChild(spans[1]);
-    }
-
-
-    var firstDivChildElt = listContainerElt.getElementsByTagName('div')[0];
-    
-    
-    if(firstDivChildElt && firstDivChildElt.innerHTML.match(/None selected/)) {
-	//alert('got dummy no-configured child div in container, removing: '+firstDivChildElt.innerHTML);
-	listContainerElt.removeChild(firstDivChildElt);
-    }
+	if(firstDivChildElt && firstDivChildElt.innerHTML.match(/None selected/)) {
+		//alert('got dummy no-configured child div in container, removing: '+firstDivChildElt.innerHTML);
+		listContainerElt.removeChild(firstDivChildElt);
+	}
 
     // Check if item is already on the list, in which case it doesn't need to be added!
     //alert('<input> elts in container='+listContainerElt.getElementsByTagName('input'));
-    var existingItemElt = findElementWithValue(listContainerElt.getElementsByTagName('input'), name);
-    if(existingItemElt) {
-	//alert('Item '+name+' is already on list '+listContainerId+', removing before re-adding');
-	listContainerElt.removeChild(existingItemElt.parentNode);
-    }
+	var existingItemElt = findElementWithValue(listContainerElt.getElementsByTagName('input'), name);
+	if(existingItemElt) {
+		//alert('Item '+name+' is already on list '+listContainerId+', removing before re-adding');
+		listContainerElt.removeChild(existingItemElt.parentNode);
+	}
 	
     // Add  entry to the visible list as div, containing both visible display namd and hidden param
     // The item needs some onclick actions to highlight the corresponding filter-container on main panel
     var listItem  = document.createElement("div");
     
-    if(value) {
-	listItem.innerHTML = displayName + ': '+value;
-    }
-    else {
-	listItem.innerHTML = displayName;
-    }
-	
-    	//var first_dataset = document.mainform.datasetmenu_3.value;
-    	var first_dataset;
-    	var dsNames = getElementsByName_local('dataset');
+	if(value) {
+		listItem.innerHTML = displayName + ': '+value;
+	}
+	else {
+		listItem.innerHTML = displayName;
+	}
+		
+	//var first_dataset = document.mainform.datasetmenu_3.value;
+	var first_dataset;
+	var dsNames = getElementsByName_local('dataset');
 	if(dsNames)
 	{
 		first_dataset = dsNames[0].value;
@@ -243,8 +255,7 @@ function addToSummaryPanelList (listContainerId, name, displayName, value) {
 		}
     }
     else 
-    {
-	
+    {	
 		if(value)
 		{
 			listItem.className = 'mart_summarypanel_listitem4';
@@ -252,22 +263,15 @@ function addToSummaryPanelList (listContainerId, name, displayName, value) {
 		else
 		{
 			listItem.className = 'mart_summarypanel_listitem2';
-		}
-    
+		}    
     }
 
     
 	parentPanelId = listContainerId.replace(/list$/,'panel');
-    	//alert("Showing section w/ ID "+parentPanelId+' on main panel');
-	// highlighting with yellow box and changing current visible section logic
-    	//listItem.onclick   = function() {
-	//showPanelHideSiblings(parentPanelId);
-	//highlightPanelSection(name+'__container'); 
-    	//}
-    	
-    //alert("LIST ITEM = "+listItem.className + "LIST CONTAINER ELT = "+listContainerElt.id);
-    	listContainerElt.appendChild(listItem);
 
+	//alert("LIST ITEM = "+listItem.className + "LIST CONTAINER ELT = "+listContainerElt.id);
+	listContainerElt.appendChild(listItem);
+	
     // Add hidden parameter entry to div, to get list entry into session.
     addHiddenFormParam(listContainerId, listItem, name);
 }
@@ -284,40 +288,33 @@ are removed in the operation.
 
 */
 function removeFromSummaryPanelList(listContainerId,name) {
-    	//alert("Removing 1 "+name+" from summary list "+listContainerId);
-    	resetResultsPanel(); // existing results no longer valid, as user changed query parameters
-    	//alert("Removing 2 "+name+" from summary list "+listContainerId);
+	//alert("Removing 1 "+name+" from summary list "+listContainerId);
+	resetResultsPanel(); // existing results no longer valid, as user changed query parameters
+	//alert("Removing 2 "+name+" from summary list "+listContainerId);
 	// Get element containing the list we want to update
-    	var listContainerElt = document.getElementById(listContainerId);
-
+	var listContainerElt = document.getElementById(listContainerId);
 	// Iterate through list until we find the input-param we want, then remove the div it lives in
-    	var elt2remove = findElementWithValue(listContainerElt.getElementsByTagName('input'), name);
-    	if(elt2remove != false) 
-    	{
-		listContainerElt.removeChild(elt2remove.parentNode);
-    	}
-    
-    	// Check if this action removed the last entry in a set of <input> elements. If so, add
-    	// a dummy element w/ whitespace to document, to get around a problem with the session-stored
-    	// value getting 'stuck'.
-    	if(listContainerElt.getElementsByTagName('input').length == 0) 
+	var elt2remove = findElementWithValue(listContainerElt.getElementsByTagName('input'), name);
+ 	if(elt2remove != false) 
 	{
-		//alert('Ooops, removed last input-elt in list. Adding dummy elt');
-	
-		//addHiddenFormParam(listContainerId, listContainerElt, ' ');
-		//addToSummaryPanelList(listContainerId,"dummy","[None selected]" );
-
+		listContainerElt.removeChild(elt2remove.parentNode);
+	}
+    
+	// Check if this action removed the last entry in a set of <input> elements. If so, add
+	// a dummy element w/ whitespace to document, to get around a problem with the session-stored
+	// value getting 'stuck'.
+	if(listContainerElt.getElementsByTagName('input').length == 0) 
+	{
 		var listItem  = document.createElement("div");
-		listItem.innerHTML = "[None selected]";
-		//var first_dataset = document.mainform.datasetmenu_3.value;
+		listItem.innerHTML = "[None selected]";		
+		
 		var first_dataset;
-    		var dsNames = getElementsByName_local('dataset');
+		var dsNames = getElementsByName_local('dataset');
 		if(dsNames)
 		{
 			first_dataset = dsNames[0].value;
 			//alert(first_dataset);
-		}
-	
+		}	
 	
 		if (listContainerId.match(first_dataset)) 
 		{
@@ -329,8 +326,8 @@ function removeFromSummaryPanelList(listContainerId,name) {
 			{
 				listItem.className = 'mart_summarypanel_listitem';
 			}			
-    		}
-	    	else 
+		}
+	    else 
 		{
 			if (name.match(/.*?__filter.*/))  	// its last filter
 			{
@@ -343,8 +340,8 @@ function removeFromSummaryPanelList(listContainerId,name) {
 		}
 		listContainerElt.appendChild(listItem);
 		addHiddenFormParam(listContainerId, listItem, 'dummy'); ///using the term dummy instead of mummi's blank space, to make it clear enough
-	//	alert("Removing 3 "+name+" from summary list "+listContainerId);
-    }
+		//	alert("Removing 3 "+name+" from summary list "+listContainerId);
+	}
 }
 
 /*
@@ -362,40 +359,22 @@ function addHiddenFormParam(paramName, parentElt, paramValue) {
     
 	var existingParamElts = getElementsByName_local(paramName);
 	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
-    	for(var i=0; i<loop_length; i++) 
-    	{
+	for(var i=0; i<loop_length; i++) 
+	{
 		if(existingParamElts[i].value == paramValue) 
 		{
-	    		//alert('param name '+paramName+' w/ value '+paramValue+' already exists, not adding a new one');	    
-	    		return;
+    		//alert('param name '+paramName+' w/ value '+paramValue+' already exists, not adding a new one');	    
+    		return;
 		}
-    	}
-
-/* SOLUTION 1 that works
-    var existingParamElts = document.getElementsByTagName("input");
-    for(var j=0; j<existingParamElts.length; j++) 
-    {
-    		if(existingParamElts[j].getAttribute("name") == paramName) 
-    		{
-    			//alert('NAME: '+paramName+ '------ VALUE: ' +existingParamElts[j].value + ' AND'+ paramValue);
-    			if(existingParamElts[j].value == paramValue)
-    			{
-    				//alert('ALREADY EXISTS, not adding');
-    				return;
-    			}
-    		}
-    }
-    
-*/  
- 
-    // Then create the param and append to the 
-    //alert('param name '+paramName+' w/ value '+paramValue+' already exists, not adding a new one');	    
+	}
+	// Then create the param and append to the 
+	//alert('param name '+paramName+' w/ value '+paramValue+' already exists, not adding a new one');	    
 	var hiddenParam = document.createElement("input");
 	hiddenParam.type  = "hidden";
-   	hiddenParam.name  = paramName;
+	hiddenParam.name  = paramName;
 	if(paramValue) { hiddenParam.value = paramValue; }
-//	alert(hiddenParam.name);
-     parentElt.appendChild(hiddenParam);	
+	//	alert(hiddenParam.name);
+	parentElt.appendChild(hiddenParam);	
 }
 
 /*
@@ -409,24 +388,22 @@ it is already present in the form it is replaced.
 
 */
 function addOrReplaceHiddenFormParam(paramName, parentElt, paramValue, oldParamValue) {
-    // First make sure this name doesn't exist already 
-    var existingParamElts = getElementsByName_local(paramName);
-    var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
-    if (loop_length > 0) 
-    {
-    		// Already exists? Replace.
-	    	for(var i=0; i<loop_length; i++) 
-	    	{
+	// First make sure this name doesn't exist already 
+	var existingParamElts = getElementsByName_local(paramName);
+	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
+	if (loop_length > 0) 
+	{
+		// Already exists? Replace.
+		for(var i=0; i<loop_length; i++) 
+		{
 			//alert(i+': Checking hidden param '+paramName+', value '+existingParamElts[i].value);
 			// Might want to only remove params with a certain value, not all of them
 			if(oldParamValue && existingParamElts[i].value != oldParamValue) 
-			{
-		    		continue;
-			}
-    			existingParamElts[i].value = paramValue;
-		    	return;
-   		}
-   	}
+			{	continue;	}
+			existingParamElts[i].value = paramValue;
+			return;
+		}
+	}
 	// Doesn't already exist? Add.
 	addHiddenFormParam(paramName, parentElt, paramValue);        
 }
@@ -445,26 +422,25 @@ function removeHiddenFormParam(paramName, paramValue) {
 
 	//alert('removing    ' + paramName);
 	var existingParamElts = getElementsByName_local(paramName);
-    	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
-	
+	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
+
 	for(var i=0; i<loop_length; i++) 
-    	{
+	{
 		if (!paramValue) // for removing 'dataset', when we change e.g schema menu, or datasets
 		{
 			//alert ('DS removal');
 			existingParamElts[i].parentNode.removeChild(existingParamElts[i]);
 		}
-		
 		// Might want to only remove params with a certain value, not all of them
 		if (paramValue && existingParamElts[i].value == paramValue) // for removing filts
-    		{
+		{
 			//alert ('filts removal');
-    			existingParamElts[i].parentNode.removeChild(existingParamElts[i]);
-    			//i--;  // Array will have shuffled to the left by one. have problem with IE/Safari here with i--
+			existingParamElts[i].parentNode.removeChild(existingParamElts[i]);
+   			//i--;  // Array will have shuffled to the left by one. have problem with IE/Safari here with i--
    			//loop_length--; // Array will have reduced in length by one. have problem with IE/Safari here l_l--
-    			//return;
-    		}    		
-    }        
+   			//return;
+		}    		
+	}        
 }
 
 /*
@@ -481,27 +457,41 @@ as the said call, doesnt seem to be working for IE
 function getElementsByName_local(paramName)
 {
 	var existingParamElts = document.getElementsByTagName("input");
-    	var arr = new Array();
-    	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
-    	for(i = 0,iarr = 0; i < loop_length; i++) 
-    	{
-          if (existingParamElts[i].getAttribute("name") == paramName)
+    var arr = new Array();
+    var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
+    for(i = 0,iarr = 0; i < loop_length; i++) 
+    {
+		if (existingParamElts[i].getAttribute("name") == paramName)
 		{
 			arr[iarr] = existingParamElts[i];
-               iarr++;
-          }
+			iarr++;
+		}
 	}
+	
 	// Textareas are not inputs, unfortunately, so we have to search for them separately.
 	existingParamElts = document.getElementsByTagName("textarea");
-    	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
-    	for(i = 0,iarr = 0; i < loop_length; i++) 
-    	{
-          if (existingParamElts[i].getAttribute("name") == paramName)
+    var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
+   	for(i = 0,iarr = 0; i < loop_length; i++) 
+   	{
+		if (existingParamElts[i].getAttribute("name") == paramName)
 		{
 			arr[iarr] = existingParamElts[i];
-               iarr++;
-          }
+			iarr++;
+		}
 	}
+	
+	// Select type input menus also included now
+	existingParamElts = document.getElementsByTagName("select");
+	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
+    for(i = 0,iarr = 0; i < loop_length; i++) 
+    {
+		if (existingParamElts[i].getAttribute("name") == paramName)
+		{
+			arr[iarr] = existingParamElts[i];
+			iarr++;
+		}
+	}
+	
 	return arr;
 }
 
@@ -766,14 +756,21 @@ Iterates through all datasetpanel divs in mainpanel and checks ID & hidden-state
 
 */
 function showPanelHideSiblings(panelId) {
-//    alert('Gotta show target panel id='+panelId);
+	//alert('Gotta show target panel id='+panelId);
     targetPanelDiv = document.getElementById(panelId);
-    if(!targetPanelDiv) {
-	return false;
+    if(!targetPanelDiv) {		
+		return false;
     }
 
     parentPanelDiv = targetPanelDiv.parentNode;
-    
+//    if(!parentPanelDiv.id) { parentPanelDiv = targetPanelDiv.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode; }
+ 
+    //alert('PARent is 1:  '+targetPanelDiv.parentNode.parentNode.id);
+   // alert('PARent is 2:  '+targetPanelDiv.parentNode.parentNode.parentNode.id);
+   // alert('PARent is 3:  '+targetPanelDiv.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+
+//   	alert(parentPanelDiv.id);
+        
     siblingDivs = parentPanelDiv.childNodes; // get all sibling nodes
 
     // Hide all sibling div's
@@ -784,11 +781,11 @@ function showPanelHideSiblings(panelId) {
 	turnOff(siblingDivs[i]);
     }
     // Then show just the target panel
-    // alert('Showing dsetpanel div '+targetPanelDiv+', id='+targetPanelDiv.id);
+
     turnOn(targetPanelDiv);
     
     // Update the hidden form-param to the ID of the currently visible panel div
-//    alert('Updating current visible section ID for parent panel '+parentPanelDiv.id);
+	// alert('Updating current visible section ID for parent panel '+parentPanelDiv.id);
     document.mainform[parentPanelDiv.id+'__current_visible_section'].value = panelId;
    
 }
@@ -1427,15 +1424,28 @@ Set all elements of a certain CSS class to a hidden state.
 =cut
 
 */
-function setVisibleStatus() {
-    var spans=document.getElementsByTagName("div");
-    for (var i=0; i < spans.length; i++){
-	if (spans[i].className=="ctl_hidden" || spans[i].className=="el_hidden" ) {
-	    spans[i].style.display = "none";
+function setVisibleStatus() 
+{
+	var spans=document.getElementsByTagName("div");
+	for (var i=0; i < spans.length; i++){
+		if (spans[i].className=="ctl_hidden" || spans[i].className=="el_hidden" ) {
+			spans[i].style.display = "none";
+		}
 	}
-    }
-    
-    //alert('FROM ONLOAD OF BODY: SETVISIBLE STATUS');
+	
+	var browserInfo = new Array();
+	browserInfo = detectBrowserProperties();
+	if(browserInfo[0] == "Safari")
+	{	
+		document.getElementById('countIFrameId').style.visibility = "hidden";
+		document.getElementById('resultsIFrameId').style.visibility = "hidden"; 
+	}
+	else
+	{
+		document.getElementById('countIFrameId').style.display = "none";
+		document.getElementById('resultsIFrameId').style.display = "none";
+	}
+	
 }
 
 /*
@@ -1499,16 +1509,16 @@ Checks or unchecks a checkbox with the ID provided.
 
 */
 function check(eltId, state) {
-    var checkboxElt = document.getElementById(eltId);
-    if(checkboxElt && checkboxElt.type == 'checkbox') {
-	//alert('setting checkbox '+checkboxElt.name+' to state '+state);
-	if(!state) {
-	    checkboxElt.checked = false;
+	var checkboxElt = document.getElementById(eltId);
+	if(checkboxElt && checkboxElt.type == 'checkbox') {
+		//alert('setting checkbox '+checkboxElt.name+' to state '+state);
+		if(!state) {
+			checkboxElt.checked = false;
+		}
+		else {
+			checkboxElt.checked = 'checked';
+		}
 	}
-	else {
-	    checkboxElt.checked = 'checked';
-	}
-    }
 }
 
 /*
@@ -1569,7 +1579,7 @@ function detectBrowserProperties()
 	},
 	dataBrowser: [
 		{
-			string: navigator.vendor,
+			string: navigator.userAgent,
 			subString: "Apple",
 			identity: "Safari"
 		},
@@ -1764,6 +1774,166 @@ function setAttFiltMouseOverStyle(eltId) {
 
 }
 
+
+function getCountAjax()
+{
+	if(document.mainform.countButton.value == 1)
+	{
+		// so it doesnt get stuck with results options
+		document.mainform.countButton.value = 0;
+		doAjaxMagic('countByAjax');
+	}
+}
+function pasteCount(returnString)
+{
+	// incase of two dataset query
+	// the count string is separated by __
+   	var arr = new Array();
+   	arr = returnString.split('__');
+   	for (var i=0; i < arr.length; i++)
+   	{
+   		//alert(arr[i]);
+   		var dsNumber = i+1;
+   		document.getElementById('summarypanel_filter_count_'+dsNumber).innerHTML = arr[i];
+   	}
+}
+
+function getResultsAjax()
+{
+	if(document.mainform.resultsButton.value == 1)
+	{
+		// so it doesnt get stuck with results options
+		document.mainform.resultsButton.value = 0;
+		doAjaxMagic('resultsByAjax');
+	}
+}
+
+function pasteResults(returnString)
+{
+	// alert(returnString);
+	
+	// Need to split the results string into 5 PORTIONS
+	// 1. preView Formatter Selected    2. all preView
+	// 3. exportView Formmater Selected 4. all exportView Formatters
+	// 5. results to be pasted
+	// we need to do this as e.g different Att Pages may have different formatters ENS. seq, feature etc
+	var preViewMenu;
+	var exportViewMenu;
+	var preView_formatters;
+	var exportView_formatters;
+	var j=0; // for option count index
+	var arr = new Array();
+	
+	arr = returnString.split('____');
+	
+	// [PREVIEW MENU] remove all existing options 
+	document.mainform.preView_outputformat.length = 0;
+	// [PREVIEW MENU] add all formatters as options
+	preView_formatters = new Array();
+	preView_formatters = arr[1].split(',');
+	for (var i = 0; i < preView_formatters.length; i++)
+	{
+		if(preView_formatters[i] != 'TXT' &&  preView_formatters[i] != 'XLS') {
+			if(arr[0].toUpperCase() == preView_formatters[i]){
+				document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase(), true, true);
+			}
+			else {
+				document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase());
+			}
+		}
+	}
+	
+	
+	j=0;
+	// [EXPORTVIEW MENU] remove all existing options 
+	document.mainform.exportView_outputformat.length = 0;
+	// [EXPORTVIEW MENU] add all formatters as options
+	exportView_formatters = new Array();
+	exportView_formatters = arr[3].split(',');	
+	for (var i = 0; i < exportView_formatters.length; i++)
+	{
+		if(preView_formatters[i] != 'TXT') {
+			if(arr[2].toUpperCase() == exportView_formatters[i]){
+			document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase(),true,true);
+			}
+			else {
+				document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase());
+			}
+		}
+	}
+
+	document.getElementById('resultsTableId').innerHTML = arr[4];
+	
+}
+
+function doAjaxMagic(toDo)
+{
+	var httpRequest;
+	if (window.ActiveXObject) 
+	{ // IE
+		try {
+			httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+		} 
+		catch (e) {
+			try {
+				httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+			} 
+			catch (e) {
+             	alert('cant declare httpREQUEST OBJECT');
+			}
+		}
+	} 
+	else if (window.XMLHttpRequest) 
+	{ 	// Mozilla, Safari, ...
+		httpRequest = new XMLHttpRequest();
+		if (httpRequest.overrideMimeType) {
+       		httpRequest.overrideMimeType('text/xml');
+           // See note below about this line
+		}
+	}
+
+   	if (!httpRequest) {
+		alert('Giving up :( Cannot create an XMLHTTP instance');
+			return false;
+	}
+	
+	httpRequest.onreadystatechange = function() { alertContents(httpRequest, toDo); };
+	var targetURL = document.mainform.action+'__'+toDo;
+	httpRequest.open('GET', targetURL, true);
+	// this is very important, if you send the request with dateTime stamps,
+	// Mr. IE 7 doesnt like you at all
+	httpRequest.setRequestHeader("If-Modified-Since","Sat, 1 Jan 2000 00:00:00 GMT");
+	d = new Date();
+	t = d.getTime();
+	thetimestring=t.toString(10);
+	httpRequest.send(thetimestring);
+	//httpRequest.send(null);
+}
+
+function alertContents(httpRequest, toDo) {
+	if (httpRequest.readyState == 4) {
+		if (httpRequest.status == 200) {
+			//alert(httpRequest.responseText);
+			var returnString = httpRequest.responseText;
+			
+			if (toDo == 'countByAjax')
+			{
+				pasteCount(returnString);
+			}
+			if (toDo == 'resultsByAjax')
+			{
+				pasteResults(returnString);
+			}
+			// return returnString;
+			// cannot use return statement as it comes here later while the lines of code
+			// after the line that is expecting retrunString might gets executed before 
+			// this statement returns anything. strange synchornisity of javaScript.		
+		}
+		else {
+     		alert('There was a problem with the request.');
+		}
+	}
+}
 
 /*
 =head1 CVSINFO
