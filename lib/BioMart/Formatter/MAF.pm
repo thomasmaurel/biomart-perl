@@ -347,7 +347,7 @@ sub preProcessRow2{
 #--------------------------------------------
 sub _printHeader {
     my $date = localtime();
-    my $p1 = sprintf "##maf version=1 Ensembl multiple alignment\n";
+    my $p1 = sprintf "##maf version=1 source=ensembl\n";
     my $p2 = sprintf "#".localtime()."\n\n";
     
     #print $p1;
