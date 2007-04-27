@@ -35,6 +35,7 @@ use Data::Dumper;
 use File::Path;
 use CGI::Session;
 use CGI::Session::Driver::db_file; # required by CGI::Session
+use DBI;
 use File::Basename qw(dirname basename);
 use List::MoreUtils qw/apply uniq/;
 use Number::Format qw(:subs);
@@ -327,20 +328,52 @@ sub _new
 	my $full_url     = $cgi->url(-full => 1);
 	my ($session_id) = $self_url =~ m{$full_url/([^/\?]+)}xms;
 	
-#	$logger->warn("SELF URL:\n", $self_url);
-#	$logger->warn("FULL URL:\n", $full_url);
-#	$logger->warn("SESSION ID:\n", $session_id);
-	
 	$session_id    ||= "foobar"; # needed to force new-session in constructor below
 	
-	# Delete old sessions.
-    CGI::Session->find( sub {} );
+	# Delete old sessions.	
+	CGI::Session->find( sub {} );
+	my $session;
+    	my %sessions = $self->getSettings('sessions');
+
+	# Retrieve existing session if possible. CGI::Session will create new session for us if necessary
+	if($sessions{'driver'} eq 'files') # flat files
+	{
+		$session = CGI::Session->new('driver:file', $session_id,
+			{ Directory=>$self->get_session_dir() })
+             || BioMart::Exception::Session->throw(CGI::Session->errstr);
+	}
+	elsif ($sessions{'driver'} eq 'mysql')
+	{
+		my $dsn = $sessions{'dsn'};
+		my $user = $sessions{'user'};
+		my $pass = $sessions{'pass'};
+		my $dbh = DBI->connect($dsn, $user, $pass, {'RaiseError' => 1});
+		$session = CGI::Session->new("driver:MySQL", $session_id, {Handle=>$dbh})
+			|| BioMart::Exception::Session->throw(CGI::Session->errstr);
+		$dbh->disconnect();		
+	}
+	elsif ($sessions{'driver'} eq 'oracle')
+	{
+		my $dsn = $sessions{'dsn'};
+		my $user = $sessions{'user'};
+		my $pass = $sessions{'pass'};
+		my $dbh = DBI->connect($dsn, $user, $pass);
+		$session = CGI::Session->new("driver:Oracle", $session_id, {Handle=>$dbh})
+			|| BioMart::Exception::Session->throw(CGI::Session->errstr);
+		$dbh->disconnect();	
+	}
+	elsif ($sessions{'driver'} eq 'postgres')
+	{
+		print "POSTGRES DRIVER";
+	}
+	else # default to BerkeleyDB
+	{
+		$session = CGI::Session->new('driver:db_file', $session_id,
+		{ FileName=>$self->get_session_dir()."/cgisessions.db" })
+			|| BioMart::Exception::Session->throw(CGI::Session->errstr);	
+	}
 	
-        # Retrieve existing session if possible. CGI::Session will create new session for us if necessary
-        my $session = CGI::Session->new('driver:db_file', $session_id,
-					{ FileName=>$self->get_session_dir()."/cgisessions.db" })
-	    || BioMart::Exception::Session->throw(CGI::Session->errstr);
-     	
+	
 	if($session->is_new()) {
    		#### The reason we do this is taht when there doesnt find an existing session to be restored, a
    		#### new session gets created and program exists and comes back and again and tries to restore again,
@@ -361,7 +394,6 @@ sub _new
 		}
 		
     	# Expiry.
-    	my %sessions = $self->getSettings('sessions');
     	$session->expire($sessions{'expire'});
     	# Aliases.
     	my %aliases = $self->getSettings('aliases');
@@ -372,7 +404,7 @@ sub _new
     	$session->param("__schema",$aliases{'schema'});
     	$session->param("__Schema",$aliases{'Schema'});
 	    # Rewrite URL if required, so session ID is part of URL string from now on (see note above). 
-	    $logger->debug("Creating new session and rewriting URL to ".$full_url.'/'.$session->id().", then redirecting");
+	    $logger->warn("Creating new session and rewriting URL to ".$full_url.'/'.$session->id().", then redirecting");
 	    print $cgi->redirect(-uri=>$full_url.'/'.$session->id(),
 	    		 -status=>"301 Moved Permanently");
 	    
