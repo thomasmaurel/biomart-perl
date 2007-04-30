@@ -50,6 +50,7 @@ use warnings;
 use Readonly;
 use Spreadsheet::WriteExcel;
 use Spreadsheet::WriteExcel::Big;
+use Digest::SHA qw (sha256_base64);
 
 # Extends BioMart::FormatterI
 use base qw(BioMart::FormatterI);
@@ -111,10 +112,6 @@ sub printResults {
 
 	my @displayNames = $self->getTextDisplayNames();
 
-    # Enclose non-numeric values in double quotes & escape the quotes already in them
-    #open (STDME, ">>/homes/syed/Desktop/temp4/biomart-web/lib/BioMart/Formatter/hiya.txt");
-    #print STDME "\n====================================================\n";
-    
     my $formatDisplay = $self->get('workbook')->addformat();
     $formatDisplay->set_bold();
     $formatDisplay->set_align('centre'); 
@@ -122,10 +119,9 @@ sub printResults {
     $formatDisplay->set_color('white');    
     my $width;
     foreach(@displayNames) {
-		#print STDME $_, "\t ***** ", length($_), " ^^^\tLINES: ", $lines;
 		
 		$width->{$self->get('columns')} = length($_) * 1.2 ;
-		#print STDME $width->{$self->get('columns')}, " *******\t";
+
 		$self->get('worksheet')->set_column($self->get('columns'), $self->get('columns'), $width->{$self->get('columns')});
 		$self->get('worksheet')->write($self->get('rows'), $self->get('columns'), $_, $formatDisplay);
 		$self->set('columns', $self->get('columns') + 1);
@@ -134,30 +130,32 @@ sub printResults {
 	$self->get('worksheet')->freeze_panes(1, 0); # Freeze the first row
 	$self->set('colWidth', $width);
 	
-	#print STDME "\n====================================================\n";
-	#close(STDME);
-
 	#------------------------------------------------------------------------------------
 		
 	my $new_row;
 	my $new_row_contents;       
 	my $rtable = $self->get('result_table');
-	my $counter = 0;
+	my $counter = 0;	
 	my $row;	
 	
+	my %collisions;
 	while ($rtable->hasMoreRows)
 	{
+	
 		$self->set('columns',0);
 		$new_row = ();
-		$counter++;
 		$row = $rtable->nextRow;
+		{
+			no warnings 'uninitialized';
+			my $hash = sha256_base64(join('.',$row));
+			next if exists $collisions{$hash};
+			$collisions{$hash} = undef;
+		}
+		$counter++;
+	
 		if (!$row || ($lines && $counter > $lines))
 		{
-		 	$self->closeWorkBook;
-		 	#open    TMP, ">/homes/syed/Desktop/temp4/biomart-web/lib/BioMart/Formatter/fh_007.xls" or die "Couldn't open file: $!";
-			#binmode TMP;
-			#print   TMP  $xls_str;
-			#close   TMP;
+		 	$self->closeWorkBook;		 	
 			return;    	
    		}
 
@@ -190,7 +188,7 @@ sub printResults {
 	
 		#------------------------------------------------------------------------------
 		# Enclose non-numeric values in double quotes & escape the quotes already in them
-		#open (STDME, ">>/homes/syed/Desktop/temp4/biomart-web/lib/BioMart/Formatter/hiya.txt");
+
     		foreach(@{$new_row}) 
     		{
 			if($self->get('colWidth')->{$self->get('columns')} < length($_->{value}) )
@@ -208,36 +206,22 @@ sub printResults {
 			}
 			if($_->{URL})
 			{
-				#print STDME $_->{value}," : ", $_->{URL} ,"\t\n";
 				## tab below with $_->{value} is prepended to handle hyperlinks on numeric values.
 				$self->get('worksheet')->write_url($self->get('rows'), $self->get('columns'), $_->{URL}, $_->{value} ); # , $self->get('format'));
 			}
 			else
 			{
-				#print STDME $_->{value}, "\t\n";
 				$self->get('worksheet')->write($self->get('rows'), $self->get('columns'), $_->{value} ); # , $self->get('format'));
 			}
 			$self->set('columns', $self->get('columns') + 1);
     		}
-	    	#print STDME "\n\n\n";
-		#close(STDME);    
 		#------------------------------------------------------------------------------	
 		$self->set('rows', $self->get('rows') + 1);
 	}
 
-	$self->closeWorkBook;	
-
-		#open    TMP, ">/homes/syed/Desktop/temp4/biomart-web/lib/BioMart/Formatter/fh_007.xls" or die "Couldn't open file: $!";
-		#binmode TMP;
-		#print   TMP  $xls_str;
-		#close   TMP;
-		
+	$self->closeWorkBook;
+			
 	return;
-
-	# Create the final record-string
-	#   	return $row;
-	#return "\nHey, u stay quiet, I will manage that myself - u understand me or do we have a communication barrier!!";
-	
 }
 
 sub getDisplayNames {
