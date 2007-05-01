@@ -253,7 +253,7 @@ You can further refine your query by including <b>Filters</b> and/or additional 
 
 <br/>
 <br/>
-<a href="/martview/tutorial/biomart_mini_tut.html">Mini Tutorial</a>
+<a href="/[% TAG_path %]/mview/tutorial/biomart_mini_tut.html">Mini Tutorial</a>
 </div>
 
 

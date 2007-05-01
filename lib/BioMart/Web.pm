@@ -2149,7 +2149,6 @@ sub filterDisplayType
             return 0;
      }
 
-	
 	my $dsOLD = $self->get_conf_Dir()."/templates/default/datasetpanel.ttc";
 	if (-e $dsOLD) {unlink $dsOLD;}
 	$dsOLD = $self->get_conf_Dir()."/templates/cached/datasetpanel.ttc";
@@ -2158,6 +2157,11 @@ sub filterDisplayType
 	if (-e $dsOLD) {unlink $dsOLD;}
 	#	print $dsCompiled;
 	$dsOLD = $self->get_conf_Dir()."/templates/default/datasetpanel.tt";
+	
+	
+	my %location_path = $self->getSettings('location');
+	my $TAG_path = $location_path{'TAG_path'};
+	
 	
 	#===========================================
 	#print $session->param("summarypanel__current_highlighted_branch");
@@ -2172,6 +2176,7 @@ sub filterDisplayType
 											js_pushactions_of_datasetmenu => \%js_pushactions_of_datasetmenu,
 											datasetOBJ           => $def_ds_OBJ,
 											reverseNAME			=> $reverseName,
+											TAG_path		=> $TAG_path,
 											build_errors=> \%build_errors,											
 											});
 	my $datasetpanel_outputfh = IO::File->new(">".$self->get_cached_tt_dir()."/datasetpanel.tt") || die $!;
@@ -2192,7 +2197,7 @@ sub filterDisplayType
 			sessionDBNAME	=> $dbName,
 			datasetOBJ	=> $def_ds_OBJ,
 			reverseNAME	=> $reverseName,
-			#entry_count   => $entry_count,
+			TAG_path		=> $TAG_path,			
 			result_string 	=> $result_string
 #   	}, \*STDOUT );
    	}, \$completePage );

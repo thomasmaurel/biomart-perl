@@ -170,7 +170,7 @@
 			}
 
           	
-          	javascript:void(window.open('/help.html','martview','width=600,height=500,resizable,scrollbars'));	
+          	javascript:void(window.open('/[% TAG_path %]/mview/help.html','martview','width=600,height=500,resizable,scrollbars'));	
           	 " title ="Get Help"/>
 
 

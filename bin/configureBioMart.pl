@@ -316,7 +316,7 @@ if($Configure eq 'n' || ! -e $httpdconfFile)
 	bin::ConfBuilder->makeMartView(%OPTIONS);
 	bin::ConfBuilder->makeMartService(%OPTIONS);
 	bin::ConfBuilder->makeMartResults(%OPTIONS);
-	bin::ConfBuilder->updateMainTemplate(%OPTIONS);
+	bin::ConfBuilder->updateSettingsDotConf(%OPTIONS);
 #	bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
 }	
 

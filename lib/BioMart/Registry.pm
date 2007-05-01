@@ -1548,9 +1548,9 @@ sub __getLinksFrom {
     return (wantarray() ? @links : \@links);
 }
 
-=head2  addSettingsParam 
+=head2  settingsParams
 
-  Usage      :  $registry->addSettingsParam($settingsHash);
+  Usage      :  $registry->settingsParams($settingsHash);
 
   Description:  adds all params in hash passed to registry
                 These params come from settings.conf
