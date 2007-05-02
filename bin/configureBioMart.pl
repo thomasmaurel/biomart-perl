@@ -14,126 +14,106 @@ use BioMart::Web::TemplateBuilder;
 use bin::ConfBuilder;
 use Data::Dumper;
 
-my %OPTIONS;
-my %ARGUMENTS;
-$OPTIONS{logDir} = Cwd::cwd()."/logs/";
-$OPTIONS{conf} = Cwd::cwd()."/conf/";
-for (my $i = 0; $i < scalar(@ARGV); $i++)
-{
-	if ($ARGV[$i] eq "--recompile") 	{	$ARGUMENTS{recompile} = $ARGV[$i];	}
-	if ($ARGV[$i] eq "--cached")		{	$ARGUMENTS{cached} = $ARGV[$i];	}
-	if ($ARGV[$i] eq "--clean")		{	$ARGUMENTS{clean} = $ARGV[$i];	}
-	if ($ARGV[$i] eq "--update")		{	$ARGUMENTS{update} = $ARGV[$i];	}
-	if ($ARGV[$i] eq "--backup")		{	$ARGUMENTS{backup} = $ARGV[$i];	}
-	if ($ARGV[$i] eq "--memory" || $ARGV[$i] eq "--m")	{	$ARGUMENTS{memory} = $ARGV[$i];	}
-	if ($ARGV[$i] eq "--lazyload" || $ARGV[$i] eq "--l")	{	$ARGUMENTS{lazyload} = $ARGV[$i];	}
-	if ($ARGV[$i] eq "-r" || $ARGV[$i] eq "-registryFile")	
-	{	
-		if($ARGV[$i+1])	{	$ARGUMENTS{"-r"} = $ARGV[$i+1];	}
-	}
-			
-}
-
-if ($ARGUMENTS{"-r"})
-{
-	#print  $ARGUMENTS{registryFile}, "\n";
-	$ARGUMENTS{"-r"} =~ m/.*?\/?([^\/]*)\Z/;
-	$OPTIONS{conf} .= $1;	
-}
-else
-{
-	#$OPTIONS{conf}.="defaultMartRegistry.xml";
-	print "\nSwitch -r followed by registryFileName is missing, Can't proceed.\n";
-	exit;
-	
-}
-
-if (! -e $OPTIONS{conf}) { BioMart::Exception::Configuration->throw ("ConfigureBioMart.pl: Registry File $OPTIONS{conf} does not exist under directory conf/");  exit ;}
-
-# Initalize logging framework if not already done, and get reference to logger
-#$ARGUMENTS{verbose} and Log::Log4perl->appender_thresholds_adjust(1);
-Log::Log4perl->init_once(dirname($OPTIONS{conf}).'/log4perl.conf');
-my $LOGGER = Log::Log4perl->get_logger(basename($0));
-
-# If user provides verbose-flag, adjust logger behaviour accordingly
-if($ARGUMENTS{verbose}) {
-    $LOGGER->level($DEBUG);
-    $LOGGER->debug("Have -v verbose flag, so setting logging level to DEBUG");
-}
-else {
-    Log::Log4perl->appender_thresholds_adjust(2);
-  } 
-
-$LOGGER->debug("Initializing template builder");
-#---------------------------------------------------------- NEW CODE TO AVOID BUILD - STARTS
-my $httpdconfFile = Cwd::cwd() . "/conf/httpd.conf";
-my $Configure = 'n';
-
-#---------------------------------------------------------- if we change registry, and httpd.conf exists,
-#---------------------------------------------------------- update it automatically
-if(-e $httpdconfFile)
-{
-	undef $/;		
-	open(STDHTTPDCONF, "$httpdconfFile");
-	my $httpd_contents = <STDHTTPDCONF>;
-	close(STDHTTPDCONF);
-	$/="\n"; 		# setting back to default value
-	$httpd_contents =~ m/.*registryFile.*\'(.*)\'.*/;
-	#print $1, "\n", $OPTIONS{conf};
-	if ($1 ne $OPTIONS{conf})
+	my %OPTIONS;
+	my %ARGUMENTS;
+	$OPTIONS{logDir} = Cwd::cwd()."/logs/";
+	$OPTIONS{conf} = Cwd::cwd()."/conf/";
+	for (my $i = 0; $i < scalar(@ARGV); $i++)
 	{
-		$httpd_contents =~ s/$1/$OPTIONS{conf}/;
-		open(STDHTTPDCONF, ">$httpdconfFile");
-		print STDHTTPDCONF $httpd_contents;
-		close(STDHTTPDCONF);
-		my $command = 'rm '.Cwd::cwd().'/conf/templates/default/'.'*.ttc';
-		print "\n$command";
-		system("$command");
-		#$ARGUMENTS{recompile} = "--recompile";	## forcing templates compiling as you switch between baked registries, 
-										## however templates could be different			
+		if ($ARGV[$i] eq "--recompile") 	{	$ARGUMENTS{recompile} = $ARGV[$i];	}
+		if ($ARGV[$i] eq "--cached")		{	$ARGUMENTS{cached} = $ARGV[$i];	}
+		if ($ARGV[$i] eq "--clean")		{	$ARGUMENTS{clean} = $ARGV[$i];	}
+		if ($ARGV[$i] eq "--update")		{	$ARGUMENTS{update} = $ARGV[$i];	}
+		if ($ARGV[$i] eq "--backup")		{	$ARGUMENTS{backup} = $ARGV[$i];	}
+		if ($ARGV[$i] eq "--memory" || $ARGV[$i] eq "--m")	{	$ARGUMENTS{memory} = $ARGV[$i];	}
+		if ($ARGV[$i] eq "--lazyload" || $ARGV[$i] eq "--l")	{	$ARGUMENTS{lazyload} = $ARGV[$i];	}
+		if ($ARGV[$i] eq "-r" || $ARGV[$i] eq "-registryFile")	
+		{	
+			if($ARGV[$i+1])	{	$ARGUMENTS{"-r"} = $ARGV[$i+1];	}
+		}
+			
 	}
-	$Configure = &promptUser("\n\nDO YOU WANT TO USE EXISTING SERVER CONFIGURATION [y/n]\t", 'y');
-}
-if($Configure eq 'n' || ! -e $httpdconfFile)
-{
-	
+
+	if ($ARGUMENTS{"-r"})
+	{
+		#print  $ARGUMENTS{registryFile}, "\n";
+		$ARGUMENTS{"-r"} =~ m/.*?\/?([^\/]*)\Z/;
+		$OPTIONS{conf} .= $1;	
+	}
+	else
+	{
+		#$OPTIONS{conf}.="defaultMartRegistry.xml";
+		print "\nSwitch -r followed by registryFileName is missing, Can't proceed.\n";
+		exit;	
+	}
+
+	if (! -e $OPTIONS{conf}) { BioMart::Exception::Configuration->throw ("ConfigureBioMart.pl: Registry File $OPTIONS{conf} does not exist under directory conf/");  exit ;}
+
+	# Initalize logging framework if not already done, and get reference to logger
+	# $ARGUMENTS{verbose} and Log::Log4perl->appender_thresholds_adjust(1);
+	Log::Log4perl->init_once(dirname($OPTIONS{conf}).'/log4perl.conf');
+	my $LOGGER = Log::Log4perl->get_logger(basename($0));
+
+	# If user provides verbose-flag, adjust logger behaviour accordingly
+	if($ARGUMENTS{verbose}) {
+		$LOGGER->level($DEBUG);
+		$LOGGER->debug("Have -v verbose flag, so setting logging level to DEBUG");
+	}
+	else {
+		Log::Log4perl->appender_thresholds_adjust(2);
+	} 
+
+	$LOGGER->debug("Initializing template builder");
+	#---------------------------------------------------------- NEW CODE TO AVOID BUILD - STARTS
+	my $httpdconfFile = Cwd::cwd() . "/conf/httpd.conf";
+
+	#---------------------------------------------------------- if we change registry, and httpd.conf exists,
+	#---------------------------------------------------------- update it automatically
+	if(-e $httpdconfFile)
+	{
+		undef $/;		
+		open(STDHTTPDCONF, "$httpdconfFile");
+		my $httpd_contents = <STDHTTPDCONF>;
+		close(STDHTTPDCONF);
+		$/="\n"; 		# setting back to default value
+		$httpd_contents =~ m/.*registryFile.*\'(.*)\'.*/;
+		#print $1, "\n", $OPTIONS{conf};
+		if ($1 ne $OPTIONS{conf})
+		{
+			$httpd_contents =~ s/$1/$OPTIONS{conf}/;
+			open(STDHTTPDCONF, ">$httpdconfFile");
+			print STDHTTPDCONF $httpd_contents;
+			close(STDHTTPDCONF);
+			my $command = 'rm '.Cwd::cwd().'/conf/templates/default/'.'*.ttc';
+			print "\n$command";
+			system("$command");
+			#$ARGUMENTS{recompile} = "--recompile";	## forcing templates compiling as you switch between baked registries, 
+										## however templates could be different			
+		}
+	}
+
 	use vars qw( $build $httpd_version $httpd_modperl $httpd_modperl_dsopath);
 	my @httpd_paths;
 
 	$OPTIONS{htdocs} = Cwd::cwd() . "/htdocs";
 	$OPTIONS{cgibin} = Cwd::cwd() . "/cgi-bin";
 	$OPTIONS{lib}    = Cwd::cwd() . "/lib";		
-
-	print "Checking several common Apache locations...";
-	foreach my $d(qw(
-		/usr/local/apache/bin /usr/local/apache2/bin 
-		/usr/local/bin /usr/local/sbin 
-		/usr/bin /usr/sbin 
-		/bin /sbin
-	)) 
-	{
-		foreach my $f(qw(
-			apache apache2 
-			httpd httpd2
-		)) 
-		{
-			-f $d."/".$f and push @httpd_paths, $d."/".$f;
-		}
-	}
-	print "done.\n";
-	my $pathlist = join("\n\t", @httpd_paths);
-	$pathlist ||= '[No plausible httpd binaries found]';
-	my $i2use = &promptUser("\nSelect either one of the detected httpd paths on the list, OR enter the path you wish to use:\n\t$pathlist\n", 1);
-	$i2use =~ s/\s+//g;
-	if(length($i2use) <= 2) 
-	{
-	    $OPTIONS{httpd} = $httpd_paths[$i2use-1];
-	}
-	else 
-	{
-	    $OPTIONS{httpd} = $i2use;
-	}
-  
+	my $settingsHash = BioMart::Web::SiteDefs->getSettings(dirname($OPTIONS{conf}));	
+	$OPTIONS{httpd} = $settingsHash->{'httpdSettings'}{'apacheBinary'};
+	$OPTIONS{server_host} = $settingsHash->{'httpdSettings'}{'serverHost'};
+	$OPTIONS{server_port} = $settingsHash->{'httpdSettings'}{'port'};
+	$OPTIONS{proxy} = $settingsHash->{'httpdSettings'}{'proxy'};
+	$OPTIONS{cgiLocation} = $settingsHash->{'httpdSettings'}{'location'};
+	$OPTIONS{cgiLocation} =~ s/^\///g; # remove preceeding slashes
+	$OPTIONS{cgiLocation} =~ s/\/$//g; # remove slashes at the end
+	
+	print "\n[for development only, will be gone soon] APACHE: ", $settingsHash->{'httpdSettings'}{'apacheBinary'};
+	print "\n[for development only, will be gone soon] HOST: ", $settingsHash->{'httpdSettings'}{'serverHost'};
+	print "\n[for development only, will be gone soon] PORT: ", $settingsHash->{'httpdSettings'}{'port'};
+	print "\n[for development only, will be gone soon] PROXY: ", $settingsHash->{'httpdSettings'}{'proxy'};
+	print "\n[for development only, will be gone soon] LOCATION: ", $settingsHash->{'httpdSettings'}{'location'};
+	print "\n";
+	
 	if(-f $OPTIONS{httpd}) 
 	{
 		print "Got usable Apache in $OPTIONS{httpd}, probing for version & ModPerl configuration\n";
@@ -252,43 +232,7 @@ if($Configure eq 'n' || ! -e $httpdconfFile)
 		
 	}
 
-
 	#------------------------------------------------------
-
-
-	if(!exists $OPTIONS{server_host}) 
-	{
-		my $default_host = Sys::Hostname::hostname();
-		my $server2use = &promptUser("\nEnter the server host OR default ", $default_host);
-		$server2use =~ s/\s+//g;
-		$OPTIONS{server_host} = $server2use;
-    	}
-    	if(!exists $OPTIONS{server_port}) 
-	{
-		my $port2use = &promptUser("\nEnter the server port OR default ", '5555');
-		$port2use =~ s/\s+//g;
-		$OPTIONS{server_port} = $port2use;
-    	}
-   	if(!exists $OPTIONS{proxy}) 
-	{
-		my $proxy = &promptUser("\nEnter proxy OR default ", '');
-		if ($proxy)
-		{
-			$proxy =~ s/\s+//g;
-			$OPTIONS{proxy} = $proxy;
-		}
-    	}
-	if(!exists $OPTIONS{cgiLocation}) 
-	{
-		my $default_loc = "biomart";
-		my $loc2use = &promptUser("\nEnter the required script location OR default ", $default_loc);
-		$loc2use =~ s/\s+//g;
-		$loc2use =~ s/^\///g; # remove preceeding slashes
-		$loc2use =~ s/\/$//g; # remove slashes at the end
-		$OPTIONS{cgiLocation} = $loc2use;
-    	}
-
-
     	# Check if user wants to use non-standard library locations
 
     	my @INC_org = @INC;
@@ -316,9 +260,8 @@ if($Configure eq 'n' || ! -e $httpdconfFile)
 	bin::ConfBuilder->makeMartView(%OPTIONS);
 	bin::ConfBuilder->makeMartService(%OPTIONS);
 	bin::ConfBuilder->makeMartResults(%OPTIONS);
-	bin::ConfBuilder->updateSettingsDotConf(%OPTIONS);
-#	bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
-}	
+	#	bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
+
 
 #---------------------------------------------------------- NEW CODE TO AVOID BUILD - ENDS
 my $mart_registry;
@@ -349,12 +292,7 @@ if ($@){
 	
 ## Load CSS SETTINGS from Script
 &loadCSSSettings();
-
-if($Configure eq 'n' || ! -e $httpdconfFile)
-{
-	bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
-}
-
+bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
 
 if(&whoBakedMe($init->configurationUpdated()) == 1 || $compiletemplates eq 'force')
 {

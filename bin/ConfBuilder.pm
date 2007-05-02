@@ -441,28 +441,6 @@ sub makeMartResults
 	chmod 0755, $file;		
 }
 
-sub updateSettingsDotConf
-{
-	my ($self, %OPTIONS) = @_;
-	
-	undef $/; ## whole file mode for read
-	$OPTIONS{conf} =~ m/(.*\/)[^\/]*/;
-	my $confDir = $1;
-	my $file = $confDir."/settings.conf";
-	open(STDMAINTEMPLATE, "$file");	
-	my $fileContents = <STDMAINTEMPLATE> ;
-	close(STDMAINTEMPLATE);
-	
-	##---------------- replacing [TAG:path]
-	$fileContents =~ s/TAG_path=.*?\n/TAG_path=$OPTIONS{cgiLocation}\n/;
-
-	$file = $confDir."/settings.conf";
-	open(STDMAINTEMPLATE, ">$file");	
-	print STDMAINTEMPLATE $fileContents;
-	close(STDMAINTEMPLATE);
-
-	chmod 0755, $file;
-}
 sub makeCopyDirectories
 {
 	my ($self, %OPTIONS) = @_;

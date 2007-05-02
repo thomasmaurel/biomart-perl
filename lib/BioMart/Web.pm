@@ -2159,8 +2159,8 @@ sub filterDisplayType
 	$dsOLD = $self->get_conf_Dir()."/templates/default/datasetpanel.tt";
 	
 	
-	my %location_path = $self->getSettings('location');
-	my $TAG_path = $location_path{'TAG_path'};
+	my %location_path = $self->getSettings('httpdSettings');
+	my $TAG_path = $location_path{'location'};
 	
 	
 	#===========================================
