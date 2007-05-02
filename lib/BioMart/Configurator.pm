@@ -548,14 +548,14 @@ sub getConfigurationTree {
 					     $dataSetName,$interfaceType,
 					     $configurationTree);
 		    }
-		    if (@{ $xmlFilter->{'Option'} } > 200){
+		    #if (@{ $xmlFilter->{'Option'} } > 200){
 			# safety guard for web performance
 			# later on set autoCompletion for these type filters
-			$filter->displayType('text');
-		    }
-		    else{
+			#$filter->displayType('text');
+		    #}
+		    #else{
 			$filter->displayType($xmlFilter->{'displayType'});
-		    }
+		    #}
 		    $filter->multipleValues($xmlFilter->{'multipleValues'});
 		    $filter->style($xmlFilter->{'style'});
 		    $filter->graph($xmlFilter->{'graph'});
