@@ -156,9 +156,10 @@ div#mart_export_data
 .mart_btnhov
 {
   font-family: sans-serif; /* Needed if buton is <input> */	
+  font-size  : 90%;
   font-weight: bold;
   padding    : 0.2em 0.5em 0.2em 0.5em;
-  border     : 2px solid;
+  border     : 1px solid;
   border-style: outset;
   color      : [font_colour_top_bottom_menubar];
   background-color: [top_bottom_menubar_bgcolour];
