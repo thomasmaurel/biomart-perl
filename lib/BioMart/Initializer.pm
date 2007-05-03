@@ -224,22 +224,22 @@ sub _init
      $self->attr('max_batchsize',$maxbs);
 
      my $registryFile=$params{'registryFile'};
-          # set the registryXML with the initial XML 
-          my $fh = IO::File->new($registryFile, "<") or
-          BioMart::Exception::Configuration->throw ("Unable to open configuration file '$registryFile', check file existence and permissions");
-          my $newxml;
-          while (<$fh>){
-	         $newxml .= $_;
-          }     
-          # close the network connection
-          close($fh);
-          $self->_registryXML($newxml);
-
-          $self->set('registry',undef);
-          $fh = IO::File->new($registryFile, "<");
-          $self->_loadConfigFrom($fh);
-          $fh->close();
-
+		# set the registryXML with the initial XML 
+		my $fh = IO::File->new($registryFile, "<") or
+		BioMart::Exception::Configuration->throw ("Unable to open configuration file '$registryFile', check file existence and permissions");
+		my $newxml;
+		while (<$fh>){
+			$newxml .= $_;
+		}     
+		# close the network connection
+		close($fh);
+		#$self->_registryXML($newxml);
+		$self->_registryXML('','');
+		
+		$self->set('registry',undef);
+		$fh = IO::File->new($registryFile, "<");
+		$self->_loadConfigFrom($fh);
+		$fh->close();
 
      $REGISTRY = $self->_populateRegistry;
 
@@ -710,14 +710,6 @@ sub _loadConfigFrom {
           }         
      }     
      $self->set('orderedLocations',$hashLocations);
-     #foreach (keys %$hashLocations)
-     #{
-     #    print "\nVS: $_";
-     #    foreach my $DS(@{$hashLocations->{$_}})
-     #     {
-     #          print "\n\t$DS:";
-     #     }
-     #}    
    
      $doc->dispose();
 
@@ -780,107 +772,90 @@ $virtualSchema->visible(0);
 						   $vSchemaNode, $includeMarts,$proxy);
     }   
 
-    $self->set('registry', $registry);
+	
+	$self->set('registry', $registry);
     $registry->toXML($self->_registryXML);
  }
 
 
 sub _loadLocationsFrom {
-     my ($self, $virtualSchema, $node, $includeMarts,$proxy) = @_;
-     my $vSchemaName = $virtualSchema->name;
-     my $vSchemaDisplayName = $virtualSchema->displayName;
+	my ($self, $virtualSchema, $node, $includeMarts,$proxy) = @_;
+	my $vSchemaName = $virtualSchema->name;
+	my $vSchemaDisplayName = $virtualSchema->displayName;
 
-     if ($node->{'default'}){
-          $virtualSchema->default(1);
-     }    
-     #-------------------------------------------------------
-     my $orderedLocations = $self->get('orderedLocations');
-     #  print "\n  ============ ", $vSchemaName;
-     if($self->get('orderedLocations')->{$vSchemaName})
-     {
-          foreach my $locationName(@{$self->get('orderedLocations')->{$vSchemaName}})
-          {
-               #print "\nDOM LOCATION    ====  ",$locationName, "\n";
-               my @rtypes=('RegistryDBPointer','RegistryURLPointer');
-               foreach my $rtype (@rtypes){
-          	     foreach my $regdbloc (@{$node->{$rtype}}) {
-   	                    #print "\nREG LOCATION    ====  ",$regdbloc->{'name'}, "\n";
-          	          if ($regdbloc->{'name'} eq $locationName)
-             	          {    
-              	               $self->_setRegistryPointer($rtype,$vSchemaName, $vSchemaDisplayName,$regdbloc); 
-              	          }
-              	     }
-               }
-               my @mtypes=('MartDBLocation','MartURLLocation');
-               foreach my $mtype (@mtypes){
-                    foreach my $dbloc (@{ $node->{$mtype} }) {
-             	          if ($dbloc->{'name'} eq $locationName)
-             	          {
-   	                         
-          	               # if includeMarts set then check if on list - if not next
-                              if ($includeMarts){
-               		     my $seen;
-               		          foreach my $martName(split(/,/,$includeMarts)){
-               		               if ($martName !~ /\./){
-               			               $martName = 'default.'.$martName;
-               		               }
-               		               if ($vSchemaName.'.'.$dbloc->{'name'} eq $martName){
-               			               $seen++;
-               			               last;
-               		               }
-          		    
-               		          }
-                                   next if (!$seen);
-                              }
-                              my $martLocation =   $self->_setMartLocation($mtype,$virtualSchema,
-							 $dbloc,$proxy);
-
-			      next if (!$martLocation);
-
-			      # remove database version check
-                              #if ($martLocation->versionCheck(VERSION) eq '1'){
-               		          $virtualSchema->addLocation($martLocation);
-               		      
-                              #    warn( "Software/configuration version check: ".VERSION." ",
-               		      #    $martLocation->displayName," OK\n");
-			      #}
-			      #elsif (!$martLocation->versionCheck(VERSION)){
-			      #    warn("SKIPPING -- Software version (".VERSION.") does not match the configuration version in meta_version__version__main for ".$martLocation->displayName."\n");
-			      #}
-			      #else {# problem doing the check
-			      #    warn("SKIPPING -- ".$martLocation->versionCheck(VERSION)."\n");
-			      #}	   
-               	     }
-                    }
-               }          
-          }
-     }
-     #-------------------------------------------------------
-     
-     warn("\n");
-
-     # validation of Registry file
-     my @knownTypes=('virtualSchema', 'RegistryDBPointer','RegistryURLPointer',
-		    'MartDBLocation','MartURLLocation','DatabaseLocation',
-		    'RegistryDBLocation');
-     foreach my $locType (keys %$node){
+	if ($node->{'default'}){
+		$virtualSchema->default(1);
+	}    
+	#-------------------------------------------------------
+	my $orderedLocations = $self->get('orderedLocations');
+	#  print "\n  ============ ", $vSchemaName;
+	if($self->get('orderedLocations')->{$vSchemaName})
+	{
+		foreach my $locationName(@{$self->get('orderedLocations')->{$vSchemaName}})
+		{
+			#print "\nDOM LOCATION    ====  ",$locationName, "\n";
+			my @rtypes=('RegistryDBPointer','RegistryURLPointer');
+			foreach my $rtype (@rtypes){
+				foreach my $regdbloc (@{$node->{$rtype}}) {
+					#print "\nREG LOCATION    ====  ",$regdbloc->{'name'}, "\n";
+					if ($regdbloc->{'name'} eq $locationName)
+					{    
+						$self->_setRegistryPointer($rtype,$vSchemaName, $vSchemaDisplayName,$regdbloc); 
+					}
+				}
+			}
+			my @mtypes=('MartDBLocation','MartURLLocation');
+			foreach my $mtype (@mtypes){
+				foreach my $dbloc (@{ $node->{$mtype} }) {
+					if ($dbloc->{'name'} eq $locationName)	{
+						# if includeMarts set then check if on list - if not next
+						if ($includeMarts){
+							my $seen;
+							foreach my $martName(split(/,/,$includeMarts)) {
+          		               	if ($martName !~ /\./){
+           			               $martName = 'default.'.$martName;
+								}
+								if ($vSchemaName.'.'.$dbloc->{'name'} eq $martName) {
+									$seen++;
+									last;
+								}
+							}
+							next if (!$seen);
+						}
+						my $martLocation =   $self->_setMartLocation($mtype,$virtualSchema,$dbloc,$proxy);
+						open(STDME, ">>/ebi/www/biomart/syed_test/biomart-perl/shazi_registry");
+						print STDME Dumper($dbloc);
+						close(STDME);						
+						next if (!$martLocation);
+						$self->_registryXML($mtype, $dbloc);
+						$virtualSchema->addLocation($martLocation);   		
+					}
+				}
+			}
+		}
+	}
+	#-------------------------------------------------------
+	warn("\n");
+	# validation of Registry file
+	my @knownTypes=('virtualSchema', 'RegistryDBPointer','RegistryURLPointer',
+		'MartDBLocation','MartURLLocation','DatabaseLocation','RegistryDBLocation');
+	foreach my $locType (keys %$node){
 	# skip empty keys
-          next if (!ref $node->{$locType} || !@{$node->{$locType}});
-	     if (! grep $locType eq $_, @knownTypes){
-	          warn("... Unknown location type:$locType\n");
-	          next;
-          }
-	     foreach my $loc (@{$node->{$locType}}){
-	          # replace warns with die before 0_4 release
-	          warn("Warning: DatabaseLocation is replaced with MartDBLocation in 0_4. Fix your registry for ".$loc->{'name'}."\n") 
-		     if ($locType eq 'DatabaseLocation');
-	          warn("Warning: RegistryDBLocation is replaced with RegistryDBPointer in 0_4. Fix your registry for ".$loc->{'name'}."\n") 
-		     if ($locType eq 'RegistryDBLocation');
-	     }
-     }
-     warn("\n");
-     
-     return $virtualSchema;
+		next if (!ref $node->{$locType} || !@{$node->{$locType}});
+		if (! grep $locType eq $_, @knownTypes){
+			warn("... Unknown location type:$locType\n");
+			next;
+		}
+		foreach my $loc (@{$node->{$locType}}){
+			# replace warns with die before 0_4 release
+			warn("Warning: DatabaseLocation is replaced with MartDBLocation in 0_4. Fix your registry for ".$loc->{'name'}."\n") 
+				if ($locType eq 'DatabaseLocation');
+			warn("Warning: RegistryDBLocation is replaced with RegistryDBPointer in 0_4. Fix your registry for ".$loc->{'name'}."\n") 
+				if ($locType eq 'RegistryDBLocation');
+		}
+	}
+	warn("\n");
+	return $virtualSchema;
 }
 
 
@@ -1227,12 +1202,33 @@ sub _populateRegistry {
 }
 
 sub _registryXML {
-  my ($self, $registryXML) = @_;
-
-  if ($registryXML) {
-     $self->{'registryXML'}=$registryXML;
-  }
-  return $self->{'registryXML'};
+	my ($self, $type, $contentsHash) = @_;
+	if ($type && $contentsHash) {
+		my @attributes = qw(name displayName host port schema serverVirtualSchema databaseType database user password visible default martUser includeDatasets path redirect proxy );
+		my $reg_xml = $self->{'registryXML'};
+		my $node = '';
+		# first time here, add XML DOC, and MartRegistry Tags
+		if (!$reg_xml)
+		{
+			$reg_xml .= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><\!DOCTYPE MartRegistry><MartRegistry><\/MartRegistry>";
+		}
+		$node .= "<$type ";
+		foreach my $key(@attributes)
+		{	
+			no warnings 'uninitialized';
+			if(exists $contentsHash->{$key})
+			{	
+#				print "\n LINE   ", $key . ' = ' . '"' . $contentsHash->{$key}. '"';
+				$node .= $key . ' = ' . '"' . $contentsHash->{$key}. '" ';
+			}
+		}
+		$node .= " \/>";
+		$node .= "<\/MartRegistry>";
+		
+		$reg_xml =~ s/<\/MartRegistry>/$node/;		
+		$self->{'registryXML'} = $reg_xml;
+	}
+	return $self->{'registryXML'};
 }
 
 1;

@@ -26,6 +26,7 @@ use BioMart::AttributeTable;
 use BioMart::QueryRunner;
 use BioMart::ResultTable;
 use BioMart::Exception;
+use Data::Dumper;
 
 
 use vars qw/ $VERSION $revision $server_host $server_port $log_Dir $cgiLocation $CONF_FILE $LOGGER $WEBQUERY $BIOMART_REGISTRY/;
@@ -143,31 +144,33 @@ sub get_registry {
     
     my ($registry,$server_host,$server_port,$path)=@_;
     
-
     my $xml = $registry->toXML();
-    my $reg_file = XMLin($xml, forcearray=> [qw(virtualSchema RegistryURLLocation RegistryDBLocation MartDBLocation MartURLLocation)], keyattr => [],KeepRoot=>1);
-    
-    my $mr =$reg_file->{'MartRegistry'};
+    my $reg_file = XMLin($xml, forcearray=> [qw(virtualSchema RegistryURLLocation RegistryDBLocation MartDBLocation MartURLLocation)], keyattr => [],KeepRoot=>1);   
+   
+	my $mr =$reg_file->{'MartRegistry'};
 	
-    while (my ($key,$value) = each (%{$mr})){
-	
-	
-	if ($mr->{'virtualSchema'}){	
-	    foreach my $lr (@{$mr->{'virtualSchema'}}){
-		&_set_location($lr, $path);
-	    }
-	} else {
-	    &_set_location($mr, $path);
-	}
-}
-    
-    
+    while (my ($key,$value) = each (%{$mr}))
+    {
+		if ($mr->{'virtualSchema'}){	
+		    foreach my $lr (@{$mr->{'virtualSchema'}})
+		    {
+				&_set_location($lr, $path);
+		    }
+		} 
+		else 
+		{
+		    &_set_location($mr, $path);
+		}
+	}   
     if ($mr->{'virtualSchema'}){
-	foreach my $lr (@{$mr->{'virtualSchema'}}){
-	    &_reset_attributes($lr, $path);
-	} 	
-    } else {
-	&_reset_attributes($mr, $path);
+		foreach my $lr (@{$mr->{'virtualSchema'}})
+		{
+			&_reset_attributes($lr, $path);
+		} 	
+    } 
+    else 
+    {
+		&_reset_attributes($mr, $path);
     }
     
 
@@ -175,10 +178,10 @@ sub get_registry {
     
     #pprint STDERR "\n$newconfig";
     if ($newconfig) {
-	print "\n$newconfig";
+		print "\n$newconfig";
     }
     else{
-	BioMart::Exception::Usage->throw("Problem retrieving registry");
+		BioMart::Exception::Usage->throw("Problem retrieving registry");
     }
 
 }
@@ -192,7 +195,7 @@ sub _set_location {
     
     if (defined  $lr->{'name'})
     {
-	$serverVirtualSchema=$lr->{'name'};
+		$serverVirtualSchema=$lr->{'name'};
     }
     
     my @new_location;
@@ -214,12 +217,12 @@ sub _set_location {
 	    		$dblc->{'port'}=$server_port;
 		    	$dblc->{'path'}=$path;
 		}
-		delete $dblc->{'proxy'} if ($dblc->{'proxy'});
+		delete $dblc->{'proxy'} if (exists $dblc->{'proxy'});
 		push (@new_location,$dblc);
 	}
     
     if (@new_location > 0) {
-	$lr->{'MartURLLocation'}=\@new_location;
+		$lr->{'MartURLLocation'}=\@new_location;
     }
     delete ($lr->{'MartDBLocation'});  
 } 
