@@ -823,9 +823,6 @@ sub _loadLocationsFrom {
 							next if (!$seen);
 						}
 						my $martLocation =   $self->_setMartLocation($mtype,$virtualSchema,$dbloc,$proxy);
-						open(STDME, ">>/ebi/www/biomart/syed_test/biomart-perl/shazi_registry");
-						print STDME Dumper($dbloc);
-						close(STDME);						
 						next if (!$martLocation);
 						$self->_registryXML($mtype, $dbloc);
 						$virtualSchema->addLocation($martLocation);   		
