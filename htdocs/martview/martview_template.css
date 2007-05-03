@@ -9,10 +9,7 @@ this stylesheet (possibly combined with customizing of HTML templates).
 div#mart_containerpanel
 { 
 	font-family: sans-serif;
-	font-size: 11pt;
-/*	height: 100%;
-	width: 100%;
-*/
+	font-size: 1em;
 	background-color: white;
 }
 
@@ -98,8 +95,6 @@ div#mart_main_menubar_outer
 
 .mart_main_menubar
 {
-	/*text-align: left;*/
-	/*padding: 8px;*/
 	padding: 7px 0px 7px 0px;	
 	border-color: [top_bottom_menubar_bgcolour];
 	background-color: [top_bottom_menubar_bgcolour];
@@ -107,8 +102,6 @@ div#mart_main_menubar_outer
 
 div#mart_bottom_bar
 {	
-	/*text-align: left;*/
-/*	padding: 3px 3px 4px 30px; */
 	border-style: solid;
 	border-width: 1px;
 	color: [font_colour_top_bottom_menubar];
@@ -116,7 +109,6 @@ div#mart_bottom_bar
 	width: inherit;
 	border-color: [top_bottom_menubar_bgcolour];
 	background-color: [top_bottom_menubar_bgcolour];
-	font-size: 11pt; 
 	font-family: sans-serif;
 }
 
@@ -136,15 +128,11 @@ div#mart_export_menubar
 {
 	color: [font_colour_rest];
 	border: solid;
-	font-size: 11pt;
-/*	clear: both;*/
 	background-color: [main_panel_bgcolour];
 	border-width: 0px;
 	padding: 0px 0px 0px 0px;
 	border-color: [blocks_outline_colour];
 	width: inherit; 
-	                          
-	/*overflow: auto;*/
 }
 
 div#mart_export_data
@@ -153,19 +141,6 @@ div#mart_export_data
 	background-color: [main_panel_bgcolour];
 	height: 75%;
 	_height: 100%; /* for IE only */
-	
-	/* border-style: solid; */
-	/* border-width: 1px; */
-	/* border-color: #CACFD5; */
-	/* This is my life time achievement, so dont fiddle with the following */
-	/* life is tough with different IE */
-/*	width: inherit;  */ /*For all browsers including IE 7*/
-/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" ); */  /*FOR IE 6 and below*/
-/*	height: 100%; */
-
-/*	margin: 12px 0px 2px 0px; */
-	/* clear: both; */
-/*	overflow: auto; */
 }
 
 .mart_viewPanel
@@ -178,8 +153,6 @@ div#mart_export_data
 .mart_btn
 {
 	font-family: sans-serif;	
-	font-size: 1em;
-	/*border:1px solid 1px dotted 1px dotted 1px solid;*/
 	border:2px solid;
 	font-weight: bold;
 	color:[font_colour_top_bottom_menubar];
@@ -191,9 +164,7 @@ div#mart_export_data
 .mart_btnhov			
 {
 	font-family: sans-serif;
-	font-size: 1em;
 	font-weight: bold;	
-	/*color:white;*/
    	color: [button_shade];
 	background-color:[top_bottom_menubar_bgcolour];
 	padding: 0.3em 0.5em 0.1em 0.5em;
@@ -202,7 +173,6 @@ div#mart_export_data
 .mart_btn_go
 {
 	font-family: sans-serif;	
-	font-size: 11pt;
 	border:1px solid;
 	font-weight: bold;
 	color:[font_colour_top_bottom_menubar];
@@ -213,7 +183,6 @@ div#mart_export_data
 .mart_btnhov_go			
 {
 	font-family: sans-serif;
-	font-size: 11pt;
 	font-weight: bold;	
 	color:[top_bottom_menubar_bgcolour];
    	background-color:[font_colour_top_bottom_menubar];
@@ -224,14 +193,12 @@ div#mart_export_data
 .mart_input				
 {
 	color: [font_colour_rest];
-	font-size: 10pt;
 	font-family: sans-serif;
 }
       				
 .mart_inputhov			
 {	
 	color: [font_colour_rest];
-	font-size: 10pt; 
 	font-family: sans-serif;
 }
 
@@ -259,9 +226,7 @@ div#mart_export_data
 	border-width: 0px 0px 1px 0px;
 	border-color: [font_colour_rest];
 	padding: 0px 0px 16px 0px;
-	/*	height: 100%; */
 	clear: both;
-	font-size: 11pt;
 	overflow: auto;
 }
 
@@ -272,10 +237,7 @@ div#mart_export_data
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
 	border-color: [font_colour_rest];
-	/*padding: 16px 0px 16px 0px; To be handled in datasetpanel.tt based on if we have a schema menu or not*/
-	/*	height: 100%; */
 	clear: both;
-	font-size: 11pt;                            
 	overflow: auto;
 }
 .mart_interfacemenu,
@@ -287,9 +249,7 @@ div#mart_export_data
 	border-width: 0px 0px 1px 0px;
 	border-color: [font_colour_rest];
 	padding: 16px 0px 16px 0px;
-	/*	height: 100%; */
 	clear: both;
-	font-size: 11pt;                            
 	overflow: auto;
 }
 
@@ -319,8 +279,6 @@ div#mart_export_data
 	border-color: [blocks_outline_colour];
 	padding: 4px;
 	margin: 0px 0px 2px 0px;
-/*	height: inherit; */
-/*	clear: both; */
 	overflow: auto;
 }
 .collectionBREAK
@@ -331,7 +289,7 @@ div#mart_export_data
 
 .mart_howToUse
 {
-	font-size: 11pt;
+
 }
 
 .mart_datasetselectpanel,
@@ -347,7 +305,6 @@ div#mart_export_data
 .mart_attributecollection
 {
 	border-width: 1px 0px 0px 0px;
-	font-size: 11pt;	
 }
 .mart_filtercollection
 {
@@ -370,7 +327,6 @@ div#mart_export_data
 }
 .mart_filter_acresult
 {
-	/* z-index: 1; */
 	border: 1px solid black;
 	background-color: white;
 }
@@ -384,7 +340,6 @@ div#mart_export_data
 }
 .mart_attributepage_selection_col
 {
-	font-size: 11pt;
 	font-weight: bold;
 	float: left;
 }
@@ -406,14 +361,12 @@ div#mart_export_data
 
 .mart_summarypanel_dataset_entrycount 
 {
-	font-size : 11pt;
 	color: [font_colour_rest];
 	font-weight: normal;
 	font-style: normal;
 }
 .mart_summarypanel_dataset_entrycount_highlighted
 {
-	font-size : 11pt;
 	color: [main_panel_bgcolour];
 	font-weight: normal;
 	font-style: normal;
@@ -432,7 +385,6 @@ div#mart_export_data
 	color: [font_colour_rest];
 	cursor: pointer;
 	font-weight: bold;                            
-	font-size: 11pt; 
 	clear: both;
 	margin: 0px 0px 2px 6px;
 	padding: 0.2em 0em  0.2em 0em;	
@@ -458,7 +410,6 @@ div#mart_export_data
 	color: [font_colour_rest];
 	cursor: pointer;
 	font-weight: bold;                            
-	font-size: 11pt; 
 	clear: both;
 	margin: 0px 0px 2px 0px;
 	padding: 0.2em 0em  0.2em 0em  ;
@@ -476,7 +427,6 @@ div#mart_export_data
 { 
 
 	margin: 0px 0px 0px 0px;
-	font-size: 11pt; 
 }
 
 .el_visible,
@@ -485,36 +435,30 @@ div#mart_export_data
 { 						
 	color: [font_colour_rest];
 	margin: 1px 0px 1px 13px;
-	font-size: 11pt; 		
 }
 
 .el_hidden_AttFiltPanel,
 .ctl_hidden_AttFiltPanel 
 {
 	margin: 0px 0px 0px 0px;
-	font-size: 11pt;
 }
 
 .el_visible_AttFiltPanel,
 .ctl_visible_AttFiltPanel,
 {
 	margin: 1px 0px 1px 0px;
-     font-size: 11pt;
 }
 
 .mart_summarypanel_AttFiltHeader,
 .mart_summarypanel_AttFiltHeader_highlighted,
 .mart_summarypanel_AttFiltHeader_mouseover
 {
-	font-size: 11pt; 
 	color: [font_colour_rest];
 	cursor: pointer;
 	font-weight: bold;                            	
 	margin: 1px 0px 1px 18px;
 	padding: 0px 5px 0px 0px;
-/*	border: 1px solid #FFF8E7;*/
 	clear: both;
-/*	width: 100%; */
 }                     
 
 .mart_summarypanel_AttFiltHeader_mouseover
@@ -525,20 +469,14 @@ div#mart_export_data
 
 .mart_summarypanel_AttFiltHeader_highlighted
 {
-
-/*	border: 1px solid #FF9900;
-	background-color: 	#FFF8E7 ;
-*/
 	background-color: [font_colour_rest];
 	color: [font_colour_reverse];
-
 }
 						
 .mart_summarypanel_list_disabled,
 .mart_summarypanel_list
 { 
 	color: [font_colour_rest];
-	font-size: 11pt; 
 	clear: both;
 	width: inherit;
 	margin: 1px 0px 1px 0px;
@@ -548,7 +486,6 @@ div#mart_export_data
 .mart_summarypanel_listitem 
 {
 	color: [font_colour_rest];
-	font-size: 11pt; 
 	font-style: normal;
 	margin: 1px 0px 1px 30px;
 	width: inherit;
@@ -557,7 +494,6 @@ div#mart_export_data
 
 .mart_summarypanel_listitem2
 {
-	font-size: 11pt; 
 	font-style: normal;
 	margin: 1px 0px 1px 30px;
 	width: inherit;
@@ -567,7 +503,6 @@ div#mart_export_data
 
 .mart_summarypanel_listitem3
 {
-	font-size: 11pt; 
 	font-style: normal;
 	margin: 1px 0px 1px 30px;
 	width: inherit;
@@ -577,7 +512,6 @@ div#mart_export_data
 
 .mart_summarypanel_listitem4 
 {
-	font-size: 11pt;
 	font-style: normal;
 	margin: 1px 0px 1px 30px;
 	width: inherit;
@@ -595,7 +529,6 @@ div#mart_export_data
 .mart_attributepanel_title,
 .mart_joineddsetpanel_title
 {
-	font-size: 11pt;
 	font-weight: bold;
 }
 
@@ -624,7 +557,6 @@ div#mart_export_data
 .mart_results
 {
 	font-family: Courier;
-	font-size : 11pt;
 	overflow: auto;
 }
 
@@ -636,7 +568,6 @@ div#mart_export_data
 
 .mart_th
 { 
-	font-size: 10pt;
 	font-family: Arial;
 	border: solid 2px; 
 	white-space: nowrap;
@@ -646,7 +577,6 @@ div#mart_export_data
 
 .mart_th2
 { 
-	font-size: 10pt;
 	font-family: Arial;	
 	border: solid 2px; 
 	white-space: nowrap;
@@ -656,7 +586,6 @@ div#mart_export_data
 
 .mart_tr1
 { 
-	font-size: 11pt;
 	font-family: Courier;
 	border: solid 1px; 
 	background-color: [font_colour_reverse];
@@ -665,7 +594,6 @@ div#mart_export_data
 
 .mart_tr2
 { 	
-	font-size: 11pt;
 	font-family: Courier;	
 	border: solid 1px; 
 	background-color: [font_colour_reverse]; 
@@ -673,9 +601,7 @@ div#mart_export_data
 
 .mart_td
 { 
-	font-size: 11pt;
 	font-family: Courier; 	
-
 	border-width: 1px 2px 1px 2px; 
 	border-style: solid; 
 	white-space: nowrap;
@@ -683,11 +609,8 @@ div#mart_export_data
 }
 .mart_td_hyperlinks
 { 
-	font-size: 11pt;
 	font-family: Courier;	
-
 	white-space: nowrap;
-	/*color: black; */
 }
 
 
@@ -729,7 +652,7 @@ acronym
 		cursor : default ;
 		Background-Color : #ECEEF0 ;
 		font-family: Arial, Helvetica, sans-serif;
-		font-size: 9pt; 	
+		font-size: 0.8em; 	
 
 }
 
@@ -737,14 +660,13 @@ acronym
 {
 	background-color: white;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 9pt; 	
+	font-size: 0.8em; 	
 }
 .tableborder { background-color: #ECEEF0}
 .white { 
 	color: #ffffff; 
 	font-family: Arial, 
 	Helvetica, sans-serif; 
-	font-size: 10pt; 
 	font-weight: normal; 
 	text-decoration: none;
 }
