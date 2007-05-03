@@ -1,33 +1,17 @@
 [% # $Id$ %]
-[% 
-# =head1 testing head1
-# =head1 testing head1 aftur
-%]
 
-[% PROCESS 'header.tt' %]
-
-<div id="mart_containerpanel">
 
 <p>
-
 [% errmsg %]
-
 </p>
+
 <p>
 If you repeatedly get directed to this error page, there may be a problem with your
 current session parameters. To clear your session and start with a clean slate, please
-click the button below.
+click the <b>New</b> button below.
 </p>
-<form name="mainform" action="martview" method="post" enctype="multipart/form-data">
-  <input type="submit" name="newsession" value="New Session" />
-</form>
 
 <p>
-
 [% tracestring %]
-
 </p>
 
-</div> <!-- martpanel closes -->
-
-[% PROCESS 'footer.tt' %]

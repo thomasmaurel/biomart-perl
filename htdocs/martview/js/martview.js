@@ -1786,15 +1786,23 @@ function getCountAjax()
 }
 function pasteCount(returnString)
 {
-	// incase of two dataset query
-	// the count string is separated by __
-   	var arr = new Array();
-   	arr = returnString.split('__');
-   	for (var i=0; i < arr.length; i++)
+	// Forward the Exception
+   	if(returnString.search('BioMart::Exception') != -1)
    	{
-   		//alert(arr[i]);
-   		var dsNumber = i+1;
-   		document.getElementById('summarypanel_filter_count_'+dsNumber).innerHTML = arr[i];
+	   	document.getElementById('summarypanel_filter_count_1').innerHTML = 'Caught Exception, Hit New';	
+   	}
+   	else
+   	{
+		// incase of two dataset query
+		// the count string is separated by __
+   		var arr = new Array();
+   		arr = returnString.split('____');
+	   	for (var i=0; i < arr.length; i++)
+   		{
+   			//alert(arr[i]);
+   			var dsNumber = i+1;
+   			document.getElementById('summarypanel_filter_count_'+dsNumber).innerHTML = arr[i];
+   		}	
    	}
 }
 
@@ -1810,60 +1818,65 @@ function getResultsAjax()
 
 function pasteResults(returnString)
 {
-	// alert(returnString);
+	//alert(returnString);
 	
-	// Need to split the results string into 5 PORTIONS
-	// 1. preView Formatter Selected    2. all preView
-	// 3. exportView Formmater Selected 4. all exportView Formatters
-	// 5. results to be pasted
-	// we need to do this as e.g different Att Pages may have different formatters ENS. seq, feature etc
-	var preViewMenu;
-	var exportViewMenu;
-	var preView_formatters;
-	var exportView_formatters;
-	var j=0; // for option count index
-	var arr = new Array();
-	
-	arr = returnString.split('____');
-	
-	// [PREVIEW MENU] remove all existing options 
-	document.mainform.preView_outputformat.length = 0;
-	// [PREVIEW MENU] add all formatters as options
-	preView_formatters = new Array();
-	preView_formatters = arr[1].split(',');
-	for (var i = 0; i < preView_formatters.length; i++)
+	// Forward the Exception
+   	if(returnString.search('BioMart::Exception') != -1)
 	{
-		if(preView_formatters[i] != 'TXT' &&  preView_formatters[i] != 'XLS') {
-			if(arr[0].toUpperCase() == preView_formatters[i]){
-				document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase(), true, true);
-			}
-			else {
-				document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase());
-			}
-		}
+		document.getElementById('resultsTableId').innerHTML = returnString;
 	}
-	
-	
-	j=0;
-	// [EXPORTVIEW MENU] remove all existing options 
-	document.mainform.exportView_outputformat.length = 0;
-	// [EXPORTVIEW MENU] add all formatters as options
-	exportView_formatters = new Array();
-	exportView_formatters = arr[3].split(',');	
-	for (var i = 0; i < exportView_formatters.length; i++)
+	else
 	{
-		if(preView_formatters[i] != 'TXT') {
-			if(arr[2].toUpperCase() == exportView_formatters[i]){
-			document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase(),true,true);
-			}
-			else {
-				document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase());
-			}
-		}
-	}
+		// Need to split the results string into 5 PORTIONS
+		// 1. preView Formatter Selected    2. all preView
+		// 3. exportView Formmater Selected 4. all exportView Formatters
+		// 5. results to be pasted
+		// we need to do this as e.g different Att Pages may have different formatters ENS. seq, feature etc
+		var preViewMenu;
+		var exportViewMenu;
+		var preView_formatters;
+		var exportView_formatters;
+		var j=0; // for option count index
+		var arr = new Array();		
+		arr = returnString.split('____');
 
-	document.getElementById('resultsTableId').innerHTML = arr[4];
+		// [PREVIEW MENU] remove all existing options 
+		document.mainform.preView_outputformat.length = 0;
+		// [PREVIEW MENU] add all formatters as options
+		preView_formatters = new Array();
+		preView_formatters = arr[1].split(',');
+		for (var i = 0; i < preView_formatters.length; i++)
+		{
+			if(preView_formatters[i] != 'TXT' &&  preView_formatters[i] != 'XLS') {
+				if(arr[0].toUpperCase() == preView_formatters[i]){
+					document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase(), true, true);
+				}
+				else {
+					document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase());
+				}
+			}
+		}
 	
+	
+		j=0;
+		// [EXPORTVIEW MENU] remove all existing options 
+		document.mainform.exportView_outputformat.length = 0;
+		// [EXPORTVIEW MENU] add all formatters as options
+		exportView_formatters = new Array();
+		exportView_formatters = arr[3].split(',');	
+		for (var i = 0; i < exportView_formatters.length; i++)
+		{
+			if(preView_formatters[i] != 'TXT') {
+				if(arr[2].toUpperCase() == exportView_formatters[i]){
+				document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase(),true,true);
+				}
+				else {
+					document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase());
+				}
+			}
+		}
+		document.getElementById('resultsTableId').innerHTML = arr[4];
+	}
 }
 
 function doAjaxMagic(toDo)

@@ -1668,7 +1668,7 @@ sub filterDisplayType
 			$session->param('filtercount_of_dataset', \%filtercount_of_dataset);	
 	    	$logger->debug("COUNT: $entry_count out of TOTAL: $total_count");
 	    	
-			$countStringForJS .= '__' if ($countStringForJS); # used as separator for TWO DS counts 
+			$countStringForJS .= '____' if ($countStringForJS); # used as separator for TWO DS counts 
 			$countStringForJS .= $entry_count || 0;
 			$countStringForJS .= ' / ';
 			$countStringForJS .= $total_count || 0;
