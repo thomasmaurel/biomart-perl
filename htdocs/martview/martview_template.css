@@ -32,7 +32,8 @@ div#mart_containerpanel
 
 .mart_summarypanel_datasets
 { 
-	background-color: #D3D9E2; /*[summary_panel_bgcolour];*/
+  /*background-color: #D3D9E2; /*[summary_panel_bgcolour];*/
+  background-color: [summary_panel_bgcolour];
 
 /*	border-style: solid;
 	margin: 12px 6px 12px 0px;
@@ -468,7 +469,7 @@ div#mart_export_data
 
 .mart_summarypanel_AttFiltHeader_highlighted
 {
-	background-color: [font_colour_rest];
+        /*background-color: [font_colour_rest];*/
 	color: [font_colour_reverse];
 }
 						
