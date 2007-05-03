@@ -150,26 +150,25 @@ div#mart_export_data
 }
 															
 /* button and hover on functions */					
-.mart_btn
+.mart_btn,
+.mart_btn:hover,
+.mart_btnhov
 {
-	font-family: sans-serif;	
-	border:2px solid;
-	font-weight: bold;
-	color:[font_colour_top_bottom_menubar];
-   	background-color:[top_bottom_menubar_bgcolour];
-	padding: 0.3em 0.5em 0.1em 0.5em;
-	border-color: [main_panel_bgcolour] [button_shade] [button_shade] [main_panel_bgcolour];
-}
-      				
-.mart_btnhov			
+  font-family: sans-serif; /* Needed if buton is <input> */	
+  font-weight: bold;
+  padding    : 0.2em 0.5em 0.2em 0.5em;
+  border     : 2px solid;
+  border-style: outset;
+  color      : [font_colour_top_bottom_menubar];
+  background-color: [top_bottom_menubar_bgcolour];
+}     				
+.mart_btn:hover,
+.mart_btnhov
 {
-	font-family: sans-serif;
-	font-weight: bold;	
-   	color: [button_shade];
-	background-color:[top_bottom_menubar_bgcolour];
-	padding: 0.3em 0.5em 0.1em 0.5em;
-	border-color: [button_shade] [main_panel_bgcolour] [main_panel_bgcolour] [button_shade] ;
+  border-style : inset;        
+  cursor       : pointer;
 }
+
 .mart_btn_go
 {
 	font-family: sans-serif;	
