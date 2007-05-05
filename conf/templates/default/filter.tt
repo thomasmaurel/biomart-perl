@@ -81,25 +81,25 @@
 
 	  	[% SWITCH first_option.filter().displayType() %]
 	
-	  	[% CASE 'list' %]
+			[% CASE 'list' %]
 		</div>
 		<div style="float: left">	
 	
-		    	[% IF first_option.filter().multipleValues() %]
-	    		[% render_checkboxlist(first_option, "${filter_paramname}__list", filter) %]
+				[% IF first_option.filter().multipleValues() %]
+	    			[% render_checkboxlist(first_option, "${filter_paramname}__list", filter) %]
     			[% ELSE %]
-      		[% render_radiobuttonlist(first_option, "${filter_paramname}__list", filter) %]
-	   		[% END %]
+      				[% render_radiobuttonlist(first_option, "${filter_paramname}__list", filter) %]
+				[% END %]
 	
-		[% CASE 'text' %]	
-		<br />	
-    			[% render_textfield(first_option, "${filter_paramname}__text", filter) %]
+			[% CASE 'text' %]	
+		<br />
+				[% render_textfield(first_option, "${filter_paramname}__text", filter) %]
 	
-	  	[% CASE %]
-  			[% IF first_option.filter().displayType() # Skips undef ones. %]
-  			ERROR: option-filter displayType '[% first_option.filter().displayType() || '[undef]' %]' not valid
-  			[% END %]
-	  	[% END %]
+			[% CASE %]
+				[% IF first_option.filter().displayType() # Skips undef ones. %]
+					ERROR: option-filter displayType '[% first_option.filter().displayType() || '[undef]' %]' not valid
+				[% END %]
+		[% END %]
 		</div>
 
 	[% CASE 'list' %]
@@ -108,26 +108,25 @@
      	# checkboxes/radiobuttons. %]
      	
 		[% IF filter.style() == 'menu' && filter.graph != '1' %]
-		[% render_selectmenu(filter, filter_paramname) %]
+			[% render_selectmenu(filter, filter_paramname) %]
 		[% ELSIF filter.style() == 'menu' && filter.graph == '1'   %] 
-		[% render_textfield(filter, filter_paramname) %]
+			[% render_textfield(filter, filter_paramname) %]
   		[% ELSE %]
-		
-		[% IF filter.multipleValues() %]
-      	[% render_checkboxlist(filter, filter_paramname) %]
+			[% IF filter.multipleValues() %]
+      			[% render_checkboxlist(filter, filter_paramname) %]
     		[% ELSE %]
-		[% render_radiobuttonlist(filter, filter_paramname) %]
-		[% END %]
+				[% render_radiobuttonlist(filter, filter_paramname) %]
+			[% END %]
 		[% END %]
 
 	[% CASE 'text' %]
-  	[% # The filter is a plain text filter %]
-  	[% render_textfield(filter, filter_paramname) %]
+  		[% # The filter is a plain text filter %]
+  		[% render_textfield(filter, filter_paramname) %]
 
 	[% CASE %]
-	[% IF filter.displayType() # Skips undef ones. %]
-	ERROR: filter displayType '[% filter.displayType() || '[undef]' %]' not valid
-	[% END %]
+		[% IF filter.displayType() # Skips undef ones. %]
+			ERROR: filter displayType '[% filter.displayType() || '[undef]' %]' not valid
+		[% END %]
 	[% END %]
 
 </div>

@@ -155,62 +155,57 @@ sub _new {
 =cut
 
 sub getConfigurationTree {
-    my ($self, $virtualSchema, $dataSetName, $interfaceType,$dsCounter) = @_;
-
-    my $registry = $self->get('registry');
-    my $dataSet = $registry->getDatasetByName($virtualSchema, $dataSetName);
-
+	my ($self, $virtualSchema, $dataSetName, $interfaceType,$dsCounter) = @_;
+	my $registry = $self->get('registry');
+	my $dataSet = $registry->getDatasetByName($virtualSchema, $dataSetName);
+	
     #-------------------------------------- 
-     my $xml;
-     my $xmlFile = $registry->getDirPath();
-     $xmlFile .= $virtualSchema."/XML/";     
-     $xmlFile .= $self->get('location')->name().".".$dataSetName.".".$interfaceType;
-     #$xmlFile .= $self->get('location')->database().".".$dataSetName.".".$interfaceType;
+	my $xml;
+	my $xmlFile = $registry->getDirPath();
+	$xmlFile .= $virtualSchema."/XML/";     
+	$xmlFile .= $self->get('location')->name().".".$dataSetName.".".$interfaceType;
+	#$xmlFile .= $self->get('location')->database().".".$dataSetName.".".$interfaceType;
    
-     if(-e $xmlFile) # if xml file exists on disk
-     {
-          $xml = ${retrieve($xmlFile)};
-          print STDERR $self->get('location')->name(), "...", $dataSetName, "...", $interfaceType, "...", "Retrieving xml from DISK: ";
-          #print STDERR $self->get('location')->database(), "...", $dataSetName, "...", $interfaceType, "...", "Retrieving xml from DISK: ";
+	if(-e $xmlFile) # if xml file exists on disk
+	{
+		$xml = ${retrieve($xmlFile)};
+		print STDERR $self->get('location')->name(), "...", $dataSetName, "...", $interfaceType, "...", "Retrieving xml from DISK: ";
+		#print STDERR $self->get('location')->database(), "...", $dataSetName, "...", $interfaceType, "...", "Retrieving xml from DISK: ";
 	}
-     else # Get XML from the appropriate server
-     {
-          $xml = $self->get('location')->getDatasetConfigXML($virtualSchema,
+	else # Get XML from the appropriate server
+	{
+		$xml = $self->get('location')->getDatasetConfigXML($virtualSchema,
 							  $dataSetName,
 							  $interfaceType,
 							  $dsCounter);
   
-          my $tempXMLHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 
-                  AttributeCollection AttributeDescription FilterPage FilterGroup 
-                  FilterCollection FilterDescription Importable Exportable Key 
-                MainTable BatchSize SeqModule Option PushAction)], keyattr => []);
+		my $tempXMLHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 
+		 	AttributeCollection AttributeDescription FilterPage FilterGroup 
+			FilterCollection FilterDescription Importable Exportable Key 
+			MainTable BatchSize SeqModule Option PushAction)], keyattr => []);
 
-          my $softwareVersion = $tempXMLHash->{'softwareVersion'};
-                if (!$softwareVersion || ($softwareVersion eq '0.4')) 
-                {       
-                         print STDERR "->  upgrading to 0.5 ... ";
-
-               my $params=BioMart::Web::CGIXSLT::read_https();
-               open(STDOUTTEMP, ">temp.xml");
-               print STDOUTTEMP $xml;
-               close(STDOUTTEMP);               
-               $params->{'source'} = 'temp.xml';              
-               $params->{'style'} = Cwd::cwd().'/conf/mart_0_4_0_5.xsl';
-               my $new_xml;
-               eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
-               if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
-               #Now, we are printing and saving what we get
-               $xml = BioMart::Web::CGIXSLT::print_output($new_xml);
-               if (-e 'temp.xml')
-               {
-                    unlink 'temp.xml';           
-               }                          
-                           
-          }               
-          #---------          
-          store(\$xml, $xmlFile); 
-     }     
-     #--------------------------------------
+		my $softwareVersion = $tempXMLHash->{'softwareVersion'};
+		if (!$softwareVersion || ($softwareVersion eq '0.4')) 
+		{       
+			print STDERR "->  upgrading to 0.5 ... ";
+			my $params=BioMart::Web::CGIXSLT::read_https();
+			open(STDOUTTEMP, ">temp.xml");
+			print STDOUTTEMP $xml;
+			close(STDOUTTEMP);               
+			$params->{'source'} = 'temp.xml';              
+			$params->{'style'} = Cwd::cwd().'/conf/mart_0_4_0_5.xsl';
+			my $new_xml;
+			eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
+			if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
+			#Now, we are printing and saving what we get
+			$xml = BioMart::Web::CGIXSLT::print_output($new_xml);
+			if (-e 'temp.xml') {
+				unlink 'temp.xml';           
+			}                           
+		}          
+		store(\$xml, $xmlFile);
+	}
+	#--------------------------------------
 
     unless ($xml) {
 	BioMart::Exception::Configuration->throw("Could not get xml for $dataSetName, interface $interfaceType\n");
@@ -226,24 +221,23 @@ sub getConfigurationTree {
     my $configurationTree = BioMart::Configuration::ConfigurationTree->new(
 	     'dataSetName'  => $dataSetName,
     );
-          # HERE XML version is 0.5 for our local marts and NONE for dicty and wormbase
-          #open(STDVER,">>/homes/syed/Desktop/temp2/biomart-web/lib/BioMart/Configuration/version");
-          #my $softwareVersion = $xmlHash->{'softwareVersion'};
-          #print STDVER "!!!! DATASET $dataSetName Version: $softwareVersion ";
-          #print STDVER "\n";
-          #close(STDVER);
-#    #TODO: deal with softwareVersion test
-#    my $softwareVersion = $xmlHash->{'softwareVersion'};
-#    if (!$softwareVersion) {       
-#	warn("!!!! DATASET $dataSetName Version does NOT exist ") ;
-#    }
-#    elsif ( $softwareVersion ne '0.5') {       
-#	warn("!!!! DATASET $dataSetName Version: $softwareVersion ") ; 
-#    }
-    
-#    #TODO: implement noCount functionality for datasets with it set
-#    my $noCount = $xmlHash->{'noCount'};
-#    warn("!!!! DATASET $dataSetName HAS NO COUNT SET ") if ($noCount && $noCount == 1);
+	# HERE XML version is 0.5 for our local marts and NONE for dicty and wormbase
+	#open(STDVER,">>/homes/syed/Desktop/temp2/biomart-web/lib/BioMart/Configuration/version");
+	#my $softwareVersion = $xmlHash->{'softwareVersion'};
+	#print STDVER "!!!! DATASET $dataSetName Version: $softwareVersion ";
+	#print STDVER "\n";
+	#close(STDVER);
+	#    #TODO: deal with softwareVersion test
+	#    my $softwareVersion = $xmlHash->{'softwareVersion'};
+	#    if (!$softwareVersion) {       
+	#	warn("!!!! DATASET $dataSetName Version does NOT exist ") ;
+	#    }
+	#    elsif ( $softwareVersion ne '0.5') {       
+	#	warn("!!!! DATASET $dataSetName Version: $softwareVersion ") ; 
+	#    }
+	#    #TODO: implement noCount functionality for datasets with it set
+	#    my $noCount = $xmlHash->{'noCount'};
+	#    warn("!!!! DATASET $dataSetName HAS NO COUNT SET ") if ($noCount && $noCount == 1);
 
     #resticted primary key access
     my $restricted_pk = $xmlHash->{'primaryKeyRestriction'};
@@ -469,14 +463,6 @@ sub getConfigurationTree {
 			$filter->attribute($attribute);
                         $filter->defaultOn($xmlFilter->{'defaultOn'});
                         $filter->setAttribute($xmlFilter->{'setAttribute'});
-			    # leaving this bit to test default filters
-                   #if($xmlFilter->{'internalName'} eq 'in_encode_region')
-			    #{
-			    #      $filter->defaultOn('true');
-			    #      open (STDME, ">>/homes/syed/Desktop/temp3/biomart-web/conf/haloFILT");
-			    #      print STDME "\n", $dataSetName, $filter->defaultOn;
-			    #      close(STDME);
-			    #}
 		    }
 		    elsif ($xmlFilter->{'type'} 
 			   && $xmlFilter->{'type'} eq 'boolean_num'){
@@ -527,15 +513,7 @@ sub getConfigurationTree {
 				 $xmlFilter->{'defaultValue'});
 				 
 			    $filter->defaultOn($xmlFilter->{'defaultOn'});
-			    # leaving this bit to test default filters
-			    #if($xmlFilter->{'internalName'} eq 'chromosome_name')
-			    #{
-			    #      $filter->defaultOn('true');
-			    #      open (STDME, ">>/homes/syed/Desktop/temp3/biomart-web/conf/haloFILT");
-			    #      print STDME "\n", $dataSetName, $filter->defaultOn;
-			    #      close(STDME);
-			    #}
-			    
+	    
 			    $filter->setAttribute(
 				 $xmlFilter->{'setAttribute'});			
 		    }
@@ -554,9 +532,17 @@ sub getConfigurationTree {
 			#$filter->displayType('text');
 		    #}
 		    #else{
-			$filter->displayType($xmlFilter->{'displayType'});
+			$filter->displayType($xmlFilter->{'displayType'});			
 		    #}
-		    $filter->multipleValues($xmlFilter->{'multipleValues'});
+		    
+			$filter->multipleValues($xmlFilter->{'multipleValues'});
+			   
+	 		# hack to test CONTAINER type multiSelect with bool radio buttons
+			if($xmlFilter->{'type'} eq 'boolean_list')
+			{
+			#	print "\nI am HERE : ", $xmlFilter->{'type'}," \n";
+				$filter->multipleValues('1');
+			}
 		    $filter->style($xmlFilter->{'style'});
 		    $filter->graph($xmlFilter->{'graph'});
 		    $filter->autoCompletion($xmlFilter->{'autoCompletion'});

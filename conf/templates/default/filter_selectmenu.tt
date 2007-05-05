@@ -67,8 +67,8 @@ document['${param_name}__image'].src='${filter.imageURL}';
   [% option_value_escaped = option_value | replace('"','&quot;')  #" %]
   [% option_displayname = option.displayName() | replace('"','&quot;') #" %]
 
-
-  <option value="[% option_value_escaped %]"
+	
+	<option value="[% option_value_escaped %]"
   [* option_value = "[% option_value_escaped %]" *]
 
   	[* IF (( session.param("[% param_name %]").defined() || ((session.param("[% param_name %]").size) && 

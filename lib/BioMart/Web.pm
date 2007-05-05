@@ -943,6 +943,7 @@ sub handleURLRequest
 							# original filterName as the one received is just options Name
 							# add filter with value  <ds>__filter.<filterInternalName>__list = array of values
 							my $realFilterName = $1;
+							#print $realFilterName," = $portions[1]  = $val " ," --- ";
 							$session->param($dsName.'__filter.'.$1.'__list', $val) if ($1); # for display of radio buttons
 							$session->param($dsName.'__filter.'.$1, $portions[1]) if ($1); # for display of select Menu
 							# add OptionName (thats the one which comes in URL) with value just as in XML query  
