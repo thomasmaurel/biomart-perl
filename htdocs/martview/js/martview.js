@@ -1977,6 +1977,26 @@ function check(eltId, state) {
 		}
 	}
 
+	function doviaJS()
+	{
+		//alert('in here');
+		var iFrameMe = document.createElement("iframe");
+		iFrameMe.name = 'newIFrame';
+		iFrameMe.style.width = '500px';
+		iFrameMe.style.height = '300px';
+		iFrameMe.style.visibility = 'true';
+		iFrameMe.src = '/help.html';
+		iFrameMe.onload = function ()
+		{
+			window.parent.getCountAjax();
+		}
+		//alert('and again');
+		document.mainform.appendChild(iFrameMe);
+		//alert('and again and again ');
+				
+	}
+
+
 /*
 	=head1 CVSINFO
 

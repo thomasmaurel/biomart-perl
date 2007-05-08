@@ -29,12 +29,16 @@
    			onmouseout="this.className='mart_btn'"
 			onclick="
 			var currentPath = window.location.pathname; 
-			currentPath = currentPath.replace('/[% session.param('_SESSION_ID') %]', '');
+			currentPath = currentPath.replace('/[% session.param('_SESSION_ID') %]', '');			
 			[% IF session.param("GALAXY_URL") %]
 			currentPath = currentPath + '?GALAXY_URL=[%session.param("GALAXY_URL")%]';
-			[% END %] 	
-  			window.location = currentPath; 
+			[% END %] 
+			window.location = currentPath; 
+			
+			document.mainform.submit();
+			
   			return false; 
+			
   			" 
   			title="Start a new query"/>	    
 	
@@ -60,6 +64,9 @@
 			document.mainform.savequery.value = 0; 
 			document.mainform.showquery.value = 0; 
 			document.mainform.countButton.value = 5;
+			
+			doviaJS();
+				
 			document.mainform.target = 'count_hiddenIFrame';
 			document.mainform.submit();
 
@@ -209,7 +216,12 @@
 		</td>
 	
 		<td class="mart_tableMainPanel" height="100%" width="85%" valign="top" align="left">
-						
+
+		<iframe id="countIFrameId" name="count_hiddenIFrame" src="about:blank;" style="width:0px; height:0px;" 
+				onload="window.parent.getCountAjax();">
+	
+			</iframe>
+					
 			<input type="hidden" name="menuNumber" value="0" />
 			<input type="hidden" name="newsession" value="0" />
 			<input type="hidden" name="do_export" value="0" />
