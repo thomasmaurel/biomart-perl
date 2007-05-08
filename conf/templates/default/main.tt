@@ -38,8 +38,10 @@
 	
 	<!-- following Iframes must be kept out of the above table otherwise FireFox starts moaning about auto scrolling -->
 	<!-- we set display:none (for all browsers) and visibility:hiddden (for Safari) through JS -->
-			
-			<iframe id="resultsIFrameId" name="results_hiddenIFrame" src="about:blank" style="width:400px; height:100px;" 
+	<iframe id="countIFrameId" name="count_hiddenIFrame" src="about:blank" style="width:0px; height:0px;" 
+				onload="getCountAjax();">
+	</iframe>				
+	<iframe id="resultsIFrameId" name="results_hiddenIFrame" src="about:blank" style="width:0px; height:0px;" 
 				onload="getResultsAjax();">
 	</iframe>
 	

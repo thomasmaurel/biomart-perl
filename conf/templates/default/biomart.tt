@@ -65,7 +65,7 @@
 			document.mainform.showquery.value = 0; 
 			document.mainform.countButton.value = 5;
 			
-			doviaJS();
+			doviaJS('count');
 				
 			document.mainform.target = 'count_hiddenIFrame';
 			document.mainform.submit();
@@ -111,6 +111,9 @@
 			document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
 			document.mainform.resultsButton.value = 5;
+			
+			doviaJS('results');			
+			
 			document.mainform.target = 'results_hiddenIFrame';
 			document.mainform.submit();
 			
@@ -217,10 +220,6 @@
 	
 		<td class="mart_tableMainPanel" height="100%" width="85%" valign="top" align="left">
 
-		<iframe id="countIFrameId" name="count_hiddenIFrame" src="about:blank;" style="width:0px; height:0px;" 
-				onload="window.parent.getCountAjax();">
-	
-			</iframe>
 					
 			<input type="hidden" name="menuNumber" value="0" />
 			<input type="hidden" name="newsession" value="0" />
@@ -529,6 +528,8 @@
 					document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
 					document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
+					doviaJS('results');
+					
 					document.mainform.resultsButton.value = 5;
 					document.mainform.target = 'results_hiddenIFrame';
 
@@ -594,6 +595,9 @@
 						document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
 						document.mainform.resultsButton.value = 5;
+						
+						doviaJS('results');
+						
 						document.mainform.target = 'results_hiddenIFrame';
 
 						document.mainform.submit();
