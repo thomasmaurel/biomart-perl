@@ -350,17 +350,19 @@ sub _new
 		my $dbh = DBI->connect($dsn, $user, $pass, {'RaiseError' => 1});
 		$session = CGI::Session->new("driver:MySQL", $session_id, {Handle=>$dbh})
 			|| BioMart::Exception::Session->throw(CGI::Session->errstr);
-		$dbh->disconnect();		
+		#$dbh->disconnect();		
 	}
 	elsif ($sessions{'driver'} eq 'oracle')
 	{
 		my $dsn = $sessions{'dsn'};
 		my $user = $sessions{'user'};
 		my $pass = $sessions{'pass'};
-		my $dbh = DBI->connect($dsn, $user, $pass);
+		# here LongReadLen determine the max size of a session that goes into a single row.
+		# right now setting this to 1 MB for a session. can go up to 4GB as per Oracle specifications
+		my $dbh = DBI->connect($dsn, $user, $pass, {'RaiseError' => 1, 'LongReadLen' => 1000000 });		
 		$session = CGI::Session->new("driver:Oracle", $session_id, {Handle=>$dbh})
 			|| BioMart::Exception::Session->throw(CGI::Session->errstr);
-		$dbh->disconnect();	
+		#$dbh->disconnect();	
 	}
 	elsif ($sessions{'driver'} eq 'postgres')
 	{
