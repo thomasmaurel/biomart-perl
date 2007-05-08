@@ -2,19 +2,8 @@
 var currentTab="Query";
 </script>
 
+<script language="javascript" type="text/javascript">
 
-
-<!--link rel="stylesheet" href="/martview/../include/stylesheet.css" type="text/css" /-->
-
-
- <script language="javascript" type="text/javascript">
-<!--
-
-
-if (top != self)
-   {
-    top.location.href=location.href;
-   }
 	function colourTab(){
 		if((document.getElementById(currentTab))){
 			(document.getElementById(currentTab)).className='menuh';
@@ -31,7 +20,6 @@ if (top != self)
 			(document.getElementById(overTab)).className='menu';
 		}
 	}
-// -->
 </script>
 
 

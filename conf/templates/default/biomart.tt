@@ -112,7 +112,7 @@
 
 			document.mainform.resultsButton.value = 5;
 			
-			doviaJS('results');			
+			doviaJS('results');		
 			
 			document.mainform.target = 'results_hiddenIFrame';
 			document.mainform.submit();
@@ -403,8 +403,8 @@
 									if (document.mainform.background_email.value=='') {
 								   		alert('You need to specify an email address for background jobs.');
 								   		okToSub = 0;
-								   	}
-								   	if (okToSub==1) { 
+								   }
+								   if (okToSub==1) { 
 										document.getElementById('resultsTableId').innerHTML = 'Loading... ';
 
 										var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
@@ -433,7 +433,11 @@
 									} 
 								} 
 								else {
-								   document.mainform.target = 'newwindow';
+								   [% IF session.param("GALAXY_URL") %]
+								   	document.mainform.target = '_self';
+								   [% ELSE %]
+ 	 								   document.mainform.target = 'newwindow';
+ 	 								[% END %]
 								   document.mainform.submit();
 								}
 								

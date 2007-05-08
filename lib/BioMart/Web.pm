@@ -377,9 +377,10 @@ sub _new
 	
 	
 	if($session->is_new()) {
-   		#### The reason we do this is taht when there doesnt find an existing session to be restored, a
-   		#### new session gets created and program exists and comes back and again and tries to restore again,
-   		#### and this time around it finds  an existing session. weirdoooo
+   		#### If the URL string does not contain a session ID or an inexistent session ID then a
+   		#### new session gets created and stored and script returns with out doing anything. 
+   		#### Then comes back again and tries to restore this session ID,
+   		#### and this time around, finds it and restores it. weirdoooo
    		# Galaxy.
 	    	if ($cgi->param("GALAXY_URL") and !$session->param("GALAXY_URL")) {
     			$session->param("GALAXY_URL",$cgi->param("GALAXY_URL")); 
@@ -2229,10 +2230,12 @@ sub filterDisplayType
 			$session->param('resultsButton', '0') ;
 			# should return 5 values
 			
+			$all_formatters = 'TSV' if ($session->param("GALAXY_URL"));
+			
 			print lc($preView_formatter_name);
 			print '____';
 			print uc($all_formatters);
-			print '____';			
+			print '____';
 			print lc($exportView_formatter_name);			
 			print '____';
 			print uc($all_formatters);
