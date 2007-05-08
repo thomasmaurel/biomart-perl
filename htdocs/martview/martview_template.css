@@ -32,13 +32,13 @@ div#mart_containerpanel
 
 .mart_summarypanel_datasets
 { 
-  /*background-color: #D3D9E2; /*[summary_panel_bgcolour];*/
-  background-color: [summary_panel_bgcolour];
+  /*background-color: #D3D9E2; /*[colour_saturation80];*/
+  background-color: [colour_saturation80];
 
 /*	border-style: solid;
 	margin: 12px 6px 12px 0px;
 	border-width: 3px 3px 3px 0px;
-	border-color: [blocks_outline_colour];
+	border-color: [colour_saturation60];
 	padding: 16px 30px 16px 30px;	
 */
 /*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  */ /*FOR IE 6 and below*/						
@@ -53,13 +53,13 @@ div#mart_containerpanel
 div#mart_mainpanel
 {
 
-	background-color: [main_panel_bgcolour];
+	background-color: [colour_saturation100];
 	padding: 0px 8px 8px 8px;
 /*
 	border-style: solid;
 	margin: 12px 0px 12px 6px;
 	border-width: 3px 0px 3px 3px;
-	border-color: [blocks_outline_colour];
+	border-color: [colour_saturation60];
 	padding: 16px 20px 16px 20px;
 */
 /*	max-width: inherit; */  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
@@ -70,10 +70,10 @@ div#mart_mainpanel
 
 .mart_datasetselectpanel 
 {
-	background-color: [main_panel_bgcolour];
+	background-color: [colour_saturation100];
 	border-style: solid;
 	border-width: 0px;
-	border-color: [blocks_outline_colour];
+	border-color: [colour_saturation60];
 	/*min-height: 350px; */
 	/*padding: 4px;*/
 	width: inherit;
@@ -89,7 +89,7 @@ div#mart_main_menubar_outer
 	margin: 2px;
 	border-style: solid;
 	border-width: 2px;	
-	border-color: [blocks_outline_colour];
+	border-color: [colour_saturation60];
 	width: inherit;
 	background-color: white;                           
 }
@@ -97,19 +97,19 @@ div#mart_main_menubar_outer
 .mart_main_menubar
 {
 	padding: 7px 0px 7px 0px;	
-	border-color: [top_bottom_menubar_bgcolour];
-	background-color: [top_bottom_menubar_bgcolour];
+	border-color: [colour_saturation20];
+	background-color: [colour_saturation20];
 }
 
 div#mart_bottom_bar
 {	
 	border-style: solid;
 	border-width: 1px;
-	color: [font_colour_top_bottom_menubar];
+	color: [colour_saturation80];
 	font-weight: bold;
 	width: inherit;
-	border-color: [top_bottom_menubar_bgcolour];
-	background-color: [top_bottom_menubar_bgcolour];
+	border-color: [colour_saturation20];
+	background-color: [colour_saturation20];
 	font-family: sans-serif;
 }
 
@@ -118,7 +118,7 @@ div#mart_bottom_bar
 	border-style: solid;
 	border-width: 1px;                           
 	padding: 4px;
-	border-color: [blocks_outline_colour];
+	border-color: [colour_saturation60];
 	clear: both;
 	width: inherit;                           
 	overflow: auto;
@@ -127,33 +127,35 @@ div#mart_bottom_bar
 
 div#mart_export_menubar	
 {
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	border: solid;
-	background-color: [main_panel_bgcolour];
+	background-color: [colour_saturation100];
 	border-width: 0px;
 	padding: 0px 0px 0px 0px;
-	border-color: [blocks_outline_colour];
+	border-color: [colour_saturation60];
 	width: inherit; 
 }
 
 div#mart_export_data
 { 
-	color: [font_colour_rest];
-	background-color: [main_panel_bgcolour];
+	color: [colour_saturation0];
+	background-color: [colour_saturation100];
 	height: 75%;
 	_height: 100%; /* for IE only */
 }
 
 .mart_viewPanel
 {
-	color: [font_colour_rest];
-	background-color: white;/*[blocks_outline_colour];*/	
+	color: [colour_saturation0];
+	background-color: white;/*[colour_saturation60];*/	
 }
 															
 /* button and hover on functions */					
 .mart_btn,
 .mart_btn:hover,
-.mart_btnhov
+.mart_btnhov,
+.mart_btn_go,
+.mart_btnhov_go
 {
   font-family: sans-serif; /* Needed if buton is <input> */	
   font-size  : 90%;
@@ -161,45 +163,31 @@ div#mart_export_data
   padding    : 0.2em 0.5em 0.2em 0.5em;
   border     : 1px solid;
   border-style: outset;
-  color      : [font_colour_top_bottom_menubar];
-  background-color: [top_bottom_menubar_bgcolour];
+  color      : [colour_saturation80];
+  background-color: [colour_saturation20];
 }     				
 .mart_btn:hover,
-.mart_btnhov
+.mart_btnhov,
+.mart_btn_go:hover,
+.mart_btnhov_go
 {
   border-style : inset;        
   cursor       : pointer;
+  color      : [colour_saturation100];
+  background-color: [colour_saturation40];
 }
 
-.mart_btn_go
-{
-	font-family: sans-serif;	
-	border:1px solid;
-	font-weight: bold;
-	color:[font_colour_top_bottom_menubar];
-   	background-color:[top_bottom_menubar_bgcolour];
-	border-color: [top_bottom_menubar_bgcolour];
-}
-      				
-.mart_btnhov_go			
-{
-	font-family: sans-serif;
-	font-weight: bold;	
-	color:[top_bottom_menubar_bgcolour];
-   	background-color:[font_colour_top_bottom_menubar];
-	border-color: [font_colour_top_bottom_menubar];
-}
 
 /* Other Input fields such drop downs and text field and hover on functions */					
 .mart_input				
 {
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	font-family: sans-serif;
 }
       				
 .mart_inputhov			
 {	
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	font-family: sans-serif;
 }
 
@@ -221,11 +209,11 @@ div#mart_export_data
 .mart_schemamenu,	
 .mart_datasetlinkmenu
 {
-	color: [font_colour_rest];
-	background-color: [main_panel_bgcolour];
+	color: [colour_saturation0];
+	background-color: [colour_saturation100];
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
-	border-color: [font_colour_rest];
+	border-color: [colour_saturation0];
 	padding: 0px 0px 16px 0px;
 	clear: both;
 	overflow: auto;
@@ -233,22 +221,22 @@ div#mart_export_data
 
 .mart_databasemenu
 {
-	color: [font_colour_rest];
-	background-color: [main_panel_bgcolour];
+	color: [colour_saturation0];
+	background-color: [colour_saturation100];
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
-	border-color: [font_colour_rest];
+	border-color: [colour_saturation0];
 	clear: both;
 	overflow: auto;
 }
 .mart_interfacemenu,
 .mart_datasetmenu
 {
-	color: [font_colour_rest];
-	background-color: [main_panel_bgcolour];
+	color: [colour_saturation0];
+	background-color: [colour_saturation100];
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
-	border-color: [font_colour_rest];
+	border-color: [colour_saturation0];
 	padding: 16px 0px 16px 0px;
 	clear: both;
 	overflow: auto;
@@ -256,10 +244,10 @@ div#mart_export_data
 
 .dummyLine
 {
-	background-color: [summary_panel_bgcolour];
+	background-color: [colour_saturation80];
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
-	border-color: [font_colour_rest];
+	border-color: [colour_saturation0];
 	margin: 16px;
 }
 					
@@ -273,18 +261,20 @@ div#mart_export_data
 .mart_compression_list,
 .mart_compression
 {
-	color: [font_colour_rest];
-	background-color: [main_panel_bgcolour];
+	color: [colour_saturation0];
+	background-color: [colour_saturation100];
 	border-style: solid;
 	border-width: 1px 0px 1px 1px;
-	border-color: [blocks_outline_colour];
+	border-color: [colour_saturation60];
 	padding: 4px;
 	margin: 0px 0px 2px 0px;
 	overflow: auto;
 }
+
+
 .collectionBREAK
 { 
-	background-color: [main_panel_bgcolour];
+	background-color: [colour_saturation100];
 	clear: both;
 }
 
@@ -362,28 +352,28 @@ div#mart_export_data
 
 .mart_summarypanel_dataset_entrycount 
 {
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	font-weight: normal;
 	font-style: normal;
 }
 .mart_summarypanel_dataset_entrycount_highlighted
 {
-	color: [main_panel_bgcolour];
+	color: [colour_saturation100];
 	font-weight: normal;
 	font-style: normal;
 }
 
 .mart_summarypanel_list_disabled
 {
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 }
 
 .mart_summarypanel_listheader,
 .mart_summarypanel_listheader_mouseover,
 .mart_summarypanel_listheader_highlighted
 {
-	background-color: 	[blocks_outline_colour];
-	color: [font_colour_rest];
+	background-color: 	[colour_saturation60];
+	color: [colour_saturation0];
 	cursor: pointer;
 	font-weight: bold;                            
 	clear: both;
@@ -400,15 +390,15 @@ div#mart_export_data
 
 .mart_summarypanel_listheader_highlighted
 {
-	background-color: 	[summary_panel_highlight_bgcolour];
-	color: [font_colour_reverse];
+	background-color: 	[colour_saturation40];
+	color: [colour_saturation100];
 }
 
 .mart_summarypanel_listheaderTable,
 .mart_summarypanel_listheaderTable_highlighted
 {
-	background-color: 	[blocks_outline_colour];
-	color: [font_colour_rest];
+	background-color: 	[colour_saturation60];
+	color: [colour_saturation0];
 	cursor: pointer;
 	font-weight: bold;                            
 	clear: both;
@@ -418,8 +408,8 @@ div#mart_export_data
 }
 .mart_summarypanel_listheaderTable_highlighted
 {
-	background-color: 	[summary_panel_highlight_bgcolour];
-	color: [font_colour_reverse];
+	background-color: 	[colour_saturation40];
+	color: [colour_saturation100];
 }
 
 
@@ -434,7 +424,7 @@ div#mart_export_data
 .ctl_visible,
 .mart_dataset_noneSelected
 { 						
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	margin: 1px 0px 1px 13px;
 }
 
@@ -454,7 +444,7 @@ div#mart_export_data
 .mart_summarypanel_AttFiltHeader_highlighted,
 .mart_summarypanel_AttFiltHeader_mouseover
 {
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	cursor: pointer;
 	font-weight: bold;                            	
 	margin: 1px 0px 1px 18px;
@@ -470,14 +460,14 @@ div#mart_export_data
 
 .mart_summarypanel_AttFiltHeader_highlighted
 {
-        /*background-color: [font_colour_rest];*/
-	color: [font_colour_reverse];
+        /*background-color: [colour_saturation0];*/
+	color: [colour_saturation100];
 }
 						
 .mart_summarypanel_list_disabled,
 .mart_summarypanel_list
 { 
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	clear: both;
 	width: inherit;
 	margin: 1px 0px 1px 0px;
@@ -486,7 +476,7 @@ div#mart_export_data
 .mart_summarypanel_listitem_disabled,
 .mart_summarypanel_listitem 
 {
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 	font-style: normal;
 	margin: 1px 0px 1px 30px;
 	width: inherit;
@@ -499,7 +489,7 @@ div#mart_export_data
 	margin: 1px 0px 1px 30px;
 	width: inherit;
 	clear: both;
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 }
 
 .mart_summarypanel_listitem3
@@ -508,7 +498,7 @@ div#mart_export_data
 	margin: 1px 0px 1px 30px;
 	width: inherit;
 	clear: both;
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 }
 
 .mart_summarypanel_listitem4 
@@ -517,7 +507,7 @@ div#mart_export_data
 	margin: 1px 0px 1px 30px;
 	width: inherit;
 	clear: both;
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 }
 
 .mart_summarypanel_listitem_disabled 
@@ -569,49 +559,54 @@ div#mart_export_data
 
 .mart_th
 { 
-	font-family: Arial;
-	border: solid 2px; 
-	white-space: nowrap;
-	border-color: black;
-	color: [font_colour_rest];
+	font-family: sans-serif;
+        font-size: 80%;
+	border: solid 1px black; 
+        padding: 1px 5px 1px 5px;
+	/*white-space: nowrap;*/
+	color: [colour_saturation0];
 }
 
 .mart_th2
 { 
-	font-family: Arial;	
+	font-family: sans-serif;	
 	border: solid 2px; 
 	white-space: nowrap;
 	border-color: black;
-	color: [font_colour_rest];
+	color: [colour_saturation0];
 }
 
 .mart_tr1
 { 
-	font-family: Courier;
+	font-family: Courier,monospace;
 	border: solid 1px; 
-	background-color: [font_colour_reverse];
+	background-color: [colour_saturation100];
 	
 }
 
 .mart_tr2
 { 	
-	font-family: Courier;	
+	font-family: Courier,monospace;	
 	border: solid 1px; 
-	background-color: [font_colour_reverse]; 
+	background-color: [colour_saturation100]; 
 }
 
 .mart_td
 { 
-	font-family: Courier; 	
-	border-width: 1px 2px 1px 2px; 
-	border-style: solid; 
-	white-space: nowrap;
+	font-family: sans-serif; 	
+        font-size: 80%;
+	border: solid 1px black; 
+        padding: 1px 5px 1px 5px;
+	/* white-space: nowrap; */
 	color: black;
+        
 }
+
+a.mart_td,
 .mart_td_hyperlinks
 { 
-	font-family: Courier;	
-	white-space: nowrap;
+	font-family: Courier,monospace,sans-serif; /*Needs sans-serif to fix size*/
+        white-space: nowrap;
 }
 
 
