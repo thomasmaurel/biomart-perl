@@ -943,9 +943,22 @@ sub handleURLRequest
 							# original filterName as the one received is just options Name
 							# add filter with value  <ds>__filter.<filterInternalName>__list = array of values
 							my $realFilterName = $1;
-							#print $realFilterName," = $portions[1]  = $val " ," --- ";
 							$session->param($dsName.'__filter.'.$1.'__list', $val) if ($1); # for display of radio buttons
-							$session->param($dsName.'__filter.'.$1, $portions[1]) if ($1); # for display of select Menu
+							if ($1 && !$session->param($dsName.'__filter.'.$1))
+							{
+								$session->param($dsName.'__filter.'.$1, $portions[1]);
+							}
+							# to handle MultiSelect followed by radio buttons
+							elsif ($1 && $session->param($dsName.'__filter.'.$1))
+							{
+								my @temp_arr;
+								push @temp_arr, $session->param($dsName.'__filter.'.$1);
+								push @temp_arr, $portions[1] ;
+								$session->clear($dsName.'__filter.'.$1);
+								$session->param($dsName.'__filter.'.$1, \@temp_arr);
+								#print Dumper($session->param($dsName.'__filter.'.$1)), " GO AWAY ";
+							}
+							
 							# add OptionName (thats the one which comes in URL) with value just as in XML query  
 							# <ds>__filter.<OptionInternalName>__list = array of values
 							$filterString .= '__list';
@@ -963,7 +976,7 @@ sub handleURLRequest
 							$filterString .= '__text';
 						}
 						else {
-							# add filter with value  <ds>__filter.<filterInternalName> = array of values							
+							# add filter with value  <ds>__filter.<filterInternalName> = array of values
 						}
 						
 						if (scalar (@temp_values) > 1) { $session->param($filterString, \@temp_values); }
@@ -1083,7 +1096,6 @@ sub getFilterCollectionName
 			}
 		}
 	}
-	
 }
 =head2 filterDisplayType
   Usage      : 
@@ -1111,9 +1123,10 @@ sub filterDisplayType
 								foreach my $group(@{$filterTree->getAllFilterGroups()}) {
 									foreach my $collection (@{$group->getAllCollections()}) {
 										foreach my $filter (@{$collection->getAllFilters()}) {
-											if ($filter->name eq $filterName)	{												
+											if ($filter->name eq $filterName)	{
 												if($filter->displayType  eq 'container')	{
-													foreach ( @{$filter->getAllOptions()} ) {																							#print "FOUND in Filters : ", $filter->name;
+													foreach ( @{$filter->getAllOptions()} ) {
+														#print "FOUND in Filters : ", $filter->name;
 														return "container__LIST" if ($_->filter()->displayType() eq 'list');
 														return "container__TEXT" if ($_->filter()->displayType() eq 'text');																}													
 												}												
