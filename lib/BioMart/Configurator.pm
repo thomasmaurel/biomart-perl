@@ -526,11 +526,12 @@ sub getConfigurationTree {
 					     $dataSetName,$interfaceType,
 					     $configurationTree);
 		    }
-		    #if (@{ $xmlFilter->{'Option'} } > 200){
+			if (@{ $xmlFilter->{'Option'} } > 200){
 			# safety guard for web performance
 			# later on set autoCompletion for these type filters
 			#$filter->displayType('text');
-		    #}
+				warn("\nWarning: Too many Options for filter [ ", $xmlFilter->{'internalName'}, " ], would slow down browser rendering if you are configuring Martview. API users please ignore this message\n");
+			}
 		    #else{
 			$filter->displayType($xmlFilter->{'displayType'});			
 		    #}
@@ -538,11 +539,10 @@ sub getConfigurationTree {
 			$filter->multipleValues($xmlFilter->{'multipleValues'});
 			   
 	 		# hack to test CONTAINER type multiSelect with bool radio buttons
-			if($xmlFilter->{'type'} eq 'boolean_list')
-			{
-			#	print "\nI am HERE : ", $xmlFilter->{'type'}," \n";
-				$filter->multipleValues('1');
-			}
+			#if($xmlFilter->{'type'} eq 'boolean_list')
+			#{
+			#	$filter->multipleValues('1');
+			#}
 		    $filter->style($xmlFilter->{'style'});
 		    $filter->graph($xmlFilter->{'graph'});
 		    $filter->autoCompletion($xmlFilter->{'autoCompletion'});
