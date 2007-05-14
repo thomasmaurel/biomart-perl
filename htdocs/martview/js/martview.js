@@ -1977,37 +1977,6 @@ identity: "Linux"
 		}
 	}
 
-	function doviaJS(val)
-	{		
-		var ua = navigator.userAgent.toLowerCase(); 
-		var versionMinor = parseFloat( ua.substring( ua.lastIndexOf('safari/') + 7 ) );
-		
-		if (versionMinor >= 412)
-		{
-			//alert('Safari 2 series');
-			var iFrameMe = document.createElement("iframe");
-			iFrameMe.name = 'newIFrame';
-			iFrameMe.style.width = '500px';
-			iFrameMe.style.height = '300px';
-			//iFrameMe.style.visibility = 'true';
-			iFrameMe.src = '/help.html';
-			iFrameMe.onload = function ()
-			{
-				if (val == 'count')
-				{
-					window.parent.getCountAjax();
-				}
-				if  (val == 'results')
-				{
-					window.parent.getResultsAjax();
-				}			
-			}
-			//alert('and again');
-			document.mainform.appendChild(iFrameMe);
-			//alert('and again and again ');
-		}			
-	}
-
 
 /*
 	=head1 CVSINFO

@@ -65,8 +65,6 @@
 			document.mainform.showquery.value = 0; 
 			document.mainform.countButton.value = 5;
 			
-			doviaJS('count');
-				
 			document.mainform.target = 'count_hiddenIFrame';
 			document.mainform.submit();
 
@@ -111,9 +109,7 @@
 			document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
 			document.mainform.resultsButton.value = 5;
-			
-			doviaJS('results');		
-			
+		
 			document.mainform.target = 'results_hiddenIFrame';
 			document.mainform.submit();
 			
@@ -532,8 +528,6 @@
 					document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
 					document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
-					doviaJS('results');
-					
 					document.mainform.resultsButton.value = 5;
 					document.mainform.target = 'results_hiddenIFrame';
 
@@ -599,8 +593,6 @@
 						document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
 						document.mainform.resultsButton.value = 5;
-						
-						doviaJS('results');
 						
 						document.mainform.target = 'results_hiddenIFrame';
 

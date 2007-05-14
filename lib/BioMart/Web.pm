@@ -1215,6 +1215,7 @@ sub filterDisplayType
 		$returnaAfterSave = 1;
 		## sending the results back in HTML formatting with html, body div tags is important
 		## otherwise Safari doesnt call onload() of hiddenIFrame
+		print $CGI->header();
 		print "<html><body><div id =\"countDivIFrameId\" style=\"display:none;\">ToCountHiddenIFrame</div></body></html>";
 	}
 	
@@ -1224,6 +1225,7 @@ sub filterDisplayType
 		$returnaAfterSave = 1;
 		## sending the results back in HTML formatting with html, body div tags is important
 		## otherwise Safari doesnt call onload() of hiddenIFrame
+		print $CGI->header();
 		print "<html><body><div id =\"resultsDivIFrameId\" style=\"display:none;\">ToResultsHiddenIFrame</div></body></html>";
 	}
 	
