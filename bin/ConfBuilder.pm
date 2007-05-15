@@ -240,7 +240,7 @@ sub makehttpdConf
 	
 	if ($OPTIONS{httpd_modperl})
 	{
-		print STDHTTPD qq/SetHandler perl-script
+		print STDHTTPD qq/	SetHandler perl-script
 		/;
 		if ($OPTIONS{httpd_version} eq '1.3')
 		{
@@ -267,7 +267,7 @@ sub makehttpdConf
 	
 	if ($OPTIONS{httpd_modperl})
 	{
-		print STDHTTPD qq/SetHandler perl-script
+		print STDHTTPD qq/	SetHandler perl-script
 		/;
 		if ($OPTIONS{httpd_version} eq '1.3')
 		{
@@ -439,6 +439,156 @@ sub makeMartResults
 	close(STDMARTRES);
 
 	chmod 0755, $file;		
+}
+
+sub makeFeatures
+{
+	my ($self, %OPTIONS) = @_;
+	undef $/; ## whole file mode for read
+	my $file = $OPTIONS{cgibin}."/features.PLS";	
+	open(STDFEATURES, "$file");	
+	my $fileContents = <STDFEATURES> ;
+	close(STDFEATURES);
+	#print $fileContents;
+	##---------------- replacing [TAG:lib]
+	my $libPaths;
+	if ($OPTIONS{libdirs})
+	{
+		foreach my $path(@{$OPTIONS{libdirs}})
+		{	
+			$libPaths .= qq/use lib "$path";\n/;
+		}
+	}
+	$fileContents =~ s/\[TAG:lib\]/$libPaths/mg;
+
+	##---------------- replacing [TAG:conf]
+	if ($OPTIONS{conf})
+	{
+		my $confFile = qq/$OPTIONS{conf}/; 
+		$fileContents =~ s/\[TAG:conf\]/$confFile/mg;
+	}
+
+	##---------------- replacing [TAG:server_host]
+	if ($OPTIONS{server_host})
+	{
+		my $server_host = qq/$OPTIONS{server_host}/; 
+		$fileContents =~ s/\[TAG:server_host\]/$server_host/mg;
+	}
+
+	##---------------- replacing [TAG:cgiLocation]
+	if ($OPTIONS{cgiLocation})
+	{
+		my $cgiLocation = qq/$OPTIONS{cgiLocation}/; 
+		$fileContents =~ s/\[TAG:cgiLocation\]/$cgiLocation/mg;			
+	}
+
+	##---------------- replacing [TAG:server_port]
+	if ($OPTIONS{server_port})
+	{
+		my $server_port;
+		if($OPTIONS{proxy}) 
+		{
+			$server_port = qq/$OPTIONS{proxy}/; 
+		}
+		else
+		{
+			$server_port = qq/$OPTIONS{server_port}/; 
+		}
+			
+		$fileContents =~ s/\[TAG:server_port\]/$server_port/mg;
+			
+	}
+	
+	##---------------- replacing [TAG:log_dir]
+	my $logDir = qq/$OPTIONS{logDir}/;
+	$fileContents =~ s/\[TAG:log_dir\]/$logDir/m;
+	
+	$file = $OPTIONS{cgibin}."/features";	
+	open(STDFEATURES, ">$file");	
+	print STDFEATURES $fileContents;
+	close(STDFEATURES);
+
+	chmod 0755, $file;		
+}
+
+sub updatehttpdConf
+{
+	my ($self, %OPTIONS) = @_;
+	
+	$OPTIONS{conf} =~ m/(.*\/)[^\/]*/;	
+	my $confdir = $1;
+	my $httpdConfFile = $1."httpd.conf";
+
+	open(STDHTTPD,">>$httpdConfFile");
+	
+	foreach my $datasetName (@{$OPTIONS{'dasDatasets'}})
+	{
+	#print "\n$datasetName";
+	print STDHTTPD qq/
+	ScriptAlias \/$OPTIONS{cgiLocation}\/das\/$datasetName\/features "$OPTIONS{cgibin}\/features"
+	<Location \/$OPTIONS{cgiLocation}\/das\/$datasetName\/features>
+    	AllowOverride None
+    	Options None
+    	Order allow,deny
+    	Allow from all
+	/;
+	
+	if ($OPTIONS{httpd_modperl})
+	{
+		print STDHTTPD qq/	SetHandler perl-script
+		/;
+		if ($OPTIONS{httpd_version} eq '1.3')
+		{
+			print STDHTTPD qq/PerlHandler     Apache::Registry/;
+		}
+		elsif($OPTIONS{httpd_version} eq '2.0' || $OPTIONS{httpd_version} eq '2.1+')
+		{
+			print STDHTTPD qq/PerlResponseHandler ModPerl::Registry/;
+		}
+	}
+	print STDHTTPD qq/
+    	Options +ExecCGI
+	<\/Location>
+	/;
+	
+	} # end of foreach
+	
+	# Now adding location for server/location/das/dsn file
+	print STDHTTPD qq/
+	ScriptAlias \/$OPTIONS{cgiLocation}\/das\/dsn "$OPTIONS{cgibin}\/dsn"
+	<Location \/$OPTIONS{cgiLocation}\/das\/dsn>
+    	AllowOverride None
+    	Options None
+    	Order allow,deny
+    	Allow from all
+	<\/Location>
+	/;
+	
+}
+
+sub makeDSN
+{
+	my ($self, %OPTIONS) = @_;
+	my $dsnFile = $OPTIONS{cgibin}."/dsn";
+	unlink $dsnFile if (-e $dsnFile);
+	open(STDDSN,">>$dsnFile");
+	print STDDSN qq/<?xml version=\"1.0\" standalone=\"yes\"?>
+	<!DOCTYPE DASDSN SYSTEM \"http:\/\/www.biodas.org\/dtd\/dasdsn.dtd\">
+	<DASDSN>/;
+
+	foreach my $datasetName (@{$OPTIONS{'dasDatasets'}})
+	{
+		print STDDSN qq/<DSN>
+		<SOURCE id=\"BIOMART_$datasetName\" version=\"default\">$datasetName<\/SOURCE>
+		<MAPMASTER>http:\/\/$OPTIONS{server_host}\/$OPTIONS{cgiLocation}\/das\/$datasetName\/<\/MAPMASTER>
+		<DESCRIPTION>BIOMART_$datasetName<\/DESCRIPTION>
+	<\/DSN>
+	/;
+	
+	}
+	print STDDSN qq /<\/DASDSN>/;
+	close(STDDSN);
+	chmod 0755, $dsnFile;
 }
 
 sub makeCopyDirectories

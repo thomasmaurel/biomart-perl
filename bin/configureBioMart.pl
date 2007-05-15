@@ -64,11 +64,14 @@ use Data::Dumper;
 	} 
 
 	$LOGGER->debug("Initializing template builder");
-	#---------------------------------------------------------- NEW CODE TO AVOID BUILD - STARTS
+#----------------------------------------------------------
+# NEW CODE TO AVOID BUILD - STARTS
+#----------------------------------------------------------
 	my $httpdconfFile = Cwd::cwd() . "/conf/httpd.conf";
 
-	#---------------------------------------------------------- if we change registry, and httpd.conf exists,
-	#---------------------------------------------------------- update it automatically
+#---------------------------------------------------------- 
+# if we change registry, and httpd.conf exists, update it automatically
+#---------------------------------------------------------- 
 	if(-e $httpdconfFile)
 	{
 		undef $/;		
@@ -166,7 +169,9 @@ use Data::Dumper;
 		httpd.conf will be generated.\n";
 	}
 	
-	##------------------------------------------------------ adding mod_gzip module, needed for apache1.3	
+#------------------------------------------------------ 
+# adding mod_gzip module, needed for apache1.3	
+#------------------------------------------------------ 
 	if ($httpd_version eq '1.3')
 	{
 		my $modlist_string = `$OPTIONS{httpd} -l `;
@@ -187,12 +192,13 @@ use Data::Dumper;
 			}
 		}
 	}
-	##----------------------------------------------------------------------------------------------------
 		
 	$OPTIONS{httpd_version} = $httpd_version;
 	$OPTIONS{httpd_modperl} = $httpd_modperl;
 	$OPTIONS{httpd_modperl_dsopath} = $httpd_modperl_dsopath;
-	##------------------------------------------------------ adding remaining modules in the dsopath DIR, needed for apache2
+#------------------------------------------------------ 
+# adding remaining modules in the dsopath DIR, needed for apache2
+#------------------------------------------------------ 
 	if ($httpd_modperl_dsopath && ($OPTIONS{httpd_version} eq '2.0' || $OPTIONS{httpd_version} eq '2.1+')) 
 	{
 		my %modules = (
@@ -232,9 +238,9 @@ use Data::Dumper;
 		
 	}
 
-	#------------------------------------------------------
-    	# Check if user wants to use non-standard library locations
-
+#------------------------------------------------------
+# Check if user wants to use non-standard library locations
+#------------------------------------------------------
     	my @INC_org = @INC;
     	if(exists($ENV{PERL5LIB})) 
 	{
@@ -260,10 +266,13 @@ use Data::Dumper;
 	bin::ConfBuilder->makeMartView(%OPTIONS);
 	bin::ConfBuilder->makeMartService(%OPTIONS);
 	bin::ConfBuilder->makeMartResults(%OPTIONS);
+	bin::ConfBuilder->makeFeatures(%OPTIONS); # DAS Script
 	#	bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
 
 
-#---------------------------------------------------------- NEW CODE TO AVOID BUILD - ENDS
+#------------------------------------------------------
+# NEW CODE TO AVOID BUILD - ENDS
+#------------------------------------------------------
 my $mart_registry;
 my $action;
 my $mode;
@@ -294,6 +303,28 @@ if ($@){
 &loadCSSSettings();
 bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
 
+#------------------------------------------------------
+# traverse registry Object and see if there are any DAS exportables/Importables
+# If TRUE, then add the corresponding directives in httpd.conf and DAS registry file 'dsn'
+#------------------------------------------------------
+foreach my $schema (@{$mart_registry->getAllVirtualSchemas()}) {
+	foreach my $mart (@{$schema->getAllMarts(1)}) {
+		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+			foreach my $exportable (@{$dataset->getExportables()}) {
+				#print "\nEXP: ", $exportable->linkName();
+				# geneDAS and chrDAS
+				if($exportable->name() eq 'das')
+				{
+					push @{$OPTIONS{'dasDatasets'}}, $dataset->name();					
+				}
+			}
+		}
+	}
+}
+bin::ConfBuilder->updatehttpdConf(%OPTIONS);
+bin::ConfBuilder->makeDSN(%OPTIONS);
+
+#------------------------------------------------------
 if(&whoBakedMe($init->configurationUpdated()) == 1 || $compiletemplates eq 'force')
 {
 	print  "Building templates for visible datasets\n";
@@ -304,7 +335,7 @@ if(&whoBakedMe($init->configurationUpdated()) == 1 || $compiletemplates eq 'forc
 ##
 #----------------------------------------------------------------------------------------
 
-#==== THis function attempts to ascertain if the templates exists for a registry object returned by Initializer or not
+#==== This function attempts to ascertain if the templates exists for a registry object returned by Initializer or not
 #==== if initializer suggests to rebuild the tmeplates -Fine. If it doesnt there is still a chance that templates are not
 #==== present, thats when the registry object is baked by API user. HOwever if an API user bakes an object, we build the templates
 #==== using this code here and then user goes back to update ther registry object again - we cant do much about it except to explicitly
