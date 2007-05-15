@@ -14,8 +14,9 @@
 			-->
 	
 		
-			<input type="submit" value="New" style="margin: 0px 0px 0px 6px" name="submit.newsession" 
-
+			<!--input type="submit" value="New" style="margin: 0px 0px 0px 6px" name="submit.newsession"--> 
+                        <a 
+                        style="margin-left:6px"
 			class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
@@ -32,14 +33,11 @@
   			return false; 
 			
   			" 
-  			title="Start a new query"/>	    
+  			title="Start a new query">New</a>
 	
 	
-
-
-	
-			<input type="button" value="Count" name="get_count_button" 
-
+			<!--input type="button" value="Count" name="get_count_button" -->
+                        <a
 			class="mart_btn"
 			onmouseover="this.className='mart_btn mart_btnhov'" 
 			onmouseout="this.className='mart_btn'"
@@ -64,11 +62,11 @@
 			
 			return false;
 
-			" title="Get result count for the query with any filters applied"/>
+			" title="Get result count for the query with any filters applied">Count</a>
 
 	
-			<input type="button" value="Results" name="get_results_button" 
-
+			<!--input type="button" value="Results" name="get_results_button" -->
+                        <a
 			class="mart_btn"
 			onmouseover="this.className='mart_btn mart_btnhov';" 
 			onmouseout="this.className='mart_btn';"
@@ -109,7 +107,7 @@
 
 			
 			return false;
-			" title="Preview the results of the query"/>
+			" title="Preview the results of the query">Results</a>
 	
 			<!--
 			<div style="clear: both; width: inherit; line-height: 0; height: 0;">&nbsp;</div>
@@ -117,8 +115,8 @@
 		</td>
 		<td height="100%" align="right" valign="top" >
 		
-		   <input type="submit" value="Perl" name="submit.showquery" 
-
+		   <!--input type="submit" value="Perl" name="submit.showquery" -->
+                   <a
 			class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
@@ -128,11 +126,11 @@
           	document.mainform.do_export.value = 0; 
 			document.mainform.savequery.value = 0; 
 			document.mainform.target = 'newwindow'; 
-			document.mainform.submit(); " title ="Show query in Perl API Format"/>
+			document.mainform.submit(); " title ="Show query in Perl API Format">Perl</a>
 
 	
-		     <input type="submit" value="XML" name="submit.showquery" 
-
+		     <!--input type="submit" value="XML" name="submit.showquery" -->
+                     <a
 			class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
@@ -142,11 +140,12 @@
           	document.mainform.do_export.value = 0; 
 			document.mainform.savequery.value = 0; 
 			document.mainform.target = 'newwindow'; 
-			document.mainform.submit(); " title ="Show query in XML Web Service Format"/>
+			document.mainform.submit(); " title ="Show query in XML Web Service Format">XML</a>
 
-	
-			<input type="submit" value="Help" name="submit.help style="margin: 0px 6px 0px 0px"" 
-
+	        
+	              <!--input type="submit" value="Help" name="submit.help style="margin: 0px 6px 0px 0px"" -->
+                      <a
+                        style="margin-right: 6px"
 			class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
@@ -169,7 +168,7 @@
 
           	
           	javascript:void(window.open('/[% TAG_path %]/mview/help.html','martview','width=600,height=500,resizable,scrollbars'));	
-          	 " title ="Get Help"/>
+          	 " title ="Get Help">Help</a>
 
 
 		</td>
