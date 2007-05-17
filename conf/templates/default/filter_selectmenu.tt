@@ -39,8 +39,10 @@ document['${param_name}__image'].src='${filter.imageURL}';
 
 [% # If parameter is available in session, set up lookup-hash here to speed up selected-status check in loop below %]
 [* filtervalues_lookup = {} *]
-[* IF (session.param("[% param_name %]").defined() && session.param("[% param_name %]") != '' ) 
-	|| ((session.param("[% param_name %]").size) && (session.param("[% param_name %]").size > 0) ) *]
+[* IF    ( session.param("[% param_name %]").defined() 
+           && ( session.param("[% param_name %]") != '' ) )
+      || ( session.param("[% param_name %]").size() 
+           && ( session.param("[% param_name %]").size > 0 ) ) *]
     
   [* FOREACH filtervalue = session.param("[% param_name %]") *]
     [*  filtervalues_lookup.\$filtervalue = 1 *]   
@@ -48,8 +50,6 @@ document['${param_name}__image'].src='${filter.imageURL}';
   
 [* END *]
 
-
-[* defaultFilterOn *]
 
 <select name="$param_name" 
 [%  IF filter.multipleValues %]
@@ -71,11 +71,14 @@ document['${param_name}__image'].src='${filter.imageURL}';
 	<option value="[% option_value_escaped %]"
   [* option_value = "[% option_value_escaped %]" *]
 
-  	[* IF (( session.param("[% param_name %]").defined() || ((session.param("[% param_name %]").size) && 
-  		(session.param("[% param_name %]").size > 0) )) 	&&  filtervalues_lookup.\$option_value.defined()) *]
+  	[* IF ( ( session.param("[% param_name %]").defined() 
+              || ( session.param("[% param_name %]").size() 
+              && ( session.param("[% param_name %]").size > 0) ) )
+            &&  filtervalues_lookup.\$option_value.defined() ) *]
 		selected="selected"
-	[* ELSIF defaultFilterOn == "[% option_value_escaped %]" &&  !session.param("[% param_name %]__onceTouched").defined() *]
-		selected="selected"
+    [* ELSIF defaultFilterOn == "[% option_value_escaped %]" 
+             && !session.param("[% param_name %]__onceTouched").defined() *]
+        selected="selected"
 	[* END *]
 
 >[% option_displayname || option_value_escaped %]</option>
