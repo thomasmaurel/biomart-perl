@@ -56,6 +56,7 @@ package BioMart::Formatter::HTML;
 use strict;
 use warnings;
 use Readonly;
+use Digest::SHA qw (sha256_base64);
 
 # Extends BioMart::FormatterI
 use base qw(BioMart::FormatterI);
@@ -85,13 +86,13 @@ Readonly my $HEADERFIELD_TMPL2    => qq{  <th class="mart_th2">%s</th>\n};
 Readonly my $NORMALFIELD_TMPL1     => qq{  <td class="mart_td">%s</td>\n};
 Readonly my $ROW_END_TMPL   => qq{</tr>\n};
 
+my %collisions;
 
 sub _new {
     my ($self) = @_;
 
     $self->SUPER::_new();  
 }
-
 
 sub processQuery {
     my ($self, $query) = @_;
@@ -109,10 +110,18 @@ sub nextRow {
 
    # print the data with urls if available
    my $new_row;
-   my $row = $rtable->nextRow;
-   if (!$row){
-       return;
+   my $row;
+   while ($row=$rtable->nextRow) {
+        if (!$row) {
+	   return;
+        }
+	no warnings 'uninitialized';
+	my $hash = sha256_base64(join('.',@$row));
+	next if exists $collisions{$hash};
+	$collisions{$hash} = undef;
+	last;
    }
+		
    map { $_ = q{} unless defined ($_); } @$row;
    my $attribute_positions = $self->get('attribute_positions');
    my $attribute_url_positions = $self->get('attribute_url_positions');

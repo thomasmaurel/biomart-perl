@@ -242,14 +242,17 @@ sub printResults {
 	}
     else
     {
+    	my $checkDups = $formatter->isa("BioMart::Formatter::HTML");
 	   	my $counter;
 		my %collisions;
 		no warnings 'uninitialized';
 		while (my $row = $formatter->nextRow)
 		{	    		
-			my $hash = sha256_base64($row);
-			next if exists $collisions{$hash};
-			$collisions{$hash} = undef;
+			if (not $checkDups) {
+			   my $hash = sha256_base64($row);
+			   next if exists $collisions{$hash};
+			   $collisions{$hash} = undef;
+			}
 			$counter++;
 			last if ($lines && $counter > $lines);
 			print $filehandle $row;
