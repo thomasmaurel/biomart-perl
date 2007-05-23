@@ -27,9 +27,7 @@
 			currentPath = currentPath + '?GALAXY_URL=[%session.param("GALAXY_URL")%]';
 			[% END %] 
 			window.location = currentPath; 
-			
-			document.mainform.submit();
-			
+
   			return false; 
 			
   			" 
@@ -44,10 +42,9 @@
 
 			onclick="
 			document.getElementById('summarypanel_filter_count_1').innerHTML = 'Loading... ';
-			//if (document.getElementById('summarypanel_filter_count_2'))
-			//{
-			//	document.getElementById('summarypanel_filter_count_2').innerHTML = 'Loading... ';
-			//}
+			if (document.getElementById('summarypanel_filter_count_2') != null)	{
+				document.getElementById('summarypanel_filter_count_2').innerHTML = 'Loading... ';
+			}
 			document.mainform.formatterMenu.value = 'preView';
 			document.mainform.do_export.value = 0; 
 			document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
@@ -82,12 +79,12 @@
 			var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
 			if (summaryCountElt1)
 			{				
-				document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+				document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
 			}
 			var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
 			if (summaryCountElt2)
 			{
-				document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+				document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
 			}
 			
 			showPanelHideSiblings('resultspanel');			
@@ -158,12 +155,12 @@
 			var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
 			if (summaryCountElt1)
 			{				
-				document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+				document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
 			}
 			var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
 			if (summaryCountElt2)
 			{
-				document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+				document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
 			}
 
           	

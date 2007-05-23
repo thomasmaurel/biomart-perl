@@ -168,8 +168,8 @@ sub _new
 	else {
 	    # Otherwise deserialize registry from file if possible, or initialize from scratch
 		my $cachefile = $args_ref{conf}.".cached"; 
-	    	if(my $size = -s $cachefile) 
-	    	{
+		if(my $size = -s $cachefile) 
+		{
 			#print STDERR "\nWEB.PM :: RECEIVED REGISTRY . DESERIALISING....!!\n"; 
 			# thats the one used, if file already exists, both for run apache and new TemplateBuilder
 			$logger->debug("Deserializing registry from ".format_bytes($size)." of data in $cachefile");
@@ -179,7 +179,7 @@ sub _new
 			if($@ || !defined($mart_registry)) {
 		    		BioMart::Exception::Configuration->throw("Failed deserialization of registry from $cachefile. ".$@||q{} );
 			}
-	    	}    
+		}    
 	}
 	
 	#$self->set_mart_registry($mart_registry);
@@ -377,18 +377,18 @@ sub _new
 	
 	
 	if($session->is_new()) {
-   		#### If the URL string does not contain a session ID or an inexistent session ID then a
-   		#### new session gets created and stored and script returns with out doing anything. 
-   		#### Then comes back again and tries to restore this session ID,
-   		#### and this time around, finds it and restores it. weirdoooo
-   		# Galaxy.
-	    	if ($cgi->param("GALAXY_URL") and !$session->param("GALAXY_URL")) {
-    			$session->param("GALAXY_URL",$cgi->param("GALAXY_URL")); 
-		    	$session->param('export_saveto','text');
-		    	$session->param('preView_outputformat','tsv');
-	    	}    	
-	    	# URL request e.g ensembl URL request for contigView
-    		if ($cgi->param('VIRTUALSCHEMANAME') || $cgi->param('ATTRIBUTES'))
+		#### If the URL string does not contain a session ID or an inexistent session ID then a
+		#### new session gets created and stored and script returns with out doing anything. 
+		#### Then comes back again and tries to restore this session ID,
+		#### and this time around, finds it and restores it. weirdoooo
+		# Galaxy.
+	   if ($cgi->param("GALAXY_URL") and !$session->param("GALAXY_URL")) {
+			$session->param("GALAXY_URL",$cgi->param("GALAXY_URL")); 
+		 	$session->param('export_saveto','text');
+		 	$session->param('preView_outputformat','tsv');
+	   }    	
+	   # URL request e.g ensembl URL request for contigView
+    	if ($cgi->param('VIRTUALSCHEMANAME') || $cgi->param('ATTRIBUTES'))
 		{		
 			$session->param("url_VIRTUALSCHEMANAME",$cgi->param('VIRTUALSCHEMANAME'));
 			$session->param("url_ATTRIBUTES", $cgi->param('ATTRIBUTES'));
@@ -814,12 +814,6 @@ sub handleURLRequest
 	my ($self, $session) = @_;
 	my $registry = $self->get_mart_registry();
 	
-	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/shaZi_URL");
-	#print STDME "\nVIRTUAL SCHEMA NAME: ", $session->param("url_VIRTUALSCHEMANAME");
-	#print STDME "\nATTRIBUTES:  ", $session->param("url_ATTRIBUTES");
-	#print STDME "\nFILTERS: ", $session->param("url_FILTERS");
-	#close(STDME);
-	
 	eval {
 
 		BioMart::Exception::Usage->throw("please specify both VIRTUALSCHEMANAME and ATTRIBUTES in URL in correct format")
@@ -861,12 +855,8 @@ sub handleURLRequest
 		$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'FILTERS'}->{$temp_portions[2].'.'.$temp_portions[3]} = $temp_portions[4];
 	}		
 	
-	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/shaZi_URL");
-	#print STDME "\n\n", Dumper($datasets);
-	#close(STDME);
-	
 
-	BioMart::Exception::Usage->throw("You cannot have 0 of more than 2 datasets")
+	BioMart::Exception::Usage->throw("You cannot have zero OR more than 2 datasets")
 		if (scalar (@DS) == 0 || scalar (@DS) > 2);
 
 	
@@ -1018,10 +1008,15 @@ sub handleURLRequest
 			}
 		}
 	}
-	$session->param('get_results_button', 'Results'); 
+	$session->param('resultsButton', '1'); 
+	# URL_REQUEST is in addition to resultsButton, so at the end of this file
+	# when we process main.tt, we donot consider this request as AJAX request
+	# and print the whole page instead of returning results only
+	$session->param('URL_REQUEST', '1');
 	$session->param("mart_mainpanel__current_visible_section", "resultspanel");
 	$session->param('preView_outputformat', 'html');
 	$session->param('exportView_outputformat', 'html');
+	$session->param('datasetmenu_3', $DS[0]);
 	#--------------------------------------------------
 	
 
@@ -1173,7 +1168,7 @@ sub filterDisplayType
 
 =cut
 
-    sub handle_request {
+sub handle_request {
 	my ($self, $CGI) = @_;
 	
 	my $qtime = time();
@@ -1184,7 +1179,7 @@ sub filterDisplayType
 	# Retrieve session information
 	my $session = $self->restore_session($CGI) || return;	    
     
-    # Unset any validation errors.
+	# Unset any validation errors.
 	$session->clear("__validationError");
 
 	my $form_action = $CGI->url(-absolute => 1) . '/' . $session->id();
@@ -1200,7 +1195,7 @@ sub filterDisplayType
 	{	my $returnVal = $self->handleURLRequest($session);
 		return if ($returnVal eq 'exit'); ## exception thrown	
 	}
-
+		
 	#------------------------------------------------------------------------
 	# if its a count/Results request, only save the session, and go back sending
 	# nothing back to the target = 'hiddenIFrame'
@@ -1238,7 +1233,15 @@ sub filterDisplayType
 	# determine if its a count request by JS	
 	$session->param('countButton', '1')  if ($CGI->self_url() =~ m/__countByAjax\z/) ;
 	$session->param('resultsButton', '1')  if ($CGI->self_url() =~ m/__resultsByAjax\z/) ;
-		
+	
+	# Galaxy, we set do_export to 1 and galaxy sets the following 2, but
+	# when we set resultsButton=1, galaxy doesnt forward this to us. so
+	# lets do the following
+	# e.g Galaxy sends us: OUR_URL/sessionIDdo_export=1&_export=1&GALAXY_URL=0
+	if (!$session->param('GALAXY_URL') && $session->param('_export') eq '1') {
+		$session->param('resultsButton', '1');
+	}
+	
 	my( $def_schema, $def_db, $def_ds, $def_ds_OBJ);
 	my $reverseName = 0;# Incase of Compara Menus, determines whether its a dataset as in DB or its a dataste with reverse naming convention	
 	#======================================
@@ -1255,132 +1258,243 @@ sub filterDisplayType
 	##-------- hint: where ever we have [%session->param(somehting)%], this gets replaced not just on first parse
 	##-------- but the moment session's value of param changes, this changes magically. 
 	if (($session->param("mart_mainpanel__current_visible_section") && 
-		$session->param("mart_mainpanel__current_visible_section") eq "__infopanel")
-		|| ($session->param("summarypanel__current_highlighted_branch") && 
-			$session->param("summarypanel__current_highlighted_branch") eq "__summarypanel_datasetbranch"))
+			$session->param("mart_mainpanel__current_visible_section") eq "__infopanel")
+			|| ($session->param("summarypanel__current_highlighted_branch") && 
+				$session->param("summarypanel__current_highlighted_branch") eq "__summarypanel_datasetbranch"))
 	{
 		$session->clear("mart_mainpanel__current_visible_section");
 		$session->clear("summarypanel__current_highlighted_branch");
 	}
+	
+#----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+	#print "SCHEMA: ", $session->param('schema'), "<br/>DB: ", $session->param('dataBase'), "<br/>DATASET: ", $session->param('dataset');
+	$session->clear('newQuery');
+	my %js_datasetpanel_sessions_values = ();
+	my @schemas;
+	my @database_names;
+	my @datasets;
+	my %build_errors;
+	my %js_pushactions_of_datasetmenu = ();
+	my $default_dataset;
+	my @datasetUnits;
+	my $unitsHash = ();
+	my $multiMenuDS = 0;
+	my $TAG_path;
+	my	$dbName;
+	my $result_string;
+	my @dataset_names_in_query = ();
+	my %entrycount_of_dataset;
+	my %filtercount_of_dataset;
+	my $preView_formatter_name;
+	my $exportView_formatter_name;
+	my $noFilter = "";
+	my $countStringForJS="";
+	my $all_formatters="";
+	my $exceptionFlag=0;
+	my %location_path = $self->getSettings('httpdSettings');
+	$TAG_path = $location_path{'location'};
 
-
-	if(!$session->param('schema'))
+	my $schemas = $registry->getAllVirtualSchemas();
+	SCHEMA:
+	foreach my $schema(@$schemas) {
+		push(@schemas, $schema);
+		my $schema_name = $schema->name();
+	  	my $databases = $registry->getAllDatabaseNames($schema_name, 1);
+     	DATABASE:
+	  	foreach my $database_name(@$databases) {
+	    	$multiMenuDS = 0;
+	    	$unitsHash = ();
+			push @database_names, $database_name;
+			my $schema__dbName = $schema_name.'____'.$database_name;
+			# Add this database to pushaction-hash
+			push(@{ $js_pushactions_of_datasetmenu{ 'schema' }->{ $schema_name }->{ 'databasemenu' } }, [$schema__dbName, $database_name] );
+			my $datasets = $registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
+			my $last_dataset;
+	     	DATASET:
+			foreach my $dataset_name(sort @$datasets) {
+				my $dataset = $registry->getDatasetByName($schema_name, $dataset_name)
+				|| BioMart::Exception::Configuration->throw("Couldn't get dataset $schema_name->$database_name->$dataset_name from registry");
+	    		push @datasets, $dataset;
+	    		my $conf_tree = $dataset->getConfigurationTree('default');
+	    		#######------------ SINGLE MENU FOR DS datastructure
+	    		# Add this dataset to pushaction-hash
+	    		if ($dataset->displayName !~ m/\|/)
+	    		{
+	    			if ($conf_tree->defaultDataset()){
+						unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
+													[$dataset->name, $dataset->displayName()]);
+	    			}
+	    			else{
+						push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
+													[$dataset->name, $dataset->displayName()]);
+	    			}
+	    			$default_dataset ||= $dataset; # if $dataset->defaultDataset();		    			
+	    		}		    		
+				#-------------------------------------------
+				#######------------ MULTI MENU FOR DS datastructure	
+	    		else
+	    		{
+					$multiMenuDS = 1;
+					my $dsName = $dataset->displayName;
+	    			my @dsPortions = split(/\|/,$dsName);
+	    			my $menuCount = 1;
+	    			$unitsHash->{$dsPortions[0]}->{$dsPortions[1]}->{$dsPortions[2]} = [$dataset->name, $dataset->displayName()];
+					$unitsHash->{$dsPortions[1]}->{$dsPortions[0]}->{$dsPortions[2]} = [$dataset->name, $dataset->displayName()];	    			
+					$default_dataset ||= $dataset;
+					$dsName = $default_dataset->displayName;
+					@datasetUnits = split(/\|/,$dsName);					
+	    		}
+				#-------------------------------------------		    		
+			} # foreach datasets closes
+			if($multiMenuDS == 1)
+			{
+				#open (STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/HELLLOO");
+				foreach my $one(sort keys %$unitsHash) {
+					#	print STDME "\n$one"; 
+					my $temp_one = $schema__dbName.'____'.$one;
+					push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_1' } },	[$temp_one,$one]);
+					foreach my $two (sort keys %{$unitsHash->{$one}}) {
+						#		print STDME "\n\t$two"; 
+						my $temp_two = $temp_one.'____'.$two;
+						push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_1' }->{ $temp_one }->{ 'datasetmenu_2' } },	[$temp_two, $two]);
+						foreach my $three (sort keys %{$unitsHash->{$one}->{$two}}) {
+							#			print STDME "\n\t\tKEY: $three \t VALUE: "; 
+							my @dsName = ();
+							my $index = 0;
+							foreach (@{$unitsHash->{$one}->{$two}->{$three}}) {
+								$dsName[$index++] = $_;
+							}	
+							my $temp_three = $temp_two.'____'.$three;
+							push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_2' }->{ $temp_two }->{ 'datasetmenu_3' } }, [$three, $three]);
+						}
+					}	
+				}
+				#print STDME Dumper(\%js_pushactions_of_datasetmenu);	
+				#close(STDME);
+			}
+		} # foreach database closes
+	} # foreach schema closes
+	$default_dataset ||= $datasets[0];
+	# build schema+dataset select-menus from the info collected above
+	if(keys(%{ $js_pushactions_of_datasetmenu{ 'databasemenu' } }) == 0) {
+		$logger->warn("No datasets found in registry, so no templates were built. Returning 0");
+		return 0;
+	}	
+			
+	if($session->param('menuNumber') && $session->param('menuNumber') eq '3')
 	{
-		#print "***** 1";
-		$logger->debug("No schema configured yet, setting defaults");
-		my $default_dataset = $registry->getDefaultDataset;
-		#$session->param('dataset', $default_dataset->name());
-	    	#$session->param('schema', $default_dataset->virtualSchema());
-		#$session->param()
-		$def_schema = $default_dataset->virtualSchema;   ## return VS Name String
-		$def_db = $default_dataset->locationDisplayName;
-		$def_ds = $default_dataset->name;
-		$def_ds_OBJ = $default_dataset;
-
+		# this form is return by datasetpanel_pre.tt so set the schema, DB and DS session params
+		my @schemaDB_units = split (/____/,$session->param('databasemenu'));
+		$session->param('schema', $schemaDB_units[0]);
+		$session->param('dataBase', $schemaDB_units[1]);
+		#$session->param('dataset', $session->param('datasetmenu_3'));
+		# print $schemaDB_units[0], " = ", $schemaDB_units[1];
 	}
 	
-	# If no dataset-info available at this point, set default dataset before going further
-	elsif($session->param('schema') && !$session->param('dataBase')) 
-	{
-		#print "***** 2";
-	    	$logger->debug("No dataset and DB configured yet, setting default DB and DS");
-	    	$def_schema = $session->param('schema');	    	
-		$def_db = $registry->getDefaultDatabase($def_schema);
-		#print "----$def_schema : $def_db---";
-		foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
-			if ($schema->name eq $def_schema){ ## this handles the possibility of having same name DB's in different schemas
-				foreach my $mart (@{$schema->getAllMarts()}) {
-					if($mart->displayName eq $def_db) {
-				    		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
-				    			foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}){
-				    				if($configurationTree->defaultDataset())
-				    				{
-				    					$def_ds = $dataset->name();
-				    					$def_ds_OBJ = $dataset;
-				    				}
-				    			}
-				    			$def_ds ||= $dataset->name();
-				    			$def_ds_OBJ ||= $dataset;
-				    		}			    		
-				    	}
-				}
-			}	    
-		}
-	}
-	elsif($session->param('schema') && $session->param('dataBase') && !$session->param('dataset')) 
-	{
-		#print "***** 3";
-		$def_schema = $session->param('schema');
-		$def_db = $session->param('dataBase');
-		if($def_db =~ m/____/) { ## remove the schema____ part from DB name.
-			my @temp = split(/____/,$def_db);
-			$def_db = $temp[1]; 
-		}
+	
+	if (!$session->param('schema') && !$session->param('dataBase') && !$session->param('dataset'))
+	{		
+		# NEW QUERY, set NO DEFAULTS
+#		print "***** 1";
+		print $CGI->header();		
+		$session->param('newQuery', '1');
+		$js_datasetpanel_sessions_values{'schema'} = '';
+		$js_datasetpanel_sessions_values{'databasmenu'} = '';
+		$js_datasetpanel_sessions_values{'datasetmenu_1'} = '';
+		$js_datasetpanel_sessions_values{'datasetmenu_2'} = '';
+		$js_datasetpanel_sessions_values{'datasetmenu_3'} = '';
 		
-		foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
-			if ($schema->name eq $def_schema)
-			{
-				foreach my $mart (@{$schema->getAllMarts()}) {
-					if($mart->displayName eq $def_db) {
-				    		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
-				    			foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}){
-				    				if($configurationTree->defaultDataset())
-				    				{
-				    					$def_ds = $dataset->name();
-				    					$def_ds_OBJ = $dataset;
-									#print " HELLO, $def_ds   ";
-				    				}
-				    			}
-							$def_ds ||= $dataset->name();
-				    			$def_ds_OBJ ||= $dataset;
-				    		}
-				    	}
-				}
-			}
-		}
 	}
-	else ### we have all three items at run time
+	else ### we have all three items at run time, SUBMITTED BY THE USER
 	{
-		#print "***** 4";
-		$def_schema = $session->param('schema');
-		$def_db = $session->param('dataBase');
-		$def_ds = $session->param('dataset');
-		
-		## find out if its a call from multi menus, so need to find out the dataset by urself and nemu number 0 means for count and results button
-		if( ($session->param('datasetmenu_1') || $session->param('datasetmenu_2')) && $session->param('menuNumber') ne '0') 
+#		print "***** 4";
+			
+		$js_datasetpanel_sessions_values{'schema'} = $session->param('schema');
+		$js_datasetpanel_sessions_values{'databasemenu'} = $session->param('dataBase');
+		my $dsName = $session->param('datasetmenu_3');
+		# compara menu triple menus values to be set by ONLOAD. SET when third menu invoked or by linked dataset menu INVOKED
+		if($session->param('menuNumber') && ($session->param('menuNumber') eq '3' || $session->param('menuNumber') eq '5' ))
 		{
-			$def_ds = undef; # as WE need to guess this as per changes in sub menus
-			$session->clear('dataset'); # v imp for compara stuff, when a menu is triggerred, dataset val changes
+			#print "<br/>****TRIPLE MENUS<BR/>";
 			my $dsHint1 = $session->param('datasetmenu_1');
 			my $dsHint2 = $session->param('datasetmenu_2');
 			my $dsHint3 = $session->param('datasetmenu_3');
 
 			## find out whihc number is triggered
 			my $dsDisplayName;
-			if($session->param('menuNumber') eq '1') # most difficult to resolve
-			{
-				# remove schema____dbName____ prefix
-				$dsHint1 =~ m/.*?____.*?____(.*)/;
-				$dsHint1 = $1;
-				$dsDisplayName = $dsHint1;				
+			# remove schema____dbName____ prefix
+			$dsHint2 =~ m/.*?____.*?____(.*)/;
+			$dsHint2 = $1;
+			$dsDisplayName = $dsHint2;
+			$dsDisplayName =~ s/____/\|/;
+			$dsDisplayName .= '|'.$dsHint3;			
+
+			my @dsUnits = split (/\|/, $dsDisplayName);
+			$js_datasetpanel_sessions_values{'datasetmenu_1'} = $dsUnits[0];
+			$js_datasetpanel_sessions_values{'datasetmenu_2'} = $dsUnits[1];
+			$js_datasetpanel_sessions_values{'datasetmenu_3'} = $dsUnits[2];
+		}
+		else # simlpe menu
+		{
+			#print "<br/>****SINGLE MENU<BR/>";
+			my $dsDisplayName;
+			foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
+				if($schema->name eq $session->param('schema')) {				
+					foreach my $mart (@{$schema->getAllMarts(1)}) {
+						if($mart->displayName eq $session->param('dataBase')) {
+					   	foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+					    		if($dsName eq $dataset->name)	{			    					
+			    					$dsDisplayName = $dataset->displayName;
+			    					#$def_ds_OBJ = $dataset;
+			    					### only for compara to maintain the reverse naming logic when dataset panel is redrawn
+			    					### when count, results or linked dataset menu is invoked
+			    					#if ($session->param ("reverseName") && $session->param ("reverseName") eq '1')
+			    					#{	$reverseName = 1;	} # keep  the reverse logic alive
+			    				}
+					    	}
+						}
+					}
+				}
 			}
-			if($session->param('menuNumber') eq '2') # second menu
-			{
-				# remove schema____dbName____ prefix
-				$dsHint2 =~ m/.*?____.*?____(.*)/;
-				$dsHint2 = $1;
-				$dsDisplayName = $dsHint2;
-				$dsDisplayName =~ s/____/\|/;
-			}
-			if($session->param('menuNumber') eq '3') #last menu triggered
-			{
-				# remove schema____dbName____ prefix
-				$dsHint2 =~ m/.*?____.*?____(.*)/;
-				$dsHint2 = $1;
-				$dsDisplayName = $dsHint2;
-				$dsDisplayName =~ s/____/\|/;
-				$dsDisplayName .= '|'.$dsHint3;			
-			}
+			$js_datasetpanel_sessions_values{'datasetmenu_3'} = $dsDisplayName;
+			$js_datasetpanel_sessions_values{'datasetmenu_1'} = '';
+			$js_datasetpanel_sessions_values{'datasetmenu_2'} = '';
+			$session->clear('datasetmenu_1');
+			$session->clear('datasetmenu_2');		
+		}
+		$session->clear('ds_1_count');
+		$session->clear('ds_2_count');
+#	print "<BR/>SCHEMA: ", $session->param('schema');
+#	print "<BR/>DATABASE: ", $session->param('dataBase');
+#	print "<BR/>DATASETs: ", $session->param('dataset');		
+#	print "<BR/>MENU 1: ", $session->param('datasetmenu_1');
+#	print "<BR/>MENU 2: ", $session->param('datasetmenu_2');
+#	print "<BR/>MENU 3: ", $session->param('datasetmenu_3');
+#	print "<BR/>DUMPER :   ", Dumper(\%js_datasetpanel_sessions_values);
+
+		## find out if its a call from multi menus, so need to find out the dataset by urself and nemu number 0 means for count and results button
+		$def_schema = $session->param('schema');
+		$def_db = $session->param('dataBase');
+		$def_ds = $session->param('dataset');
+		
+		if($session->param('menuNumber') && $session->param('menuNumber') eq '3') 
+		{
+			#print "*** COMPARA LOGIC";
+			$def_ds = undef; # as WE need to guess this as per changes in sub menus
+			$session->clear('dataset'); # v imp for compara stuff, when a menu is triggerred, dataset val changes
+			my $dsHint1 = $session->param('datasetmenu_1');
+			my $dsHint2 = $session->param('datasetmenu_2');
+			my $dsHint3 = $session->param('datasetmenu_3');
+
+			my $dsDisplayName;
+			# remove schema____dbName____ prefix
+			$dsHint2 =~ m/.*?____.*?____(.*)/;
+			$dsHint2 = $1;
+			$dsDisplayName = $dsHint2;
+			$dsDisplayName =~ s/____/\|/;
+			$dsDisplayName .= '|'.$dsHint3;			
+
 			my ($tempRemoveSpaces, $tempdsDisplayName);
 			foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
 				if($schema->name eq $def_schema) {
@@ -1461,9 +1575,6 @@ sub filterDisplayType
 						    			$tempRemoveSpaces =~ s/\)//mg; # ) pretends to be OR cause trouble in matching regex
 						    			$tempdsDisplayName =~ s/\)//mg;
 
-									#open (STDME, ">>/homes/syed/Desktop/temp6/biomart-perl/lib/BioMart/HALO");
-				    					#print STDME "\n", $tempRemoveSpaces, "\t ",$tempdsDisplayName;
-				    					#close(STDME);
 				    					if($tempRemoveSpaces =~ m/$tempdsDisplayName/) {
 					    					foreach my $configurationTree (@{$dataset->getAllConfigurationTrees()}){
 				    							if($configurationTree->defaultDataset())
@@ -1497,6 +1608,7 @@ sub filterDisplayType
 		}
 		else
 		{
+			#print "*** SIMPLE LOGIC";
 			## ==== first check if there are more than one datasets in query or not. change def_ds accordingly
 			my $datasets_all = $session->param('dataset');
 			my @dataset_names   = ref($datasets_all) ? @$datasets_all : ($datasets_all);
@@ -1506,287 +1618,258 @@ sub filterDisplayType
 				if($schema->name eq $def_schema) {
 					foreach my $mart (@{$schema->getAllMarts()}) {
 						if($mart->displayName eq $def_db) {
-					    		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
-					    			if($def_ds eq $dataset->name)
-			    					{
-			    						$def_ds_OBJ = $dataset;
-			    						### only for compara to maintain the reverse naming logic when dataset panel is redrawn
-			    						### when count, results or linked dataset menu is invoked
-			    						if ($session->param ("reverseName") && $session->param ("reverseName") eq '1')
-			    						{	$reverseName = 1;	} # keep  the reverse logic alive
-			    					}
-					    		}
+					   	foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+					    		if($def_ds eq $dataset->name)
+			    				{
+			    					$def_ds_OBJ = $dataset;
+			    					### only for compara to maintain the reverse naming logic when dataset panel is redrawn
+			    					### when count, results or linked dataset menu is invoked
+			    					if ($session->param ("reverseName") && $session->param ("reverseName") eq '1')
+			    					{	$reverseName = 1;	} # keep  the reverse logic alive
+			    				}
 					    	}
+					    }
 					}
 				}
 			}			
 		}
-	}
+	
 
-	#print " ", $session->param('schema');
-	#print " ", $session->param('dataBase');
-	#print " ", $session->param('dataset'), "==";
+		#print " ", $session->param('schema');
+		#print " ", $session->param('dataBase');
+		#print " ", $session->param('dataset'), "==";
 
-	$session->clear('schema');
-	$session->clear('dataBase');
-	$session->param('schema', $def_schema);
-	$session->param('dataBase', $def_db);
-	$session->param('dataset', $def_ds) if (!$session->param('dataset'));
+	
+		$session->clear('schema');
+		$session->clear('dataBase');
+		$session->param('schema', $def_schema);
+		$session->param('dataBase', $def_db);
+		$session->param('dataset', $def_ds) if (!$session->param('dataset'));
 	
 	
-	#print "$def_schema  -- $def_db  -- $def_ds";
-	#===========================================
-	#print " ", $session->param('schema');
-	#print " ", $session->param('dataBase');
-	#print " ", $session->param('dataset'), "    ";
-	#print " OBJECT's name: ", $def_ds_OBJ->name();	
-	#===========================================	
-	
-	# If one or more datasets are selected by now, get initial counts and build query
-	my $datasets_string = $session->param('dataset');
-	my $schema_name     = $session->param('schema');
-	my $query_main      =  BioMart::Query->new(registry          => $registry,
-						   virtualSchemaName => $schema_name);
-	my $qrunner = BioMart::QueryRunner->new();
-	
-	my @dataset_names   = ref($datasets_string) ? @$datasets_string : ($datasets_string); 
-	$logger->debug("Need to query datasets ".join(',',@dataset_names)." for total entry counts for each");
-	my @dataset_names_in_query = ();
-	my %entrycount_of_dataset;
-	my %filtercount_of_dataset;
-	my $preView_formatter_name;
-	my $exportView_formatter_name;
-	my $noFilter = "";
-	my $countStringForJS="";
-	my $all_formatters="";
-
-	# Turn on/off background jobs option in interface.
-	my %backgroundSettings = $self->getSettings('background');
-	$session->param('__enable_background', ($backgroundSettings{'enable'} eq 'yes') ? 1 : 0);
-
-	foreach my $dataset_name(@dataset_names) {
-	    
-	    	# Pull out filter & attribute params for this dataset and prepare the query
-	    	my $filterlist_string    = $session->param($dataset_name.'__filterlist') if ($session->param($dataset_name.'__filterlist'));
-	    	my $attributepage        = $session->param($dataset_name.'__attributepage') if ($session->param($dataset_name.'__attributepage'));
-	    	my $attributelist_string = $session->param($dataset_name.'__'.($attributepage||'').'__attributelist');
-	    	
-		if ($filterlist_string){ $logger->debug("FILTERLIST_STRING IS $filterlist_string"); }
-		else {$logger->debug("FILTERLIST_STRING IS *EMPTY*"); }
-	    	
-	    
-		my @filterlist = !defined($filterlist_string) ? ()
-	                   		: ref($filterlist_string) ? @$filterlist_string 
-						: ($filterlist_string); 
+		# If one or more datasets are selected by now, get initial counts and build query
+		my $datasets_string = $session->param('dataset');
+		my $schema_name     = $session->param('schema');
+		my $query_main      =  BioMart::Query->new(registry	=> $registry,
+														virtualSchemaName => $schema_name);
+		my $qrunner = BioMart::QueryRunner->new();
 		
-		my @attributelist = !defined($attributelist_string) ? ()
-	                      	: ref($attributelist_string) ? @$attributelist_string 
+		my @dataset_names   = ref($datasets_string) ? @$datasets_string : ($datasets_string); 
+		$logger->debug("Need to query datasets ".join(',',@dataset_names)." for total entry counts for each");
+	
+		# Turn on/off background jobs option in interface.
+		my %backgroundSettings = $self->getSettings('background');
+		$session->param('__enable_background', ($backgroundSettings{'enable'} eq 'yes') ? 1 : 0);
+	
+		foreach my $dataset_name(@dataset_names) {
+		    
+		    	# Pull out filter & attribute params for this dataset and prepare the query
+			my $filterlist_string    = $session->param($dataset_name.'__filterlist') if ($session->param($dataset_name.'__filterlist'));
+			my $attributepage        = $session->param($dataset_name.'__attributepage') if ($session->param($dataset_name.'__attributepage'));
+			my $attributelist_string = $session->param($dataset_name.'__'.($attributepage||'').'__attributelist');
+	    	
+			if ($filterlist_string){ $logger->debug("FILTERLIST_STRING IS $filterlist_string"); }
+			else {$logger->debug("FILTERLIST_STRING IS *EMPTY*"); }
+	    	
+			my @filterlist = !defined($filterlist_string) ? ()
+	                 		: ref($filterlist_string) ? @$filterlist_string 
+								: ($filterlist_string); 
+		
+			my @attributelist = !defined($attributelist_string) ? ()
+	                    	: ref($attributelist_string) ? @$attributelist_string 
 		              		: ($attributelist_string); 
-		
-		$logger->debug("Enabled filters for dset $dataset_name: ".join('|',@filterlist));
+			$logger->debug("Enabled filters for dset $dataset_name: ".join('|',@filterlist));
 	    	$logger->debug("Enabled attributes for dset $dataset_name: ".join('|',@attributelist));
 	    
-		foreach (@attributelist)
-		{
-			if($_ eq 'dummy')
+			foreach (@attributelist)
 			{
-				undef $_;
-				##$session->clear($dataset_name.'__'.'feature_page'.'__attributelist');
+				if($_ eq 'dummy')
+				{
+					undef $_;
+					##$session->clear($dataset_name.'__'.'feature_page'.'__attributelist');
+				}
 			}
-		}
-		foreach (@filterlist)
-		{
-			if($_ eq 'dummy') ### refers to Mummi' addition of dummy filter in removeFromSummaryPanelList of java script
-			{	
-				## storing it to retrieve back once query param extraction is done
-				$noFilter = 1;				
-				## its a filter with out value and then handled by extract_queryparams. gets ignored as it has no value
-				$session->clear($dataset_name.'__filtercollections'); 	## these are hidden form parameters so they dont appear in HTML source
-															## making life more difficult to trace them.				
+			foreach (@filterlist)
+			{
+				if($_ eq 'dummy') ### refers to Mummi' addition of dummy filter in removeFromSummaryPanelList of java script
+				{	
+					## storing it to retrieve back once query param extraction is done
+					$noFilter = 1;				
+					## its a filter with out value and then handled by extract_queryparams. gets ignored as it has no value
+					$session->clear($dataset_name.'__filtercollections'); 	## these are hidden form parameters so they dont appear in HTML source
+																## making life more difficult to trace them.				
+				}
 			}
-		} 
-
-	    	# Extract filtervalues & attributelist from the full set of request-parameters
+			
+			# Extract filtervalues & attributelist from the full set of request-parameters
 	    	my ($values_of_filter, $attributes, $values_of_attributefilter)
-			= $self->extract_queryparams($session->dataref(), \@filterlist, \@attributelist);
+				= $self->extract_queryparams($session->dataref(), \@filterlist, \@attributelist);
 	    
 
 	    	# Add filters(if any) to single-dset query to get counts
-		push(@dataset_names_in_query, $dataset_name);
+			push(@dataset_names_in_query, $dataset_name);
 		   		
-		# only do for the first top dataset
-		if (@dataset_names_in_query == 1)
-		{
-			my $atttree = $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->getAttributeTreeByName($attributepage);
-			# || BioMart::Exception::Configuration->throw("Can't find attpage $attributepage for $schema_name\.$dataset_name");			
-			if (defined($atttree))
-			{ 
+			# only do for the first top dataset
+			if (@dataset_names_in_query == 1)
+			{
+				my $atttree = $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->getAttributeTreeByName($attributepage);
+				# || BioMart::Exception::Configuration->throw("Can't find attpage $attributepage for $schema_name\.$dataset_name");			
+				if (defined($atttree))
+				{ 
 			   	$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
 			   	my @outputformats = split(',', $atttree->outFormats());
 			   	$all_formatters = $atttree->outFormats();
 			   	$session->param("export_outputformats", \@outputformats);		    	
-				my $preView_session_outformat = $session->param('preView_outputformat');
-				my $exportView_session_outformat = $session->param('exportView_outputformat');
-			 	foreach (@outputformats)
-		    	{
-					if (defined($preView_session_outformat) && $preView_session_outformat eq $_)
-					{
+					my $preView_session_outformat = $session->param('preView_outputformat');
+					my $exportView_session_outformat = $session->param('exportView_outputformat');
+				 	foreach (@outputformats)
+			    	{
+						if (defined($preView_session_outformat) && $preView_session_outformat eq $_)
+						{
 			    			$preView_formatter_name = uc($preView_session_outformat);
-					}
-					if (defined($exportView_session_outformat) && $exportView_session_outformat eq $_)
-					{
+						}
+						if (defined($exportView_session_outformat) && $exportView_session_outformat eq $_)
+						{
 			    			$exportView_formatter_name = uc($exportView_session_outformat);
-					}
-	    		}
-				$preView_formatter_name = uc($outputformats[0]) if (!$preView_formatter_name);
-	    		$exportView_formatter_name = uc($outputformats[0]) if (!$exportView_formatter_name);
-	    	}
-			else
-			{
-		    	# this is just for setting the export_outputformats session param for the first time since
-				# we have AJAX working now, so this param should be set right from the beginning so the
-				# results panel menus would turn up populated right from the beginning.
-				my $allAttributeTrees = $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->getAllAttributeTrees();
-				my $atttree = $allAttributeTrees->[0]; # first one is supposed to be the default one
-				$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
-			   	my @outputformats = split(',', $atttree->outFormats());
+						}
+		    		}
+					$preView_formatter_name = uc($outputformats[0]) if (!$preView_formatter_name);
+		    		$exportView_formatter_name = uc($outputformats[0]) if (!$exportView_formatter_name);
+		    	}
+				else
+				{
+			    	# this is just for setting the export_outputformats session param for the first time since
+					# we have AJAX working now, so this param should be set right from the beginning so the
+					# results panel menus would turn up populated right from the beginning.
+					my $allAttributeTrees = $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->getAllAttributeTrees();
+					my $atttree = $allAttributeTrees->[0]; # first one is supposed to be the default one
+					$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
+					my @outputformats = split(',', $atttree->outFormats());
 			   	$all_formatters = $atttree->outFormats();
 			   	$session->param("export_outputformats", \@outputformats);
-			}	    	    		
-		}
+				}
+			}
 		
-		
-		# need to calculate count here as adding attributes to query from GS would crash the counting
-		# so better do counting with out any attributes and this involves less processing by QRunner
-		if (($session->param('get_count_button') && $session->param('get_count_button') eq 'Count') # this doesnt work on Mac-safari
-				|| ( $session->param('countButton') && $session->param('countButton') eq '1') ) 
-		{
-			#$session->clear('get_count_button'); # don't get stuck here
-			# Get counts if possible, i.e. if it's only a single dataset query
-			#print "INSIDE COUNT";
-			$logger->debug("Sending query for execution to get counts only");
-			# process TOTAL count using the above retrived attribute
-			my ($entry_count, $total_count) = 'N/A';
-			my $qrunner_count = BioMart::QueryRunner->new();
-			my $query_count = $self->prepare_martquery({	schema     => $schema_name,
-						   						dataset    => $dataset_name	});
-			$query_count->count(1);
-			$qrunner_count->execute($query_count);
-			$total_count = $qrunner_count->getCount();	    		
-			$entrycount_of_dataset{$dataset_name} = $total_count || 0;
-			$session->param('entrycount_of_dataset',  \%entrycount_of_dataset);
+			# need to calculate count here as adding attributes to query from GS would crash the counting
+			# so better do counting with out any attributes and this involves less processing by QRunner
+			if ($session->param('countButton') && $session->param('countButton') eq '1' ) 
+			{
+				#$session->clear('get_count_button'); # don't get stuck here
+				# Get counts if possible, i.e. if it's only a single dataset query
+				#print "INSIDE COUNT";
+				$logger->debug("Sending query for execution to get counts only");
+				# process TOTAL count using the above retrived attribute
+				my ($entry_count, $total_count) = 'N/A';
+				my $qrunner_count = BioMart::QueryRunner->new();
+				my $query_count = $self->prepare_martquery({	schema     => $schema_name,
+							   						dataset    => $dataset_name	});
+				$query_count->count(1);
+				$qrunner_count->execute($query_count);
+				$total_count = $qrunner_count->getCount();	    		
+				$entrycount_of_dataset{$dataset_name} = $total_count || 0;
+				$session->param('entrycount_of_dataset',  \%entrycount_of_dataset);
 
-			# process FILTER SPECIFIC count now
-			$query_count = $self->prepare_martquery({	schema     => $schema_name,
+				# process FILTER SPECIFIC count now
+				$query_count = $self->prepare_martquery({	schema     => $schema_name,
 						   						dataset    => $dataset_name,
 						   						filters    => $values_of_filter});
-			$query_count->count(1);
-			$qrunner_count->execute($query_count);	    		
-			$entry_count = $qrunner_count->getCount();		
-			$filtercount_of_dataset{$dataset_name} = $entry_count || 0;
-			$session->param('filtercount_of_dataset', \%filtercount_of_dataset);	
-	    	$logger->debug("COUNT: $entry_count out of TOTAL: $total_count");
-	    	
-			$countStringForJS .= '____' if ($countStringForJS); # used as separator for TWO DS counts 
-			$countStringForJS .= $entry_count || 0;
-			$countStringForJS .= ' / ';
-			$countStringForJS .= $total_count || 0;
-			$countStringForJS .= ' ';
-			$countStringForJS .= $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->entryLabel || 'Entries';
+				$query_count->count(1);
+				$qrunner_count->execute($query_count);	    		
+				$entry_count = $qrunner_count->getCount();		
+				$filtercount_of_dataset{$dataset_name} = $entry_count || 0;
+				$session->param('filtercount_of_dataset', \%filtercount_of_dataset);	
+		    	$logger->debug("COUNT: $entry_count out of TOTAL: $total_count");
 
-			
-	    }
+				$countStringForJS .= '____' if ($countStringForJS); # used as separator for TWO DS counts 
+				$countStringForJS .= $entry_count || 0;
+				$countStringForJS .= ' / ';
+				$countStringForJS .= $total_count || 0;
+				$countStringForJS .= ' ';
+				$countStringForJS .= $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->entryLabel || 'Entries';
+			}
 
-	    # Add filters & atts to main query as well, if any		
-	    $query_main = $self->prepare_martquery({query      => $query_main,
-						    schema     => $schema_name,
-						    dataset    => $dataset_name,
-						    filters    => $values_of_filter,
-						    attributes => {$dataset_name => $attributes},
-						    attributefilters => $values_of_attributefilter});
-		if($noFilter)
-		{
-			## adding back blank/dummy, so defaults are ignored as user explicitly removes all filters
-			## but this time, not to filterList, its for filtercollections. see filterpanel.tt javascript as well
-			$noFilter = $dataset_name.'__filtercollections';
-			$session->param($noFilter, 'dummy');
-			undef $noFilter; 															
+		    # Add filters & atts to main query as well, if any		
+			$query_main = $self->prepare_martquery({query      => $query_main,
+									schema     => $schema_name,
+									dataset    => $dataset_name,
+									filters    => $values_of_filter,
+									attributes => {$dataset_name => $attributes},
+									attributefilters => $values_of_attributefilter});
+			if($noFilter)
+			{
+				## adding back blank/dummy, so defaults are ignored as user explicitly removes all filters
+				## but this time, not to filterList, its for filtercollections. see filterpanel.tt javascript as well
+				$noFilter = $dataset_name.'__filtercollections';
+				$session->param($noFilter, 'dummy');
+				undef $noFilter; 															
+			}
 		}
 
-	}
-
-	########### copying it to another session variable as the  original once gets reset in main.tt back again
-	#if ($session->param('summarypanel_filter_count_1') || $session->param('summarypanel_filter_count_2'))
-	#{
-		$session->param('ds_1_count', $session->param('summarypanel_filter_count_1'));
-		$session->param('ds_2_count', $session->param('summarypanel_filter_count_2'));
-	#}
-	$session->clear('get_count_button'); # don't get stuck here
-	#$session->clear('countButton'); # don't get stuck here
-	###########	
+		########### copying it to another session variable as the  original once gets reset in main.tt back again
+		$session->param('ds_1_count', $session->param('summarypanel_filter_count_1_hidden'));
+		$session->param('ds_2_count', $session->param('summarypanel_filter_count_2_hidden'));
 	
-	# Check if there are any datasets on our list which did not make it into the query, and
-	# if so then undef the main query to avoid inconsistencies in the user interface
-	$logger->debug("Datasetcount added to query:   ".scalar(@dataset_names_in_query));
-	$logger->debug("Datasetcount in session:       ".scalar(@dataset_names));
+		$session->clear('get_count_button'); # don't get stuck here
+		#$session->clear('countButton'); # don't get stuck here
+		###########	
+	
+		# Check if there are any datasets on our list which did not make it into the query, and
+		# if so then undef the main query to avoid inconsistencies in the user interface
+		$logger->debug("Datasetcount added to query:   ".scalar(@dataset_names_in_query));
+		$logger->debug("Datasetcount in session:       ".scalar(@dataset_names));
 		
-	# Save the main query in session, for later use, if there's anything in query by now
-	if(defined($query_main)) {
-	    # Then save info to session
-	    my %lastquery_info;
-	    $lastquery_info{xml} = $query_main->toXML(1,1,1,1);
-	    $lastquery_info{timestamp} = strftime "%Y-%m-%d %H:%M:%S", localtime;
-	    $session->param('lastquery_info', \%lastquery_info);
-	}
+		# Save the main query in session, for later use, if there's anything in query by now
+		if(defined($query_main)) {
+			# Then save info to session
+		    my %lastquery_info;
+		    $lastquery_info{xml} = $query_main->toXML(1,1,1,1);
+		    $lastquery_info{timestamp} = strftime "%Y-%m-%d %H:%M:%S", localtime;
+		    $session->param('lastquery_info', \%lastquery_info);
+		}
 	
-	# Display the xml query in separate browser window
-	my $showQuery = $session->param('showquery');
+		# Display the xml query in separate browser window
+		my $showQuery = $session->param('showquery');
 	
-	if(defined ($showQuery) && defined($query_main) && $showQuery ne '0')
-	{
-                # do not want to show internals of BioMart ;-) 
-		my $tempered_xml = $query_main->toXML(1,1,1,1);
-		$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\"/g;
-		$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
-		print $tempered_xml;
-		$session->clear('showquery'); # so we don't get stuck a this stage
-		$session->flush();
-		return;
-	}
+		if(defined ($showQuery) && defined($query_main) && $showQuery ne '0')
+		{
+			# do not want to show internals of BioMart ;-) 
+			my $tempered_xml = $query_main->toXML(1,1,1,1);
+			$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\"/g;
+			$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
+			print $tempered_xml;
+			$session->clear('showquery'); # so we don't get stuck a this stage
+			$session->flush();
+			return;
+		}
 	
-	# If there's enough information at hand now, set up formatter for query & get subset of results
-	my $result_string;
-	RUN_QUERY:
-	if(defined($query_main)) 
-	{		
-		$logger->debug("Query has both filters and attributes by now, let's go get some results!");
-		# Figure out how many entries to print
-		my $export_subset = $session->param('export_subset') || '10';
-    	undef $export_subset if defined($export_subset) && $export_subset eq q{};
-		undef $export_subset if ($session->param("do_export"));
+		# If there's enough information at hand now, set up formatter for query & get subset of results
+		RUN_QUERY:
+		if(defined($query_main)) 
+		{
+			$logger->debug("Query has both filters and attributes by now, let's go get some results!");
+			# Figure out how many entries to print
+			my $export_subset = $session->param('export_subset') || '10';
+	    	undef $export_subset if defined($export_subset) && $export_subset eq q{};
+			undef $export_subset if ($session->param("do_export"));
 
-		# Eval next line and check to see if any exception thrown. If so,
-		# return nicely with exception in session parameter.
-		my $return_after_eval = 0;
-		eval {
-				if ( ($session->param('get_results_button') && $session->param('get_results_button') eq 'Results') # this doesnt work on Mac-safari
-	    			|| ($session->param("mart_mainpanel__current_visible_section") &&
-	    				 $session->param("mart_mainpanel__current_visible_section") eq "resultspanel") )
-			{    			
-				$session->clear('get_results_button'); # don't get stuck here
-				
+			# Eval next line and check to see if any exception thrown. If so,
+			# return nicely with exception in session parameter.
+			my $return_after_eval = 0;
+			eval {
+				if ( $session->param('resultsButton') && $session->param('resultsButton') eq '1' )
+				{
+					$session->clear('get_results_button'); # don't get stuck here
+					my $selectedFormatterMenu;
+					if($session->param('formatterMenu') && $session->param('formatterMenu') eq 'exportView')
+					{ $selectedFormatterMenu = $exportView_formatter_name; }
+					else
+					{ $selectedFormatterMenu = $preView_formatter_name; }
 
-				my $selectedFormatterMenu;
-				if($session->param('formatterMenu') && $session->param('formatterMenu') eq 'exportView')
-				{ $selectedFormatterMenu = $exportView_formatter_name; }
-				else 				
-				{ $selectedFormatterMenu = $preView_formatter_name; }
-
-				my $formatterName = $selectedFormatterMenu || 'TSV';
-				my $formatter_class = 'BioMart::Formatter::'.$formatterName;
-				eval "require $formatter_class" or BioMart::Exception->throw("could not load module $formatter_class: $@");
-				my $formatter = $formatter_class->new();
-				$logger->debug("Formatting data as $formatterName");
+					my $formatterName = $selectedFormatterMenu || 'TSV';
+					my $formatter_class = 'BioMart::Formatter::'.$formatterName;
+					eval "require $formatter_class" or BioMart::Exception->throw("could not load module $formatter_class: $@");
+					my $formatter = $formatter_class->new();
+					$logger->debug("Formatting data as $formatterName");
 	
 			    	# START NEW CODE
 			    	# Run in background?
@@ -1804,7 +1887,8 @@ sub filterDisplayType
 							#$export_subset = 10;
 						}
 					}
-			    	if ($session->param('do_export') and ($export_saveto eq 'file_bg' or $export_saveto eq 'gz_bg')) {
+			    	if ($session->param('do_export') and ($export_saveto eq 'file_bg' or $export_saveto eq 'gz_bg')) 
+			    	{
 						$logger->debug("Running in background.");
 						$session->clear('do_export'); # so it only happens once
 						
@@ -1828,7 +1912,8 @@ sub filterDisplayType
 						if ($export_saveto eq 'gz_bg') {
 							print MIME 'application/octet-stream';
 							print BINMODE '1';
-						} else {
+						} 
+						else {
 							print MIME $formatter->getMimeType();
 							print BINMODE $formatter->isBinary();
 						}
@@ -1851,75 +1936,76 @@ sub filterDisplayType
 												
 						# Fork and run in background.
 	    				$SIG{CHLD} = 'IGNORE';
-   						defined (my $pid = fork) or die "Cannot fork: $!\n";
-				   		unless ($pid) {    	
-				   			# Ready for mail.
-							my %mailSettings = $self->getSettings('mailSettings');
-							my $mailer = new Mail::Mailer $mailSettings{'mailerType'};  
-							my %mail_headers = (); 
-  							$mail_headers {From} = $mailSettings{'from'}; 
-							$mail_headers {To}  = $session->param("background_email"); 
-							$mail_headers {Subject}  = $mailSettings{'subject'}; 
-							eval {
-				   				# Run query.			    
-				   				$logger->debug("Sending query for execution to get full resultset");
-	    						$query_main->formatter($exportView_formatter_name);
-	    						$query_main->count(0);# do don't get count below
-								$qrunner->execute($query_main);						
-					   			# Create results.
-					   			if ($export_saveto eq 'gz_bg') {
-									$logger->debug("Writing results to ".$background_file_dir.$background_file);
-									open(FH,">".$background_file_dir.$background_file);
-					   				my $fh = BioMart::Web::Zlib->new(\*FH);
-									$qrunner->printHeader($fh);
-									$qrunner->printResults($fh, $export_subset);
-									$qrunner->printFooter($fh);
-									$fh->close();
-									close(FH);
-					   			} else {				   		
-									$logger->debug("Writing results to ".$background_file_dir.$background_file);
-									open(FH,'>'.$background_file_dir.$background_file);	
-									if ($formatter->isBinary()) {	
-										binmode FH;						
-									}	
-									$qrunner->printHeader(\*FH);
-									$qrunner->printResults(\*FH, $export_subset);
-									$qrunner->printFooter(\*FH);
-									close(FH);
-					   			}	
-							};
-							if ($@) {
-								# Send failure email.
-								my $ex = Exception::Class->caught();
-				    			$logger->debug("Serious error: ".$ex);
-								$mailer->open(\%mail_headers); 
-								print $mailer "Your results file FAILED.\n\n".
-								"Here is the reason why:\n\n$ex\n\n".
-								"Please try your request again, or alternatively contact your service provider\nincluding a copy of this email and quoting this reference: $background_file.";
-	  							$mailer->close;
-							} else {	
-								# Send email with link to file.
-								$mailer->open(\%mail_headers); 
-								print $mailer "Your results are ready and can be downloaded by following this link:\n\n$background_file_url";
-	  							$mailer->close; 
-							}
-   							# Child is done so should stop here.		 			
-	   						CORE::exit(0);
-	   					} # end background process
+   					defined (my $pid = fork) or die "Cannot fork: $!\n";
+				   	unless ($pid) {    	
+				   	# Ready for mail.
+						my %mailSettings = $self->getSettings('mailSettings');
+						my $mailer = new Mail::Mailer $mailSettings{'mailerType'};  
+						my %mail_headers = (); 
+  						$mail_headers {From} = $mailSettings{'from'}; 
+						$mail_headers {To}  = $session->param("background_email"); 
+						$mail_headers {Subject}  = $mailSettings{'subject'}; 
+						eval {
+				   		# Run query.			    
+				   		$logger->debug("Sending query for execution to get full resultset");
+	    					$query_main->formatter($exportView_formatter_name);
+	    					$query_main->count(0);# do don't get count below
+							$qrunner->execute($query_main);						
+							# Create results.
+							if ($export_saveto eq 'gz_bg') {
+								$logger->debug("Writing results to ".$background_file_dir.$background_file);
+								open(FH,">".$background_file_dir.$background_file);
+								my $fh = BioMart::Web::Zlib->new(\*FH);
+								$qrunner->printHeader($fh);
+								$qrunner->printResults($fh, $export_subset);
+								$qrunner->printFooter($fh);
+								$fh->close();
+								close(FH);
+				  			} 
+				  			else 	{
+								$logger->debug("Writing results to ".$background_file_dir.$background_file);
+								open(FH,'>'.$background_file_dir.$background_file);	
+								if ($formatter->isBinary()) {	
+									binmode FH;						
+								}	
+								$qrunner->printHeader(\*FH);
+								$qrunner->printResults(\*FH, $export_subset);
+								$qrunner->printFooter(\*FH);
+								close(FH);
+				  			}	
+						};
+						if ($@) {
+							# Send failure email.
+							my $ex = Exception::Class->caught();
+				   		$logger->debug("Serious error: ".$ex);
+							$mailer->open(\%mail_headers); 
+							print $mailer "Your results file FAILED.\n\n".
+							"Here is the reason why:\n\n$ex\n\n".
+							"Please try your request again, or alternatively contact your service provider\nincluding a copy of this email and quoting this reference: $background_file.";
+	  						$mailer->close;
+						}
+						else {	
+							# Send email with link to file.
+							$mailer->open(\%mail_headers); 
+							print $mailer "Your results are ready and can be downloaded by following this link:\n\n$background_file_url";
+	  						$mailer->close; 
+						}
+   					# Child is done so should stop here.		 			
+	   				CORE::exit(0);
+	   				} # end background process
 			    	} 
 			    	# Not in background, then is export or show-in-browser.
-			    	else {							
+			    	else {
 			    		# Export?
-			    		
 			    		if ($session->param("do_export")) {
 			    			# Exit after eval block.
 							$return_after_eval = 1;		
 							$session->clear('do_export'); # so it only happens once
 											    						   			
 				    		# Run query.			    
-					   		$logger->debug("Sending query for execution to get full resultset");
-	    						$query_main->formatter($exportView_formatter_name);
-	    						$query_main->count(0);# do don't get count below
+					  		$logger->debug("Sending query for execution to get full resultset");
+	    					$query_main->formatter($exportView_formatter_name);
+	    					$query_main->count(0);# do don't get count below
 							$qrunner->execute($query_main);
 						
 							# Work out filename.    
@@ -1934,39 +2020,39 @@ sub filterDisplayType
 							# Work out CGI headers
 							if ($export_saveto eq 'text') {
 								print $CGI->header(-type=>$formatter->getMimeType());
-							} elsif ($export_saveto eq 'gz') {
+							}
+							elsif ($export_saveto eq 'gz') {
 								print $CGI->header(-type=>'application/octet-stream',
 										-attachment=>$file);
-							} else {
+							}
+							else {
 								print $CGI->header(-type=>$formatter->getMimeType(),
 										-attachment=>$file);
 							}
 							
-				   			# Create results.
-				   			if ($export_saveto eq 'gz') {
-				   				my $fh = BioMart::Web::Zlib->new(\*STDOUT);
+				   		# Create results.
+				   		if ($export_saveto eq 'gz') {
+				   			my $fh = BioMart::Web::Zlib->new(\*STDOUT);
 								$qrunner->printHeader($fh);
 								$qrunner->printResults($fh, $export_subset);
 								$qrunner->printFooter($fh);
 								$fh->close();
-				   			} else {				   									
+				   		}
+				   		else {				   									
 								if ($formatter->isBinary()) {	
 									binmode STDOUT;						
 								}
-								
 								$qrunner->printHeader(\*STDOUT);
 								$qrunner->printResults(\*STDOUT, $export_subset);
 								$qrunner->printFooter(\*STDOUT);
-				   			}
-				   			
-							# Finish up.
+				   		}
+				   		# Finish up.
 							undef $/;
 			    		}
 			    		# No export, so show in browser.
 			    		else {
-			    				# Set up browser to show stuff.			    								
-
-			    				$session->param("mart_mainpanel__current_visible_section","resultspanel");
+			    			# Set up browser to show stuff.			    								
+		    				$session->param("mart_mainpanel__current_visible_section","resultspanel");
 							$session->param("summarypanel__current_highlighted_branch","show_results"); 
 
 							$logger->debug("Showing in browser.");
@@ -1981,15 +2067,14 @@ sub filterDisplayType
 								$result_string = "<br/>Cannot preview multiple genomic alignments due to the huge amount of data.<br/>Choose the target from the menu above & press Go.<br/>The size of the output expected will be between tens of Mb to a few Gb depending on your filtering";
 			    			} 
 
-
 			    			# But can show everything else.
 			    			else {			    				
 								$logger->debug("Showing ".($export_subset||'all')." entries in main panel");
 		    				   			
 				    			# Run query.			    
-					   			$logger->debug("Sending query for execution to get full resultset");
-	    							$query_main->formatter($preView_formatter_name);
-		    						$query_main->count(0);# do don't get count below
+					  			$logger->debug("Sending query for execution to get full resultset");
+	    						$query_main->formatter($preView_formatter_name);
+		    					$query_main->count(0);# do don't get count below
 								$qrunner->execute($query_main);
 								
 								undef $export_subset if ($export_subset eq 'All');
@@ -2000,14 +2085,12 @@ sub filterDisplayType
 								$qrunner->printFooter($result_buffer);
 								close($result_buffer);
 								
-								if($preView_formatter_name eq 'HTML') 
-								{
+								if($preView_formatter_name eq 'HTML') {
 						    		# strip out HTML stuff in case this is HTML-format
 						    		$result_string =~ s/\A\<\?xml.+\<table/\<table/xms; 
 						    		$result_string =~ s/\<\/body.+\Z//xms;
 								}
-								else 
-								{
+								else {
 									# wrap in <pre/> to make it look pretty.
 		    						$result_string = "<pre class=\"mart_results\">$result_string</pre>";
 								}
@@ -2018,199 +2101,79 @@ sub filterDisplayType
 							#$session->param('__enable_background', ($backgroundSettings{'enable'} eq 'yes') ? 1 : 0);
 			    		}
 			    	}
-			    	# END NEW CODE
-			    	
-			    	
-	    	} # end of if session->param count defined
-  		}; # end eval, trouble maker
-  		
-		# catch
-	  	my $ex;
-	  	if ( $ex = Exception::Class->caught('BioMart::Exception::Usage') )
-  		{
-	    		my $errmsg = $ex->error();
+			    	# END NEW CODE		    	
+				} # end of if session->param count defined
+  			}; # end eval, trouble maker
+  			
+  			# catch
+		  	my $ex;
+		  	$exceptionFlag=0;
+		  	if ( $ex = Exception::Class->caught('BioMart::Exception::Usage') )
+  			{
+  				$exceptionFlag = 1;
+  				my $errmsg = $ex->error();
+				# for new AJAX issues, the validation error goes into results panel
+				print "Validation Error: ", $errmsg;
+ 				
     			$logger->debug("Validation error: ".$errmsg);
-			$session->param("__validationError",$errmsg);
-			$session->param('mart_mainpanel__current_visible_section', $session->param('track_visible_section')); ## display setting back to where it was 
-	  	}
-		elsif ($ex = Exception::Class->caught()) 
-		{
-    			$logger->debug("Serious error: ".$ex);
-     			UNIVERSAL::can($ex, 'rethrow') ? $ex->rethrow : die $ex;     		
- 		}
-	  	else 
-	  	{
-    			$logger->debug("Everything's fine");
-		}
-		
-		if ($return_after_eval == 1) 
-		{ 
-			return; 
-		}  	
-	 
-	} # end of if (defined $query_main... (RUN_QUERY)
-	 
-	 # Clear count request.
-	$session->clear('get_count_button'); # so we don't get stuck at this stage
-	 
-	$qtime = round(time - $qtime, 4);
-	$logger->info("All Mart counts and main Mart-query executed in ".$qtime);						  
-
-	# Render main query-building interface page
-	print $session->header(); # adds the required session-ID cookie to the header
-
-	$logger->debug("Incoming SESSION-params:\n",Dumper($session));
-	
-	#------------------------------------------------------------ Rebuild the DS panel
-	my @schemas;
-	my @database_names;
-	my @datasets;
-	my %build_errors;
-	my %js_pushactions_of_datasetmenu = ();
-	my $default_dataset;
-	my @datasetUnits;
-	my $unitsHash = ();
-	my $multiMenuDS = 0;
-	my $schemas = $registry->getAllVirtualSchemas();
-	SCHEMA:
-	foreach my $schema(@$schemas) {
- 		push(@schemas, $schema);
-          my $schema_name = $schema->name();
-	    	my $databases = $registry->getAllDatabaseNames($schema_name, 1);
-       	DATABASE:
-	    	foreach my $database_name(@$databases) {
-		    	$multiMenuDS = 0;
-		    	$unitsHash = ();
-			push @database_names, $database_name;
-			my $schema__dbName = $schema_name.'____'.$database_name;
-			# Add this database to pushaction-hash
-			push(@{ $js_pushactions_of_datasetmenu{ 'schema' }->{ $schema_name }->{ 'databasemenu' } }, [$schema__dbName, $database_name] );
-			my $datasets = $registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
-			my $last_dataset;
-	        	DATASET:
-			foreach my $dataset_name(sort @$datasets) {
-				my $dataset = $registry->getDatasetByName($schema_name, $dataset_name)
-					|| BioMart::Exception::Configuration->throw("Couldn't get dataset $schema_name->$database_name->$dataset_name from registry");
-		    		push @datasets, $dataset;
-		    		my $conf_tree = $dataset->getConfigurationTree('default');
-		    		#######------------ SINGLE MENU FOR DS datastructure
-		    		# Add this dataset to pushaction-hash
-		    		if ($dataset->displayName !~ m/\|/)
-		    		{
-		    			if ($conf_tree->defaultDataset()){
-					unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
-														[$dataset->name, $dataset->displayName()]);
-		    			}
-		    			else{
-					push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
-														[$dataset->name, $dataset->displayName()]);
-		    			}
-		    			$default_dataset ||= $dataset; # if $dataset->defaultDataset();
-		    			
-		    		}		    		
-				#-------------------------------------------
-				#######------------ MULTI MENU FOR DS datastructure	
-		    		else
-		    		{
-					$multiMenuDS = 1;
-					my $dsName = $dataset->displayName;
-		    			my @dsPortions = split(/\|/,$dsName);
-		    			my $menuCount = 1;
-		    			$unitsHash->{$dsPortions[0]}->{$dsPortions[1]}->{$dsPortions[2]} = [$dataset->name, $dataset->displayName()];
-					$unitsHash->{$dsPortions[1]}->{$dsPortions[0]}->{$dsPortions[2]} = [$dataset->name, $dataset->displayName()];	    			
-					$default_dataset ||= $dataset;
-					$dsName = $default_dataset->displayName;
-					@datasetUnits = split(/\|/,$dsName);
-					
-		    		}		    		
-				#-------------------------------------------		    		
-			} # foreach datasets closes
-			if($multiMenuDS == 1)
+				$session->param("__validationError",$errmsg);
+				## display setting back to where it was
+				$session->param('mart_mainpanel__current_visible_section', $session->param('track_visible_section')); 
+		  	}
+			elsif ($ex = Exception::Class->caught()) 
 			{
-				#open (STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/HELLLOO");
-				foreach my $one(sort keys %$unitsHash) {
-				#	print STDME "\n$one"; 
-					my $temp_one = $schema__dbName.'____'.$one;
-					push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_1' } },	[$temp_one,$one]);
-					
-					foreach my $two (sort keys %{$unitsHash->{$one}}) {
-				#		print STDME "\n\t$two"; 
-						my $temp_two = $temp_one.'____'.$two;
-						push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_1' }->{ $temp_one }->{ 'datasetmenu_2' } },	[$temp_two, $two]);
-					
-						foreach my $three (sort keys %{$unitsHash->{$one}->{$two}}) {
-				#			print STDME "\n\t\tKEY: $three \t VALUE: "; 
-							my @dsName = ();
-							my $index = 0;
-					
-							foreach (@{$unitsHash->{$one}->{$two}->{$three}}) {
-								#print STDME $_," ---- ";	
-								$dsName[$index++] = $_;
-							}	
-							my $temp_three = $temp_two.'____'.$three;
-							push(@{ $js_pushactions_of_datasetmenu{ 'datasetmenu_2' }->{ $temp_two }->{ 'datasetmenu_3' } }, [$three, $three]);
-							
-						}	
-					}	
-				}
+  				$exceptionFlag = 1;			
+				my $errmsg = $ex->error();
+				# for new AJAX issues, the validation error goes into results panel				
+				print "Serious Error: ", $errmsg;
 				
-				#print STDME Dumper(\%js_pushactions_of_datasetmenu);	
-				#close(STDME);
+   			$logger->debug("Serious error: ".$ex);
+     			UNIVERSAL::can($ex, 'rethrow') ? $ex->rethrow : die $ex;
+     			print "Serious Error: ", $errmsg;
+ 			}
+		  	else 
+		  	{
+    			$logger->debug("Everything's fine");
 			}
-			
-			
-		} # foreach database closes
-	} # foreach schema closes
-	$default_dataset ||= $datasets[0];
-        # build schema+dataset select-menus from the info collected above
-     if(keys(%{ $js_pushactions_of_datasetmenu{ 'databasemenu' } }) == 0) {
-            $logger->warn("No datasets found in registry, so no templates were built. Returning 0");
-            return 0;
-     }
-
+			if ($return_after_eval == 1) 
+			{			 
+				return; 
+			}  	
+	 
+		} # end of if (defined $query_main... (RUN_QUERY)
+	 
+		# Clear count request.
+		$session->clear('get_count_button'); # so we don't get stuck at this stage
+		$qtime = round(time - $qtime, 4);
+		$logger->info("All Mart counts and main Mart-query executed in ".$qtime);						  
+		# Render main query-building interface page
+		print $session->header(); # adds the required session-ID cookie to the header
+		$logger->debug("Incoming SESSION-params:\n",Dumper($session));
+	
+		#------------------------------------------------------------ Populate the DS panel		
+		
+		$dbName = $session->param('dataBase');
+		$session->clear('dataBase');
+	
+	}	##### end of IF/ELSE (****4) statement for governing if its a submit from user and not the first parse
+	
 	my $dsOLD = $self->get_conf_Dir()."/templates/default/datasetpanel.ttc";
 	if (-e $dsOLD) {unlink $dsOLD;}
 	$dsOLD = $self->get_conf_Dir()."/templates/cached/datasetpanel.ttc";
 	if (-e $dsOLD) {unlink $dsOLD;}
 	$dsOLD = $self->get_conf_Dir()."/templates/cached/datasetpanel.tt";
 	if (-e $dsOLD) {unlink $dsOLD;}
-	#	print $dsCompiled;
-	$dsOLD = $self->get_conf_Dir()."/templates/default/datasetpanel.tt";
 	
-	
-	my %location_path = $self->getSettings('httpdSettings');
-	my $TAG_path = $location_path{'location'};
-	
-	
-	#===========================================
-	#print $session->param("summarypanel__current_highlighted_branch");
-	#print " == ", $session->param("mart_mainpanel__current_visible_section");
-	#===========================================	
-	my $dataset_menu_tt = $self->process_template($dsOLD,
-                                                     {
-											tbuilder                  => $self,
-											schemas                   => \@schemas,
-											database_names            => \@database_names,
-											datasets                  => \@datasets,
-											js_pushactions_of_datasetmenu => \%js_pushactions_of_datasetmenu,
-											datasetOBJ           => $def_ds_OBJ,
-											reverseNAME			=> $reverseName,
-											TAG_path		=> $TAG_path,
-											build_errors=> \%build_errors,											
-											});
-	my $datasetpanel_outputfh = IO::File->new(">".$self->get_cached_tt_dir()."/datasetpanel.tt") || die $!;
-	$datasetpanel_outputfh->print("[% TAGS star %]\n".$dataset_menu_tt);
-	$datasetpanel_outputfh->close();
-	#------------------------------------------------------------
-	my $dbName = $session->param('dataBase');
-	$session->clear('dataBase');
-## E! hack
-        my $PS = new BioMart::Web::PageStub( $session );
-        $PS->start();
-## End of hack
+	## E! hack
+	my $PS = new BioMart::Web::PageStub( $session );
+	$PS->start();
+	## End of hack
 	my $completePage = "";
 	$self->process_template( "main.tt", {
-			session       	=> $session, 
+			tbuilder			=> $self,
+			js_pushactions_of_datasetmenu => \%js_pushactions_of_datasetmenu,
+			js_datasetpanel_sessions_values => \%js_datasetpanel_sessions_values,
+			session       	=> $session,
 			wq            	=> $self,
 			form_action	=> $form_action,
 			sessionDBNAME	=> $dbName,
@@ -2218,43 +2181,44 @@ sub filterDisplayType
 			reverseNAME	=> $reverseName,
 			TAG_path		=> $TAG_path,			
 			result_string 	=> $result_string
-#   	}, \*STDOUT );
+			#   	}, \*STDOUT );
    	}, \$completePage );
-## E! hack
-		if ( $session->param('countButton') && $session->param('countButton') eq '1')
+	## E! hack
+	if ( $session->param('countButton') && $session->param('countButton') eq '1')
+	{
+		$session->param('countButton', '0') ;
+		# only countString
+		print "$countStringForJS";			
+	}
+	elsif ($session->param('resultsButton') && $session->param('resultsButton') eq '1' && !$session->param('URL_REQUEST'))
+	{
+		$session->param('resultsButton', '0') ;
+		if ($exceptionFlag != 1)
 		{
-			$session->param('countButton', '0') ;
-			# only countString
-			print "$countStringForJS";			
-		}
-		elsif ($session->param('resultsButton') && $session->param('resultsButton') eq '1')
-		{
-			$session->param('resultsButton', '0') ;
 			# should return 5 values
-			
 			$all_formatters = 'TSV' if ($session->param("GALAXY_URL"));
-			
+		
 			print lc($preView_formatter_name);
 			print '____';
 			print uc($all_formatters);
 			print '____';
-			print lc($exportView_formatter_name);			
+			print lc($exportView_formatter_name);
 			print '____';
 			print uc($all_formatters);
 			print '____';
 			print $result_string;
 			# only resultsString
 		}
-		else
-		{
-			# complete HTML page as in 0.5
-			print $completePage;
-		}
-        $PS->end();
-## End of hack
-
-    }					  
-#}
+	}
+	else
+	{
+		$session->clear('URL_REQUEST');
+		# complete HTML page as in 0.5
+		print $completePage;
+	}
+	$PS->end();
+	## End of hack
+}					  
 1;
 
 =head1 SEE ALSO

@@ -756,35 +756,27 @@ Iterates through all datasetpanel divs in mainpanel and checks ID & hidden-state
 
 */
 function showPanelHideSiblings(panelId) {
-	//alert('Gotta show target panel id='+panelId);
+	// alert('Gotta show target panel id='+panelId);
 	targetPanelDiv = document.getElementById(panelId);
 	if(!targetPanelDiv) {		
 		return false;
 	}
-
+	
 	parentPanelDiv = targetPanelDiv.parentNode;
-//    if(!parentPanelDiv.id) { parentPanelDiv = targetPanelDiv.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode; }
-
-//alert('PARent is 1:  '+targetPanelDiv.parentNode.parentNode.id);
-// alert('PARent is 2:  '+targetPanelDiv.parentNode.parentNode.parentNode.id);
-// alert('PARent is 3:  '+targetPanelDiv.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
-
-//   	alert(parentPanelDiv.id);
 	
 	siblingDivs = parentPanelDiv.childNodes; // get all sibling nodes
 
-// Hide all sibling div's
+	// Hide all sibling div's
 	var loop_length = siblingDivs.length;      
 	for(var i=0; i < loop_length ; i++ ) { 
 		if(siblingDivs[i].nodeName != 'DIV') continue; // get div only
-	//alert('Hiding dsetpanel div '+siblingDivs[i]+', id='+siblingDivs[i].id+': state='+siblingDivs[i].style.display);
+	//	alert('Hiding dsetpanel div '+siblingDivs[i]+', id='+siblingDivs[i].id+': state='+siblingDivs[i].style.display);
 		turnOff(siblingDivs[i]);
 	}
-// Then show just the target panel
-
+	// Then show just the target panel
+	//alert('TARGET itself: '+ targetPanelDiv.id);
 	turnOn(targetPanelDiv);
-
-// Update the hidden form-param to the ID of the currently visible panel div
+	// Update the hidden form-param to the ID of the currently visible panel div
 	// alert('Updating current visible section ID for parent panel '+parentPanelDiv.id);
 	document.mainform[parentPanelDiv.id+'__current_visible_section'].value = panelId;
 
@@ -1134,8 +1126,10 @@ function expandListCompactSiblings(listId) {
 		}
 	// then recreate element w/ updated counts
 		var subListDivCountNote = document.createElement("span");
+		
 		subListDivCountNote.className = 'mart_summarypanel_listitem_disabled';
 	//subListDivCountNote.style.color = 'grey';
+		subListDivCountNote.style.display = 'none';
 		subListDivCountNote.innerHTML = '['+subListDivs.length+' enabled]';
 		siblingDivs[i].insertBefore(subListDivCountNote, null); // add as last child
 
@@ -1453,12 +1447,15 @@ Set all elements of a certain CSS class to a hidden state.
 =cut
 
 */
-function setVisibleStatus() 
+function setVisibleStatus(menuLists, sessionValues) 
 {
 	var spans=document.getElementsByTagName("div");
 	for (var i=0; i < spans.length; i++){
 		if (spans[i].className=="ctl_hidden" || spans[i].className=="el_hidden" ) {
 			spans[i].style.display = "none";
+		}
+		if (spans[i].className=="ctl_visible" ) {
+			spans[i].style.display = "block";
 		}
 	}
 	
@@ -1467,13 +1464,20 @@ function setVisibleStatus()
 	if(browserInfo[0] == "Safari")
 	{	
 		document.getElementById('countIFrameId').style.visibility = "hidden";
-		document.getElementById('resultsIFrameId').style.visibility = "hidden"; 
+		document.getElementById('resultsIFrameId').style.visibility = "hidden";
+		if (document.getElementById('summaryPanelDiv_empty').style.display == "none")
+		{
+			//alert('SAFARI FIX IN process');
+			//document.getElementById('summaryPanelDiv_empty').style.visibility = "hidden";		
+		}
 	}
 	else
 	{
 		document.getElementById('countIFrameId').style.display = "none";
 		document.getElementById('resultsIFrameId').style.display = "none";
 	}
+	
+	datasetpanel_pre_onload(menuLists, sessionValues);
 	
 }
 
@@ -1847,10 +1851,14 @@ identity: "Linux"
 
 	function pasteResults(returnString)
 	{
-	//alert(returnString);
+		//alert(returnString);
 	
-	// Forward the Exception
+		// Forward the Exception
 		if(returnString.search('BioMart::Exception') != -1)
+		{
+			document.getElementById('resultsTableId').innerHTML = returnString;
+		}
+		else if (returnString.search('Validation Error:') != -1 || returnString.search('Serious Error:') != -1)
 		{
 			document.getElementById('resultsTableId').innerHTML = returnString;
 		}
@@ -1977,6 +1985,379 @@ identity: "Linux"
 		}
 	}
 
+////////////////////////////////////////////////////////
+////////////// Functions for datasetpanel_pre.tt
+////////////////////////////////////////////////////////
+var dataForMenus;
+var dsPanelSessionValues;
+function datasetpanel_pre_onload(menuLists, sessionValues)
+{
+	dataForMenus = menuLists;
+	dsPanelSessionValues = sessionValues;
+	
+	var j = 0; // options count index
+	// count schemas, if > 1, then display schema MENU, otherwise hide it
+	var schemaCount=0;
+	for(i in dataForMenus['schema'])	{
+			schemaCount++;
+	}
+	
+	// NEW QUERY, DEFAULT VALUES
+	if (document.mainform.newQueryValue.value == '1')
+	{		
+		if (schemaCount > 1) {
+			document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '', true, true);
+			for(i in dataForMenus['schema'])	{
+				document.mainform.schemamenu[j++] = new Option(i, i);
+			}
+		}
+		else{ // donot show VS menu
+			document.getElementById('schemaMenu').style.display = 'none';
+				
+			document.mainform.databasemenu.length = 0;
+			document.getElementById('dbMenu').style.display = 'block';
+			document.mainform.databasemenu[j++] = new Option(' - CHOOSE DATABASE - ', '', true, true);
+			for(schema_name in dataForMenus['schema'])	{
+				// this is imp as we dont have schemaMenu visible, so somehow add schema value to session
+				addHiddenFormParam('schema', document.mainform, schema_name);
+				for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)	{
+					//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
+					var val = dataForMenus['schema'][schema_name]['databasemenu'][i][0];
+					var display = dataForMenus['schema'][schema_name]['databasemenu'][i][1];
+					document.mainform.databasemenu[j++] = new Option(display, val);					
+				}				
+			}
+		}
+	}	
+	else // old query repopulating menus
+	{
+		//populate SCHEMA MENU
+		j=0;
+		// document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '');
+		if (schemaCount > 1) {
+			document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '');
+			for(i in dataForMenus['schema'])	{
+				if(i == dsPanelSessionValues['schema']) {
+					toBeSelected = j;
+				}
+				document.mainform.schemamenu[j++] = new Option(i, i);
+			}
+			document.mainform.schemamenu[toBeSelected].selected='true';
+		}
+		else
+		{
+			//display Schema to none;
+			document.getElementById('schemaMenu').style.display = 'none';			
+		}
+		// populate DB MENU
+		j=0;
+		document.mainform.databasemenu.length = 0;
+		document.getElementById('dbMenu').style.display = 'block';
+		document.mainform.databasemenu[j++] = new Option(' - CHOOSE DATABASE - ', '');
+		for(schema_name in dataForMenus['schema']){
+			if (schema_name == dsPanelSessionValues['schema'])	{
+				for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)	{
+					var val = dataForMenus['schema'][schema_name]['databasemenu'][i][0];
+					var display = dataForMenus['schema'][schema_name]['databasemenu'][i][1];
+					if (display == dsPanelSessionValues['databasemenu']) {
+						toBeSelected = j;
+					}
+					document.mainform.databasemenu[j++] = new Option(display, val);
+				}
+				document.mainform.databasemenu[toBeSelected].selected='true';
+			}
+		}
+		// populate DS MENU
+		// Compara Style
+		if (dsPanelSessionValues['datasetmenu_1'] || dsPanelSessionValues['datasetmenu_2'])
+		{
+			document.mainform.datasetmenu_1.length = 0;	
+			document.mainform.datasetmenu_2.length = 0;
+			document.mainform.datasetmenu_3.length = 0;
+
+			// menu 1
+			j=0;
+			var db_name = dsPanelSessionValues['schema']+'____'+dsPanelSessionValues['databasemenu'];
+			document.getElementById('dsMenu_1').style.display = 'block';
+			document.mainform.datasetmenu_1[j++] = new Option(' - CHOOSE SPECIES - ', '')
+			for (var i=0; i < dataForMenus['databasemenu'][db_name]['datasetmenu_1'].length; i++)
+			{			
+				//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
+				var val = dataForMenus['databasemenu'][db_name]['datasetmenu_1'][i][0];
+				var display = dataForMenus['databasemenu'][db_name]['datasetmenu_1'][i][1];
+				if (display == dsPanelSessionValues['datasetmenu_1']) {
+					toBeSelected = j;
+				}
+				document.mainform.datasetmenu_1[j++] = new Option(display, val);
+			}
+			document.mainform.datasetmenu_1[toBeSelected].selected='true';
+			// menu 2
+			j=0;
+			var dsName = dsPanelSessionValues['schema']+'____'+dsPanelSessionValues['databasemenu']+'____'+dsPanelSessionValues['datasetmenu_1'];
+			document.getElementById('dsMenu_2').style.display = 'block';
+			document.mainform.datasetmenu_2[j++] = new Option(' - CHOOSE SPECIES - ', '');
+			for (var i=0; i < dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'].length; i++)
+			{			
+				var val = dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'][i][0];
+				var display = dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'][i][1];
+				if (display == dsPanelSessionValues['datasetmenu_2']) {
+					toBeSelected = j;
+				}
+				document.mainform.datasetmenu_2[j++] = new Option(display, val);
+			}
+			document.mainform.datasetmenu_2[toBeSelected].selected='true';
+			// menu 3
+			j=0;
+			dsName = dsPanelSessionValues['schema']+'____'+dsPanelSessionValues['databasemenu']+'____'+dsPanelSessionValues['datasetmenu_1']		
+							+'____'+dsPanelSessionValues['datasetmenu_2'];
+			document.getElementById('dsMenu_3').style.display = 'block';
+			document.mainform.datasetmenu_3[j++] = new Option(' - CHOOSE TYPE - ', '');
+			for (var i=0; i < dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'].length; i++)
+			{		
+				var val = dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'][i][0];
+				var display = dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'][i][1];
+				if (display == dsPanelSessionValues['datasetmenu_3']) {
+					toBeSelected = j;
+				}
+				document.mainform.datasetmenu_3[j++] = new Option(display, val);
+			}
+			document.mainform.datasetmenu_3[toBeSelected].selected='true';
+		}		
+		else // normal menu system
+		{
+			j=0;
+			document.mainform.datasetmenu_3.length = 0;
+			var db_name = dsPanelSessionValues['schema']+'____'+dsPanelSessionValues['databasemenu'];
+			document.getElementById('dsMenu_3').style.display = 'block';
+			document.mainform.datasetmenu_3[j++] = new Option(' - CHOOSE DATASET - ', '');
+			for (var i=0; i < dataForMenus['databasemenu'][db_name]['datasetmenu_3'].length; i++)
+			{			
+				//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
+				var val = dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0];
+				var display = dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][1];
+				if (display == dsPanelSessionValues['datasetmenu_3']){
+					toBeSelected = j;
+				}
+				document.mainform.datasetmenu_3[j++] = new Option(display, val);
+			}
+			document.mainform.datasetmenu_3[toBeSelected].selected='true';
+		}
+	}
+}
+function schemaMenuTriggered(schema_name)
+{
+	var j=0;
+	document.mainform.databasemenu.length = 0;
+	document.mainform.datasetmenu_1.length = 0;	
+	document.mainform.datasetmenu_2.length = 0;
+	document.mainform.datasetmenu_3.length = 0;
+	document.getElementById('dsMenu_1').style.display = 'none';
+	document.getElementById('dsMenu_2').style.display = 'none';
+	document.getElementById('dsMenu_3').style.display = 'none';
+	document.getElementById('dbMenu').style.display = 'none';
+	
+	if(schema_name != '')
+	{
+		if (dataForMenus['schema'][schema_name]['databasemenu'])
+		{
+			document.getElementById('dbMenu').style.display = 'block';
+			document.mainform.databasemenu[j++] = new Option(' - CHOOSE DATABASE - ', '');
+			for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)
+			{			
+				//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
+				var val = dataForMenus['schema'][schema_name]['databasemenu'][i][0];
+				var display = dataForMenus['schema'][schema_name]['databasemenu'][i][1];
+				if (display == dsPanelSessionValues['schema']) {
+					document.mainform.databasemenu[j++] = new Option(display, val, true, true);
+				}
+				else {
+					document.mainform.databasemenu[j++] = new Option(display, val);
+				}
+			}
+		}
+	}		
+}
+function dbMenuTriggered(db_name)
+{
+	var j = 0; // options count index
+	// clear all existing options first
+	document.mainform.datasetmenu_1.length = 0;	
+	document.mainform.datasetmenu_2.length = 0;
+	document.mainform.datasetmenu_3.length = 0;
+	document.getElementById('dsMenu_1').style.display = 'none';
+	document.getElementById('dsMenu_2').style.display = 'none';
+	document.getElementById('dsMenu_3').style.display = 'none';
+
+	
+		//	alert(dataForMenus['databasemenu']['default____ENSEMBL 44 GENES (SANGER)']['datasetmenu_3'][3][1]);
+		//	alert(db_name);
+		// alert (dataForMenus['databasemenu'][db_name]['datasetmenu_1'].length);
+		// alert (dataForMenus['databasemenu'][db_name]['datasetmenu_3'].length);
+		
+		// check if its a normal menu system or Compara Menu system
+	if(db_name != '')
+	{
+		if(dataForMenus['databasemenu'][db_name]['datasetmenu_1']) 
+		{
+			document.getElementById('dsMenu_1').style.display = 'block';
+			document.mainform.datasetmenu_1[j++] = new Option(' - CHOOSE SPECIES - ', '', true, true);
+			for (var i=0; i < dataForMenus['databasemenu'][db_name]['datasetmenu_1'].length; i++)
+			{			
+				//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
+				var val = dataForMenus['databasemenu'][db_name]['datasetmenu_1'][i][0];
+				var display = dataForMenus['databasemenu'][db_name]['datasetmenu_1'][i][1];
+				document.mainform.datasetmenu_1[j++] = new Option(display, val);
+			}
+		}
+		else // normal menu system
+		{		
+			document.getElementById('dsMenu_3').style.display = 'block';
+			document.mainform.datasetmenu_3[j++] = new Option(' - CHOOSE DATASET - ', '', true, true);
+
+			for (var i=0; i < dataForMenus['databasemenu'][db_name]['datasetmenu_3'].length; i++)
+			{			
+				//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
+				var val = dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0];
+				var display = dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][1];
+				document.mainform.datasetmenu_3[j++] = new Option(display, val);
+			}
+		}
+	}
+}
+
+function datasetmenu_1_Triggered(dsName)
+{
+	var j = 0; // options count index
+	// clear all existing options first
+	document.mainform.datasetmenu_2.length = 0;
+	document.mainform.datasetmenu_3.length = 0;
+	document.getElementById('dsMenu_2').style.display = 'none';
+	document.getElementById('dsMenu_3').style.display = 'none';
+	
+	if(dsName != '')
+	{
+		// no need to test the following IF as the next menu details must be there, just to catch any exception
+		if(dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2']) 
+		{
+			document.getElementById('dsMenu_2').style.display = 'block';
+			document.mainform.datasetmenu_2[j++] = new Option(' - CHOOSE SPECIES - ', '', true, true);
+			for (var i=0; i < dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'].length; i++)
+			{			
+				var val = dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'][i][0];
+				var display = dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'][i][1];
+				document.mainform.datasetmenu_2[j++] = new Option(display, val);
+			}
+		}
+		else
+		{
+			alert('Something wrong in processing Compara Menu System');
+		}
+	}
+}
+function datasetmenu_2_Triggered(dsName)
+{	
+	var j = 0; // options count index
+	// clear all existing options first	
+	document.mainform.datasetmenu_3.length = 0;
+	document.getElementById('dsMenu_3').style.display = 'none';
+
+	if(dsName != '')
+	{
+
+		// no need to test the following IF as the next menu details must be there, just to catch any exception
+		if(dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3']) 
+		{
+			document.getElementById('dsMenu_3').style.display = 'block';
+			document.mainform.datasetmenu_3[j++] = new Option(' - CHOOSE TYPE - ', '', true, true);
+			for (var i=0; i < dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'].length; i++)
+			{			
+				var val = dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'][i][0];
+				var display = dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'][i][1];
+				document.mainform.datasetmenu_3[j++] = new Option(display, val);
+			}
+		}
+		else
+		{
+			alert('Something wrong in processing Compara Menu System');
+		}
+	}
+}
+
+function datasetmenu_3_Triggered(value, dsName)
+{
+
+}
+
+function clearSummaryPanel()
+{
+	var attPageVisible;
+	var eltVal;
+/*
+	var dsNames = getElementsByName_local('dataset');
+	for (var i=0; i < dsNames.length; i++)
+	{
+		if(dsNames[i].value!='')
+		{
+			//alert(dsNames[i].value);
+			attPageVisible = dsNames[i].value+'__attributepages__current_visible_section';
+			eltVal = document.mainform[attPageVisible].value;
+			eltVal = eltVal.replace('__attributepanel','');
+			//	alert('ok');
+			eltVal = eltVal+'__attributelist';
+			//	alert(eltVal);
+			// dataset visible AttributePanel going away
+			//document.getElementById(eltId).style.display = 'none';
+			document.getElementById(eltVal).length =0;
+			document.getElementById(eltVal).innerHTML = '[None Selected]';
+		}
+	}
+
+	// datasetName going away
+	var spans=document.getElementsByTagName("div");
+	for (var i=0; i < spans.length; i++){
+		if (spans[i].className=="ctl_visible" || spans[i].className=="el_visible" ) {
+			//spans[i].style.display = "none";
+			spans[i].length =0;
+			spans[i].innerHTML = '[None Selected]';
+		}
+	}
+	
+	// Filters  going one by one
+	var spans=document.getElementsByTagName("div");
+	for (var i=0; i < spans.length; i++){
+		if (spans[i].className=="mart_summarypanel_listitem3") {
+			//spans[i].style.display = "none";
+			spans[i].length =0;
+			spans[i].innerHTML = '[None Selected]';			
+		}
+	}
+
+	// Resetting the count values
+	var ds1 = document.getElementById('summarypanel_filter_count_1');
+	if(ds1) {
+		ds1.innerHTML = ' ';
+	}	
+	var ds2 = document.getElementById('summarypanel_filter_count_2');
+	if(ds2) {
+		ds2.innerHTML = ' ';
+	}
+*/
+
+	if (document.getElementById('summarypanel_filter_count_1') != null)	{
+		document.getElementById('summarypanel_filter_count_1').innerHTML = '';
+	}
+	if (document.getElementById('summarypanel_filter_count_2') != null)	{
+		document.getElementById('summarypanel_filter_count_2').innerHTML = '';
+	}
+	document.mainform.countButton.value = 0;
+	document.mainform.summarypanel_filter_count_1_hidden.value = '';
+	document.mainform.summarypanel_filter_count_2_hidden.value = '';	
+	document.getElementById('summaryPanelDiv').style.display = 'none';
+	document.getElementById('summaryPanelDiv_empty').style.display = 'block';
+}
+
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 
 /*
 	=head1 CVSINFO

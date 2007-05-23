@@ -21,6 +21,12 @@
 <input type="hidden" name="dataset" value="[% dset_name %]" />
 
 [% dset_count = dset_count + 1 %]
+
+	[% IF dset_count == 2 %]
+		<div class="dummyLine_2"></div>
+	[% END %]
+
+
 [% dset = wq.get_mart_registry().getDatasetByName(session.param("schema"), dset_name) %]
 [% dset_displayname = dset.displayName() || dset_name %]
 
@@ -80,6 +86,43 @@
 
 [% render_collapse_controls_summaryPanel("dataset.${dset_name}__summary", "$dset_displayname", 'show' ) # dataset_initial_hiddenstate %]
 
+<!-- enabled filters list OPENS -->
+
+<div id="${dset_name}__filterlist">
+<!--
+<img src="/martview/images/triangle_gray_small_right.png" alt="" />
+-->
+
+<table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+<tr>
+<td onclick="document.getElementById('${dset_name}__summarypanel_filterbranch').onclick();"
+onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch');"
+        onmouseout="setAttFiltMouseOutStyle('${dset_name}__summarypanel_filterbranch');">
+<span class="mart_summarypanel_AttFiltHeader" id="${dset_name}__summarypanel_filterbranch"  
+	onclick="
+	resetResultsPanel();	
+	showPanelHideSiblings('${dset_name}__filterpanel'); setHighlightedSummaryPanelBranch(this.id);" 
+	onmouseover="setAttFiltMouseOverStyle(this.id);" 
+	onmouseout="setAttFiltMouseOutStyle(this.id);" 
+	title="Restrict your query by filtering">Filters (Restrictions)</span>
+</td>
+</tr>
+</table>
+
+<!-- No actual content here, summary list gets populated entirely via Javascript -->
+[% IF dset_count == 1 %]
+<div  class="mart_summarypanel_listitem3">
+  [None selected]
+</div>
+[% ELSE %]
+<div  class="mart_summarypanel_listitem4">
+  [None selected]
+</div>
+[% END %]
+</div> 
+<!-- enabled filters list closes -->
+
+
 
 [% dataset_initial_hiddenstate = 'hide' IF dataset_initial_hiddenstate == 'show' %]
 
@@ -121,7 +164,7 @@
 	onmouseover="setAttFiltMouseOverStyle(this.id);" 
 	onmouseout="setAttFiltMouseOutStyle(this.id);"
 	title="Choose data you want to view or save">
-	Attributes</span>
+	Attributes (Output)</span>
 </td>
 </tr>
 </table>
@@ -136,7 +179,7 @@
 [% FOREACH attributetree = dset.getConfigurationTree("default").getAllAttributeTrees() %]
   [% NEXT IF attributetree.hideDisplay().defined && attributetree.hideDisplay == 'true' %]
 	<div id="${dset_name}__[% attributetree.name() %]__attributelist" style="display:none;">
-  	[% IF attTreeCount > 1%]
+  	[% IF attTreeCount > 100 %]   <!-- TEMPORARY HACK AS AREK SAID. NO DEFAULTS reduce greater than 100 to 1 -->
   	<span class="mart_summarypanel_listitem"  id="${dset_name}__summarypanel_attributebranch__[% attributetree.name %]">Page: [% attributetree.displayName() %]</span>
 	[% END %]
 
@@ -156,44 +199,7 @@
 [% END # end foreach atttree for datset %]
 </div> <!-- attribute page list closes-->
 
-<div id="${dset_name}__filterlist">
 
-
-<!--
-<img src="/martview/images/triangle_gray_small_right.png" alt="" />
--->
-
-<table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
-<tr>
-<td onclick="document.getElementById('${dset_name}__summarypanel_filterbranch').onclick();"
-onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch');"
-        onmouseout="setAttFiltMouseOutStyle('${dset_name}__summarypanel_filterbranch');">
-<span class="mart_summarypanel_AttFiltHeader" id="${dset_name}__summarypanel_filterbranch"  
-	onclick="
-	resetResultsPanel();	
-	showPanelHideSiblings('${dset_name}__filterpanel'); setHighlightedSummaryPanelBranch(this.id);" 
-	onmouseover="setAttFiltMouseOverStyle(this.id);" 
-	onmouseout="setAttFiltMouseOutStyle(this.id);" 
-	title="Restrict your query by filtering">Filters</span>
-</td>
-</tr>
-</table>
-
-<!-- No actual content here, summary list gets populated entirely via Javascript -->
-[% IF dset_count == 1 %]
-<div  class="mart_summarypanel_listitem3">
-  [None selected]
-</div>
-[% ELSE %]
-<div  class="mart_summarypanel_listitem4">
-  [None selected]
-</div>
-[% END %]
-</div> <!-- enabled filters list closes -->
-
-	[% IF dset_count == 1 %]
-		<div class="dummyLine"></div>
-	[% END %]
 <!--
 [% IF session.param('filtercount_of_dataset').$dset_name.defined() %]
 <span class="mart_summarypanel_dataset_entrycount" id="${dset_name}__filtercount">
@@ -216,7 +222,19 @@ onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch')
 <!--
 <img src="/martview/images/triangle_gray_small_right.png" alt="" />
 -->
-
+	[% linked_dataset_count = wq.get_mart_registry.getDatasetsExportingTo(session.param("schema"),session.param("dataset").first) %]
+	<!-- LINK COUNT: [% linked_dataset_count.size() %] this doesnt work, keeps returning 1 for both one possible value and zero -->
+	[% linkdsCount = 0 %]
+	[% FOREACH linked_dataset_name = linked_dataset_count.sort %]
+  		[% linked_dataset = wq.get_mart_registry().getDatasetByName(session.param("schema"),linked_dataset_name) %]
+  		[% IF linked_dataset %]
+			[% linkdsCount = linkdsCount + 1 %]
+		[% END %]
+	[% END %]
+	<!-- LINK DS COUNT: [% linkdsCount %] this doesnt misbehave -->
+	
+	[% IF linkdsCount > 0 %]
+			<div class="dummyLine"></div>
 <table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 <tr>
 <td onclick="document.getElementById('show_linked_datasetpanel').onclick();"
@@ -225,7 +243,9 @@ onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch')
 <span id="show_linked_datasetpanel" class="mart_summarypanel_listheader" 
 	onclick="
 	resetResultsPanel();
-	showPanelHideSiblings('add_linked_datasetpanel'); setHighlightedSummaryPanelBranch(this.id); " 
+	showPanelHideSiblings('add_linked_datasetpanel');
+	setHighlightedSummaryPanelBranch(this.id);
+	"
 	onmouseover="setMouseOverStyle(this.id);" 
 	onmouseout="setMouseOutStyle(this.id);" 
 	title="Optional second dataset to combine in queries">[% session.param("__Dataset") %] 
@@ -236,7 +256,7 @@ onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch')
 </table>
 
 <span class="mart_dataset_noneSelected">[None Selected]</span>
-
+	[% END %]
 [% END %]
 
 

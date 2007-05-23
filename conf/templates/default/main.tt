@@ -15,7 +15,7 @@
 
 </head>
 
-<body style="margin: 0px;" onload="setVisibleStatus()">
+<body style="margin: 0px;" onload="setVisibleStatus([% tbuilder.perlhash2js(js_pushactions_of_datasetmenu) %], [% tbuilder.perlhash2js(js_datasetpanel_sessions_values) %])">
 
 
 

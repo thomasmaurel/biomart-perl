@@ -21,6 +21,8 @@
 <tr>
 <td width="100%" height="100%" valign="top" align="left">
 
+<div class="dummyLine_1" align="center"><b>Please restrict your query using criteria below</b></div>
+
 <div class="mart_filterpanel">
 
 [% # NOTE TO SELF: do we need multiple filterpage menu here, or...? %]

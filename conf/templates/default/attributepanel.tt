@@ -10,6 +10,8 @@
 <tr>
 <td width="100%" height="100%" valign="top" align="left">
 
+<div class="dummyLine_1" align="center"><b>Please select columns to be included in the output and hit 'Results' when ready</b></div>
+
 [% default_attributetree = '' %]
 
 [% attributetree_count = 0 %]

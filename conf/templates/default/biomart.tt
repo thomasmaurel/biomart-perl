@@ -27,6 +27,7 @@
 		</td>
 	</tr>
 	
+	
 	<tr>
 	
 	<td width="100%" height="85%" align="left">
@@ -34,17 +35,29 @@
 		<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 		<tr>
 		<td class="mart_tableSummaryPanel" height="100%" width="25%" align="left" valign="top">
-			<div class="mart_summarypanel_datasets" style="height:100%; overflow: auto; text-align: top; position:relative;">
+			<div id="summaryPanelDiv" class="mart_summarypanel_datasets" style="height:100%; overflow: auto; text-align: top; position:relative; display:
+				[% IF session.param('newQuery') &&  session.param('newQuery') == "1" %] none;">
+				[% ELSE %] block;"> [% END %]
+			
+
 				<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 				<tr>
 				<td width="100%" height="100%" valign="top" align="left">
-
+				
 					[% PROCESS 'summarypanel.tt' %]
-
+					
 				</td>
 				</tr>
 				</table>
 			</div> <!-- summary box closes -->	
+			<div id="summaryPanelDiv_empty" style="display:
+				[% IF session.param('newQuery') &&  session.param('newQuery') == "1" %] block;">
+				[% ELSE %] none;"> [% END %]
+			
+				<table class="mart_summarypanel_listheaderTable" width="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed; margin: 16px 0px 0px 0px;">
+				<tr> <td> <span class="mart_summarypanel_AttFiltHeader" id=""> Dataset </span>	</td>	</tr>
+				</table> 	<div  class="mart_summarypanel_listitem2">	[None selected]</div>
+			</div>
 		</td>
 	
 		<td class="mart_tableMainPanel" height="100%" width="85%" valign="top" align="left">
@@ -59,17 +72,23 @@
 			<input type="hidden" name="countButton" value="0" />
 			<input type="hidden" name="resultsButton" value="0" />
 			<input type="hidden" name="reverseName" value="[% reverseNAME %]" />
-			<input type="hidden" name="summarypanel_filter_count_1" value="[%session.param('ds_1_count')%]" />
-			<input type="hidden" name="summarypanel_filter_count_2" value="[%session.param('ds_2_count')%]" />
+			<input type="hidden" name="summarypanel_filter_count_1_hidden" value="[%session.param('ds_1_count')%]" />
+			<input type="hidden" name="summarypanel_filter_count_2_hidden" value="[%session.param('ds_2_count')%]" />
 			<input type="hidden" name="track_visible_section" value="0" />
 			<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
 			<input type="hidden" name="formatterMenu" value="[% session.param('formatterMenuInvoked') %]" />
-			
+			<input type="hidden" name="newQueryValue" value="[% session.param('newQuery') %]" />
+
+			<input type="hidden" name="mart_mainpanel__current_visible_section" value="[% session.param('mart_mainpanel__current_visible_section') %]"/>
+			<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
 			
 			<div id="mart_mainpanel" style="height:100%; overflow:hidden; text-align: top; position: relative;">
 			<table width="100%" height="100%"  border="0" cellpadding="6" cellspacing="0" style="table-layout: fixed;">
 			<tr>
 			<td id="mart_mainpanel" width="100%" height="100%" valign="top" align="left">	
+	[% IF session.param('newQuery') &&  session.param('newQuery') == "1" %]
+		[% PROCESS 'datasetpanel.tt' %]
+	[% ELSE %]
 		
 		[% IF session.param("dataset").size >= 1 %]
 
@@ -84,8 +103,6 @@
   			[% foo = session.param("mart_mainpanel__current_visible_section", "${infoPanel}" ) %]
   			[% bar = session.param("summarypanel__current_highlighted_branch", "${summaryPanel}" ) %]
 		[% END %]
-		<input type="hidden" name="mart_mainpanel__current_visible_section" value="[% session.param('mart_mainpanel__current_visible_section') %]"/>
-		<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
 
 		[% # Show linked dataset menu, but only if we have a single dataset by now (NEEDS MODS TO HANDLE >2 dsets!!!) %]
 		[% IF session.param('dataset').size == 1 %]
@@ -194,8 +211,12 @@
   							[% IF outputformat != "txt" %]
   							<option value="$outputformat"
 								[% IF session.param("exportView_outputformat").defined() && session.param("exportView_outputformat") == outputformat %]
- 									selected="selected"	
-								[% END %]>[% outputformat FILTER upper %]
+ 									selected="selected"
+								[% END %]
+								[% IF !session.param("exportView_outputformat") &&  outputformat == "tsv" %]
+										selected="selected"
+								[% END %]
+							>
 							</option>
 							[% END %]
 
@@ -211,15 +232,14 @@
 
 							onclick="
 							if(this.value != '') 
-							{ 
-								
-	  							[% IF session.param("GALAXY_URL") %]
+							{
+								[% IF session.param("GALAXY_URL") %]
 								[% dset = wq.get_mart_registry().getDatasetByName(session.param("schema"), dset_name) %]
 								document.mainform.action = 
 									'[% session.param("GALAXY_URL") %]'+
 									'?type=text'+
 									'&name=[% dset.displayName() || dset_name %]'+
-									'&URL=http://'+location.host+'[% form_action %]?do_export=1';
+									'&URL=http://'+location.host+'[% form_action %]?do_export=1&resultsButton=1';
 								[% END %]
 								
 								document.mainform.formatterMenu.value = 'exportView';
@@ -229,6 +249,7 @@
 								var okToSub = 1;
 								var exportOpt = document.mainform.export_saveto.options[document.mainform.export_saveto.selectedIndex].value;
 								if (exportOpt=='file_bg' || exportOpt=='gz_bg') {
+									alert('wrong place');
 									if (document.mainform.background_email.value=='') {
 								   		alert('You need to specify an email address for background jobs.');
 								   		okToSub = 0;
@@ -239,12 +260,12 @@
 										var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
 										if (summaryCountElt1)
 										{
-											document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+											document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
 										}
 										var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
 										if (summaryCountElt2)
 										{
-											document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+											document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
 										}
 
 										document.mainform.track_visible_section.value = 
@@ -267,6 +288,7 @@
 								   [% ELSE %]
  	 								   document.mainform.target = 'newwindow';
  	 								[% END %]
+ 	 								document.mainform.resultsButton.value = 1;
 								   document.mainform.submit();
 								}
 								
@@ -324,12 +346,12 @@
 					var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
 					if (summaryCountElt1)
 					{				
-						document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+						document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
 					}
 					var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
 					if (summaryCountElt2)
 					{
-						document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+						document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
 					}
 					
 					document.mainform.savequery.value = 0; 
@@ -337,37 +359,31 @@
 
 					if(this.value == 'All' )
 					{
-						//document.mainform.do_export.value = 1; 
-						//document.mainform.formatterMenu.value = 'preView';
-						//document.mainform.target = 'newwindow';
-						document.mainform.do_export.value = 0 
-
+						document.mainform.do_export.value = 1; 
+						document.mainform.formatterMenu.value = 'preView';
+						document.mainform.target = 'newwindow';
+						document.mainform.resultsButton.value = 1;
+						document.mainform.submit();
 					}
 					else
 					{
+
 						document.mainform.do_export.value = 0; 
-						//document.mainform.target = '_self'; 
-					}
-					
-					document.mainform.do_export.value = 0; 
-					document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
-					document.mainform.formatterMenu.value = 'preView';
+						document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
+						document.mainform.formatterMenu.value = 'preView';
 							
-					showPanelHideSiblings('resultspanel');
-					setHighlightedSummaryPanelBranch('show_results');					
-			
-					document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
-	
-					document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
-					document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
+						showPanelHideSiblings('resultspanel');
+						setHighlightedSummaryPanelBranch('show_results');					
+						document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
+						document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
+						document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
-					document.mainform.resultsButton.value = 5;
-					document.mainform.target = 'results_hiddenIFrame';
-
-					document.mainform.submit();
-			
-					document.mainform.resultsButton.value = 1;					
-					
+						document.mainform.resultsButton.value = 5;
+						document.mainform.target = 'results_hiddenIFrame';
+						document.mainform.submit();			
+						document.mainform.resultsButton.value = 1;
+					}
+									
 					">
 
 					[% FOREACH c = [10,20,50,100,150,200, 'All'] %]
@@ -390,12 +406,12 @@
 						var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
 						if (summaryCountElt1)
 						{				
-							document.mainform.summarypanel_filter_count_1.value = summaryCountElt1.innerHTML;
+							document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
 						}
 						var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
 						if (summaryCountElt2)
 						{
-							document.mainform.summarypanel_filter_count_2.value = summaryCountElt2.innerHTML;
+							document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
 						}
 						
 						document.mainform.savequery.value = 0;  
@@ -404,34 +420,31 @@
 						var seeAll = document.mainform.export_subset.options[document.mainform.export_subset.selectedIndex].value;
 						if(seeAll == 'All')
 						{
-							//document.mainform.do_export.value = 1;
-							//document.mainform.target = 'newwindow'; 
-							document.mainform.do_export.value = 0
+							document.mainform.do_export.value = 1; 
+							document.mainform.formatterMenu.value = 'preView';
+							document.mainform.target = 'newwindow';
+							document.mainform.resultsButton.value = 1;
+							document.mainform.submit();
 						}
 						else
 						{
 							document.mainform.do_export.value = 0;
-							document.mainform.target = '_self'; 
+							document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
+							document.mainform.formatterMenu.value = 'preView';
+							
+							showPanelHideSiblings('resultspanel');
+							setHighlightedSummaryPanelBranch('show_results');
+							document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
+							document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
+							document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results';
+							
+							document.mainform.resultsButton.value = 5;
+							document.mainform.target = 'results_hiddenIFrame';
+							document.mainform.submit();
+							document.mainform.resultsButton.value = 1;
 						}						
 												
-						document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
-						document.mainform.formatterMenu.value = 'preView';
-							
-						showPanelHideSiblings('resultspanel');
-						setHighlightedSummaryPanelBranch('show_results');					
-			
-						document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
-	
-						document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
-						document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
-
-						document.mainform.resultsButton.value = 5;
 						
-						document.mainform.target = 'results_hiddenIFrame';
-
-						document.mainform.submit();
-			
-						document.mainform.resultsButton.value = 1;
 						
 						">
 					
@@ -486,6 +499,7 @@
 		// Various startup/initialization related things for the main panel and
 		// the summary panel.
 		// Set the proper section to visible-status on the main panel
+		
 			showPanelHideSiblings('[% session.param("mart_mainpanel__current_visible_section") %]');
 			setHighlightedSummaryPanelBranch('[% session.param("summarypanel__current_highlighted_branch") %]');
 
@@ -498,10 +512,12 @@
   		[% PROCESS "datasetpanel.tt" %]
 	[% END %]
 
+		[% END %]
 			</td>
 			</tr>
 			</table>
 			</div>
+
 
 		</td>
 		</tr>
@@ -510,6 +526,4 @@
 	</div>
 	</td>
 	</tr>
-	
-		
 

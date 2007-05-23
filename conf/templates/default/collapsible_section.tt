@@ -85,7 +85,7 @@ el_hidden_AttFiltPanel" style="display: none
 	[% IF state_from_session == "show" %]
 		ctl_hidden" style="display: none
 	[% ELSE %]
-		ctl_visible
+		ctl_visible" style="display: none
 	[% END %]
   	">
   	
@@ -99,7 +99,7 @@ el_hidden_AttFiltPanel" style="display: none
 
 <div id="[% section_name %]__hide" class="
 [% IF state_from_session == "show" %]
-ctl_visible
+ctl_visible" style="display: none
 [% ELSE %]
 ctl_hidden" style="display: none
 [% END %]
