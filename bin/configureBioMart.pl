@@ -110,12 +110,12 @@ use Data::Dumper;
 	$OPTIONS{cgiLocation} =~ s/^\///g; # remove preceeding slashes
 	$OPTIONS{cgiLocation} =~ s/\/$//g; # remove slashes at the end
 	
-	print "\n[for development only, will be gone soon] APACHE: ", $settingsHash->{'httpdSettings'}{'apacheBinary'};
-	print "\n[for development only, will be gone soon] HOST: ", $settingsHash->{'httpdSettings'}{'serverHost'};
-	print "\n[for development only, will be gone soon] PORT: ", $settingsHash->{'httpdSettings'}{'port'};
-	print "\n[for development only, will be gone soon] PROXY: ", $settingsHash->{'httpdSettings'}{'proxy'};
-	print "\n[for development only, will be gone soon] LOCATION: ", $settingsHash->{'httpdSettings'}{'location'};
-	print "\n";
+	print "\nAPACHE: ", $settingsHash->{'httpdSettings'}{'apacheBinary'};
+	print "\nHOST: ", $settingsHash->{'httpdSettings'}{'serverHost'};
+	print "\nPORT: ", $settingsHash->{'httpdSettings'}{'port'};
+	print "\nPROXY: ", $settingsHash->{'httpdSettings'}{'proxy'};
+	print "\nLOCATION: ", $settingsHash->{'httpdSettings'}{'location'};
+	print "\n\n";
 	
 	if(-f $OPTIONS{httpd}) 
 	{
