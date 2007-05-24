@@ -249,7 +249,6 @@
 								var okToSub = 1;
 								var exportOpt = document.mainform.export_saveto.options[document.mainform.export_saveto.selectedIndex].value;
 								if (exportOpt=='file_bg' || exportOpt=='gz_bg') {
-									alert('wrong place');
 									if (document.mainform.background_email.value=='') {
 								   		alert('You need to specify an email address for background jobs.');
 								   		okToSub = 0;

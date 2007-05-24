@@ -1941,9 +1941,12 @@ sub handle_request {
 				   	# Ready for mail.
 						my %mailSettings = $self->getSettings('mailSettings');
 						my $mailer = new Mail::Mailer $mailSettings{'mailerType'};  
-						my %mail_headers = (); 
+						my %mail_headers = ();
+						# apply Ensembl Security patch for email address
+						my $TO = $session->param("background_email");
+						$TO =~ s/[\r\n].*$//sm;						
   						$mail_headers {From} = $mailSettings{'from'}; 
-						$mail_headers {To}  = $session->param("background_email"); 
+						$mail_headers {To}  = $TO; 
 						$mail_headers {Subject}  = $mailSettings{'subject'}; 
 						eval {
 				   		# Run query.			    

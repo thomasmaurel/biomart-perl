@@ -13,7 +13,6 @@
 			clearSummaryPanel();
 			removeHiddenFormParam('dataBase');		
 			removeHiddenFormParam('dataset');
-//			addDatasetParamToForm('');
 			schemaMenuTriggered(this.options[this.selectedIndex].value);
 		">
 	</select>
@@ -30,7 +29,7 @@
 			clearSummaryPanel();
 			
 			removeHiddenFormParam('dataset');
-//			addDatasetParamToForm('');
+
 			dbMenuTriggered(this.options[this.selectedIndex].value);
 		">
 	</select>
@@ -42,6 +41,7 @@
 		onchange="
 			document.mainform.menuNumber.value = 1;
 			clearSummaryPanel();
+			removeHiddenFormParam('dataset');
 			datasetmenu_1_Triggered(this.options[this.selectedIndex].value);
 		">
 
@@ -54,6 +54,7 @@
 		onchange="
 			document.mainform.menuNumber.value = 2;
 			clearSummaryPanel();
+			removeHiddenFormParam('dataset');			
 			datasetmenu_2_Triggered(this.options[this.selectedIndex].value);
 		">
 
@@ -66,6 +67,7 @@
 		onchange="
 			document.mainform.do_export.value = 0;
 			document.mainform.showquery.value = 0;
+			removeHiddenFormParam('dataset');
 			if(this.options[this.selectedIndex].value != '')	{
 				if (document.getElementById('dsMenu_1').style.display == 'block')	{
 					// or dsMenu_2, just to flag its multi menu system for Web.pm
@@ -74,7 +76,7 @@
 				else {
 					document.mainform.menuNumber.value = 0;
 				}
-				removeHiddenFormParam('dataset');
+
 				addDatasetParamToForm(this.options[this.selectedIndex].value);
 				if (document.getElementById('summarypanel_filter_count_1') != null)	{
 					document.getElementById('summarypanel_filter_count_1').innerHTML = ' ';

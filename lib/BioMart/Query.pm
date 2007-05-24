@@ -376,29 +376,17 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 		my $interface = $self->getInterfaceForDataset($dataset);
      	if($self->_visibleDataset($dataset)) ## only for visible datasets,
      	{
-		$vDataset{$dataset} = qq |
+			$vDataset{$dataset} = qq |
 	<Dataset name = "|.$dataset.qq|" interface = "|.$interface.qq|" >|; 
 			$visibleDSCount++;			
 			
      	}    	
 	}
-
-	## Attributes and AttributeLists
-	my $attsAndAttLists = $self->get('attsAndAttListsForXMLDisplay'); ## this hash is populated in addAttribute() and _populateFromXML() only
-	foreach my $attribute (@$attsAndAttLists)
-     {
-		foreach my $attName (keys %$attribute)
-		{
-			$actualDS = $self->getActualDS($attribute->{$attName}, \%vDataset);
-			$vDataset{$actualDS} .= qq |
-      		<Attribute name = "|.$attName.qq|" />|;
-		}
-     }
-     
+	
 	## Filters
 	my $filts = $self->getAllFilters();
 	foreach my $filter (@$filts)
-    	{
+	{
 		$actualDS = $self->getActualDS($filter->dataSetName, \%vDataset);
 		# e.g if filter is from gnf_xxx or evoc_xxx datasets which are generic for all but
 		# used for human so far. the only way to assign such filters to the corresponding dataset
@@ -406,87 +394,90 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 		if(!$actualDS)
 		{
 			$actualDS = $self->getActualDS_reverseLinks($filter->dataSetName, \%vDataset);
-		}
-		
+		}	
 
 		if ($filter->isa("BioMart::Configuration::ValueFilter"))
 		{
-		    my @values;
-	     	my @rows;
-		     my $atable = $filter->getTable;
-		     while (my $row = $atable->nextRow)
-    		 	{
+			my @values;
+			my @rows;
+			my $atable = $filter->getTable;
+			while (my $row = $atable->nextRow)	{
 				push @rows,$row;
-				foreach my $col (@$row)
-				{
-			     	push @values,$col;
+				foreach my $col (@$row)	{
+					push @values,$col;
 		  		}
 			}
-		     # need to regenerate AttributeTable cols for subsequent calls
-		     $atable->addRows(\@rows);
+			# need to regenerate AttributeTable cols for subsequent calls
+			$atable->addRows(\@rows);
 			my $value = join(',',@values);
 	    	 
-	     	$vDataset{$actualDS} .= qq |
-     		<Filter name = "|.$filter->name.qq|" value = "|.
+			$vDataset{$actualDS} .= qq |
+		<Filter name = "|.$filter->name.qq|" value = "|.
 	               $value.qq|"/>|;
 		}
 		elsif ($filter->isa("BioMart::Configuration::FilterList"))
 		{
-		    	my @values;
-		    	my $filts = $filter->get('filters');
-	    		my @filters = @$filts;
-		    	my $attribute_table = $filter->get('attribute_table');
-		    	my $rows_avail = $attribute_table->hasMoreRows();
+			my @values;
+			my $filts = $filter->get('filters');
+			my @filters = @$filts;
+			my $attribute_table = $filter->get('attribute_table');
+			my $rows_avail = $attribute_table->hasMoreRows();
 			my $value;
 		  	# deal with non-batching invisible datasets for webservice
 		  	# need to keep reusing the same values for the filterlist
-		    	if (!$rows_avail)
-		    	{
+			if (!$rows_avail)
+			{
 				if (!$filter->batching || $filter->batching != 1)
 				{
-			    		my $oldFilterListValues = $self->get('oldFilterListValues');
-				    	$value = $oldFilterListValues->{$filter->name};
+					my $oldFilterListValues = $self->get('oldFilterListValues');
+					$value = $oldFilterListValues->{$filter->name};
 				}
-		    	}
-		    	else
-		    	{	
-				while ($rows_avail && $filter->_inBatch($attribute_table))
-				{
-				    	my $row = $attribute_table->nextRow();
-				    	my $val = '';
-			    		my $separator = '';
-				    	foreach my $col (@$row)
-				    	{	
+			}
+			else
+			{	
+				while ($rows_avail && $filter->_inBatch($attribute_table)) {
+					my $row = $attribute_table->nextRow();
+					my $val = '';
+					my $separator = '';
+					foreach my $col (@$row)	{	
 						$val = $val.$separator.$col;
 						$separator = '|';
-			    		}
-			    		push @values,$val;
+					}
+					push @values,$val;
 				}
 				$value = join(',',@values);
 			}
 			# needed for correct batching behaviour
 			$filter->set('exhausted', 1) unless ($rows_avail);
-         		   
-		   	my $oldFilterListValues = $self->get('oldFilterListValues');
-		   	$oldFilterListValues->{$filter->name} = $value;
-		    	$self->set('oldFilterListValues',$oldFilterListValues);
-    	 
+			
+			my $oldFilterListValues = $self->get('oldFilterListValues');
+			$oldFilterListValues->{$filter->name} = $value;
+			$self->set('oldFilterListValues',$oldFilterListValues);
+
 			unless( defined $value) {$value="";} 
-		     $vDataset{$actualDS} .= qq |
-				<Filter name = "|.$filter->name.qq|" value = "|.
+			$vDataset{$actualDS} .= qq |
+		<Filter name = "|.$filter->name.qq|" value = "|.
 $value.qq|"/>|;
 	
 		}
-	
-	     elsif ($filter->isa("BioMart::Configuration::BooleanFilter"))
-    	 	{
+		elsif ($filter->isa("BioMart::Configuration::BooleanFilter")) {
 			$vDataset{$actualDS} .= qq |
-	    	<Filter name = "|.$filter->name.qq|" excluded = "|.
+		<Filter name = "|.$filter->name.qq|" excluded = "|.
 $filter->getExcluded.qq|"/>|;
 		}
-	}  		
-
-
+	}
+	
+	## Attributes and AttributeLists
+	my $attsAndAttLists = $self->get('attsAndAttListsForXMLDisplay'); ## this hash is populated in addAttribute() and _populateFromXML() only
+	foreach my $attribute (@$attsAndAttLists)
+	{
+		foreach my $attName (keys %$attribute)	{
+			$actualDS = $self->getActualDS($attribute->{$attName}, \%vDataset);
+			$vDataset{$actualDS} .= qq |
+		<Attribute name = "|.$attName.qq|" />|;
+		}
+	}
+     
 	my $ds;
   	foreach (keys %vDataset)
   	{

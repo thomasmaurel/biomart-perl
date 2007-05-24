@@ -2308,6 +2308,11 @@ function datasetmenu_3_Triggered(value, dsName)
 
 }
 
+function datasetExists()
+{
+	var existingParamElts = getElementsByName_local('dataset');
+	return existingParamElts.length;
+}
 function clearSummaryPanel()
 {
 	var attPageVisible;
