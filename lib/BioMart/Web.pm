@@ -1837,6 +1837,7 @@ sub handle_request {
 			$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\"/g;
 			$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
 			print $tempered_xml;
+			print $query_main->toPerl();
 			$session->clear('showquery'); # so we don't get stuck a this stage
 			$session->flush();
 			return;

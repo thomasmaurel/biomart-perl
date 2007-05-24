@@ -2134,5 +2134,51 @@ sub _equals {
   return ($self->hashCode == $otherq->hashCode);
 }
 
+=head2 toPerl
+
+  Usage      :  my perlApiExample = $query->toPerl();
+
+  Description:  display the PERL API Equivalent of Query
+  Returntype :  string
+  Exceptions :  none
+  Caller     :  Web.pm
+
+=cut
+sub toPerl {
+	my $self = shift;
+	my $xml = $self->toXML(1,1,1,1);
+	my $registry = $self->getRegistry;
+	my $perl_string;
+	# so far expecting to deal with only 0.5 style XML
+	my $config = XMLin($xml, forcearray=> [qw(Query Dataset Attribute 
+					      ValueFilter BooleanFilter 
+					      Filter Links)], keyattr => []);
+
+	my $virtualSchemaName =  $config->{'virtualSchemaName'} || 'default';
+
+	my $formatter = $config->{'formatter'} if ($config->{'formatter'});
+
+	foreach my $dataset (@{$config->{'Dataset'}}) {	
+		my $interface = $dataset->{'interface'} || 'default';
+		$perl_string .= $dataset->{'name'};
+		$perl_string .= '<br/>';
+		foreach my $attributeNode (@{$dataset->{'Attribute'}}) {
+			$perl_string .= $attributeNode->{'name'};
+			$perl_string .= '<br/>';
+		}
+		foreach my $filterNode (@{$dataset->{'Filter'}}) {
+			if (defined $filterNode->{'excluded'}) {
+				$perl_string .= $filterNode->{'name'};
+				$perl_string .= '<br/> ONLY/EXCLUDED <br/>';
+			}
+			elsif  (defined $filterNode->{'value'}) {
+				$perl_string .= $filterNode->{'name'};
+				$perl_string .= '<br/> VALUE <br/>';
+			}
+		}
+	}
+	return $perl_string;
+}
+
 1;
 
