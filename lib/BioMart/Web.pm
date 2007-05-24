@@ -1312,7 +1312,9 @@ sub handle_request {
 			my $datasets = $registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
 			my $last_dataset;
 	     	DATASET:
-			foreach my $dataset_name(sort @$datasets) {
+	     	# no more sorting of dataset names alphabetically
+			#foreach my $dataset_name(sort @$datasets) {
+			foreach my $dataset_name(@$datasets) {
 				my $dataset = $registry->getDatasetByName($schema_name, $dataset_name)
 				|| BioMart::Exception::Configuration->throw("Couldn't get dataset $schema_name->$database_name->$dataset_name from registry");
 	    		push @datasets, $dataset;
@@ -1321,15 +1323,16 @@ sub handle_request {
 	    		# Add this dataset to pushaction-hash
 	    		if ($dataset->displayName !~ m/\|/)
 	    		{
-	    			if ($conf_tree->defaultDataset()){
-						unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
-													[$dataset->name, $dataset->displayName()]);
-	    			}
-	    			else{
+					# setting the default dataset to appear as first option in the menu
+					#if ($conf_tree->defaultDataset()){
+					#	unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
+					#								[$dataset->name, $dataset->displayName()]);
+	    			#}
+	    			#else{
 						push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
 													[$dataset->name, $dataset->displayName()]);
-	    			}
-	    			$default_dataset ||= $dataset; # if $dataset->defaultDataset();		    			
+	    			#}
+	    			$default_dataset ||= $dataset; 
 	    		}		    		
 				#-------------------------------------------
 				#######------------ MULTI MENU FOR DS datastructure	
@@ -1349,7 +1352,6 @@ sub handle_request {
 			} # foreach datasets closes
 			if($multiMenuDS == 1)
 			{
-				#open (STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/HELLLOO");
 				foreach my $one(sort keys %$unitsHash) {
 					#	print STDME "\n$one"; 
 					my $temp_one = $schema__dbName.'____'.$one;
@@ -1370,8 +1372,6 @@ sub handle_request {
 						}
 					}	
 				}
-				#print STDME Dumper(\%js_pushactions_of_datasetmenu);	
-				#close(STDME);
 			}
 		} # foreach database closes
 	} # foreach schema closes

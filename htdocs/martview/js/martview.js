@@ -2208,6 +2208,11 @@ function dbMenuTriggered(db_name)
 				var display = dataForMenus['databasemenu'][db_name]['datasetmenu_1'][i][1];
 				document.mainform.datasetmenu_1[j++] = new Option(display, val);
 			}
+			// single option in DS Menu, select it by default and invoke onclick
+			if(dataForMenus['databasemenu'][db_name]['datasetmenu_1'].length == 1){
+				document.mainform.datasetmenu_1.options[1].selected = 'true';
+				document.mainform.datasetmenu_1.onchange();
+			}
 		}
 		else // normal menu system
 		{		
@@ -2220,6 +2225,11 @@ function dbMenuTriggered(db_name)
 				var val = dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0];
 				var display = dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][1];
 				document.mainform.datasetmenu_3[j++] = new Option(display, val);
+			}
+			// single option in DS Menu, select it by default and invoke onclick
+			if(dataForMenus['databasemenu'][db_name]['datasetmenu_3'].length == 1){
+				document.mainform.datasetmenu_3.options[1].selected = 'true';
+				document.mainform.datasetmenu_3.onchange();
 			}
 		}
 	}
@@ -2246,6 +2256,11 @@ function datasetmenu_1_Triggered(dsName)
 				var val = dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'][i][0];
 				var display = dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'][i][1];
 				document.mainform.datasetmenu_2[j++] = new Option(display, val);
+			}
+			// single option in DS Menu, select it by default and invoke onclick
+			if(dataForMenus['datasetmenu_1'][dsName]['datasetmenu_2'].length == 1){
+				document.mainform.datasetmenu_2.options[1].selected = 'true';
+				document.mainform.datasetmenu_2.onchange();
 			}
 		}
 		else
@@ -2275,6 +2290,11 @@ function datasetmenu_2_Triggered(dsName)
 				var display = dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'][i][1];
 				document.mainform.datasetmenu_3[j++] = new Option(display, val);
 			}
+			// single option in DS Menu, select it by default and invoke onclick
+			if(dataForMenus['datasetmenu_2'][dsName]['datasetmenu_3'].length == 1){
+				document.mainform.datasetmenu_3.options[1].selected = 'true';
+				document.mainform.datasetmenu_3.onchange();
+			}			
 		}
 		else
 		{
