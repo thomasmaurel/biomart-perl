@@ -104,7 +104,7 @@ onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch')
 	showPanelHideSiblings('${dset_name}__filterpanel'); setHighlightedSummaryPanelBranch(this.id);" 
 	onmouseover="setAttFiltMouseOverStyle(this.id);" 
 	onmouseout="setAttFiltMouseOutStyle(this.id);" 
-	title="Restrict your query by filtering">Filters (Restrictions)</span>
+	title="Restrict your query by filtering">Filters </span>
 </td>
 </tr>
 </table>
@@ -164,7 +164,7 @@ onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch')
 	onmouseover="setAttFiltMouseOverStyle(this.id);" 
 	onmouseout="setAttFiltMouseOutStyle(this.id);"
 	title="Choose data you want to view or save">
-	Attributes (Output)</span>
+	Attributes </span>
 </td>
 </tr>
 </table>
