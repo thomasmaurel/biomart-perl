@@ -272,7 +272,8 @@ div#mart_export_data
 	border-style: solid;
 	border-width: 0px 0px 0px 0px;
 /*	border-color: [colour_saturation0]; */
-	margin: 16px;
+	margin: 8px;
+	padding: 0px 0px 6px 0px;
 }
 .dummyLine_2
 {
@@ -444,6 +445,16 @@ div#mart_export_data
 	color: [colour_saturation100];
 }
 
+.mart_summarypanel_listheader_empty
+{
+	background-color: 	[colour_saturation60];
+	color: [colour_saturation0];
+	cursor: pointer;
+	font-weight: bold;                            
+	clear: both;
+	margin: 0px 0px 2px 6px;
+	padding: 0.2em 0em  0.2em 0em;	
+}
 
 .el_hidden,
 .ctl_hidden
@@ -457,7 +468,7 @@ div#mart_export_data
 .mart_dataset_noneSelected
 { 						
 	color: [colour_saturation0];
-	margin: 1px 0px 1px 13px;
+	margin: 1px 0px 1px 6px;
 }
 
 .el_hidden_AttFiltPanel,
@@ -510,7 +521,7 @@ div#mart_export_data
 {
 	color: [colour_saturation0];
 	font-style: normal;
-	margin: 1px 0px 1px 30px;
+	margin: 1px 0px 1px 18px;
 	width: inherit;
 	clear: both;
 }
@@ -518,7 +529,7 @@ div#mart_export_data
 .mart_summarypanel_listitem2
 {
 	font-style: normal;
-	margin: 1px 0px 1px 30px;
+	margin: 1px 0px 1px 18px;
 	width: inherit;
 	clear: both;
 	color: [colour_saturation0];
@@ -527,7 +538,7 @@ div#mart_export_data
 .mart_summarypanel_listitem3
 {
 	font-style: normal;
-	margin: 1px 0px 1px 30px;
+	margin: 1px 0px 1px 18px;
 	width: inherit;
 	clear: both;
 	color: [colour_saturation0];
@@ -536,7 +547,7 @@ div#mart_export_data
 .mart_summarypanel_listitem4 
 {
 	font-style: normal;
-	margin: 1px 0px 1px 30px;
+	margin: 1px 0px 1px 18px;
 	width: inherit;
 	clear: both;
 	color: [colour_saturation0];
