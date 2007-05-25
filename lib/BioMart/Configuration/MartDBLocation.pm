@@ -249,8 +249,8 @@ sub _retrieveDatasetInfo() {
     }
 
 
-
     $sql=$sql.$include_string;
+    $sql .= " ORDER BY conf.dataset_id_key";
     my $sth = $dbh->prepare($sql);
     unless($sth) {
         my $err = $dbh->errstr;

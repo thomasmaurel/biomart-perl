@@ -329,18 +329,17 @@ sub getDefaultVirtualSchema {
 
 sub getAllDatasetNames {
     my ($self, $virtualSchemaName, $visible_only) = @_;
-
     my @dataSetNames;
     foreach my $virtualSchema (@{$self->getAllVirtualSchemas}){
 	next unless ($virtualSchema->name eq $virtualSchemaName);
 	foreach my $location (@{$virtualSchema->getAllLocations}){
-	    foreach my $dataset (@{$location->getAllDatasets}){
-		if ($visible_only){
-		    push @dataSetNames,$dataset->name
-			if ($dataset->visible == 1);
-		}
-		else{
+	    if ($visible_only){
+		push @dataSetNames, @{$location->getAllVisibleDatasetNames};
+	    }
+	    else{
+		foreach my $dataset (@{$location->getAllDatasets}){
 		    push @dataSetNames,$dataset->name;
+		
 		}
 	    }
 	}
@@ -375,17 +374,15 @@ sub getAllDatasetNames {
 
 sub getAllDisplayNames {
     my ($self, $virtualSchemaName, $visible_only) = @_;
-
     my @dataSetNames;
     foreach my $virtualSchema (@{$self->getAllVirtualSchemas}){
 	next unless ($virtualSchema->name eq $virtualSchemaName);
 	foreach my $location (@{$virtualSchema->getAllLocations}){
-	    foreach my $dataset (@{$location->getAllDatasets}){
-		if ($visible_only){
-		    push @dataSetNames,$dataset->displayName
-			if ($dataset->visible == 1);
-		}
-		else{
+	    if ($visible_only){
+		push @dataSetNames, @{$location->getAllVisibleDatasetDisplayNames};
+	    }
+	    else {
+		foreach my $dataset (@{$location->getAllDatasets}){
 		    push @dataSetNames,$dataset->displayName;
 		}
 	    }
@@ -729,13 +726,14 @@ sub getAllDataSetsByDatabaseName {
 	next unless ($virtualSchema->name eq $virtualSchemaName);
 	foreach my $location (@{$virtualSchema->getAllLocations}){
 	    next unless ($location->displayName eq $databaseName);
-	    foreach my $dataset (@{$location->getAllDatasets}){
-		if ($visible_only){
-		    push @dataSetNames,$dataset->name 
-			if ($dataset->visible == 1);
-		}
-		else{
+
+	    if ($visible_only){
+		push @dataSetNames, @{$location->getAllVisibleDatasetNames};
+	    }
+	    else{
+		foreach my $dataset (@{$location->getAllDatasets}){
 		    push @dataSetNames,$dataset->name;
+		
 		}
 	    }
 	}

@@ -93,6 +93,8 @@ sub _new {
   $self->attr('dsn', undef);
   $self->attr('datasets', { });
   $self->attr('datasetNumber', undef);
+  $self->attr('visibleDatasetNames', []);
+  $self->attr('visibleDatasetDisplayNames', []);
 }
 
 =head2 name
@@ -477,6 +479,15 @@ sub addDataset {
       BioMart::Exception::Configuration->throw("Can not add dataset '$dataSetName', already added");
   }
   $dataSetHash->{$dataSetName} = $dataset;
+  
+  if ($dataset->visible == 1){
+      my $datasetNames = $self->get('visibleDatasetNames');
+      my $datasetDisplayNames = $self->get('visibleDatasetDisplayNames');
+      push @$datasetNames,$dataSetName;
+      push @$datasetDisplayNames, $dataset->displayName();
+      $self->set('visibleDatasetNames', $datasetNames);
+      $self->set('visibleDatasetDisplayNames', $datasetDisplayNames);
+  }
   $self->set('datasets', $dataSetHash);
 
 }
@@ -505,6 +516,39 @@ sub removeDataset {
   }
 }
 
+
+=head2 getAllVisibleDatasetNames
+
+  Usage      : usage
+  Description: Description
+  Returntype : 
+  Exceptions : none
+  Caller     : caller
+
+=cut
+
+sub getAllVisibleDatasetNames {
+  my $self = shift;
+  return $self->get('visibleDatasetNames');
+
+}
+
+=head2 getAllVisibleDatasetDisplayNames
+
+  Usage      : usage
+  Description: Description
+  Returntype : 
+  Exceptions : none
+  Caller     : caller
+
+=cut
+
+sub getAllVisibleDatasetDisplayNames {
+  my $self = shift;
+  return $self->get('visibleDatasetDisplayNames');
+
+}
+
 =head2 getAllDatasets
 
   Usage      : usage
@@ -520,7 +564,6 @@ sub getAllDatasets {
 
   my $datasetHash =  $self->get('datasets');
   my @datasets = values %{$datasetHash};
-  
 	if(!$visible)
 	{
 		return \@datasets;
