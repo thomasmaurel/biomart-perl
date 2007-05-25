@@ -1827,17 +1827,23 @@ sub handle_request {
 		    $session->param('lastquery_info', \%lastquery_info);
 		}
 	
-		# Display the xml query in separate browser window
+		# Display the xml query or PERL API equivalent in separate browser window
 		my $showQuery = $session->param('showquery');
-	
+
 		if(defined ($showQuery) && defined($query_main) && $showQuery ne '0')
 		{
-			# do not want to show internals of BioMart ;-) 
-			my $tempered_xml = $query_main->toXML(1,1,1,1);
-			$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\"/g;
-			$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
-			print $tempered_xml;
-			print $query_main->toPerl();
+			# XML Query
+			if ($showQuery eq '1') {
+				# do not want to show internals of BioMart ;-) 
+				my $tempered_xml = $query_main->toXML(1,1,1,1);
+				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\"/g;
+				$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
+				print $tempered_xml;
+			}
+			# PERL API equivalent of the query
+			if ($showQuery eq '2') {
+				print $query_main->toPerl();
+			}
 			$session->clear('showquery'); # so we don't get stuck a this stage
 			$session->flush();
 			return;

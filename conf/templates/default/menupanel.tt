@@ -15,116 +15,107 @@
 	
 		
 			<!--input type="submit" value="New" style="margin: 0px 0px 0px 6px" name="submit.newsession"--> 
-                        <a 
-                        style="margin-left:6px"
-			class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
-			onclick="
-			var currentPath = window.location.pathname; 
-			currentPath = currentPath.replace('/[% session.param('_SESSION_ID') %]', '');			
-			[% IF session.param("GALAXY_URL") %]
-			currentPath = currentPath + '?GALAXY_URL=[%session.param("GALAXY_URL")%]';
-			[% END %] 
-			window.location = currentPath; 
+			<a 
+				style="margin-left:6px"
+				class="mart_btn"
+	   			onmouseover="this.className='mart_btn mart_btnhov'" 
+	   			onmouseout="this.className='mart_btn'"
+				onclick="
+				var currentPath = window.location.pathname; 
+				currentPath = currentPath.replace('/[% session.param('_SESSION_ID') %]', '');			
+				[% IF session.param("GALAXY_URL") %]
+				currentPath = currentPath + '?GALAXY_URL=[%session.param("GALAXY_URL")%]';
+				[% END %] 
+				window.location = currentPath; 
+	
+	  			return false; 
 
-  			return false; 
-			
-  			" 
-  			title="Start a new query">New</a>
+	  			" 
+	  			title="Start a new query">New
+	  		</a>
 	
 	
 			<!--input type="button" value="Count" name="get_count_button" -->
-                        <a
-			class="mart_btn"
-			onmouseover="this.className='mart_btn mart_btnhov'" 
-			onmouseout="this.className='mart_btn'"
+			<a
+				style="margin-left:4px"
+				class="mart_btn"
+				onmouseover="this.className='mart_btn mart_btnhov'" 
+				onmouseout="this.className='mart_btn'"
 
-			onclick="
-			if (datasetExists() > 0) {
-				document.getElementById('summarypanel_filter_count_1').innerHTML = 'Loading... ';
-				if (document.getElementById('summarypanel_filter_count_2') != null)	{
-					document.getElementById('summarypanel_filter_count_2').innerHTML = 'Loading... ';
+				onclick="
+				if (datasetExists() > 0) {
+					document.getElementById('summarypanel_filter_count_1').innerHTML = 'Loading... ';
+					if (document.getElementById('summarypanel_filter_count_2') != null)	{
+						document.getElementById('summarypanel_filter_count_2').innerHTML = 'Loading... ';
+					}
+					document.mainform.formatterMenu.value = 'preView';
+					document.mainform.do_export.value = 0; 
+					document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
+					document.mainform.savequery.value = 0; 
+					document.mainform.showquery.value = 0; 
+					document.mainform.countButton.value = 5;
+			
+					document.mainform.target = 'count_hiddenIFrame';
+					document.mainform.submit();
+	
+					document.mainform.countButton.value = 1;
+				
+					return false;
 				}
-				document.mainform.formatterMenu.value = 'preView';
-				document.mainform.do_export.value = 0; 
-				document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
-				document.mainform.savequery.value = 0; 
-				document.mainform.showquery.value = 0; 
-				document.mainform.countButton.value = 5;
-			
-				document.mainform.target = 'count_hiddenIFrame';
-				document.mainform.submit();
 
-				document.mainform.countButton.value = 1;
-			
-				return false;
-			}
-
-			" title="Get result count for the query with any filters applied">Count</a>
+				" title="Get result count for the query with any filters applied">Count
+			</a>
 
 	
 			<!--input type="button" value="Results" name="get_results_button" -->
-                        <a
-			class="mart_btn"
-			onmouseover="this.className='mart_btn mart_btnhov';" 
-			onmouseout="this.className='mart_btn';"
+			<a
+				style="margin-left:4px"
+				class="mart_btn"
+				onmouseover="this.className='mart_btn mart_btnhov';" 
+				onmouseout="this.className='mart_btn';"
 			
-			onclick="
-			if (datasetExists() > 0) {
-				document.getElementById('resultsTableId').innerHTML = 'Loading... ';
-				document.mainform.formatterMenu.value = 'preView';
-				document.mainform.do_export.value = 0; 
-				document.mainform.savequery.value = 0;
-				document.mainform.showquery.value = 0;  
+				onclick="
+				if (datasetExists() > 0) {
+					document.getElementById('resultsTableId').innerHTML = 'Loading... ';
+					document.mainform.formatterMenu.value = 'preView';
+					document.mainform.do_export.value = 0; 
+					document.mainform.savequery.value = 0;
+					document.mainform.showquery.value = 0;  
 		
-				var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
-				if (summaryCountElt1)	{				
-					document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
-				}
-				var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
-				if (summaryCountElt2)	{
-					document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
-				}
+					var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
+					if (summaryCountElt1)	{				
+						document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
+					}
+					var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
+					if (summaryCountElt2)	{
+						document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
+					}
 			
-				showPanelHideSiblings('resultspanel');			
-				setHighlightedSummaryPanelBranch('show_results');			
+					showPanelHideSiblings('resultspanel');			
+					setHighlightedSummaryPanelBranch('show_results');			
 	
-				document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
+					document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
 	
-				document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
-				document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
+					document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
+					document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results'; 
 
-				document.mainform.resultsButton.value = 5;
+					document.mainform.resultsButton.value = 5;
 		
-				document.mainform.target = 'results_hiddenIFrame';
-				document.mainform.submit();
+					document.mainform.target = 'results_hiddenIFrame';
+					document.mainform.submit();
 			
-				document.mainform.resultsButton.value = 1;			
-			
-				return false;
-			}
-			" title="Preview the results of the query">Results</a>
+					document.mainform.resultsButton.value = 1;			
+				
+					return false;
+				}
+				" title="Preview the results of the query">Results
+			</a>
 	
 		</td>
 		<td height="100%" align="right" valign="top" >
-
+		
 			<a
-				class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
-
-          	onclick="
-				if (datasetExists() > 0) {
-	          	document.mainform.showquery.value = 1; 
-   	       	document.mainform.do_export.value = 0; 
-					document.mainform.savequery.value = 0; 
-					document.mainform.target = 'newwindow'; 
-					document.mainform.submit(); 
-				}
-				" title ="Show query in Perl API Format">Perl</a>
-         
-         <a
+				style="margin-right:4px"
 				class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
@@ -136,8 +127,24 @@
 					document.mainform.target = 'newwindow'; 
 					document.mainform.submit();
 				}
-				" title ="Show query in XML Web Service Format">XML</a>
+				" title ="Show query in XML Web Service Format">XML
+			</a>
 
+			<a
+				style="margin-right:4px"
+				class="mart_btn"
+   			onmouseover="this.className='mart_btn mart_btnhov'" 
+   			onmouseout="this.className='mart_btn'"
+          	onclick="
+				if (datasetExists() > 0) {          	
+	          	document.mainform.showquery.value = 2; 
+   	       	document.mainform.do_export.value = 0; 
+					document.mainform.savequery.value = 0; 
+					document.mainform.target = 'newwindow'; 
+					document.mainform.submit();
+				}
+				" title ="Show query in XML Web Service Format">Perl
+			</a>
 	        
 			<a
 				style="margin-right: 6px"
@@ -159,7 +166,8 @@
 						document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
 					}
 	         	javascript:void(window.open('/[% TAG_path %]/mview/help.html','martview','width=600,height=500,resizable,scrollbars'));	
-				" title ="Get Help">Help</a>
+				" title ="Get Help">Help
+			</a>
 
 
 		</td>

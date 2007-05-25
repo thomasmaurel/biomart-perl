@@ -2149,6 +2149,28 @@ sub toPerl {
 	my $xml = $self->toXML(1,1,1,1);
 	my $registry = $self->getRegistry;
 	my $perl_string;
+	$perl_string .= qq|
+
+# An example script demonstrating the use of BioMart API.
+use strict;
+use BioMart::Initializer;
+use BioMart::Query;
+use BioMart::QueryRunner;
+
+my \$confFile = "PATH TO YOU REGISTRY FILE UNDER biomart-perl/conf/. For Biomart Central Registry navigate to
+						http://www.biomart.org/biomart/martservice?type=registry";
+#
+# NB: change action to 'cached' if you want 
+# to skip the configuraiton step on subsequent runs
+# from the same registry
+#
+
+my \$action='cached';
+my \$initializer = BioMart::Initializer->new('registryFile'=>\$confFile, 'action'=>\$action);
+my \$registry = \$initializer->getRegistry;
+
+my \$query = BioMart::Query->new('registry'=>\$registry,'virtualSchemaName'=>'default');
+|;
 	# so far expecting to deal with only 0.5 style XML
 	my $config = XMLin($xml, forcearray=> [qw(Query Dataset Attribute 
 					      ValueFilter BooleanFilter 
@@ -2157,26 +2179,47 @@ sub toPerl {
 	my $virtualSchemaName =  $config->{'virtualSchemaName'} || 'default';
 
 	my $formatter = $config->{'formatter'} if ($config->{'formatter'});
-
+	#DATASETS
 	foreach my $dataset (@{$config->{'Dataset'}}) {	
 		my $interface = $dataset->{'interface'} || 'default';
-		$perl_string .= $dataset->{'name'};
-		$perl_string .= '<br/>';
-		foreach my $attributeNode (@{$dataset->{'Attribute'}}) {
-			$perl_string .= $attributeNode->{'name'};
-			$perl_string .= '<br/>';
-		}
+		$perl_string .= qq|
+		
+	\$query->setDataset("|.$dataset->{'name'}.qq|");|;
+		# FILTERS
 		foreach my $filterNode (@{$dataset->{'Filter'}}) {
 			if (defined $filterNode->{'excluded'}) {
-				$perl_string .= $filterNode->{'name'};
-				$perl_string .= '<br/> ONLY/EXCLUDED <br/>';
+				if($filterNode->{'excluded'} eq '1') {
+					$perl_string .= qq| 
+	\$query->addFilter("|.$filterNode->{'name'}.qq|", ["Excluded"]);|;
+				}
+				else {
+					$perl_string .= qq| 
+	\$query->addFilter("|.$filterNode->{'name'}.qq|", ["Only"]);|;
+				}
 			}
 			elsif  (defined $filterNode->{'value'}) {
-				$perl_string .= $filterNode->{'name'};
-				$perl_string .= '<br/> VALUE <br/>';
+				my $temp_str = $filterNode->{'value'};
+				$temp_str =~ s/\,/\"\,\"/g;
+				$perl_string .= qq|
+	\$query->addFilter("|.$filterNode->{'name'}.qq|", ["|.$temp_str.q|"]);|;
 			}
 		}
+		# ATTRIBUTES
+		foreach my $attributeNode (@{$dataset->{'Attribute'}}) {
+			$perl_string .= qq|
+	\$query->addAttribute("|.$attributeNode->{'name'}.qq|");|;			
+		}
 	}
+
+
+$perl_string .= qq|
+
+my \$query_runner = BioMart::QueryRunner->new();
+\$query_runner->execute(\$query);
+\$query_runner->printHeader();
+\$query_runner->printResults();
+\$query_runner->printFooter();
+|;
 	return $perl_string;
 }
 
