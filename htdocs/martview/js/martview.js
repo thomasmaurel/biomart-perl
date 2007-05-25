@@ -2004,7 +2004,8 @@ function datasetpanel_pre_onload(menuLists, sessionValues)
 	
 	// NEW QUERY, DEFAULT VALUES
 	if (document.mainform.newQueryValue.value == '1')
-	{		
+	{	
+		disableButtons();			
 		if (schemaCount > 1) {
 			document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '', true, true);
 			for(i in dataForMenus['schema'])	{
@@ -2308,6 +2309,21 @@ function datasetmenu_3_Triggered(value, dsName)
 
 }
 
+function disableButtons()
+{
+	document.getElementById("count_button_tag").className = "mart_btn_disabled";
+	document.getElementById("count_button_tag").onmouseover = function() {};
+	document.getElementById("count_button_tag").onmouseout = function() {};		
+	document.getElementById("results_button_tag").className = "mart_btn_disabled";
+	document.getElementById("results_button_tag").onmouseover = function() {};
+	document.getElementById("results_button_tag").onmouseout = function() {};
+	document.getElementById("xml_button_tag").className = "mart_btn_disabled";
+	document.getElementById("xml_button_tag").onmouseover = function() {};
+	document.getElementById("xml_button_tag").onmouseout = function() {};
+	document.getElementById("perl_button_tag").className = "mart_btn_disabled";
+	document.getElementById("perl_button_tag").onmouseover = function() {};
+	document.getElementById("perl_button_tag").onmouseout = function() {};
+}
 function datasetExists()
 {
 	var existingParamElts = getElementsByName_local('dataset');
@@ -2315,6 +2331,8 @@ function datasetExists()
 }
 function clearSummaryPanel()
 {
+	disableButtons();
+	
 	var attPageVisible;
 	var eltVal;
 /*

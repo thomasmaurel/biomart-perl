@@ -176,6 +176,17 @@ div#mart_export_data
   background-color: [colour_saturation40];
 }
 
+.mart_btn_disabled
+{
+  font-family: sans-serif; /* Needed if buton is <input> */	
+  font-size  : 90%;
+  font-weight: bold;
+  padding    : 0.2em 0.5em 0.2em 0.5em;
+  border     : 1px solid;
+  border-style: solid;
+  color      : [colour_saturation40];
+  background-color: [colour_saturation20];
+}
 
 /* Other Input fields such drop downs and text field and hover on functions */					
 .mart_input				

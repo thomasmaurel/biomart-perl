@@ -15,8 +15,8 @@
 	
 		
 			<!--input type="submit" value="New" style="margin: 0px 0px 0px 6px" name="submit.newsession"--> 
-			<a 
-				style="margin-left:6px"
+			<a id="new_button_tag"
+				style="margin-left:6px;"
 				class="mart_btn"
 	   			onmouseover="this.className='mart_btn mart_btnhov'" 
 	   			onmouseout="this.className='mart_btn'"
@@ -36,7 +36,7 @@
 	
 	
 			<!--input type="button" value="Count" name="get_count_button" -->
-			<a
+			<a id="count_button_tag"
 				style="margin-left:4px"
 				class="mart_btn"
 				onmouseover="this.className='mart_btn mart_btnhov'" 
@@ -68,7 +68,7 @@
 
 	
 			<!--input type="button" value="Results" name="get_results_button" -->
-			<a
+			<a id="results_button_tag"
 				style="margin-left:4px"
 				class="mart_btn"
 				onmouseover="this.className='mart_btn mart_btnhov';" 
@@ -114,7 +114,7 @@
 		</td>
 		<td height="100%" align="right" valign="top" >
 		
-			<a
+			<a id="xml_button_tag"
 				style="margin-right:4px"
 				class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
@@ -130,7 +130,7 @@
 				" title ="Show query in XML Web Service Format">XML
 			</a>
 
-			<a
+			<a id="perl_button_tag"
 				style="margin-right:4px"
 				class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
@@ -146,7 +146,7 @@
 				" title ="Show query in XML Web Service Format">Perl
 			</a>
 	        
-			<a
+			<a id="help_button_tag"
 				style="margin-right: 6px"
 				class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
