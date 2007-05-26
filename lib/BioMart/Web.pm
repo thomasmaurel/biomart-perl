@@ -2079,7 +2079,7 @@ sub handle_request {
 			    			} 
 
 			    			# But can show everything else.
-			    			else {			    				
+			    			else {	    				
 								$logger->debug("Showing ".($export_subset||'all')." entries in main panel");
 		    				   			
 				    			# Run query.			    
@@ -2100,6 +2100,13 @@ sub handle_request {
 						    		# strip out HTML stuff in case this is HTML-format
 						    		$result_string =~ s/\A\<\?xml.+\<table/\<table/xms; 
 						    		$result_string =~ s/\<\/body.+\Z//xms;
+						    		# apply different css styles here, the classes now removed from
+						    		# HTML formatter as for EXPORT options, no point having those
+						    		# class tags in there
+						    		$result_string =~ s/\<table\>/\<table\ class=\"mart_table\">/gxms;
+						    		$result_string =~ s/\<th\>/\<th\ class=\"mart_th\">/gxms;						    		
+						    		$result_string =~ s/\<tr\>/\<tr\ class=\"mart_tr1\">/gxms;
+						    		$result_string =~ s/\<td\>/\<td\ class=\"mart_td\">/gxms;
 								}
 								else {
 									# wrap in <pre/> to make it look pretty.
