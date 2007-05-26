@@ -102,7 +102,7 @@ sub _new {
   $self->attr('last_visible_exportable', undef);
   $self->attr('union_tables', undef);
   $self->attr('visibleDSCount', undef);
-  
+  $self->attr('uniqueResultsFlag', undef);
 }
 
 =head2 execute
@@ -230,26 +230,28 @@ sub getCount {
 =cut
 
 sub printResults {
-    my ($self, $filehandle, $lines) = @_;
+	my ($self, $filehandle, $lines) = @_;
     
-  	$filehandle ||= \*STDOUT; # in case no fhandle is provided
+	$filehandle ||= \*STDOUT; # in case no fhandle is provided
 
-    my $formatter = $self->get('formatter');
+	my $formatter = $self->get('formatter');
     
-    if ($formatter->isa("BioMart::Formatter::XLS"))
-    {
-    	$formatter->printResults($filehandle,$lines);    			
+	if ($formatter->isa("BioMart::Formatter::XLS")) {
+		$formatter->printResults($filehandle,$lines, $self->uniqueRowsOnly());    			
 	}
-    else
-    {
-   	my $counter;
+	else
+	{
+		my $counter;
 		my %collisions;
 		no warnings 'uninitialized';
 		while (my $row = $formatter->nextRow)
-		{	    		
-		   my $hash = sha256_base64($row);
-		   next if exists $collisions{$hash};
-		   $collisions{$hash} = undef;
+		{
+			# send unique results only if its set on QueryRunner Object
+			if ($self->uniqueRowsOnly()) {
+				my $hash = sha256_base64($row);
+				next if exists $collisions{$hash};
+				$collisions{$hash} = undef;
+			}
 			$counter++;
 			last if ($lines && $counter > $lines);
 			print $filehandle $row;
@@ -755,5 +757,15 @@ sub _executionPlan {
     }
 }
 
+sub uniqueRowsOnly
+{
+	my ($self, $val)  = @_;
+	if($val) {
+		$self->set('uniqueResultsFlag', 1);	
+	}
+	return $self->get('uniqueResultsFlag');
+	
+	
+}
 
 1;

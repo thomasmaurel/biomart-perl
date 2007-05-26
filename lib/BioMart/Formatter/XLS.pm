@@ -13,7 +13,7 @@ BioMart::Formatter::XLS
 =head1 SYNOPSIS
 
 The XLS Formatter returns XLS format data
-for a BioMart query's ResultTable
+for a BioMart querys ResultTable
 
 =head1 DESCRIPTION
 
@@ -77,9 +77,11 @@ sub processQuery {
 }
 
 sub printResults {
-    	my ($self, $filehandle, $lines) = @_;
+	my ($self, $filehandle, $lines, $uniqueResults) = @_;
 	
-	# on web26 the filehandle was getting lost/corrupted so best to create from scratch - not necessary if using just WriteExcel for some reason. HOWEVER this fix broke all other setups so revert - to be investigated in the future if it appears anywhere else
+	# on web26 the filehandle was getting lost/corrupted so best to create from scratch - not necessary if using 
+	# just WriteExcel for some reason. HOWEVER this fix broke all other setups so revert - to be investigated 
+	# in the future if it appears anywhere else
 	# $filehandle = IO::File->new();
 	# my $tie = ref tied( *STDOUT );# always 'Apache' even for gz on web26 - hence don't get zipped output
 	# tie *$filehandle, $tie; 
@@ -90,9 +92,9 @@ sub printResults {
 	          	
       #---------------------------------------- worksheet properties
     	#binmode(STDOUT);
-    	#my $workbook = Spreadsheet::WriteExcel::Big->new("/homes/syed/Desktop/temp9/biomart-web/lib/BioMart/Formatter/perl.xls");
-	#my $workbook = Spreadsheet::WriteExcel::Big->new(\*STDOUT);
-	#tie *XLS => $r;  # Tie to the Apache::RequestRec object
+		#my $workbook = Spreadsheet::WriteExcel::Big->new("/homes/syed/Desktop/temp9/biomart-web/lib/BioMart/Formatter/perl.xls");
+		#my $workbook = Spreadsheet::WriteExcel::Big->new(\*STDOUT);
+		#tie *XLS => $r;  # Tie to the Apache::RequestRec object
     	#binmode(*XLS);
     	#my $workbook = Spreadsheet::WriteExcel::Big->new(\*XLS);
 	
@@ -140,14 +142,14 @@ sub printResults {
 	
 	my %collisions;
 	while ($rtable->hasMoreRows)
-	{
-	
+	{	
 		$self->set('columns',0);
 		$new_row = ();
 		$row = $rtable->nextRow;
-		{
+
+		if ($uniqueResults) {
 			no warnings 'uninitialized';
-			my $hash = sha256_base64(join('.',$row));
+			my $hash = sha256_base64("@{$row}");
 			next if exists $collisions{$hash};
 			$collisions{$hash} = undef;
 		}
@@ -155,42 +157,39 @@ sub printResults {
 	
 		if (!$row || ($lines && $counter > $lines))
 		{
-		 	$self->closeWorkBook;		 	
+			$self->closeWorkBook;		 	
 			return;    	
-   		}
+		}
 
 		map { $_ ||= q{}; } @$row;
-   		my $attribute_positions = $self->get('attribute_positions');
-	   	my $attribute_url_positions = $self->get('attribute_url_positions');
-   		my $attribute_url = $self->get('attribute_url');
+		my $attribute_positions = $self->get('attribute_positions');
+		my $attribute_url_positions = $self->get('attribute_url_positions');
+		my $attribute_url = $self->get('attribute_url');
 
-	   	#my $dataset1_end = $self->get('dataset1_end');
-
-   		for (my $i = 0; $i < @{$attribute_positions}; $i++)
-	   	{
+		for (my $i = 0; $i < @{$attribute_positions}; $i++)
+		{
      		if ($$attribute_url[$i])
      		{
      	  		my @url_data = map {$$row[$_]} @{$$attribute_url_positions[$i]};
-		   		my $url_string = sprintf($$attribute_url[$i],@url_data);
-		   		#push @{$new_row}, $url_string, $$row[$$attribute_positions[$i]];
-	   			$new_row_contents->{value} = $$row[$$attribute_positions[$i]];
-	   			$new_row_contents->{URL} = $url_string;	   		   		
-	       	}
-     	  	else
-       		{
-	  			$new_row_contents->{value} = $$row[$$attribute_positions[$i]];
-		   		$new_row_contents->{URL} = undef;	   		   		
-     	  	}
-   			push @{$new_row}, $new_row_contents; 
-	   		$new_row_contents = ();      	
-
-   		}	
+				my $url_string = sprintf($$attribute_url[$i],@url_data);
+				#push @{$new_row}, $url_string, $$row[$$attribute_positions[$i]];
+				$new_row_contents->{value} = $$row[$$attribute_positions[$i]];
+				$new_row_contents->{URL} = $url_string;	   		   		
+			}
+			else
+       	{
+				$new_row_contents->{value} = $$row[$$attribute_positions[$i]];
+		   	$new_row_contents->{URL} = undef;	   		   		
+			}
+   		push @{$new_row}, $new_row_contents; 
+	  		$new_row_contents = ();
+		}	
 	
 		#------------------------------------------------------------------------------
 		# Enclose non-numeric values in double quotes & escape the quotes already in them
 
-    		foreach(@{$new_row}) 
-    		{
+		foreach(@{$new_row}) 
+		{
 			if($self->get('colWidth')->{$self->get('columns')} < length($_->{value}) )
 			{
 				if ( length($_->{value}) > 200)

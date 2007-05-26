@@ -1653,7 +1653,8 @@ sub handle_request {
 		my $query_main      =  BioMart::Query->new(registry	=> $registry,
 														virtualSchemaName => $schema_name);
 		my $qrunner = BioMart::QueryRunner->new();
-		
+		$qrunner->uniqueRowsOnly(1) if ($session->param('uniqueRowsCheckBox') && $session->param('uniqueRowsCheckBox') eq '1');
+				
 		my @dataset_names   = ref($datasets_string) ? @$datasets_string : ($datasets_string); 
 		$logger->debug("Need to query datasets ".join(',',@dataset_names)." for total entry counts for each");
 	

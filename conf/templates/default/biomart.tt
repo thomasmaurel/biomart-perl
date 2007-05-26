@@ -78,6 +78,7 @@
 			<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
 			<input type="hidden" name="formatterMenu" value="[% session.param('formatterMenuInvoked') %]" />
 			<input type="hidden" name="newQueryValue" value="[% session.param('newQuery') %]" />
+			<input type="hidden" name="uniqueRowsCheckBox" value="0" />			
 
 			<input type="hidden" name="mart_mainpanel__current_visible_section" value="[% session.param('mart_mainpanel__current_visible_section') %]"/>
 			<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
@@ -318,18 +319,41 @@
 					</tr>
 						
 					
-					<tr class="mart_viewPanel">
-					<td align="left" width="" valign="top">
-						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black; margin: 0px 0px 4px 0px;">
-					</td>
-					<td align="left" width="" valign="top">
-						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black; margin: 0px 0px 4px 0px;">
-					</td>
-					</tr>
 					
+				<tr class="mart_viewPanel">
+					<td align="left" width="" valign="top">
+						<div style="border-width: 0px 0px 1px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
+					</td>
+					<td align="left" width="" valign="top">
+						<div style="border-width: 0px 0px 1px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
+					</td>
+				</tr>
+				<tr class="mart_viewPanel">
+					<td align="left" width="" valign="center">
+						<input type="checkbox" id="uniqueCBox"
+							onchange="
+								if(this.checked) {
+									document.mainform.uniqueRowsCheckBox.value = 1;
+								}
+								else {
+									document.mainform.uniqueRowsCheckBox.value = 0;
+								}
+							"
+						/> Unique results only
+					</td>
+					<td align="left" width="" valign="top">
+					</td>
+				</tr>
+				<tr class="mart_viewPanel">
+					<td align="left" width="" valign="top">
+						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
+					</td>
+					<td align="left" width="" valign="top">
+						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
+					</td>
+				</tr>
 
-					
-								
+
 				<tr class="mart_viewPanel">
 				<td align="left" width="25%" valign="top">
 						&nbsp;View&nbsp;&nbsp;
