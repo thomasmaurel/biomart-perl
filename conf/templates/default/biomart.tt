@@ -78,7 +78,7 @@
 			<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
 			<input type="hidden" name="formatterMenu" value="[% session.param('formatterMenuInvoked') %]" />
 			<input type="hidden" name="newQueryValue" value="[% session.param('newQuery') %]" />
-			<input type="hidden" name="uniqueRowsCheckBox" value="0" />			
+			<input type="hidden" name="uniqueRowsCheckBox" value="[% session.param('uniqueRowsCheckBox') %]" />			
 
 			<input type="hidden" name="mart_mainpanel__current_visible_section" value="[% session.param('mart_mainpanel__current_visible_section') %]"/>
 			<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
@@ -331,6 +331,10 @@
 				<tr class="mart_viewPanel">
 					<td align="left" width="" valign="center">
 						<input type="checkbox" id="uniqueCBox"
+						
+							[% IF session.param('uniqueRowsCheckBox') == "1" %]
+								checked
+							[% END %]
 							onchange="
 								if(this.checked) {
 									document.mainform.uniqueRowsCheckBox.value = 1;
