@@ -37,7 +37,7 @@
 	</table>
 	
 	<!-- following Iframes must be kept out of the above table otherwise FireFox starts moaning about auto scrolling -->
-	<!-- we set display:none (for all browsers) and visibility:hiddden (for Safari) through JS -->
+	<!-- we set display:none (for all browsers) and visibility:hiddden (for Safari & Konqueror) through JS -->
 	<iframe id="countIFrameId" name="count_hiddenIFrame" src="about:blank" style="width:0px; height:0px;" 
 				onload="getCountAjax();">
 	</iframe>				
@@ -49,7 +49,7 @@
 </div>
 	
 
-<div class="mart_footer" style=" width:100%; height:5%; overflow:auto;">
+<div id="mart_footerStrip" class="mart_footer" style=" width:100%; height:5%; overflow:auto;">
 	<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0">
 	<tr>
 	<td width="100%" height="100%" align="left">

@@ -1461,16 +1461,23 @@ function setVisibleStatus(menuLists, sessionValues)
 	
 	var browserInfo = new Array();
 	browserInfo = detectBrowserProperties();
-	if(browserInfo[0] == "Safari")
+	if(browserInfo[0] == "Safari" || browserInfo[0] == "Konqueror")
 	{	
 		document.getElementById('countIFrameId').style.visibility = "hidden";
 		document.getElementById('resultsIFrameId').style.visibility = "hidden";
-		if (document.getElementById('summaryPanelDiv_empty').style.display == "none")
+		// adjusting heights as new auto adjust height doesnt work with Konqueror
+		if (browserInfo[0] == "Konqueror")
 		{
-			//alert('SAFARI FIX IN process');
-			//document.getElementById('summaryPanelDiv_empty').style.visibility = "hidden";		
+			document.getElementById('mart_containerpanel').style.height = '80%';
+			document.getElementById('mart_footerStrip').style.height = '10%';
+			
+			document.getElementById('summaryPanelDiv').style.height = '390px';
+			document.getElementById('summaryPanelDiv').style.overflow = 'auto';
+			document.getElementById('mart_mainpanel').style.height = '382px';
+			document.getElementById('mart_mainpanel').style.overflow = 'auto';		
 		}
 	}
+
 	else
 	{
 		document.getElementById('countIFrameId').style.display = "none";
