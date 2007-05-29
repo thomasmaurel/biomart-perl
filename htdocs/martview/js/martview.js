@@ -1447,7 +1447,7 @@ Set all elements of a certain CSS class to a hidden state.
 =cut
 
 */
-function setVisibleStatus(menuLists, sessionValues) 
+function setVisibleStatus(menuLists, sessionValues, schemaTitle, databaseTitle, datasetTitle) 
 {
 	var spans=document.getElementsByTagName("div");
 	for (var i=0; i < spans.length; i++){
@@ -1484,7 +1484,7 @@ function setVisibleStatus(menuLists, sessionValues)
 		document.getElementById('resultsIFrameId').style.display = "none";
 	}
 	
-	datasetpanel_pre_onload(menuLists, sessionValues);
+	datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, databaseTitle, datasetTitle);
 	
 }
 
@@ -1997,10 +1997,16 @@ identity: "Linux"
 ////////////////////////////////////////////////////////
 var dataForMenus;
 var dsPanelSessionValues;
-function datasetpanel_pre_onload(menuLists, sessionValues)
+var schemaCaption;
+var databaseCaption;
+var datasetCaption;
+function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, databaseTitle, datasetTitle)
 {
 	dataForMenus = menuLists;
 	dsPanelSessionValues = sessionValues;
+	schemaCaption = schemaTitle;
+	databaseCaption = databaseTitle;
+	datasetCaption = datasetTitle;
 	
 	var j = 0; // options count index
 	// count schemas, if > 1, then display schema MENU, otherwise hide it
@@ -2014,17 +2020,17 @@ function datasetpanel_pre_onload(menuLists, sessionValues)
 	{	
 		disableButtons();			
 		if (schemaCount > 1) {
-			document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '', true, true);
+			document.mainform.schemamenu[j++] = new Option(schemaCaption, '', true, true);
 			for(i in dataForMenus['schema'])	{
 				document.mainform.schemamenu[j++] = new Option(i, i);
 			}
 		}
-		else{ // donot show VS menu
+		else{ // donot show Virtual Schema menu
 			document.getElementById('schemaMenu').style.display = 'none';
 				
 			document.mainform.databasemenu.length = 0;
 			document.getElementById('dbMenu').style.display = 'block';
-			document.mainform.databasemenu[j++] = new Option(' - CHOOSE DATABASE - ', '', true, true);
+			document.mainform.databasemenu[j++] = new Option(databaseCaption, '', true, true);
 			for(schema_name in dataForMenus['schema'])	{
 				// this is imp as we dont have schemaMenu visible, so somehow add schema value to session
 				addHiddenFormParam('schema', document.mainform, schema_name);
@@ -2043,7 +2049,7 @@ function datasetpanel_pre_onload(menuLists, sessionValues)
 		j=0;
 		// document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '');
 		if (schemaCount > 1) {
-			document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '');
+			document.mainform.schemamenu[j++] = new Option(schemaCaption, '');
 			for(i in dataForMenus['schema'])	{
 				if(i == dsPanelSessionValues['schema']) {
 					toBeSelected = j;
@@ -2061,7 +2067,7 @@ function datasetpanel_pre_onload(menuLists, sessionValues)
 		j=0;
 		document.mainform.databasemenu.length = 0;
 		document.getElementById('dbMenu').style.display = 'block';
-		document.mainform.databasemenu[j++] = new Option(' - CHOOSE DATABASE - ', '');
+		document.mainform.databasemenu[j++] = new Option(databaseCaption, '');
 		for(schema_name in dataForMenus['schema']){
 			if (schema_name == dsPanelSessionValues['schema'])	{
 				for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)	{
@@ -2137,7 +2143,7 @@ function datasetpanel_pre_onload(menuLists, sessionValues)
 			document.mainform.datasetmenu_3.length = 0;
 			var db_name = dsPanelSessionValues['schema']+'____'+dsPanelSessionValues['databasemenu'];
 			document.getElementById('dsMenu_3').style.display = 'block';
-			document.mainform.datasetmenu_3[j++] = new Option(' - CHOOSE DATASET - ', '');
+			document.mainform.datasetmenu_3[j++] = new Option(datasetCaption, '');
 			for (var i=0; i < dataForMenus['databasemenu'][db_name]['datasetmenu_3'].length; i++)
 			{			
 				//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
@@ -2169,7 +2175,7 @@ function schemaMenuTriggered(schema_name)
 		if (dataForMenus['schema'][schema_name]['databasemenu'])
 		{
 			document.getElementById('dbMenu').style.display = 'block';
-			document.mainform.databasemenu[j++] = new Option(' - CHOOSE DATABASE - ', '');
+			document.mainform.databasemenu[j++] = new Option(databaseCaption, '');
 			for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)
 			{			
 				//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
@@ -2225,7 +2231,7 @@ function dbMenuTriggered(db_name)
 		else // normal menu system
 		{		
 			document.getElementById('dsMenu_3').style.display = 'block';
-			document.mainform.datasetmenu_3[j++] = new Option(' - CHOOSE DATASET - ', '', true, true);
+			document.mainform.datasetmenu_3[j++] = new Option(datasetCaption, '', true, true);
 
 			for (var i=0; i < dataForMenus['databasemenu'][db_name]['datasetmenu_3'].length; i++)
 			{			

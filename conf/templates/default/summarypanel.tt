@@ -49,7 +49,7 @@
 	onmouseover="setMouseOverStyle(this.id);" 
 	onmouseout="setMouseOutStyle(this.id);" 
 	title="Choose a main dataset to query">
-	[% session.param("__Dataset") %]
+	Dataset
 
 	[% #### display count adjacent to DATASET TITLE %]
 	<span class="mart_summarypanel_dataset_entrycount" id="summarypanel_filter_count_[%dset_count%]">
@@ -248,7 +248,7 @@ onmouseover="setAttFiltMouseOverStyle('${dset_name}__summarypanel_filterbranch')
 	"
 	onmouseover="setMouseOverStyle(this.id);" 
 	onmouseout="setMouseOutStyle(this.id);" 
-	title="Optional second dataset to combine in queries">[% session.param("__Dataset") %] 
+	title="Optional second dataset to combine in queries">Dataset 
 </span> 
 
 </td>
