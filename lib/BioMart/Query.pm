@@ -2215,6 +2215,8 @@ my \$query = BioMart::Query->new('registry'=>\$registry,'virtualSchemaName'=>'de
 $perl_string .= qq|
 
 my \$query_runner = BioMart::QueryRunner->new();
+# to obtain unique rows only
+# \$query_runner->uniqueRowsOnly(1);
 \$query_runner->execute(\$query);
 \$query_runner->printHeader();
 \$query_runner->printResults();

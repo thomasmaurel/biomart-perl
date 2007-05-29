@@ -1312,9 +1312,8 @@ sub handle_request {
 			my $datasets = $registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
 			my $last_dataset;
 	     	DATASET:
-	     	# no more sorting of dataset names alphabetically
-			#foreach my $dataset_name(sort @$datasets) {
-			foreach my $dataset_name(@$datasets) {
+			foreach my $dataset_name(sort @$datasets) {
+			#foreach my $dataset_name(@$datasets) {
 				my $dataset = $registry->getDatasetByName($schema_name, $dataset_name)
 				|| BioMart::Exception::Configuration->throw("Couldn't get dataset $schema_name->$database_name->$dataset_name from registry");
 	    		push @datasets, $dataset;
@@ -1324,14 +1323,14 @@ sub handle_request {
 	    		if ($dataset->displayName !~ m/\|/)
 	    		{
 					# setting the default dataset to appear as first option in the menu
-					#if ($conf_tree->defaultDataset()){
-					#	unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
-					#								[$dataset->name, $dataset->displayName()]);
-	    			#}
-	    			#else{
+					if ($conf_tree->defaultDataset()){
+						unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
+													[$dataset->name, $dataset->displayName()]);
+	    			}
+	    			else{
 						push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
 													[$dataset->name, $dataset->displayName()]);
-	    			#}
+	    			}
 	    			$default_dataset ||= $dataset; 
 	    		}		    		
 				#-------------------------------------------
@@ -1837,7 +1836,7 @@ sub handle_request {
 			if ($showQuery eq '1') {
 				# do not want to show internals of BioMart ;-) 
 				my $tempered_xml = $query_main->toXML(1,1,1,1);
-				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\"/g;
+				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\" uniqueRows = \"1\"/g;
 				$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
 				print $tempered_xml;
 			}

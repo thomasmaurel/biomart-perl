@@ -534,6 +534,13 @@ sub run_query {
 				 'xml'      => $xml);
     
     		my $query_planner = BioMart::QueryRunner->new();
+    		
+    		# check if uniqueResults are requested
+    		my $config = XMLin($xml, forcearray=> [qw(Query Dataset Attribute 
+					      ValueFilter BooleanFilter 
+					      Filter Links)], keyattr => []);
+    		$query_planner->uniqueRowsOnly(1) if ($config->{'uniqueRows'} && $config->{'uniqueRows'} eq '1');
+    		
     		$query_planner->execute($query);
     
     		if ($query->count eq '1'){

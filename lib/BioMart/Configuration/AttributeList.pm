@@ -48,12 +48,14 @@ use constant LINKNAME        => "linkName";
 use constant LINKVERSION     => "linkVersion";
 use constant ATTRIBUTESTRING => "attribute_string";
 use constant ORDERBYSTRING   => "orderby_string";
+use constant TYPE   				=> "type";
 
 use constant TITLES => [
                LINKNAME,
                LINKVERSION,
-  	       ATTRIBUTESTRING,
-               ORDERBYSTRING
+					ATTRIBUTESTRING,
+               ORDERBYSTRING,
+               TYPE
 			 ];
 
 =head2 _new
@@ -174,6 +176,26 @@ sub orderByString {
     $self->setParam(ORDERBYSTRING, $name);
   }
   return $self->getParam(ORDERBYSTRING);
+}
+
+=head2 type
+
+  Usage        :  $exp->type();
+                  
+  Description  :  get/set for the exportable type 
+                  object.
+  Returntype   :  string                  
+  Exceptions   :  none
+  Caller       :  caller
+
+=cut
+
+sub type {
+  my ($self, $name) = @_;
+  if ($name) {
+    $self->setParam(TYPE, $name);
+  }
+  return $self->getParam(TYPE);
 }
 
 

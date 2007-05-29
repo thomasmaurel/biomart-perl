@@ -83,13 +83,16 @@ else
 eval{
 	if($segment)
 	{	
-		if ($segment =~ m/^ENS/)
-		{
-			&get_geneAnnotation($segment);
+		if ($segment =~ m/:/) {
+			&get_chromosomeAnnotation($segment);
 		}
-		else
-		{
-			&get_chromosomeAnnotation($segment);		
+		else {
+			if (&featureType($segment) eq 'gene') {
+				&get_geneAnnotation($segment);
+			}
+			else {
+				&get_chromosomeAnnotation($segment);
+			}
 		}
 	} 
 
@@ -103,10 +106,61 @@ if($@) {
 	return;
 }
 
+# To decide if its a gene request or a chromosome request when segment=SOMETHING
+# where SOMETHING could be chrName or a GeneName
+# Algorithm requests all the chromosomes if dasChr exportable exists
+# and checks if the requested chromosome exists. If it does, then its a Chromosome request
+# otherwise its a gene Request
+sub featureType
+{
+	my $segmentString = shift;
+	my $temp_results;
+	my $dasChrExists = 0;
+	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
+     
+	$query->setDataset($dasDatasetName);
+	
+	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
+		foreach my $mart (@{$schema->getAllMarts(1)}) {
+			foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+				if ($dataset->name eq $dasDatasetName) {
+					foreach my $exportable (@{$dataset->getExportables()}) {
+						if($exportable->type() eq 'dasChr') {
+							foreach my $importable (@{$dataset->getImportables()}) {
+								if($importable->type() eq 'dasChr') {
+									my @temp_arr = split(/,/, $importable->filterString());
+									$query->addAttribute($temp_arr[0]);
+									$query->addFilter($temp_arr[0], [$segmentString]);
+									$dasChrExists = 1;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return 'gene' if (!$dasChrExists);
+	
+	open(my $result_buffer, '>', \$temp_results);
 
-#
-# returns registry XML
-#
+	my $query_runner = BioMart::QueryRunner->new();
+	$query_runner->uniqueRowsOnly(1);
+	$query_runner->execute($query);
+	#$query_runner->printHeader();
+	$query_runner->printResults($result_buffer);
+	#$query_runner->printFooter();		
+	close($result_buffer);
+	if ($temp_results) {
+		return 'chr'; # its a chromosome request
+	}
+	else {
+		return 'gene'; # its a gene request
+	}
+}
+
+
 
 #GeneView
 
@@ -129,15 +183,44 @@ sub get_geneAnnotation
 	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
      
 	$query->setDataset($dasDatasetName);
-	$query->addAttribute("ensembl_gene_id");
-	$query->addAttribute("ensembl_transcript_id");
-	$query->addAttribute("description");
 	
-	$query->addFilter("ensembl_gene_id", [$geneID]);
+	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
+		foreach my $mart (@{$schema->getAllMarts(1)}) {
+			foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+				if ($dataset->name eq $dasDatasetName) {
+					foreach my $exportable (@{$dataset->getExportables()}) {
+						if($exportable->type() eq 'dasGene') {
+							foreach my $importable (@{$dataset->getImportables()}) {
+								if($importable->type() eq 'dasGene') {
+									foreach (split(/,/, $exportable->attributeString() ))
+									{
+										$query->addAttribute($_);	
+									}
+									# no need to split, this should strictly be a single filter GeneId
+									foreach (split(/,/, $importable->filterString() ))
+									{
+										$query->addFilter($_, [$geneID]);	
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+
+#	$query->addAttribute("ensembl_gene_id");
+#	$query->addAttribute("ensembl_transcript_id");
+#	$query->addAttribute("description");
+	
+#	$query->addFilter("ensembl_gene_id", [$geneID]);
 	
 	open(my $result_buffer, '>', \$temp_results);
 
 	my $query_runner = BioMart::QueryRunner->new();
+	$query_runner->uniqueRowsOnly(1);
 	$query_runner->execute($query);
 	#$query_runner->printHeader();
 	$query_runner->printResults($result_buffer);
@@ -196,45 +279,74 @@ sub get_chromosomeAnnotation
 	my $counter = 0;
 	my ($chromosome, $start, $end);
 	
-	if ($coordinates_string =~ m/:/)
-	{
+	if ($coordinates_string =~ m/:/) {
 		my @portions = split( /:/, $coordinates_string);
 		$chromosome =  $portions[0];
 		($start , $end ) = split (/\,/, $portions[1]) ;
-		#print $chromosome, "   ==   ", $start, "   ==   ", $end;
+	}
+	else {
+		$chromosome = $coordinates_string;
 	}
 	
 	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
      
 	$query->setDataset($dasDatasetName);
-	$query->addAttribute("gene_stable_id");
-	$query->addAttribute("transcript_stable_id");	
-	$query->addAttribute("transcript_chrom_start");
-	$query->addAttribute("transcript_chrom_end");
-	$query->addAttribute("transcript_chrom_strand");
-	$query->addAttribute("exon_stable_id");	
-	$query->addAttribute("exon_chrom_start");
-	$query->addAttribute("exon_chrom_end");
-	$query->addAttribute("translation_stable_id");
-	$query->addAttribute("exon_coding_start");
-	$query->addAttribute("exon_coding_end");   
+
+	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
+		foreach my $mart (@{$schema->getAllMarts(1)}) {
+			foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+				if ($dataset->name eq $dasDatasetName) {
+					foreach my $exportable (@{$dataset->getExportables()}) {
+						if($exportable->type() eq 'dasChr') {
+							foreach my $importable (@{$dataset->getImportables()}) {
+								if($importable->type() eq 'dasChr') {
+									foreach (split(/,/, $exportable->attributeString() ))
+									{
+										$query->addAttribute($_);	
+									}							
+									my @temp_arr = split(/,/, $importable->filterString());
+									$query->addFilter($temp_arr[0], [$chromosome]);
+									$query->addFilter($temp_arr[1], [$start])		if ($start);
+									$query->addFilter($temp_arr[2], [$end])		if ($end);									
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+#	$query->addAttribute("gene_stable_id");
+#	$query->addAttribute("transcript_stable_id");	
+#	$query->addAttribute("transcript_chrom_start");
+#	$query->addAttribute("transcript_chrom_end");
+#	$query->addAttribute("transcript_chrom_strand");
+#	$query->addAttribute("exon_stable_id");	
+#	$query->addAttribute("exon_chrom_start");
+#	$query->addAttribute("exon_chrom_end");
+#	$query->addAttribute("translation_stable_id");
+#	$query->addAttribute("exon_coding_start");
+#	$query->addAttribute("exon_coding_end");   
 		
-	$query->addFilter("chromosome_name", [$chromosome]);
-	$query->addFilter("start", [$start])	if ($start);
-	$query->addFilter("end", [$end])		if ($end);
+#	$query->addFilter("chromosome_name", [$chromosome]);
+#	$query->addFilter("start", [$start])	if ($start);
+#	$query->addFilter("end", [$end])		if ($end);
 
 	open(my $result_buffer, '>', \$temp_results);
 
 	my $query_runner = BioMart::QueryRunner->new();
+	$query_runner->uniqueRowsOnly(1);
 	$query_runner->execute($query);
 	#$query_runner->printHeader();
 	$query_runner->printResults($result_buffer);
 	#$query_runner->printFooter();		
 	close($result_buffer);
 
+
 	# establish a multi-dimensional hash to store all the structure table information for xml transformation
 	@resultRows = split(/\n/, $temp_results);
 	foreach my $line (@resultRows) {
+		no warnings 'uninitialized';
 		my @portions = split (/\t/, $line);
 		
 		# for every transcript reinitialise the counter assuming the translation_id 'portion[8]' 
@@ -388,7 +500,7 @@ sub GFF_open
 {
 	my $hrefURL = shift;
 	return qq|
-	<GFF version="1.0" href="|.$hrefURL.qq|" >		|;
+	<GFF version="1.5" href="|.$hrefURL.qq|" >		|;
 }
 sub segment_open
 {

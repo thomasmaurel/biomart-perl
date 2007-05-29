@@ -328,23 +328,26 @@ sub getDefaultVirtualSchema {
 =cut
 
 sub getAllDatasetNames {
-    my ($self, $virtualSchemaName, $visible_only) = @_;
-    my @dataSetNames;
-    foreach my $virtualSchema (@{$self->getAllVirtualSchemas}){
-	next unless ($virtualSchema->name eq $virtualSchemaName);
-	foreach my $location (@{$virtualSchema->getAllLocations}){
-	    if ($visible_only){
-		push @dataSetNames, @{$location->getAllVisibleDatasetNames};
-	    }
-	    else{
-		foreach my $dataset (@{$location->getAllDatasets}){
-		    push @dataSetNames,$dataset->name;
-		
+	my ($self, $virtualSchemaName, $visible_only) = @_;
+
+	my @dataSetNames;
+	my @sortedNames;
+	foreach my $virtualSchema (@{$self->getAllVirtualSchemas}){
+		next unless ($virtualSchema->name eq $virtualSchemaName);
+		foreach my $location (@{$virtualSchema->getAllLocations}){
+			@sortedNames=();
+			foreach my $dataset (@{$location->getAllDatasets}){
+				if ($visible_only){
+					push @sortedNames, $dataset->name if ($dataset->visible == 1);
+				}
+				else{
+					push @sortedNames, $dataset->name;
+				}
+			}			
+			push @dataSetNames, sort(@sortedNames);
 		}
-	    }
 	}
-    }
-    return (wantarray() ? @dataSetNames : \@dataSetNames);
+	return (wantarray() ? @dataSetNames : \@dataSetNames);
 }
 
 

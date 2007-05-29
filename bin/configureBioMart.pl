@@ -307,15 +307,18 @@ bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
 # traverse registry Object and see if there are any DAS exportables/Importables
 # If TRUE, then add the corresponding directives in httpd.conf and DAS registry file 'dsn'
 #------------------------------------------------------
+my %repetition = ();
 foreach my $schema (@{$mart_registry->getAllVirtualSchemas()}) {
 	foreach my $mart (@{$schema->getAllMarts(1)}) {
 		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
 			foreach my $exportable (@{$dataset->getExportables()}) {
 				#print "\nEXP: ", $exportable->linkName();
 				# geneDAS and chrDAS
-				if($exportable->name() eq 'das')
-				{
-					push @{$OPTIONS{'dasDatasets'}}, $dataset->name();					
+				if($exportable->type() eq 'dasGene' || $exportable->type() eq 'dasChr')	{
+					if (!exists $repetition{$dataset->name()}) {
+						push @{$OPTIONS{'dasDatasets'}}, $dataset->name();
+						$repetition{$dataset->name()} = '';
+					}
 				}
 			}
 		}

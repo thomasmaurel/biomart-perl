@@ -54,9 +54,14 @@ use base qw(BioMart::Configuration::BaseFilter);
 
 use constant LINKNAME => "linkName";
 use constant LINKVERSION => "linkVersion";
+use constant FILTERSTRING => "filter_string";
+use constant TYPE   				=> "type";
+
 
 use constant TITLES => [ LINKNAME,
-                         LINKVERSION ];
+                         LINKVERSION,
+                         FILTERSTRING,
+                         TYPE ];
 
 
 =head2 _new
@@ -310,6 +315,26 @@ sub linkVersion {
   return $self->getParam(LINKVERSION);
 }
 
+=head2 type
+
+  Usage        :  $imp->type();
+                  
+  Description  :  get/set for the importable type 
+                  object.
+  Returntype   :  string                  
+  Exceptions   :  none
+  Caller       :  caller
+
+=cut
+
+sub type {
+  my ($self, $name) = @_;
+  if ($name) {
+    $self->setParam(TYPE, $name);
+  }
+  return $self->getParam(TYPE);
+}
+
 =head2 addFilter
 
   Usage      : $flist->addFilter($filter);
@@ -350,6 +375,27 @@ sub getAllFilters {
   my $self = shift;
   return $self->get('filters');
 }
+
+=head2 filterString
+
+  Usage        :  my $filterString = $flist->fitlerString; 
+                  $flist->filterString($newFiltString);
+  Description  :  get/set the filterString of this BioMart::FilterList 
+                  object.
+  Returntype   :  scalar $filterString
+  Exceptions   :  none
+  Caller       :  caller
+
+=cut
+
+sub filterString {
+  my ($self, $name) = @_;
+  if ($name) {
+    $self->setParam(FILTERSTRING, $name);
+  }
+  return $self->getParam(FILTERSTRING);
+}
+
 
 =head2 setTable
 

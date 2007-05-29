@@ -185,14 +185,16 @@ sub getConfigurationTree {
 			MainTable BatchSize SeqModule Option PushAction)], keyattr => []);
 
 		my $softwareVersion = $tempXMLHash->{'softwareVersion'};
+		# Transformation from 0.4 to 0.5 & 0.6
 		if (!$softwareVersion || ($softwareVersion eq '0.4')) 
-		{       
+		{  
+			# 0.4 TO 0.5
 			print STDERR "->  upgrading to 0.5 ... ";
 			my $params=BioMart::Web::CGIXSLT::read_https();
 			open(STDOUTTEMP, ">temp.xml");
 			print STDOUTTEMP $xml;
-			close(STDOUTTEMP);               
-			$params->{'source'} = 'temp.xml';              
+			close(STDOUTTEMP);
+			$params->{'source'} = 'temp.xml';      
 			$params->{'style'} = Cwd::cwd().'/conf/mart_0_4_0_5.xsl';
 			my $new_xml;
 			eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
@@ -200,9 +202,46 @@ sub getConfigurationTree {
 			#Now, we are printing and saving what we get
 			$xml = BioMart::Web::CGIXSLT::print_output($new_xml);
 			if (-e 'temp.xml') {
-				unlink 'temp.xml';           
-			}                           
-		}          
+				unlink 'temp.xml';
+			}
+			
+			# 0.5 TO 0.6
+			print STDERR "->  upgrading to 0.6 ... ";
+			$params=();
+			$params=BioMart::Web::CGIXSLT::read_https();
+			open(STDOUTTEMP, ">temp.xml");
+			print STDOUTTEMP $xml;
+			close(STDOUTTEMP);
+			$params->{'source'} = 'temp.xml';      
+			$params->{'style'} = Cwd::cwd().'/conf/mart_0_5_0_6.xsl';
+			eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
+			if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
+			#Now, we are printing and saving what we get
+			$xml = BioMart::Web::CGIXSLT::print_output($new_xml);
+			if (-e 'temp.xml') {
+				unlink 'temp.xml';
+			}						
+		}
+		# Transform from 0.5 to 0.6
+		if ($softwareVersion && $softwareVersion eq '0.5')
+		{
+			# 0.5 TO 0.6
+			print STDERR "->  upgrading to 0.6 ... ";
+			my $params=BioMart::Web::CGIXSLT::read_https();
+			open(STDOUTTEMP, ">temp.xml");
+			print STDOUTTEMP $xml;
+			close(STDOUTTEMP);
+			$params->{'source'} = 'temp.xml';      
+			$params->{'style'} = Cwd::cwd().'/conf/mart_0_5_0_6.xsl';
+			my $new_xml;
+			eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
+			if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
+			#Now, we are printing and saving what we get
+			$xml = BioMart::Web::CGIXSLT::print_output($new_xml);
+			if (-e 'temp.xml') {
+				unlink 'temp.xml';
+			}			
+		}		
 		store(\$xml, $xmlFile);
 	}
 	#--------------------------------------
@@ -576,10 +615,12 @@ sub getConfigurationTree {
                     'displayName'    => $importable->{'displayName'},
 			       'description' => $importable->{'description'},
                     'linkName'       => $importable->{'linkName'},
-		    'linkVersion'    => $importable->{'linkVersion'},
+		    		'linkVersion'    => $importable->{'linkVersion'},
+		    'filter_string'    => $importable->{'filters'},
                     'orderby_string' => $importable->{'orderBy'},
                     'dataSetName'    => $dataSetName,
                     'interface'      => $interfaceType,
+                    'type'				=> $importable->{'type'} || 'link'
 								 );
 
 	foreach my $filterName (split (/,/, $importable->{'filters'})) {
@@ -629,6 +670,7 @@ sub getConfigurationTree {
                     'orderby_string'      => $exportable->{'orderBy'},
                     'dataSetName'         => $dataSetName,
                     'interface'           => $interfaceType,
+							'type'				=> $exportable->{'type'} || 'link'
                 );
             if ($exportable->{'default'}) { $attributeList->setDefault()}
 
@@ -1312,6 +1354,7 @@ sub addPlaceHolders {
                     'orderby_string'      => $exportable->{'orderBy'},
                     'dataSetName'         => $dataSetName,
                     'interface'           => $interface,
+						'type'				=> $exportable->{'type'} || 'link'
 	     );
 	          if ($exportable->{'default'}) { $attributeList->setDefault()}
      

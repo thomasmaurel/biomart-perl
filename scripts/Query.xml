@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Query>
-<Query  virtualSchemaName = "default" Header = "1" count = "" softwareVersion = "0.5" >
+<Query  virtualSchemaName = "default" header = "1" uniqueRows="1" count = "" softwareVersion = "0.5">
 			
 		<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
-	      		<Attribute name = "ensembl_transcript_id" />
-                        <Attribute name = "chromosome_name" />
+	      		
+               <Attribute name = "chromosome_name" />
 	     		<Filter name = "chromosome_name" value= "22"/>
 		</Dataset>
 
