@@ -579,7 +579,7 @@ sub makeDSN
 	foreach my $datasetName (@{$OPTIONS{'dasDatasets'}})
 	{
 		print STDDSN qq/<DSN>
-		<SOURCE id=\"BIOMART_$datasetName\" version=\"default\">$datasetName<\/SOURCE>
+		<SOURCE id=\"$datasetName\" version=\"default\">$datasetName<\/SOURCE>
 		<MAPMASTER>http:\/\/$OPTIONS{server_host}\/$OPTIONS{cgiLocation}\/das\/$datasetName\/<\/MAPMASTER>
 		<DESCRIPTION>BIOMART_$datasetName<\/DESCRIPTION>
 	<\/DSN>
