@@ -308,10 +308,10 @@ div#mart_export_data
 	color: [colour_saturation0];
 	background-color: [colour_saturation100];
 	border-style: solid;
-	border-width: 1px 0px 1px 1px;
+	border-width: 1px 1px 1px 1px;
 	border-color: [colour_saturation60];
 	padding: 4px;
-	margin: 0px 0px 2px 0px;
+	margin: 0px 4px 2px 0px;
 	overflow: auto;
 }
 
