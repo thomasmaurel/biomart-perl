@@ -133,7 +133,7 @@
 [* render_collapse_controls("$attributegroup_parname", "$attributegroup.displayName", "$attgroup_initial_state", "$attributegroup.description" ) *]
 [% attgroup_initial_state = "hide" IF attgroup_initial_state == "show" %]
 
-    [% FOREACH attributecollection = attributegroup.getAllCollections %]
+	[% FOREACH attributecollection = attributegroup.getAllCollections %]
 	[% attributecollection_parname = "[* param_prefix*]${attributetree.name}__attributecollection.${attributecollection.name}" %] 
 
 	<div class="mart_attributecollection" id="$attributecollection_parname">
@@ -158,11 +158,11 @@
 
 	[% ELSE %]
 
-
+		[% IF attributecollection.selectAll().defined && attributecollection.selectAll() == 'true' %]
 		<input type="checkbox" name="[% attributecollection_parname %]_a" id="[% attributecollection_parname %]_a" onclick="checkCheckboxesInContainer(this,1)" />Select all
 		<input type="checkbox" name="[% attributecollection_parname %]_n" id="[% attributecollection_parname %]_n" onclick="checkCheckboxesInContainer(this,0)" />Deselect all
-
-
+		[% END %]
+	
 	[% END %]
 	<br />
 

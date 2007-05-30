@@ -43,11 +43,13 @@ use constant NAMEKEY => "name";
 use constant DISPLAYNAME => "displayName";
 use constant DESCRIPTION => "description";
 use constant MAXSELECT => "maxSelect";
+use constant SELECTALL => "selectAll";
 
 use constant TITLES => [ NAMEKEY,
                          DISPLAYNAME,
                          DESCRIPTION,
-			 MAXSELECT];
+                         MAXSELECT,
+                         SELECTALL];
 
 sub _new {
   my ($self, @param) = @_;
@@ -132,6 +134,25 @@ sub maxSelect {
     $self->setParam(MAXSELECT, $value);
   }
   return $self->getParam(MAXSELECT);
+}
+
+=head2 selectAll
+
+  Usage      : 
+  Description: get/set for selectAll checkBox
+  Returntype : true/false
+  Exceptions : none
+  Caller     : templateToolKit
+
+=cut
+
+sub selectAll {
+  # stores max select
+  my ($self, $value) = @_;
+  if ($value){
+    $self->setParam(SELECTALL, $value);
+  }
+  return $self->getParam(SELECTALL);
 }
 
 

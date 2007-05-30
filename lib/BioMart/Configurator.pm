@@ -209,6 +209,11 @@ sub getConfigurationTree {
 			print STDERR "->  upgrading to 0.6 ... ";
 			$params=();
 			$params=BioMart::Web::CGIXSLT::read_https();
+			# ENSEMBL 37 & 38 crashes during this transformation for dataset  evoc_cell_type by XML:Parser 
+			# used by CGIXSLT. The funny character ü comes and is lost after first transformation
+			# $xml =~ s/\<Option displayName=\"M.*ller cell\" internalName=\"m.*ller_cell\" isSelectable=\"true\" value=\"M.*ller cell\" displayType=\"text\" multipleValues=\"1\" graph=\"\" style=\"\" autoCompletion=\"\"\/\>/
+			# \<Option displayName=\"Müller cell\" internalName=\"müller_cell\" isSelectable=\"true\" value=\"Müller cell\" displayType=\"text\" multipleValues=\"1\" graph=\"\" style=\"\" autoCompletion=\"\"\/\>/mg;
+
 			open(STDOUTTEMP, ">temp.xml");
 			print STDOUTTEMP $xml;
 			close(STDOUTTEMP);
@@ -356,6 +361,7 @@ sub getConfigurationTree {
 		     'displayName' => $xmlAttributeCollection->{'displayName'},
 		'description' => $xmlAttributeCollection->{'description'},
 		     'maxSelect'  => $xmlAttributeCollection->{'maxSelect'},
+  		     'selectAll'  => $xmlAttributeCollection->{'enableSelectAll'} || 'false',
 								   );
                 foreach my $xmlAttribute
                     (@{ $xmlAttributeCollection->{'AttributeDescription'} }) {
