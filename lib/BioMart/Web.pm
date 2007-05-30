@@ -1651,8 +1651,7 @@ sub handle_request {
 		my $schema_name     = $session->param('schema');
 		my $query_main      =  BioMart::Query->new(registry	=> $registry,
 														virtualSchemaName => $schema_name);
-		my $qrunner = BioMart::QueryRunner->new();
-		$qrunner->uniqueRowsOnly(1) if ($session->param('uniqueRowsCheckBox') && $session->param('uniqueRowsCheckBox') eq '1');
+		my $qrunner = BioMart::QueryRunner->new();		
 				
 		my @dataset_names   = ref($datasets_string) ? @$datasets_string : ($datasets_string); 
 		$logger->debug("Need to query datasets ".join(',',@dataset_names)." for total entry counts for each");
@@ -1959,7 +1958,8 @@ sub handle_request {
 				   		# Run query.			    
 				   		$logger->debug("Sending query for execution to get full resultset");
 	    					$query_main->formatter($exportView_formatter_name);
-	    					$query_main->count(0);# do don't get count below
+	    					$query_main->count(0);# don't get count below
+	    					$qrunner->uniqueRowsOnly(1) if ($session->param('uniqueRowsExportView') && $session->param('uniqueRowsExportView') eq '1');
 							$qrunner->execute($query_main);						
 							# Create results.
 							if ($export_saveto eq 'gz_bg') {
@@ -2015,7 +2015,8 @@ sub handle_request {
 				    		# Run query.			    
 					  		$logger->debug("Sending query for execution to get full resultset");
 	    					$query_main->formatter($exportView_formatter_name);
-	    					$query_main->count(0);# do don't get count below
+	    					$query_main->count(0);# don't get count below
+	    					$qrunner->uniqueRowsOnly(1) if ($session->param('uniqueRowsExportView') && $session->param('uniqueRowsExportView') eq '1');
 							$qrunner->execute($query_main);
 						
 							# Work out filename.    
@@ -2084,7 +2085,8 @@ sub handle_request {
 				    			# Run query.			    
 					  			$logger->debug("Sending query for execution to get full resultset");
 	    						$query_main->formatter($preView_formatter_name);
-		    					$query_main->count(0);# do don't get count below
+		    					$query_main->count(0);# don't get count below
+		    					$qrunner->uniqueRowsOnly(1) if ($session->param('uniqueRowsPreView') && $session->param('uniqueRowsPreView') eq '1');
 								$qrunner->execute($query_main);
 								
 								undef $export_subset if ($export_subset eq 'All');

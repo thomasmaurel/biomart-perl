@@ -78,7 +78,8 @@
 			<input type="hidden" name="export_dataset" value="[% session.param('export_dataset') || 0 %]" />
 			<input type="hidden" name="formatterMenu" value="[% session.param('formatterMenuInvoked') %]" />
 			<input type="hidden" name="newQueryValue" value="[% session.param('newQuery') %]" />
-			<input type="hidden" name="uniqueRowsCheckBox" value="[% session.param('uniqueRowsCheckBox') %]" />			
+			<input type="hidden" name="uniqueRowsPreView" value="[% session.param('uniqueRowsPreView') %]" />
+			<input type="hidden" name="uniqueRowsExportView" value="[% session.param('uniqueRowsExportView') %]" />			
 
 			<input type="hidden" name="mart_mainpanel__current_visible_section" value="[% session.param('mart_mainpanel__current_visible_section') %]"/>
 			<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
@@ -226,6 +227,8 @@
 
 						</select>
 						
+						
+						
 						<input type="submit" name="export_submit" value="Go" 
 							class="mart_btn_go"
 							onmouseover="this.className='mart_btn_go mart_btnhov_go'" 
@@ -296,6 +299,22 @@
 							}							
 							
 							"/>
+							
+						<input type="checkbox" id="uniqueCBoxExportView"
+						
+							[% IF session.param('uniqueRowsExportView') == "1" %]
+								checked
+							[% END %]
+							onchange="
+								if(this.checked) {
+									document.mainform.uniqueRowsExportView.value = 1;
+								}
+								else {
+									document.mainform.uniqueRowsExportView.value = 0;
+								}
+							"
+						/> Unique results only	
+							
 					</td>
 					
 					</tr>
@@ -322,41 +341,12 @@
 					
 				<tr class="mart_viewPanel">
 					<td align="left" width="" valign="top">
-						<div style="border-width: 0px 0px 1px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
+						<div style="border-width: 0px 0px 1px 0px; border-style: solid; border-color: black; margin: 0px 0px 6px 0px;"> </div>
 					</td>
 					<td align="left" width="" valign="top">
-						<div style="border-width: 0px 0px 1px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
+						<div style="border-width: 0px 0px 1px 0px; border-style: solid; border-color: black; margin: 0px 0px 6px 0px;"> </div>
 					</td>
 				</tr>
-				<tr class="mart_viewPanel">
-					<td align="left" width="" valign="center">
-						<input type="checkbox" id="uniqueCBox"
-						
-							[% IF session.param('uniqueRowsCheckBox') == "1" %]
-								checked
-							[% END %]
-							onchange="
-								if(this.checked) {
-									document.mainform.uniqueRowsCheckBox.value = 1;
-								}
-								else {
-									document.mainform.uniqueRowsCheckBox.value = 0;
-								}
-							"
-						/> Unique results only
-					</td>
-					<td align="left" width="" valign="top">
-					</td>
-				</tr>
-				<tr class="mart_viewPanel">
-					<td align="left" width="" valign="top">
-						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
-					</td>
-					<td align="left" width="" valign="top">
-						<div style="border-width: 1px 0px 0px 0px; border-style: solid; border-color: black; margin: 0px;"> </div>
-					</td>
-				</tr>
-
 
 				<tr class="mart_viewPanel">
 				<td align="left" width="25%" valign="top">
@@ -492,6 +482,22 @@
 					[% END %]
 
 					</select>
+					
+					<input type="checkbox" id="uniqueCBoxPreView"
+						
+							[% IF session.param('uniqueRowsPreView') == "1" %]
+								checked
+							[% END %]
+							onchange="
+								if(this.checked) {
+									document.mainform.uniqueRowsPreView.value = 1;
+								}
+								else {
+									document.mainform.uniqueRowsPreView.value = 0;
+								}
+							"
+						/> Unique results only
+					
 				</td>
 				</tr>
 
