@@ -1015,7 +1015,7 @@ sub handleURLRequest
 	$session->param('URL_REQUEST', '1');
 	$session->param("mart_mainpanel__current_visible_section", "resultspanel");
 	$session->param('preView_outputformat', 'html');
-	$session->param('exportView_outputformat', 'html');
+	$session->param('exportView_outputformat', 'tsv');
 	$session->param('datasetmenu_3', $DS[0]);
 	#--------------------------------------------------
 	
