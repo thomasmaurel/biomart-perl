@@ -329,22 +329,27 @@ sub getDefaultVirtualSchema {
 
 sub getAllDatasetNames {
 	my ($self, $virtualSchemaName, $visible_only) = @_;
-
+	# sort all the dataset Names per Mart based on their displayNames if visible_only = 1
 	my @dataSetNames;
-	my @sortedNames;
+	my %sortedNames;
 	foreach my $virtualSchema (@{$self->getAllVirtualSchemas}){
 		next unless ($virtualSchema->name eq $virtualSchemaName);
 		foreach my $location (@{$virtualSchema->getAllLocations}){
-			@sortedNames=();
+			%sortedNames=();
 			foreach my $dataset (@{$location->getAllDatasets}){
 				if ($visible_only){
-					push @sortedNames, $dataset->name if ($dataset->visible == 1);
+					$sortedNames{$dataset->displayName} = $dataset->name if ($dataset->visible == 1);
 				}
 				else{
-					push @sortedNames, $dataset->name;
+					# directly pushing as invisible datasets often has no display Name
+					push @dataSetNames,$dataset->name;
 				}
-			}			
-			push @dataSetNames, sort(@sortedNames);
+			}
+			if ($visible_only){
+				foreach my $displayName ( sort keys %sortedNames ) {
+					push @dataSetNames, $sortedNames{$displayName};
+				}
+			}
 		}
 	}
 	return (wantarray() ? @dataSetNames : \@dataSetNames);
@@ -722,26 +727,32 @@ sub getDefaultDatabase {
 =cut
 
 sub getAllDataSetsByDatabaseName {
-    my ($self, $virtualSchemaName, $databaseName, $visible_only) = @_;
-
-    my @dataSetNames;
-    foreach my $virtualSchema (@{$self->getAllVirtualSchemas}){
-	next unless ($virtualSchema->name eq $virtualSchemaName);
-	foreach my $location (@{$virtualSchema->getAllLocations}){
-	    next unless ($location->displayName eq $databaseName);
-
-	    if ($visible_only){
-		push @dataSetNames, @{$location->getAllVisibleDatasetNames};
-	    }
-	    else{
-		foreach my $dataset (@{$location->getAllDatasets}){
-		    push @dataSetNames,$dataset->name;
-		
+	my ($self, $virtualSchemaName, $databaseName, $visible_only) = @_;
+	# sort all the dataset Names in a Mart based on their displayNames if visible_only is true 
+	my @dataSetNames;
+	my %sortedNames;
+	foreach my $virtualSchema (@{$self->getAllVirtualSchemas}){
+		next unless ($virtualSchema->name eq $virtualSchemaName);
+		foreach my $location (@{$virtualSchema->getAllLocations}){
+			next unless ($location->displayName eq $databaseName);
+			%sortedNames=();
+			foreach my $dataset (@{$location->getAllDatasets}){
+				if ($visible_only){
+					$sortedNames{$dataset->displayName} = $dataset->name if ($dataset->visible == 1);
+				}
+				else{
+					# directly pushing as invisible datasets often has no display Name
+					push @dataSetNames,$dataset->name;
+				}
+			}
+			if ($visible_only){
+				foreach my $displayName ( sort keys %sortedNames ) {
+					push @dataSetNames, $sortedNames{$displayName};
+				}
+			}
 		}
-	    }
 	}
-    }
-    return \@dataSetNames;
+	return (wantarray() ? @dataSetNames : \@dataSetNames);    
 }
 
 

@@ -1312,8 +1312,8 @@ sub handle_request {
 			my $datasets = $registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
 			my $last_dataset;
 	     	DATASET:
-			foreach my $dataset_name(sort @$datasets) {
-			#foreach my $dataset_name(@$datasets) {
+			#foreach my $dataset_name(sort @$datasets) {
+			foreach my $dataset_name(@$datasets) {
 				my $dataset = $registry->getDatasetByName($schema_name, $dataset_name)
 				|| BioMart::Exception::Configuration->throw("Couldn't get dataset $schema_name->$database_name->$dataset_name from registry");
 	    		push @datasets, $dataset;
