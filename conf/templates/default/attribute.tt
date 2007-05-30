@@ -74,7 +74,7 @@
 [% END %]
 
 [% IF attribute.description %]
-  <a title="[% attribute.description | replace('"','&quot;') %]">[% attribute_displayname %]</a>
+<a title="[% attribute.description | replace('"','&quot;') %]">[% attribute_displayname %]</a>
 [% ELSE %]
   [% attribute_displayname %]
 [% END %]
