@@ -2187,22 +2187,7 @@ sub handle_request {
 	my $PS = new BioMart::Web::PageStub( $session );
 	$PS->start();
 	## End of hack
-	my $completePage = "";
-	$self->process_template( "main.tt", {
-			tbuilder			=> $self,
-			js_pushactions_of_datasetmenu => \%js_pushactions_of_datasetmenu,
-			js_datasetpanel_sessions_values => \%js_datasetpanel_sessions_values,
-			session       	=> $session,
-			wq            	=> $self,
-			form_action	=> $form_action,
-			sessionDBNAME	=> $dbName,
-			datasetOBJ	=> $def_ds_OBJ,
-			reverseNAME	=> $reverseName,
-			TAG_path		=> $TAG_path,			
-			result_string 	=> $result_string
-			#   	}, \*STDOUT );
-   	}, \$completePage );
-	## E! hack
+
 	if ( $session->param('countButton') && $session->param('countButton') eq '1')
 	{
 		$session->param('countButton', '0') ;
@@ -2232,9 +2217,26 @@ sub handle_request {
 	else
 	{
 		$session->clear('URL_REQUEST');
+		my $completePage = "";
+		$self->process_template( "main.tt", {
+			tbuilder			=> $self,
+			js_pushactions_of_datasetmenu => \%js_pushactions_of_datasetmenu,
+			js_datasetpanel_sessions_values => \%js_datasetpanel_sessions_values,
+			session       	=> $session,
+			wq            	=> $self,
+			form_action	=> $form_action,
+			sessionDBNAME	=> $dbName,
+			datasetOBJ	=> $def_ds_OBJ,
+			reverseNAME	=> $reverseName,
+			TAG_path		=> $TAG_path,			
+			result_string 	=> $result_string
+						#   	}, \*STDOUT );
+   	}, \$completePage );
+
 		# complete HTML page as in 0.5
 		print $completePage;
 	}
+	## E! hack	
 	$PS->end();
 	## End of hack
 }					  
