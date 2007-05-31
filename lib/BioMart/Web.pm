@@ -649,7 +649,10 @@ sub _new
             elsif($real_value = $value_of_param->{ $filtername.'__text' }) {
                # Second case: ID-list upload filter type, where the filter indicates against which db-table column
                # The list of uploaded identifiers should be matched. IDs can come from either textarea or uploaded file
-               if (ref($real_value) eq 'ARRAY') { $real_value = @$real_value[0]; }
+               if (ref($real_value) eq 'ARRAY') { 
+               	#$real_value = @$real_value[0];
+               	$real_value = "@{$real_value}"; 
+               }
                $logger->debug("Modifying ID-list filter name/value pair $filtername to $real_value (list from textarea)");
               # $filtername = $filtervalue;
                my @values = split(/[\n+\s+\,]+/, $real_value); # split paste-in text into a list of identifiers
