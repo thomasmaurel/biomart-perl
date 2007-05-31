@@ -1468,13 +1468,32 @@ function setVisibleStatus(menuLists, sessionValues, schemaTitle, databaseTitle, 
 		// adjusting heights as new auto adjust height doesnt work with Konqueror
 		if (browserInfo[0] == "Konqueror")
 		{
-			document.getElementById('mart_containerpanel').style.height = '80%';
-			document.getElementById('mart_footerStrip').style.height = '10%';
+			document.getElementById('mart_containerpanel').style.height = '460px';
+			document.getElementById('mart_footerStrip').style.height = '';
+			document.getElementById('mart_footerStrip').style.width = '';
+			document.getElementById('mart_footerStrip').style.overflow = 'visible';
 			
-			document.getElementById('summaryPanelDiv').style.height = '390px';
+			document.getElementById('summaryPanelDiv').style.height = '420px';
 			document.getElementById('summaryPanelDiv').style.overflow = 'auto';
-			document.getElementById('mart_mainpanel').style.height = '382px';
-			document.getElementById('mart_mainpanel').style.overflow = 'auto';		
+			document.getElementById('mart_datasetselectpanel').style.height = '400px';
+			document.getElementById('mart_datasetselectpanel').style.overflow = 'auto';
+
+			document.getElementById('resultspanel').style.height = '400px';
+			document.getElementById('resultspanel').style.overflow = 'auto';
+			var dsNames = getElementsByName_local('dataset');
+			for (var i=0; i < dsNames.length; i++)
+			{
+				if(dsNames[i].value!='')
+				{					
+					document.getElementById(dsNames[i].value+'__attributepanel').style.height = '400px';
+					document.getElementById(dsNames[i].value+'__attributepanel').style.overflow = 'auto';
+					document.getElementById(dsNames[i].value+'__filterpanel').style.height = '400px';
+					document.getElementById(dsNames[i].value+'__attributepanel').style.overflow = 'auto';
+				}
+			}			
+			document.getElementById('add_linked_datasetpanel').style.height = '400px';
+			document.getElementById('add_linked_datasetpanel').style.overflow = 'auto';
+			
 		}
 	}
 
@@ -1484,7 +1503,7 @@ function setVisibleStatus(menuLists, sessionValues, schemaTitle, databaseTitle, 
 		document.getElementById('resultsIFrameId').style.display = "none";
 	}
 	
-	datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, databaseTitle, datasetTitle);
+//	datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, databaseTitle, datasetTitle);
 	
 }
 

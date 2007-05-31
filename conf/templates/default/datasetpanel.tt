@@ -1,5 +1,5 @@
 
-<div class="mart_datasetselectpanel" style="" >
+<div id="mart_datasetselectpanel" class="mart_datasetselectpanel" style="" >
 
 
 <div id="schemaMenu" class="mart_schemamenu" style="">
