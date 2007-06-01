@@ -25,7 +25,7 @@
 <MartURLLocation default="0" displayName="WORMBASE 167 (CSHL)" host="www.wormbase.org" includeDatasets="" martUser="" name="wormbase_current" path="/biomart/martservice" port="80" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="WS_CURRENT" visible="1" redirect="1" />
 -->
 
-<!--
+
 <MartURLLocation  host="www.gramene.org" name="ENSEMBL_MART_GRAMENE" path="/Multi/martservice" proxy="http://wwwcache.ebi.ac.uk:8080" serverVirtualSchema="" displayName="GRAMENE (CSHL)" port="80" visible="1" default="0" martUser="" includeDatasets="" redirect="1" />
 
 
@@ -38,18 +38,14 @@
 
 <MartURLLocation database="pepseekerGOLD_mart" default="0" displayName="PEPSEEKER (UNIVERSITY OF MANCHESTER)" host="www.ispider.manchester.ac.uk" includeDatasets="peptide_1" includeMarts="pepseekerGOLD_mart" name="pepseekerGOLD_mart" martUser="" serverVirtualSchema="pepseekerGOLD" path="/pepseeker/biomart/martservice" port="80"  proxy="http://wwwcache.ebi.ac.uk:8080" visible="1" redirect="1" />
 
--->
-<!--
 
+<!--
 <MartURLLocation database="pepseeker2_mart" default="0" displayName="PEPSEEKER2 (UNIVERSITY OF MANCHESTER)" host="www.ispider.manchester.ac.uk" includeDatasets="peptide_1" includeMarts="pepseeker2_mart" name="pepseeker2_mart" martUser="" serverVirtualSchema="pepseeker2" path="/pepseeker/biomart/martservice" port="80"  proxy="http://wwwcache.ebi.ac.uk:8080" visible="1" redirect="1" />
-
 -->
 
-<!--
 <MartURLLocation database="pride_mart_2" default="1" displayName="PRIDE (EBI)" host="www.ebi.ac.uk" includeDatasets="" martUser="" name="pride" path="/pride/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" redirect="1" />
 
 
--->
 <MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="uniprot_mart_17" name="uniprot" displayName="UNIPROT PROTOTYPE (EBI)" port="3306" schema="uniprot_mart_17" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />
 
 <MartDBLocation databaseType="mysql" host="martdb.ebi.ac.uk" database="msd_mart_4" name="msd" displayName="MSD PROTOTYPE (EBI)" port="3306" schema="msd_mart_4" user="anonymous" password="" visible="1" default="0" martUser="" includeDatasets="" />

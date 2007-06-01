@@ -1308,6 +1308,7 @@ sub handle_request {
 	  	foreach my $database_name(@$databases) {
 	    	$multiMenuDS = 0;
 	    	$unitsHash = ();
+			my %defDSHash = ();	    	
 			push @database_names, $database_name;
 			my $schema__dbName = $schema_name.'____'.$database_name;
 			# Add this database to pushaction-hash
@@ -1327,8 +1328,12 @@ sub handle_request {
 	    		{
 					# setting the default dataset to appear as first option in the menu
 					if ($conf_tree->defaultDataset()){
-						unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
-													[$dataset->name, $dataset->displayName()]);
+						# unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
+						#								[$dataset->name, $dataset->displayName()]);
+						# just in case there are more than one defaults DSs in a MART, they shouls also be ordered
+						# alphabetically tore them in a separate hash, and towards the end of this Mart
+						# add them to the top in alphabetical order
+						$defDSHash{$dataset->displayName()} = $dataset->name();
 	    			}
 	    			else{
 						push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
@@ -1374,6 +1379,11 @@ sub handle_request {
 						}
 					}	
 				}
+			}
+			foreach my $dispName(reverse sort keys %defDSHash) {
+				#print "$defDSHash{$dispName}";
+				unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
+						[$defDSHash{$dispName}, $dispName]);				
 			}
 		} # foreach database closes
 	} # foreach schema closes
