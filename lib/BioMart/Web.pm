@@ -832,7 +832,7 @@ sub handleURLRequest
 	foreach(@attributeList)
 	{
 		my @temp_portions = split (/\./, $_);
-		# <DatasetName>.<Interface>.<ATTRIBUTES>.<AttributePage>.<AttributeInternalName>."<Optional: attributevalue incase its an AttributeFilter>"
+		# <DatasetName>.<Interface>.<AttributePage>.<AttributeInternalName>."<Optional: attributevalue incase its an AttributeFilter>"
 		if ($temp_portions[4]) {
 			$temp_portions[4] =~ s/\"//g; # remove double quotes
 			$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'ATTRIBUTES'}->{$temp_portions[2].'.'.$temp_portions[3]}  = $temp_portions[4];
@@ -853,7 +853,7 @@ sub handleURLRequest
 	foreach(@filterList)
 	{
 		my @temp_portions = split (/\./, $_,5); # strictly splitting into five as the values in ""quotes might have dots e.g human band p36.33
-		# <DatasetName>.<Interface>.<FITLERS>.<FilterPAGE>.<FilterInternalName>."<commaSeperatedValues>"
+		# <DatasetName>.<Interface>.<FilterPAGE>.<FilterInternalName>."<commaSeperatedValues>"
 		$temp_portions[4] =~ s/\"//g; # remove double quotes
 		$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'FILTERS'}->{$temp_portions[2].'.'.$temp_portions[3]} = $temp_portions[4];
 	}		
