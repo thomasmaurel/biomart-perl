@@ -79,10 +79,12 @@
 
 				addDatasetParamToForm(this.options[this.selectedIndex].value);
 				if (document.getElementById('summarypanel_filter_count_1') != null)	{
-					document.getElementById('summarypanel_filter_count_1').innerHTML = ' ';
+					document.getElementById('summarypanel_filter_count_1').innerHTML = '';
+					document.mainform.summarypanel_filter_count_1_hidden.value = '';
 				}
 				if (document.getElementById('summarypanel_filter_count_2') != null)	{
-					document.getElementById('summarypanel_filter_count_2').innerHTML = ' ';
+					document.getElementById('summarypanel_filter_count_2').innerHTML = '';
+					document.mainform.summarypanel_filter_count_2_hidden.value = '';
 				}
 				document.mainform.target = '_self';
 				document.mainform.submit();
