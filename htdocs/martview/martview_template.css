@@ -602,7 +602,7 @@ div#mart_export_data
 .mart_results
 {
 	font-family: Courier;
-	overflow: auto;
+	overflow: visible;
 }
 
 .mart_table
