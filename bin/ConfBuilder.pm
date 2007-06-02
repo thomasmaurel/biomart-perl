@@ -527,8 +527,7 @@ sub updatehttpdConf
 	print STDHTTPD qq/
 	ScriptAlias \/$OPTIONS{cgiLocation}\/das\/$datasetName\/features "$OPTIONS{cgibin}\/features"
 	<Location \/$OPTIONS{cgiLocation}\/das\/$datasetName\/features>
-    	AllowOverride None
-    	Options None
+	Options None
     	Order allow,deny
     	Allow from all
 	/;
