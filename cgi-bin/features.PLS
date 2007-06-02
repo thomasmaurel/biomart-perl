@@ -525,7 +525,7 @@ sub method
 {
 	my ($id, $val) = @_;
 	return qq|
-		<METHOD id= "|.$id.qq|" > $val</METHOD>	|;
+		<METHOD id= "|.$id.qq|" >$val</METHOD>	|;
 	
 
 }
