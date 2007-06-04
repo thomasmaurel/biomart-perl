@@ -490,7 +490,7 @@
 							[% IF session.param('uniqueRowsPreView') == "1" %]
 								checked
 							[% END %]
-						onchange="
+						onclick="
 						if(this.checked) {
 							document.mainform.uniqueRowsPreView.value = 1;									
 						}
