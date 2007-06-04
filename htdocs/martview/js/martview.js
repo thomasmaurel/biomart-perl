@@ -1461,6 +1461,12 @@ function setVisibleStatus(menuLists, sessionValues, schemaTitle, databaseTitle, 
 	
 	var browserInfo = new Array();
 	browserInfo = detectBrowserProperties();
+	
+	if(browserInfo[0] == "Explorer")
+	{
+		document.getElementById('mart_containerpanel').style.overflow = 'hidden';
+	}
+	
 	if(browserInfo[0] == "Safari" || browserInfo[0] == "Konqueror")
 	{	
 		document.getElementById('countIFrameId').style.visibility = "hidden";
@@ -1492,11 +1498,9 @@ function setVisibleStatus(menuLists, sessionValues, schemaTitle, databaseTitle, 
 				}
 			}			
 			document.getElementById('add_linked_datasetpanel').style.height = '400px';
-			document.getElementById('add_linked_datasetpanel').style.overflow = 'auto';
-			
+			document.getElementById('add_linked_datasetpanel').style.overflow = 'auto';		
 		}
 	}
-
 	else
 	{
 		document.getElementById('countIFrameId').style.display = "none";
