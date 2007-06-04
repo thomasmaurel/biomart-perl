@@ -1849,7 +1849,7 @@ sub handle_request {
 			if ($showQuery eq '1') {
 				# do not want to show internals of BioMart ;-) 
 				my $tempered_xml = $query_main->toXML(1,1,1,1);
-				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\" uniqueRows = \"1\"/g;
+				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\" uniqueRows = \"0\"/g;
 				$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
 				print $tempered_xml;
 			}
@@ -1895,19 +1895,20 @@ sub handle_request {
 			    	# Run in background?
 					my $export_saveto = $session->param('export_saveto');
 					# if its ALL option, to be redirected to Browser with preView formatter
-					if ($session->param('export_subset') eq 'All')
+					if ($session->param('export_subset') eq 'All' 
+							&& $session->param('showAll') &&  $session->param('showAll') eq '1')
 					{
 						$export_saveto = 'text';
-						$exportView_formatter_name = $preView_formatter_name;
-						# change the option Menu value to 10 if it was All and then user comes back to 
-						# Atts/Filts/Ds panels and hit results again or hits the count button
-						if (!$session->param("do_export"))
-						{	
-							$session->param('export_subset', '10');
-							#$export_subset = 10;
-						}
+						$exportView_formatter_name = $preView_formatter_name;						
 					}
-			    	if ($session->param('do_export') and ($export_saveto eq 'file_bg' or $export_saveto eq 'gz_bg')) 
+					# change the option Menu value to 10 if it was All and then user comes back to 
+					# Atts/Filts/Ds panels and hit results again or hits the count button
+					if ($session->param('export_subset') eq 'All' && !$session->param("do_export"))
+					{	
+						$session->param('export_subset', '10');
+					}
+					
+					if ($session->param('do_export') and ($export_saveto eq 'file_bg' or $export_saveto eq 'gz_bg')) 
 			    	{
 						$logger->debug("Running in background.");
 						$session->clear('do_export'); # so it only happens once
@@ -2030,8 +2031,13 @@ sub handle_request {
 					  		$logger->debug("Sending query for execution to get full resultset");
 	    					$query_main->formatter($exportView_formatter_name);
 	    					$query_main->count(0);# don't get count below
-	    					$qrunner->uniqueRowsOnly(1) if ($session->param('uniqueRowsExportView') && $session->param('uniqueRowsExportView') eq '1');
-							$qrunner->execute($query_main);
+	    					if ( ($session->param('uniqueRowsExportView') && $session->param('uniqueRowsExportView') eq '1' )
+	    						||($session->param('uniqueRowsPreView') && $session->param('uniqueRowsPreView') eq '1' 
+	    							&& $session->param('showAll') &&  $session->param('showAll') eq '1' ) )
+	    					{
+		    					$qrunner->uniqueRowsOnly(1);		    					
+	    					}
+	    					$qrunner->execute($query_main);
 						
 							# Work out filename.    
 							my $file = 'mart_export';

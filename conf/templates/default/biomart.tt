@@ -79,7 +79,8 @@
 			<input type="hidden" name="formatterMenu" value="[% session.param('formatterMenuInvoked') %]" />
 			<input type="hidden" name="newQueryValue" value="[% session.param('newQuery') %]" />
 			<input type="hidden" name="uniqueRowsPreView" value="[% session.param('uniqueRowsPreView') %]" />
-			<input type="hidden" name="uniqueRowsExportView" value="[% session.param('uniqueRowsExportView') %]" />			
+			<input type="hidden" name="uniqueRowsExportView" value="[% session.param('uniqueRowsExportView') %]" />
+			<input type="hidden" name="showAll" value="0" />
 
 			<input type="hidden" name="mart_mainpanel__current_visible_section" value="[% session.param('mart_mainpanel__current_visible_section') %]"/>
 			<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
@@ -245,7 +246,7 @@
 									'&name=[% dset.displayName() || dset_name %]'+
 									'&URL=http://'+location.host+'[% form_action %]?do_export=1&resultsButton=1';
 								[% END %]
-								
+								document.mainform.showAll.value = 0;
 								document.mainform.formatterMenu.value = 'exportView';
 								document.mainform.do_export.value = 1; 
 								document.mainform.showquery.value = 0; 
@@ -370,13 +371,14 @@
 					{
 						document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
 					}
-					
+
 					document.mainform.savequery.value = 0; 
 					document.mainform.showquery.value = 0; 
 
 					if(this.value == 'All' )
 					{
-						document.mainform.do_export.value = 1; 
+						document.mainform.showAll.value = 1;
+						document.mainform.do_export.value = 1;
 						document.mainform.formatterMenu.value = 'preView';
 						document.mainform.target = 'newwindow';
 						document.mainform.resultsButton.value = 1;
@@ -384,9 +386,8 @@
 					}
 					else
 					{
-
-						document.mainform.do_export.value = 0; 
-						document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
+						document.mainform.do_export.value = 0;
+						document.getElementById('resultsTableId').innerHTML = 'Loading... ';
 						document.mainform.formatterMenu.value = 'preView';
 							
 						showPanelHideSiblings('resultspanel');
@@ -397,7 +398,7 @@
 
 						document.mainform.resultsButton.value = 5;
 						document.mainform.target = 'results_hiddenIFrame';
-						document.mainform.submit();			
+						document.mainform.submit();
 						document.mainform.resultsButton.value = 1;
 					}
 									
@@ -437,6 +438,7 @@
 						var seeAll = document.mainform.export_subset.options[document.mainform.export_subset.selectedIndex].value;
 						if(seeAll == 'All')
 						{
+							document.mainform.showAll.value = 1;
 							document.mainform.do_export.value = 1; 
 							document.mainform.formatterMenu.value = 'preView';
 							document.mainform.target = 'newwindow';
@@ -512,6 +514,7 @@
 						var seeAll = document.mainform.export_subset.options[document.mainform.export_subset.selectedIndex].value;
 						if(seeAll == 'All')
 						{
+							document.mainform.showAll.value = 1;						
 							document.mainform.do_export.value = 1; 
 							document.mainform.formatterMenu.value = 'preView';
 							document.mainform.target = 'newwindow';
