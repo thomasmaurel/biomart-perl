@@ -238,7 +238,7 @@ sub get_geneAnnotation
 	
 		$results .= &feature_open($portions[1], $portions[1]);
 		$results .= &type("TRANSCRIPT","no","no","no", $portions[1]);
-		$results .= &method("methodID", "methodVal");
+		$results .= &method("methodID", "");
 		$results .= &start("0");
 		$results .= &end("0");
 		$results .= &score("0");
