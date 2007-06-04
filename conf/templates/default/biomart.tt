@@ -488,13 +488,53 @@
 							[% IF session.param('uniqueRowsPreView') == "1" %]
 								checked
 							[% END %]
-							onchange="
-								if(this.checked) {
-									document.mainform.uniqueRowsPreView.value = 1;
-								}
-								else {
-									document.mainform.uniqueRowsPreView.value = 0;
-								}
+						onchange="
+						if(this.checked) {
+							document.mainform.uniqueRowsPreView.value = 1;									
+						}
+						else {
+							document.mainform.uniqueRowsPreView.value = 0;
+						}
+						var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
+						if (summaryCountElt1)
+						{				
+							document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
+						}
+						var summaryCountElt2 = document.getElementById('summarypanel_filter_count_2');
+						if (summaryCountElt2)
+						{
+							document.mainform.summarypanel_filter_count_2_hidden.value = summaryCountElt2.innerHTML;
+						}
+						
+						document.mainform.savequery.value = 0;  
+						document.mainform.showquery.value = 0; 
+						
+						var seeAll = document.mainform.export_subset.options[document.mainform.export_subset.selectedIndex].value;
+						if(seeAll == 'All')
+						{
+							document.mainform.do_export.value = 1; 
+							document.mainform.formatterMenu.value = 'preView';
+							document.mainform.target = 'newwindow';
+							document.mainform.resultsButton.value = 1;
+							document.mainform.submit();
+						}
+						else
+						{
+							document.mainform.do_export.value = 0;
+							document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
+							document.mainform.formatterMenu.value = 'preView';
+							
+							showPanelHideSiblings('resultspanel');
+							setHighlightedSummaryPanelBranch('show_results');
+							document.mainform.track_visible_section.value = document.mainform['mart_mainpanel__current_visible_section'].value;
+							document.mainform['mart_mainpanel__current_visible_section'].value = 'resultspanel'; 
+							document.mainform['summarypanel__current_highlighted_branch'].value = 'show_results';
+							
+							document.mainform.resultsButton.value = 5;
+							document.mainform.target = 'results_hiddenIFrame';
+							document.mainform.submit();
+							document.mainform.resultsButton.value = 1;
+						}
 							"
 						/> Unique results only
 					
