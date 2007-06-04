@@ -213,6 +213,7 @@ sub _new
                                         PRE_CHOMP    => 1,
 					COMPILE_EXT  => 'c',
 					COMPILE_DIR  => '/',
+					CACHE_SIZE => 5
                                         # NOTE TO SELF: add constants here, for performance boost?
                                         # DEBUG => DEBUG_ALL,
                                         # CONSTANTS    => {},

@@ -137,6 +137,7 @@ sub build_templates {
      my @database_names;
 	my @datasets;
      my $default_dataset;
+     
      SCHEMA:
      foreach my $schema(@$schemas) {
  	    #if(!$schema->visible()) {
@@ -224,7 +225,8 @@ sub build_templates {
 			} # foreach datasets closes
 		} # foreach database closes
 	} # foreach schema closes
-
+	
+	
         # build schema+dataset select-menus from the info collected above
 	if(keys(%{ $js_pushactions_of_datasetmenu{ 'databasemenu' } }) == 0) {
      	$logger->warn("No datasets found in registry, so no templates were built. Returning 0");
@@ -232,22 +234,34 @@ sub build_templates {
 	}
 	$default_dataset ||= $datasets[0];
 	print STDERR "\n"; # Last bit of progress bar.
-    
+
 	# make sure all cached tt files are precompiled for optimal site performance
      print STDERR "Compiling templates for visible datasets\n";
-	
-	opendir (DIR, $self->get_cached_tt_dir);
-	my @entries = readdir (DIR);
-	closedir (DIR);
-	my $totalTCount = scalar(@entries);
 	my $currentTCount = 0;
-	foreach my $template_file(@entries){
-		$currentTCount++;
-		printf STDERR "\r.... %d%%",(100*($currentTCount/$totalTCount));
-		next if ($template_file !~ /.*\.tt$/);
-	    	#warn($template_file);
-	    	$self->process_template($template_file, { build_errors=> \%build_errors});
+	SCHEMA:
+	foreach my $schema(@$schemas) {
+		my $schema_name = $schema->name();
+		my $databases = $mart_registry->getAllDatabaseNames($schema_name, 1);
+		DATABASE:
+	    	foreach my $database_name(@$databases) {
+			push(@{ $js_pushactions_of_datasetmenu{ 'schema' }->{ $schema_name }->{ 'databasemenu' } }, [$database_name, $database_name] );
+			my $datasets = $mart_registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
+			DATASET:
+			foreach my $dataset_name(sort @$datasets) {
+				my $template_file = $self->get_cached_tt_dir()
+							  . "/attributepanel_$schema_name\."
+							  . $dataset_name . ".tt";
+				$self->process_template($template_file, { build_errors=> \%build_errors}) if (-e $template_file);
+				$template_file = 	$self->get_cached_tt_dir()
+							  . "/filterpanel_$schema_name\."
+							  . $dataset_name . ".tt";
+				$self->process_template($template_file, { build_errors=> \%build_errors}) if (-e $template_file);
+				$currentTCount++;
+				printf STDERR "\r.... %d%%",(100*($currentTCount/$totalDSCount));
+			}
+		}
 	}
+	
     	print STDERR "\n"; # Last bit of progress bar.
 	
 	# If any non-fatal errors occurred during template generation, get hash with info on them 
