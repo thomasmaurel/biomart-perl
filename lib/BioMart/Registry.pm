@@ -1206,6 +1206,43 @@ sub getDatasetsExportingTo {
     return @exporting_datasets;
 }
 
+# only called by linked dataset panel to reverse the order of DBs in linking Menu
+sub getDatasetsExportingTo_reverseDBs
+{
+	my ($self,$virtualSchema,$to_dataset) = @_;
+	my @exporting_datasets;
+	my $dataset_names = $self->getAllDatasetNames($virtualSchema,1);
+	foreach my $fr_dataset (@{$dataset_names}) {
+		next if ($fr_dataset eq $to_dataset);
+		push @exporting_datasets, $fr_dataset if ($self->getLinkBetween(
+		$virtualSchema,$fr_dataset,$to_dataset));
+	}
+	
+	# return @exporting_datasets;
+	# maintain the same order of datasets by rearrange them in reverse order as per DB Names
+	my @allMarts;
+	my %martsHash;
+	my @revisedOrder;
+	foreach my $virtualSchemaObj (@{$self->getAllVirtualSchemas}) {
+		next unless ($virtualSchemaObj->name eq $virtualSchema);
+		foreach my $location (@{$virtualSchemaObj->getAllLocations(1)}) {			
+			unshift @allMarts, $location->displayName();
+			$martsHash{$location->displayName()} = undef;
+		}
+	}
+	
+	foreach my $dsName (@exporting_datasets) {
+		my $dbName = $self->getDatasetByName($virtualSchema, $dsName)->locationDisplayName();
+		push @{$martsHash{$dbName}}, $dsName;
+	}
+	
+	foreach my $martName (@allMarts) {
+		foreach (@{$martsHash{$martName}}) {
+			push @revisedOrder, $_;
+		}
+	}
+	return @revisedOrder;
+}
 
 #------------------------------------------------------------------------
 # internal

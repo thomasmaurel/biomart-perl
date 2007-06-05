@@ -7,7 +7,7 @@
 <td width="100%" height="100%" valign="top" align="left">
 
 
-[% linked_dataset_list = wq.get_mart_registry.getDatasetsExportingTo(session.param("schema"),session.param("dataset").first) %]
+[% linked_dataset_list = wq.get_mart_registry.getDatasetsExportingTo_reverseDBs(session.param("schema"),session.param("dataset").first) %]
 [% IF linked_dataset_list.size() > 0 %]
 
 	<div class="mart_datasetlinkmenu">
