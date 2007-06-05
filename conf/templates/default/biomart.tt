@@ -228,7 +228,20 @@
 
 						</select>
 						
+						<input type="checkbox" id="uniqueCBoxExportView"
 						
+							[% IF session.param('uniqueRowsExportView') == "1" %]
+								checked
+							[% END %]
+							onchange="
+								if(this.checked) {
+									document.mainform.uniqueRowsExportView.value = 1;
+								}
+								else {
+									document.mainform.uniqueRowsExportView.value = 0;
+								}
+							"
+						/> Unique results only &nbsp
 						
 						<input type="submit" name="export_submit" value="Go" 
 							class="mart_btn_go"
@@ -301,20 +314,7 @@
 							
 							"/>
 							
-						<input type="checkbox" id="uniqueCBoxExportView"
-						
-							[% IF session.param('uniqueRowsExportView') == "1" %]
-								checked
-							[% END %]
-							onchange="
-								if(this.checked) {
-									document.mainform.uniqueRowsExportView.value = 1;
-								}
-								else {
-									document.mainform.uniqueRowsExportView.value = 0;
-								}
-							"
-						/> Unique results only	
+							
 							
 					</td>
 					
