@@ -30,7 +30,7 @@
 	
 	<tr>
 	
-	<td width="100%" height="85%" align="left">
+	<td width="100%" height="94%" align="left">
 	<div style="width:100%; height:100%; overflow:hidden; align:top; background: white; position: relative;">
 		<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 		<tr>
@@ -60,7 +60,7 @@
 			</div>
 		</td>
 	
-		<td class="mart_tableMainPanel" height="100%" width="85%" valign="top" align="left">
+	<td class="mart_tableMainPanel" height="100%" width="85%" valign="top" align="left">
 
 					
 			<input type="hidden" name="menuNumber" value="0" />
@@ -86,7 +86,7 @@
 			<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
 			
 			<div id="mart_mainpanel" style="height:100%; overflow:hidden; text-align: top; position: relative;">
-			<table width="100%" height="100%"  border="0" cellpadding="6" cellspacing="0" style="table-layout: fixed;">
+			<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 			<tr>
 			<td id="mart_mainpanel" width="100%" height="100%" valign="top" align="left">	
 	[% IF session.param('newQuery') &&  session.param('newQuery') == "1" %]
@@ -602,4 +602,9 @@
 	</div>
 	</td>
 	</tr>
-
+	
+	<tr>
+		<td align="left" height="0%" valign="top">
+		<div style="border-width: 0px 0px 1px 0px; border-style: solid; border-color: black;"> </div>
+		</td>
+	</tr>

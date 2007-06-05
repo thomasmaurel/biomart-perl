@@ -17,14 +17,14 @@ div#mart_containerpanel
 {
 	width: 15em;
   	border-style: solid;
-	border-width: 1px 1px 1px 0px;
+	border-width: 1px 1px 0px 0px;
 	border-color: black;	
 }
 
 .mart_tableMainPanel
 {
   	border-style: solid;
-	border-width: 1px 0px 1px 0px;
+	border-width: 1px 0px 0px 0px;
 	border-color: black;	
 }
 
@@ -35,16 +35,11 @@ div#mart_containerpanel
   /*background-color: #D3D9E2; /*[colour_saturation80];*/
   background-color: [colour_saturation80];
 
-/*	border-style: solid;
-	margin: 12px 6px 12px 0px;
-	border-width: 3px 3px 3px 0px;
-	border-color: [colour_saturation60];
-	padding: 16px 30px 16px 30px;	
-*/
-/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  */ /*FOR IE 6 and below*/						
-/*	max-width: inherit; */  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
 
-/*	clear: both; */
+	/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" );  */ /*FOR IE 6 and below*/						
+	/*	max-width: inherit; */  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
+
+	/*	clear: both; */
 	/*overflow: auto;*/
 	
 
@@ -55,15 +50,9 @@ div#mart_mainpanel
 
 	background-color: [colour_saturation100];
 	padding: 0px 8px 8px 8px;
-/*
-	border-style: solid;
-	margin: 12px 0px 12px 6px;
-	border-width: 3px 0px 3px 3px;
-	border-color: [colour_saturation60];
-	padding: 16px 20px 16px 20px;
-*/
-/*	max-width: inherit; */  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
-/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" ); */  /*FOR IE 6 and below*/
+
+	/*	max-width: inherit; */  /*For all browsers including IE 7. y not only width: inherit bcoz Safari doesnt like that*/
+	/*	_width:expression(document.body.clientWidth > 2 ? "100%" : "100%" ); */  /*FOR IE 6 and below*/
 	clear: both;
 	/*overflow: auto;*/
 }
@@ -112,6 +101,18 @@ div#mart_bottom_bar
 	font-family: sans-serif;
 }
 
+div#mart_bottom_bar
+{	
+	border-style: solid;
+	border-width: 1px;
+	color: [colour_saturation80];
+	font-weight: bold;
+	width: inherit;
+	border-color: [colour_saturation20];
+	background-color: [colour_saturation20];
+	font-family: sans-serif;
+}
+
 .mart_datasetpanel
 {
 	border-style: solid;
@@ -130,7 +131,7 @@ div#mart_export_menubar
 	border: solid;
 	background-color: [colour_saturation100];
 	border-width: 0px;
-	padding: 0px 0px 0px 0px;
+	padding: 10px 0px 0px 0px;
 	border-color: [colour_saturation60];
 	width: inherit; 
 }
@@ -139,7 +140,7 @@ div#mart_export_data
 { 
 	color: [colour_saturation0];
 	background-color: [colour_saturation100];
-	height: 70%;
+	height: 72%;
 	_height: 100%; /* for IE only */
 }
 
@@ -226,13 +227,13 @@ div#mart_export_data
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
 	border-color: [colour_saturation0];
-	padding: 10px 0px 6px 2px;
+	padding: 16px 0px 6px 2px;
 	clear: both;
 	overflow: auto;
 }
 .mart_datasetlinkmenu
 {
-	padding: 8px 0px 12px 0px;
+	padding: 14px 0px 12px 0px;
 }
 .mart_databasemenu
 {
@@ -243,7 +244,7 @@ div#mart_export_data
 	border-color: [colour_saturation100];
 	clear: both;
 	overflow: auto;
-	padding: 10px 0px 6px 2px;
+	padding: 16px 0px 6px 2px;
 }
 .mart_interfacemenu,
 .mart_datasetmenu
