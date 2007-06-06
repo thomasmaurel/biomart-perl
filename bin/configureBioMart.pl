@@ -316,8 +316,8 @@ bin::ConfBuilder->makeCopyDirectories(%OPTIONS);
 #------------------------------------------------------
 my %repetition = ();
 foreach my $schema (@{$mart_registry->getAllVirtualSchemas()}) {
-	foreach my $mart (@{$schema->getAllMarts(1)}) {
-		foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+	foreach my $mart (@{$schema->getAllMarts(0)}) {
+		foreach my $dataset (@{$mart->getAllDatasets(0)}) {
 			foreach my $exportable (@{$dataset->getExportables()}) {
 				#print "\nEXP: ", $exportable->linkName();
 				# geneDAS and chrDAS

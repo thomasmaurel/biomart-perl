@@ -114,15 +114,40 @@ if($@) {
 sub featureType
 {
 	my $segmentString = shift;
+	
+	# FIRST check if both dasChr and dasGene exist, if only one exists then this one is being called
+	my $geneOk = 0;
+	my $chrOk = 0;
+	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
+		foreach my $mart (@{$schema->getAllMarts(0)}) {
+			foreach my $dataset (@{$mart->getAllDatasets(0)}) {
+				if ($dataset->name eq $dasDatasetName) {
+					foreach my $exportable (@{$dataset->getExportables()}) {
+						if($exportable->type() eq 'dasChr') {
+							$chrOk = 1;
+						}
+						if($exportable->type() eq 'dasGene') {
+							$geneOk = 1;
+						}
+					}
+				}
+			}
+		}
+	}
+	return 'chromosome' if (!$geneOk && $chrOk);
+	return 'gene' if (!$chrOk && $geneOk);
+	
+	# incase both dasGene and dasChr exist	
 	my $temp_results;
-	my $dasChrExists = 0;
+	my $dasChrExists = 0;	
+	
 	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
      
 	$query->setDataset($dasDatasetName);
 	
 	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
-		foreach my $mart (@{$schema->getAllMarts(1)}) {
-			foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+		foreach my $mart (@{$schema->getAllMarts(0)}) {
+			foreach my $dataset (@{$mart->getAllDatasets(0)}) {
 				if ($dataset->name eq $dasDatasetName) {
 					foreach my $exportable (@{$dataset->getExportables()}) {
 						if($exportable->type() eq 'dasChr') {
@@ -185,8 +210,8 @@ sub get_geneAnnotation
 	$query->setDataset($dasDatasetName);
 	
 	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
-		foreach my $mart (@{$schema->getAllMarts(1)}) {
-			foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+		foreach my $mart (@{$schema->getAllMarts(0)}) {
+			foreach my $dataset (@{$mart->getAllDatasets(0)}) {
 				if ($dataset->name eq $dasDatasetName) {
 					foreach my $exportable (@{$dataset->getExportables()}) {
 						if($exportable->type() eq 'dasGene') {
@@ -293,8 +318,8 @@ sub get_chromosomeAnnotation
 	$query->setDataset($dasDatasetName);
 
 	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
-		foreach my $mart (@{$schema->getAllMarts(1)}) {
-			foreach my $dataset (@{$mart->getAllDatasets(1)}) {
+		foreach my $mart (@{$schema->getAllMarts(0)}) {
+			foreach my $dataset (@{$mart->getAllDatasets(0)}) {
 				if ($dataset->name eq $dasDatasetName) {
 					foreach my $exportable (@{$dataset->getExportables()}) {
 						if($exportable->type() eq 'dasChr') {
