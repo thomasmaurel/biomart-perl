@@ -621,11 +621,17 @@ sub _modFlanks {
     
     $location->{start} || return $location; # Sanity check
     $location->{end}   || return $location; # Sanity check
- 
+      
     if ($shift == 1) 
     {
 	# shift for flanks only - if user accidentally chooses both flanks, 
 	# assume upstream as the original martview
+
+	if ($self->get('upstream_flank') && $self->get('downstream_flank')){
+	    BioMart::Exception::Usage->throw("For this sequence option choose upstream OR downstream gene flanking sequence, NOT both, as makes no sense to simply concatenate them together.\n");
+	}
+
+
 	if ($self->get('upstream_flank')) 
 	{
 	    if ($location->{"strand"} < 0) 
