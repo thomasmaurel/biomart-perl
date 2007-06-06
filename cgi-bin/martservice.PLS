@@ -71,7 +71,7 @@ my $fils          = $CGI->param('filter');
 my $mart_name     = $CGI->param('mart');
 my $martuser      = $CGI->param('martuser') || 'default';
 my $interface     = $CGI->param('interface') || 'default';
-
+my $xml           = $CGI->param('query');
 my $path = "/".$cgiLocation."/martservice";
 
 
@@ -116,12 +116,48 @@ eval{
 			&version($registry,$vschema_name,$mart_name);
 		}
 	} 
-    	else{
-		my $xml = $CGI->param('query');
+    	elsif ($xml){
 		my $ip = $CGI->remote_host();
 		&createLog($registry, $xml, $ip);
 		&run_query($registry,$xml);
     	}
+	else{
+	    print $CGI->header(-type=>'text/html');
+	    my $port = '';
+	    $port = ":$server_port" if ($server_port != 80);
+
+
+	    my $first_schema = ${$registry->getAllVirtualSchemas}[0];
+	    my $first_location = ${$first_schema->getAllLocations}[0];
+	    my $first_mart_name = $first_location->name;
+	    my $first_dataset = ${$first_location->getAllDatasets}[0];
+            my $first_dataset_name = $first_dataset->name;
+
+
+	    print qq(<html>
+<head>
+</head>
+<body>
+<h3>Martservices usage:</h3><br>
+(a) Querying BioMart<br><br>
+To submit a query using our webservices generate an XML document conforming to our Query XML syntax. This can be achieved simply by building up your query using MartView and hitting the XML button. This XML should be posted to http://$server_host$port/martservice attached to a single parameter of <b>query</b>. For example you could either:<br><br> 
+- save your query as Query.xml and then POST this using the <a href="http://cvs.sanger.ac.uk/cgi-bin/viewcvs.cgi/*checkout*/biomart-perl/scripts/webExample.pl?root=BioMart&content-type=text%2Fplain">webExample.pl</a> script in our biomart-perl/scripts installation.<br>
+- submit using wget: wget -O results.txt 'http://$server_host$port:/biomart/martservice?query=MY_XML' replacing MY_XML with the XML obtained above, first removing any new lines.<br>
+<br>
+(b) Retrieving Meta Data<br>
+<br>
+- to retrieve registry information: <a href="/biomart/martservice?type=registry">http://$server_host$port/biomart/martservice?type=registry</a><br>
+- to retrieve datasets available for a mart: <a href="/biomart/martservice?type=datasets&mart=$first_mart_name">http://$server_host$port/biomart/martservice?type=datasets&mart=$first_mart_name</a><br>
+- to retrieve attributes available for a dataset: <a href="/biomart/martservice?type=attributes&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=attributes&datatset=$first_dataset_name</a><br>
+- to retrieve filters available for a dataset: <a href="/biomart/martservice?type=filters&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=filters&datatset=$first_dataset_name</a><br>
+- to retrieve configuration for a dataset: <a href="/biomart/martservice?type=configuration&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=configuration&datatset=$first_dataset_name</a><br>
+<br>
+For more information see the webservices section of our <a href="http://www.biomart.org/user-docs.pdf">documentation</a>.
+
+</body>
+</html>
+);   
+	}
 
 };
 if($@) {
