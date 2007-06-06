@@ -87,8 +87,8 @@ sub getResultSet {
 	BioMart::Exception::Query->throw("need a valid request type: GET or POST");    
     }
 
-    my $ua = LWP::UserAgent->new;
-
+	my $ua = LWP::UserAgent->new;
+	$ua->timeout(20); # default is 180 seconds
     $ua->proxy( ['http', 'https'], $self->proxy ) if defined $self->proxy;
     my $response = $ua->request($request);
     

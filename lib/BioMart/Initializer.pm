@@ -970,7 +970,9 @@ sub _populateRegistry {
     	   	
      	if(!scalar (@dataSets))
          {    my $name=$location->name;
-               BioMart::Exception::Configuration->throw("\n
+               #BioMart::Exception::Configuration->throw("\n
+               #No datasets available with given parameters for Location: $name\n");
+               warn("\n
                No datasets available with given parameters for Location: $name\n");
           }
 	 foreach my $datasetData (@dataSets){
@@ -1042,7 +1044,7 @@ sub _populateRegistry {
           	my $softwareVersion = $tempXMLHash->{'softwareVersion'};
                if (!$softwareVersion || ($softwareVersion eq '0.4')) 
                 {       
-                    print STDERR "->  upgrading to 0.5 ... ";
+                    #print STDERR "->  upgrading to 0.5 ... ";
      	          my $params=BioMart::Web::CGIXSLT::read_https();
 	               open(STDOUTTEMP, ">temp.xml");
                	print STDOUTTEMP $xml;
@@ -1125,7 +1127,9 @@ sub _populateRegistry {
 	    my @datasets = $location->retrieveDatasetInfo($virtualSchema->name, $virtualSchema->default);
           if(!@datasets)
           {    my $name=$location->name;
-               BioMart::Exception::Configuration->throw("\n
+               #BioMart::Exception::Configuration->throw("\n
+               #No datasets available with given parameters for Location: $name\n");
+               warn("\n
                No datasets available with given parameters for Location: $name\n");
           }
 	    foreach my $datasetData (@datasets){
