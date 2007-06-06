@@ -273,6 +273,7 @@
 								   }
 								   if (okToSub==1) { 
 										document.getElementById('resultsTableId').innerHTML = 'Loading... ';
+										addLoadingImage('resultsTableId', '[% TAG_path %]');
 
 										var summaryCountElt1 = document.getElementById('summarypanel_filter_count_1');
 										if (summaryCountElt1)
