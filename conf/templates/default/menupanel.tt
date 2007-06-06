@@ -45,8 +45,11 @@
 				onclick="
 				if (datasetExists() > 0) {
 					document.getElementById('summarypanel_filter_count_1').innerHTML = 'Loading... ';
+					addLoadingImage('summarypanel_filter_count_1', '[% TAG_path %]');
+					
 					if (document.getElementById('summarypanel_filter_count_2') != null)	{
 						document.getElementById('summarypanel_filter_count_2').innerHTML = 'Loading... ';
+						addLoadingImage('summarypanel_filter_count_2', '[% TAG_path %]');
 					}
 					document.mainform.formatterMenu.value = 'preView';
 					document.mainform.do_export.value = 0; 
@@ -77,6 +80,7 @@
 				onclick="
 				if (datasetExists() > 0) {
 					document.getElementById('resultsTableId').innerHTML = 'Loading... ';
+					addLoadingImage('resultsTableId', '[% TAG_path %]');
 					document.mainform.formatterMenu.value = 'preView';
 					document.mainform.do_export.value = 0; 
 					document.mainform.savequery.value = 0;

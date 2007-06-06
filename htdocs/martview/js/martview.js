@@ -2438,6 +2438,13 @@ function clearSummaryPanel()
 ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 
+function addLoadingImage(eltId, tagPath)
+{
+	var element = document.createElement("img");
+	element.setAttribute("src", "/"+tagPath+"/mview/images/loading.gif");
+	document.getElementById(eltId).appendChild(element);
+}
+
 /*
 	=head1 CVSINFO
 

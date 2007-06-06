@@ -388,6 +388,7 @@
 					{
 						document.mainform.do_export.value = 0;
 						document.getElementById('resultsTableId').innerHTML = 'Loading... ';
+						addLoadingImage('resultsTableId', '[% TAG_path %]');
 						document.mainform.formatterMenu.value = 'preView';
 							
 						showPanelHideSiblings('resultspanel');
@@ -448,7 +449,8 @@
 						else
 						{
 							document.mainform.do_export.value = 0;
-							document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
+							document.getElementById('resultsTableId').innerHTML = 'Loading... ';
+							addLoadingImage('resultsTableId', '[% TAG_path %]');									
 							document.mainform.formatterMenu.value = 'preView';
 							
 							showPanelHideSiblings('resultspanel');
@@ -524,7 +526,8 @@
 						else
 						{
 							document.mainform.do_export.value = 0;
-							document.getElementById('resultsTableId').innerHTML = 'Loading... ';											
+							document.getElementById('resultsTableId').innerHTML = 'Loading... ';
+							addLoadingImage('resultsTableId', '[% TAG_path %]');											
 							document.mainform.formatterMenu.value = 'preView';
 							
 							showPanelHideSiblings('resultspanel');
