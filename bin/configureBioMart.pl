@@ -116,6 +116,11 @@ use Data::Dumper;
 	print "\nPROXY: ", $settingsHash->{'httpdSettings'}{'proxy'};
 	print "\nLOCATION: ", $settingsHash->{'httpdSettings'}{'location'};
 	print "\n\n";
+
+
+print "You can change the above configuration by editing \"biomart-perl/conf/settings.conf\"\n\n\n\n";
+
+
 	
 	if(-f $OPTIONS{httpd}) 
 	{
@@ -168,6 +173,8 @@ use Data::Dumper;
 		print "No valid httpd binary specified, skipping Apache version and mod_perl checks. No
 		httpd.conf will be generated.\n";
 	}
+
+
 	
 #------------------------------------------------------ 
 # adding mod_gzip module, needed for apache1.3	
