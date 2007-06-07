@@ -262,7 +262,7 @@ sub get_geneAnnotation
 		my @portions = split (/\t/, $line);
 	
 		$results .= &feature_open($portions[1], $portions[1]);
-		$results .= &type("TRANSCRIPT","no","no","no", $portions[1]);
+		$results .= &type($portions[1],"no","no","no", $portions[1]);
 		$results .= &method("methodID", "");
 		$results .= &start("0");
 		$results .= &end("0");
