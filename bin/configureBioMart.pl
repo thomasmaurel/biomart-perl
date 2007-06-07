@@ -323,7 +323,7 @@ foreach my $schema (@{$mart_registry->getAllVirtualSchemas()}) {
 				# geneDAS and chrDAS
 				if($exportable->type() eq 'dasGene' || $exportable->type() eq 'dasChr')	{
 					if (!exists $repetition{$dataset->name()}) {
-						push @{$OPTIONS{'dasDatasets'}}, $dataset->name();
+						push @{$OPTIONS{'dasDatasets'}}, $schema->name.'__'.$dataset->name();
 						$repetition{$dataset->name()} = '';
 					}
 				}

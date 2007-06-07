@@ -63,7 +63,9 @@ my $CGI = $ENV{MOD_PERL} ? CGI->new(shift @_) : CGI->new();
 my $segment = $CGI->param('segment');
 my $url_string = $CGI->self_url();
 $url_string =~ m/.*?\/das\/(.*)\/features.*/;
-my $dasDatasetName = $1;
+my @schema__DS = split(/__/, $1);
+my $schemaName= $schema__DS[0];
+my $dasDatasetName = $schema__DS[1];
 
 #print "MY DAS DATASET: ", $dasDatasetName;
 #exit();
@@ -141,7 +143,7 @@ sub featureType
 	my $temp_results;
 	my $dasChrExists = 0;	
 	
-	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
+	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>$schemaName);
      
 	$query->setDataset($dasDatasetName);
 	
@@ -204,8 +206,11 @@ sub get_geneAnnotation
 	my $results;
 	my $temp_results;
 	my @resultRows;
-
-	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
+	my $attributeList;
+	my $linkURL;
+	my $hrefURL;
+	
+	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>$schemaName);
      
 	$query->setDataset($dasDatasetName);
 	
@@ -217,6 +222,7 @@ sub get_geneAnnotation
 						if($exportable->type() eq 'dasGene') {
 							foreach my $importable (@{$dataset->getImportables()}) {
 								if($importable->type() eq 'dasGene') {
+									$attributeList = $exportable->attributeString();
 									foreach (split(/,/, $exportable->attributeString() ))
 									{
 										$query->addAttribute($_);	
@@ -235,6 +241,16 @@ sub get_geneAnnotation
 		}
 	}
 	
+	# GET THE URL LINK using the second attribute in attributeString, fetch its object and find link URL
+	if ($attributeList)
+	{
+		my @portions = split (/,/,$attributeList);
+		my $datasetObj = $registry->getDatasetByName($schemaName, $dasDatasetName);
+		my $dataset_conf  = $datasetObj->getConfigurationTree('default');
+		my $attributeObj = $dataset_conf->getAttributeByName($portions[1]);
+		$linkURL = $attributeObj->link();
+		$linkURL =~ s/^exturl\|//;
+	}
 
 #	$query->addAttribute("ensembl_gene_id");
 #	$query->addAttribute("ensembl_transcript_id");
@@ -263,13 +279,17 @@ sub get_geneAnnotation
 	
 		$results .= &feature_open($portions[1], $portions[1]);
 		$results .= &type($portions[1],"no","no","no", $portions[1]);
-		$results .= &method("methodID", "");
+		$results .= &method("methodID:notSupported", "");
 		$results .= &start("0");
 		$results .= &end("0");
 		$results .= &score("-");
 		$results .= &orientation("0");
 		$results .= &phase("-");
 		$results .= &note($portions[2]);
+
+		$hrefURL = sprintf ($linkURL, defined ($linkURL) ? $portions[1] : '');
+		$results .= &link($hrefURL, $portions[1]);
+
 		$results .= &feature_close();
 	}	
 	
@@ -277,7 +297,7 @@ sub get_geneAnnotation
 	$results .= &GFF_close();
 	$results .= &footer();
 	
-	&printDASHttpHeader(1); # for DAS success code 200		
+	&printDASHttpHeader(1); # 1 for DAS success code 200		
 	print $results;
 }
 
@@ -315,7 +335,7 @@ sub get_chromosomeAnnotation
 		$chromosome = $coordinates_string;
 	}
 	
-	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>'default');
+	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>$schemaName);
      
 	$query->setDataset($dasDatasetName);
 
@@ -505,7 +525,7 @@ sub get_chromosomeAnnotation
 	$results .= &GFF_close();
 	$results .= &footer();
 	
-	&printDASHttpHeader(1); # for DAS success code 200	
+	&printDASHttpHeader(1); # 1 for DAS success code 200	
 	print $results;
 				
 	#&dummyResultsContig();
@@ -551,7 +571,7 @@ sub feature_open
 {
 	my ($id, $label) = @_;
 	return qq|
-		<FEATURE id="|.$id.qq|" label= "|.$label.qq|">	|;
+		<FEATURE id="|.$id.qq|" label="|.$label.qq|">	|;
 }
 sub type
 {
@@ -563,7 +583,7 @@ sub method
 {
 	my ($id, $val) = @_;
 	return qq|
-		<METHOD id= "|.$id.qq|" >$val</METHOD>	|;
+		<METHOD id="|.$id.qq|" >$val</METHOD>	|;
 	
 
 }
@@ -609,7 +629,9 @@ sub note
 }
 sub link
 {
-
+	my ($url, $label) = @_;
+	return qq|
+		<LINK href="|.$url.qq|">$label</LINK>|;
 }
 sub target
 {
@@ -619,7 +641,7 @@ sub group
 {
 	my ($id, $type, $label) = @_;
 	return qq|
-		<GROUP id= "|.$id.qq|" type = "|.$type.qq|" label = "|.$label.qq|"/>	|;
+		<GROUP id="|.$id.qq|" type="|.$type.qq|" label="|.$label.qq|"/>	|;
 }
 sub feature_close
 {

@@ -333,8 +333,8 @@ sub width {
 
 =head2 link
 
-  Usage      : Arg [1] - (optional) string $link for table joining
-  Description: get/set for link
+  Usage      : Arg [1] - (optional) string $link for URL display
+  Description: get/set for linkURL
   Returntype : string
   Exceptions : none
   Caller     : general
