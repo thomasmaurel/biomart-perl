@@ -279,7 +279,7 @@ sub get_geneAnnotation
 	
 		$results .= &feature_open($portions[1], $portions[1]);
 		$results .= &type($portions[1],"no","no","no", $portions[1]);
-		$results .= &method("methodID:notSupported", "");
+		$results .= &method("methodID:unknown", "");
 		$results .= &start("0");
 		$results .= &end("0");
 		$results .= &score("-");
@@ -437,7 +437,7 @@ sub get_chromosomeAnnotation
 		
 			$results .= &feature_open($transcriptID, $transcriptID);
 			$results .= &type("transcript","no","no","no", "transcript");
-			$results .= &method("ensembl", "ensembl");
+			$results .= &method("methodID:unknown", "");
 			$results .= &start($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}->{'start'});
 			$results .= &end($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}->{'end'});
 			$results .= &score("-");
@@ -460,7 +460,7 @@ sub get_chromosomeAnnotation
 							
 				$results .= &feature_open($exonID, $exonID);
 				$results .= &type("exon","no","no","no", "exon");
-				$results .= &method("ensembl", "ensembl");
+				$results .= &method("methodID:unknown", "");
 				$results .= &start($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}
 											->{'exon'}->{$exonID}->{'start'});
 				$results .= &end($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}
@@ -493,7 +493,7 @@ sub get_chromosomeAnnotation
 				
 					$results .= &feature_open($translationID, $translationID);
 					$results .= &type("translation","no","no","no", "translation");
-					$results .= &method("ensembl", "ensembl");
+					$results .= &method("methodID:unknown", "");
 					$results .= &start($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}
 								->{'exon'}->{$exonID}->{'translation'}->{$translationID}->{'start'});
 					$results .= &end($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}
