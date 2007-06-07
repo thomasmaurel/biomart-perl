@@ -266,9 +266,9 @@ sub get_geneAnnotation
 		$results .= &method("methodID", "");
 		$results .= &start("0");
 		$results .= &end("0");
-		$results .= &score("0");
-		$results .= &orientation("+");
-		$results .= &phase("0");
+		$results .= &score("-");
+		$results .= &orientation("0");
+		$results .= &phase("-");
 		$results .= &note($portions[2]);
 		$results .= &feature_close();
 	}	
@@ -276,6 +276,8 @@ sub get_geneAnnotation
 	$results .= &segment_close();
 	$results .= &GFF_close();
 	$results .= &footer();
+	
+	&printDASHttpHeader(1); # for DAS success code 200		
 	print $results;
 }
 
@@ -503,10 +505,21 @@ sub get_chromosomeAnnotation
 	$results .= &GFF_close();
 	$results .= &footer();
 	
+	&printDASHttpHeader(1); # for DAS success code 200	
 	print $results;
 				
 	#&dummyResultsContig();
 
+}
+
+########################################### DAS HTTP HEADER
+sub printDASHttpHeader
+{
+	my $val = shift;
+	print $CGI->header(	-'X-DAS-Version' => 'DAS/1.5',
+								-'X-DAS-Status'  => '200',
+								-'X-DAS-Capabilities' => 'dsn/1.0; features/1.0;');
+	
 }
 
 
@@ -525,7 +538,7 @@ sub GFF_open
 {
 	my $hrefURL = shift;
 	return qq|
-	<GFF version="1.5" href="|.$hrefURL.qq|" >		|;
+	<GFF version="1.0" href="|.$hrefURL.qq|" >		|;
 }
 sub segment_open
 {
