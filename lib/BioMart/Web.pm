@@ -367,7 +367,7 @@ sub _new
 	}
 	elsif ($sessions{'driver'} eq 'postgres')
 	{
-		print "POSTGRES DRIVER";
+		print "POSTGRES DRIVER Not implemented yet";
 	}
 	else # default to BerkeleyDB
 	{
