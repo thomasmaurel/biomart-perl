@@ -122,41 +122,7 @@ eval{
 		&run_query($registry,$xml);
     	}
 	else{
-	    print $CGI->header(-type=>'text/html');
-	    my $port = '';
-	    $port = ":$server_port" if ($server_port != 80);
-
-
-	    my $first_schema = ${$registry->getAllVirtualSchemas}[0];
-	    my $first_location = ${$first_schema->getAllLocations}[0];
-	    my $first_mart_name = $first_location->name;
-	    my $first_dataset = ${$first_location->getAllDatasets}[0];
-            my $first_dataset_name = $first_dataset->name;
-
-
-	    print qq(<html>
-<head>
-</head>
-<body>
-<h3>Martservices usage:</h3><br>
-(a) Querying BioMart<br><br>
-To submit a query using our webservices generate an XML document conforming to our Query XML syntax. This can be achieved simply by building up your query using MartView and hitting the XML button. This XML should be posted to http://$server_host$port/martservice attached to a single parameter of <b>query</b>. For example you could either:<br><br> 
-- save your query as Query.xml and then POST this using the <a href="http://cvs.sanger.ac.uk/cgi-bin/viewcvs.cgi/*checkout*/biomart-perl/scripts/webExample.pl?root=BioMart&content-type=text%2Fplain">webExample.pl</a> script in our biomart-perl/scripts installation.<br>
-- submit using wget: wget -O results.txt 'http://$server_host$port:/biomart/martservice?query=MY_XML' replacing MY_XML with the XML obtained above, first removing any new lines.<br>
-<br>
-(b) Retrieving Meta Data<br>
-<br>
-- to retrieve registry information: <a href="/biomart/martservice?type=registry">http://$server_host$port/biomart/martservice?type=registry</a><br>
-- to retrieve datasets available for a mart: <a href="/biomart/martservice?type=datasets&mart=$first_mart_name">http://$server_host$port/biomart/martservice?type=datasets&mart=$first_mart_name</a><br>
-- to retrieve attributes available for a dataset: <a href="/biomart/martservice?type=attributes&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=attributes&datatset=$first_dataset_name</a><br>
-- to retrieve filters available for a dataset: <a href="/biomart/martservice?type=filters&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=filters&datatset=$first_dataset_name</a><br>
-- to retrieve configuration for a dataset: <a href="/biomart/martservice?type=configuration&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=configuration&datatset=$first_dataset_name</a><br>
-<br>
-For more information see the webservices section of our <a href="http://www.biomart.org/user-docs.pdf">documentation</a>.
-
-</body>
-</html>
-);   
+		&printMartServiceHelp($registry);
 	}
 
 };
@@ -642,7 +608,140 @@ sub createLog
 }
 
 
+sub printMartServiceHelp
+{
+		my $registry = shift;
+	   my $port = '';
+	    $port = ":$server_port" if ($server_port != 80);
 
+
+	    my $first_schema = ${$registry->getAllVirtualSchemas}[0];
+	    my $first_location = ${$first_schema->getAllLocations}[0];
+	    my $first_mart_name = $first_location->name;
+	    my $first_dataset = ${$first_location->getAllDatasets}[0];
+			my $first_dataset_name = $first_dataset->name;
+
+	    	    print $CGI->header(-type=>'text/html');
+	    	    
+	    print qq(
+<html><!-- InstanceBegin template="/Templates/biomart_standalone.dwt" codeOutsideHTMLIsLocked="false" -->	
+	<head> 
+		<!-- InstanceBeginEditable name="doctitle" -->
+<meta name="Description" content="BioMart is a simple and robust data integration system for large scale data querying. It has been designed to provide researchers with an easy and interactive access to both the wealth of data available on the Internet and for in house data integration.">
+<meta name="keywords" content="BioMart, DATABASE, SEARCHES, protein">
+
+<title>BioMart Webservice</title>
+<script language = "javascript">
+var currentTab="Martservice";
+</script>
+
+<!-- InstanceEndEditable -->
+<link rel="stylesheet" href="/$cgiLocation/mview/martview.css" type="text/css" />
+ <script language="javascript" type="text/javascript">
+
+	function colourTab(){
+		if((document.getElementById(currentTab))){
+			(document.getElementById(currentTab)).className='menuh';
+		}
+	}
+
+	function rollOver(overTab){
+		if(currentTab!=overTab){
+			(document.getElementById(overTab)).className='menuh';
+		}
+	}
+	function rollOut(overTab){
+		if(currentTab!=overTab){
+			(document.getElementById(overTab)).className='menu';
+		}
+	}
+
+</script>
+
+</head>
+<body style="margin: 0px;" onLoad="colourTab()" >
+
+<div style=" width:100%; height:15%;">
+<table height="65%" width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		
+    <td width="270" align="right">
+    <a href="index.html">
+    		<img style = "margin: 15px 0px 5px 8px;" height="33" width="105" src="/martview/images/biomart-logo.gif" alt="EBI Home Page" border="0" />
+    </a>
+    </td>
+		 <td valign="top" align="right" width="100%">
+
+  	</td>
+	</tr>
+</table>
+
+
+<table border="0"  valign="bottom" cellpadding="" cellspacing="2" height="35%" width="1000">
+        <tr>
+        
+			<td align="center" valign="bottom" width="14%">
+	          <div class="menu" id="BioMart Home" onClick="location='/martview/../index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">HOME</div> 
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+          <div   class="menu"  id="Documentation" onClick="location='/martview/../install.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">DOCS</div> 
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+		  <div   class="menu"  id="News" onClick="location='/martview/../news.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">NEWS</div> 
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+          <div   class="menu"  id="Contact" onClick="location='/martview/../contact.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CONTACT</div> 
+			</td>
+			
+			
+			<td align="center" valign="bottom" width="14%">
+			<div    class="menu"  id="Credits" onClick="location='/martview/../credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CREDITS</div> 
+			</td>
+
+			<td align="center" valign="bottom" width="14%">
+			<div     class="menuh" id="Service" onClick="location='/biomart/martservice'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTSERVICE</div>
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+			<div    class="menu"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTVIEW</div>    
+			</td>
+			
+		</tr>
+</table>
+
+</div>
+
+<div class="mart_header" style=" width:100%; height:85%;">
+<table bgcolor="black" width="100%" height="5" border="0" cellspacing="0" cellpadding="0">
+             <tr> 
+                <td bgcolor="black" width="100%" height="20" align="center"><!-- InstanceBeginEditable name="topnav" --><nobr></nobr><!-- InstanceEndEditable --></td>
+              </tr> 
+</table>
+
+
+<h3>Martservices usage:</h3><br>
+(a) Querying BioMart<br><br>
+To submit a query using our webservices generate an XML document conforming to our Query XML syntax. This can be achieved simply by building up your query using MartView and hitting the XML button. This XML should be posted to http://$server_host$port/martservice attached to a single parameter of <b>query</b>. For example you could either:<br><br> 
+- save your query as Query.xml and then POST this using the <a href="http://cvs.sanger.ac.uk/cgi-bin/viewcvs.cgi/*checkout*/biomart-perl/scripts/webExample.pl?root=BioMart&content-type=text%2Fplain">webExample.pl</a> script in our biomart-perl/scripts installation.<br>
+- submit using wget: wget -O results.txt 'http://$server_host$port:/biomart/martservice?query=MY_XML' replacing MY_XML with the XML obtained above, first removing any new lines.<br>
+<br>
+(b) Retrieving Meta Data<br>
+<br>
+- to retrieve registry information: <a href="/biomart/martservice?type=registry">http://$server_host$port/biomart/martservice?type=registry</a><br>
+- to retrieve datasets available for a mart: <a href="/biomart/martservice?type=datasets&mart=$first_mart_name">http://$server_host$port/biomart/martservice?type=datasets&mart=$first_mart_name</a><br>
+- to retrieve attributes available for a dataset: <a href="/biomart/martservice?type=attributes&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=attributes&datatset=$first_dataset_name</a><br>
+- to retrieve filters available for a dataset: <a href="/biomart/martservice?type=filters&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=filters&datatset=$first_dataset_name</a><br>
+- to retrieve configuration for a dataset: <a href="/biomart/martservice?type=configuration&dataset=$first_dataset_name">http://$server_host$port/biomart/martservice?type=configuration&datatset=$first_dataset_name</a><br>
+<br>
+For more information see the webservices section of our <a href="http://www.biomart.org/user-docs.pdf">documentation</a>.
+</div>
+</body>
+</html>
+);   
+}
 
 
 
