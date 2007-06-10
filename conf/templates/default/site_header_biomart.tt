@@ -23,12 +23,12 @@ var currentTab="Query";
 </script>
 
 
-<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tabletop">
+<table height="65%" width="100%" border="0" cellspacing="0" cellpadding="0" class="tabletop">
 	<tr>
 		
     <td width="270" align="right">
     <a href="index.html">
-    		<img style = "margin: 20px 0px 20px 8px;" height="33" width="105" src="/martview/images/biomart-logo.gif" alt="EBI Home Page" border="0" />
+    		<img style = "margin: 15px 0px 5px 8px;" height="33" width="105" src="/martview/images/biomart-logo.gif" alt="EBI Home Page" border="0" />
     </a>
     </td>
 		 <td valign="top" align="right" width="100%">
@@ -38,26 +38,39 @@ var currentTab="Query";
 </table>
 
 
-<table class="menutable" border="0"  cellpadding="2" cellspacing="0" bordercolor="#ECEEF0" height="30" width="1000" rows="*, *, *, *, *, *, *, *">
+<table border="0"  valign="bottom" cellpadding="" cellspacing="2" height="35%" width="1000">
         <tr>
+        
+			<td align="center" valign="bottom" width="14%">
+	          <div class="menu" id="BioMart Home" onClick="location='/martview/../index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">HOME</div> 
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+          <div   class="menu"  id="Documentation" onClick="location='/martview/../install.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">DOCS</div> 
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+		  <div   class="menu"  id="News" onClick="location='/martview/../news.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">NEWS</div> 
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+          <div   class="menu"  id="Contact" onClick="location='/martview/../contact.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CONTACT</div> 
+			</td>
+			
+			
+			<td align="center" valign="bottom" width="14%">
+			<div    class="menu"  id="Credits" onClick="location='/martview/../credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CREDITS</div> 
+			</td>
 
-          <td align="center" valign="middle" width="14%"  nowrap="true"  class="menu" id="BioMart Home" onClick="location='/martview/../index.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">HOME</td> 
-
-          <td align="center" valign="middle" width="14%" nowrap="true"  class="menu"  id="Documentation" onClick="location='/martview/../install.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">DOCS</td> 
-         
-
-		  <td align="center" valign="middle" width="14%" nowrap="true"  class="menu"  id="News" onClick="location='/martview/../news.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">NEWS</td> 
-
-          <td align="center" valign="middle" width="14%" nowrap="true"  class="menu"  id="Contact" onClick="location='/martview/../contact.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CONTACT</td> 
-
-          <td align="center" valign="middle" width="14%" nowrap="true"  class="menu"  id="Credits" onClick="location='/martview/../credits.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">CREDITS</td> 
-
-
-    <td align="center" valign="middle" width="14%" nowrap="true"  class="menu"  id="Service" onClick="location='/biomart/martservice'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTSERVICE</td>
-
-
-
-      <td align="center" valign="middle" width="14%" nowrap="true"  class="menuh"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTVIEW</td>    
-
+			<td align="center" valign="bottom" width="14%">
+			<div     class="menu" id="Service" onClick="location='/biomart/martservice'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTSERVICE</div>
+			</td>
+			
+			<td align="center" valign="bottom" width="14%">
+			<div    class="menuh"  id="Query" onClick="location='/biomart/martview'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTVIEW</div>    
+			</td>
+			
 		</tr>
 </table>
+
+
