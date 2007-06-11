@@ -33,6 +33,7 @@ sub makehttpdConf
 	AddType image\/jpeg .jpg .jpeg
 	AddType text\/css .css
 	AddType text\/html .html .htm
+	AddType text\/xml .xml
 	AddType text\/plain .asc .txt
 	AddType application\/pdf .pdf
 	AddType application\/x-gzip .gz .tgz
@@ -381,7 +382,7 @@ sub makeMartService
 	if ($OPTIONS{cgiLocation})
 	{
 		my $cgiLocation = qq/\$cgiLocation = '$OPTIONS{cgiLocation}';\n/; 
-		$fileContents =~ s/\[TAG:cgiLocation\]/$cgiLocation/m;			
+		$fileContents =~ s/\[TAG:cgiLocation\]/$cgiLocation/m;
 	}
 
 	##---------------- replacing [TAG:server_port]
@@ -560,6 +561,23 @@ sub updatehttpdConf
     	Options None
     	Order allow,deny
     	Allow from all
+	/;
+	
+	if ($OPTIONS{httpd_modperl})
+	{
+		print STDHTTPD qq/	SetHandler perl-script
+		/;
+		if ($OPTIONS{httpd_version} eq '1.3')
+		{
+			print STDHTTPD qq/PerlHandler     Apache::Registry/;
+		}
+		elsif($OPTIONS{httpd_version} eq '2.0' || $OPTIONS{httpd_version} eq '2.1+')
+		{
+			print STDHTTPD qq/PerlResponseHandler ModPerl::Registry/;
+		}
+	}
+	print STDHTTPD qq/
+    	Options +ExecCGI
 	<\/Location>
 	/;
 	
@@ -568,16 +586,20 @@ sub updatehttpdConf
 sub makeDSN
 {
 	my ($self, %OPTIONS) = @_;
-	my $dsnFile = $OPTIONS{cgibin}."/dsn";
-	unlink $dsnFile if (-e $dsnFile);
-	open(STDDSN,">>$dsnFile");
-	print STDDSN qq/<?xml version=\"1.0\" standalone=\"yes\"?>
+	my $dsnFile = $OPTIONS{cgibin}."/dsn.PLS";
+	undef $/; ## whole file mode for read
+	open(STDDSN,"$dsnFile");
+	my $fileContents = <STDDSN> ;
+	close STDDSN;
+	
+	
+	my $dasRegistry .= qq/<?xml version=\"1.0\" standalone=\"yes\"?>
 	<!DOCTYPE DASDSN SYSTEM \"http:\/\/www.biodas.org\/dtd\/dasdsn.dtd\">
 	<DASDSN>/;
 
 	foreach my $datasetName (@{$OPTIONS{'dasDatasets'}})
 	{
-		print STDDSN qq/<DSN>
+		$dasRegistry .= qq/<DSN>
 		<SOURCE id=\"$datasetName\" version=\"default\">$datasetName<\/SOURCE>
 		<MAPMASTER>http:\/\/$OPTIONS{server_host}\/$OPTIONS{cgiLocation}\/das\/$datasetName\/<\/MAPMASTER>
 		<DESCRIPTION>BIOMART_$datasetName<\/DESCRIPTION>
@@ -585,7 +607,13 @@ sub makeDSN
 	/;
 	
 	}
-	print STDDSN qq /<\/DASDSN>/;
+	$dasRegistry .= qq /<\/DASDSN>/;
+	
+	$fileContents =~ s/\[TAG:dasSources\]/$dasRegistry/m;
+	
+	$dsnFile = $OPTIONS{cgibin}."/dsn";	
+	open(STDDSN, ">$dsnFile");	
+	print STDDSN $fileContents;
 	close(STDDSN);
 	chmod 0755, $dsnFile;
 }

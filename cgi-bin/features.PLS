@@ -536,7 +536,8 @@ sub get_chromosomeAnnotation
 sub printDASHttpHeader
 {
 	my $val = shift;
-	print $CGI->header(	-'X-DAS-Version' => 'DAS/1.5',
+	print $CGI->header(	-'type' =>'text/xml',
+								-'X-DAS-Version' => 'DAS/1.5',
 								-'X-DAS-Status'  => '200',
 								-'X-DAS-Capabilities' => 'dsn/1.0; features/1.0;');
 	
@@ -548,8 +549,7 @@ sub header
 {
 	my $version;
 	
-	return qq|
-	<?xml version="1.0" standalone="yes"?>
+	return qq|<?xml version="1.0" standalone="yes"?>
 	<!DOCTYPE DASGFF SYSTEM "http://www.biodas.org/dtd/dasgff.dtd">
 	<DASGFF>	|;
 }
