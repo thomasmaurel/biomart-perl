@@ -942,6 +942,11 @@ sub _setLocation {
   if($@ || !$location) {
       warn("COULD NOT CONNECT TO DATABASE ".$dbloc->{'database'}.".CHECK YOUR SETTINGS\n");
       
+  }
+  else {
+        if($dbloc->{'displayName'}){
+             print STDERR "\nConnection parameters of [".$dbloc->{'displayName'}."]\t[ OK ]";
+        }
   }   
   return $location;
 }
