@@ -158,9 +158,9 @@ div#mart_export_data
 .mart_btnhov_go
 {
   font-family: sans-serif; /* Needed if buton is <input> */	
-  font-size  : 90%;
   font-weight: bold;
-  padding    : 0.2em 0.5em 0.2em 0.5em;
+		font-size: 12pt;
+		padding: 3px 5px 3px 5px;	
   border     : 1px solid;
   border-style: outset;
   color      : [colour_saturation80];
@@ -180,9 +180,9 @@ div#mart_export_data
 .mart_btn_disabled
 {
   font-family: sans-serif; /* Needed if buton is <input> */	
-  font-size  : 90%;
   font-weight: bold;
-  padding    : 0.2em 0.5em 0.2em 0.5em;
+		font-size: 12pt;
+		padding: 3px 5px 3px 5px;	
   border     : 1px solid;
   border-style: solid;
   color      : [colour_saturation40];
