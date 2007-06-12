@@ -1477,28 +1477,40 @@ function setVisibleStatus(menuLists, sessionValues, schemaTitle, databaseTitle, 
 			document.getElementById('mart_containerpanel').style.height = '460px';
 			document.getElementById('mart_footerStrip').style.height = '';
 			document.getElementById('mart_footerStrip').style.width = '';
+			document.getElementById('mart_footerStrip').style.margin = '3px';
 			document.getElementById('mart_footerStrip').style.overflow = 'visible';
 			
-			document.getElementById('summaryPanelDiv').style.height = '420px';
+			document.getElementById('summaryPanelDiv').style.height = '410px';
 			document.getElementById('summaryPanelDiv').style.overflow = 'auto';
-			document.getElementById('mart_datasetselectpanel').style.height = '400px';
+			document.getElementById('summaryPanelDiv').style.padding = '';
+			document.getElementById('summaryPanelDiv').style.margin = '';
+			
+			document.getElementById('mart_datasetselectpanel').style.height = '410px';
+			document.getElementById('mart_datasetselectpanel').style.padding = '';
+			document.getElementById('mart_datasetselectpanel').style.margin = '';
 			document.getElementById('mart_datasetselectpanel').style.overflow = 'auto';
 
 			document.getElementById('resultspanel').style.height = '400px';
-			document.getElementById('resultspanel').style.overflow = 'auto';
+			document.getElementById('mart_export_data').style.height = '280px';
+			document.getElementById('resultspanel').style.overflow = 'hidden';
 			var dsNames = getElementsByName_local('dataset');
 			for (var i=0; i < dsNames.length; i++)
 			{
 				if(dsNames[i].value!='')
 				{					
-					document.getElementById(dsNames[i].value+'__attributepanel').style.height = '400px';
+					document.getElementById(dsNames[i].value+'__attributepanel').style.height = '410px';
 					document.getElementById(dsNames[i].value+'__attributepanel').style.overflow = 'auto';
-					document.getElementById(dsNames[i].value+'__filterpanel').style.height = '400px';
+					document.getElementById(dsNames[i].value+'__attributepanel').style.padding = '';
+					document.getElementById(dsNames[i].value+'__attributepanel').style.margin = '';	
+					document.getElementById(dsNames[i].value+'__filterpanel').style.height = '410px';
+					document.getElementById(dsNames[i].value+'__filterpanel').style.padding = '';
+					document.getElementById(dsNames[i].value+'__filterpanel').style.margin = '';	
 					document.getElementById(dsNames[i].value+'__attributepanel').style.overflow = 'auto';
 				}
 			}			
-			document.getElementById('add_linked_datasetpanel').style.height = '400px';
+			document.getElementById('add_linked_datasetpanel').style.height = '410px';
 			document.getElementById('add_linked_datasetpanel').style.overflow = 'auto';		
+
 		}
 	}
 	else
