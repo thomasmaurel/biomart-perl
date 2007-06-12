@@ -611,9 +611,10 @@ sub createLog
 sub printMartServiceHelp
 {
 		my $registry = shift;
-	   my $port = '';
+	    my $port = '';
 	    $port = ":$server_port" if ($server_port != 80);
-
+	    
+	     
 
 	    my $first_schema = ${$registry->getAllVirtualSchemas}[0];
 	    my $first_location = ${$first_schema->getAllLocations}[0];
@@ -726,7 +727,7 @@ var currentTab="Martservice";
 (a) Querying BioMart<br><br>
 To submit a query using our webservices generate an XML document conforming to our Query XML syntax. This can be achieved simply by building up your query using MartView and hitting the XML button. This XML should be posted to http://$server_host$port/martservice attached to a single parameter of <b>query</b>. For example you could either:<br><br> 
 - save your query as Query.xml and then POST this using the <a href="http://cvs.sanger.ac.uk/cgi-bin/viewcvs.cgi/*checkout*/biomart-perl/scripts/webExample.pl?root=BioMart&content-type=text%2Fplain">webExample.pl</a> script in our biomart-perl/scripts installation.<br>
-- submit using wget: wget -O results.txt 'http://$server_host$port:/biomart/martservice?query=MY_XML' replacing MY_XML with the XML obtained above, first removing any new lines.<br>
+- submit using wget: wget -O results.txt 'http://$server_host$port/biomart/martservice?query=MY_XML' replacing MY_XML with the XML obtained above, first removing any new lines.<br>
 <br>
 (b) Retrieving Meta Data<br>
 <br>
