@@ -252,12 +252,6 @@ sub get_geneAnnotation
 		$linkURL =~ s/^exturl\|//;
 	}
 
-#	$query->addAttribute("ensembl_gene_id");
-#	$query->addAttribute("ensembl_transcript_id");
-#	$query->addAttribute("description");
-	
-#	$query->addFilter("ensembl_gene_id", [$geneID]);
-	
 	open(my $result_buffer, '>', \$temp_results);
 
 	my $query_runner = BioMart::QueryRunner->new();
@@ -279,16 +273,16 @@ sub get_geneAnnotation
 	
 		$results .= &feature_open($portions[1], $portions[1]);
 		$results .= &type($portions[1],"no","no","no", $portions[1]);
-		$results .= &method("methodID:unknown", "");
-		$results .= &start("0");
-		$results .= &end("0");
-		$results .= &score("-");
-		$results .= &orientation("0");
-		$results .= &phase("-");
+		#$results .= &method("methodID:unknown", "");
+		#$results .= &start("0");
+		#$results .= &end("0");
+		#$results .= &score("-");
+		#$results .= &orientation("0");
+		#$results .= &phase("-");
 		$results .= &note($portions[2]);
 
 		$hrefURL = sprintf ($linkURL, defined ($linkURL) ? $portions[1] : '');
-		$results .= &link($hrefURL, $portions[1]);
+		$results .= &link($hrefURL, $portions[1])  if($hrefURL);
 
 		$results .= &feature_close();
 	}	
@@ -363,21 +357,6 @@ sub get_chromosomeAnnotation
 			}
 		}
 	}
-#	$query->addAttribute("gene_stable_id");
-#	$query->addAttribute("transcript_stable_id");	
-#	$query->addAttribute("transcript_chrom_start");
-#	$query->addAttribute("transcript_chrom_end");
-#	$query->addAttribute("transcript_chrom_strand");
-#	$query->addAttribute("exon_stable_id");	
-#	$query->addAttribute("exon_chrom_start");
-#	$query->addAttribute("exon_chrom_end");
-#	$query->addAttribute("translation_stable_id");
-#	$query->addAttribute("exon_coding_start");
-#	$query->addAttribute("exon_coding_end");   
-		
-#	$query->addFilter("chromosome_name", [$chromosome]);
-#	$query->addFilter("start", [$start])	if ($start);
-#	$query->addFilter("end", [$end])		if ($end);
 
 	open(my $result_buffer, '>', \$temp_results);
 
@@ -576,14 +555,17 @@ sub feature_open
 sub type
 {
 	my ($id, $reference, $subparts, $superparts, $val) = @_;
+	# return qq|
+	#	<TYPE id="|.$id.qq|"  reference="|.$reference.qq|" subparts="|.$subparts.qq|" superparts="|.$superparts.qq|">$val</TYPE>	|;
 	return qq|
-		<TYPE id="|.$id.qq|"  reference="|.$reference.qq|" subparts="|.$subparts.qq|" superparts="|.$superparts.qq|">$val</TYPE>	|;
+		<TYPE id="|.$id.qq|">$val</TYPE>	|;
+
 }
 sub method
 {
 	my ($id, $val) = @_;
 	return qq|
-		<METHOD id="|.$id.qq|" >$val</METHOD>	|;
+		<METHOD id="|.$id.qq|">$val</METHOD>	|;
 	
 
 }
