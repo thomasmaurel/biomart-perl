@@ -63,7 +63,7 @@ var currentTab="Query";
 			</td>
 
 			<td align="center" valign="bottom" width="14%">
-			<div     class="menu" id="Service" onClick="location='/biomart/martservice'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTSERVICE</div>
+			<div     class="menu" id="Service" onClick="location='/martview/../martservice.html'" onmouseover="rollOver(this.id)" onMouseout="rollOut(this.id)">MARTSERVICE</div>
 			</td>
 			
 			<td align="center" valign="bottom" width="14%">
