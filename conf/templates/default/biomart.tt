@@ -163,7 +163,7 @@
 			<table width="100%" height="100%"  border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 			<tr>
 			<td width="100%" height="20%" valign="top" align="left">
-				<div id="mart_export_menubar" style="width:100%; height:100%; overflow:hidden;" >
+				<div id="mart_export_menubar" style="width:100%; height:110px; overflow:auto;" >
 
 				<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
 				
@@ -321,7 +321,6 @@
 					
 					</tr>
 				
-					
 					<tr>
 					<td align="left" width="25%" valign="top">
 							&nbsp;Email notification to&nbsp;&nbsp;
@@ -557,8 +556,8 @@
 
 			<tr>
 			<td width="100%" height="100%" valign="top" align="left">
-				<div id = "mart_export_data" style="width:100%; overflow: auto; position: absolute; " >
-					<table width="100%" height="100%"  border="0" cellpadding="4" cellspacing="0" style="table-layout: auto; ">
+				<div id = "mart_export_data" style="width:100%; height:99%;  overflow:auto;" >
+					<table width="100%" height="100%" border="0" cellpadding="" cellspacing="0" style="table-layout: auto; ">
 					<tr>
 					<td id="resultsTableId" width="100%" height="100%" valign="top" align="left" >
 						[% # this is now loaded via AJAX the below is for default results incase of URL Requests %]

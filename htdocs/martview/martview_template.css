@@ -140,7 +140,7 @@ div#mart_export_data
 { 
 	color: [colour_saturation0];
 	background-color: [colour_saturation100];
-	height: 78%;
+	
 	_height: 100%; /* for IE only */
 }
 
