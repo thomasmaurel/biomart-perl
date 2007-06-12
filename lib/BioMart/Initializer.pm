@@ -666,37 +666,40 @@ sub reloadRegistry
 # is null, returns undef
 
 sub _loadConfigFrom {
-     my ($self, $source, $vSchemaName, $vSchemaDisplayName, $includeMarts,$proxy) 
-    		= @_;
 
-     return undef unless($source);
-     #-------------------
-     my $hashLocations;
-     my $configurePass = 0;
-     my $parserDOM = XML::DOM::Parser->new();
-     my $doc = $parserDOM->parsefile($self->get('registryFileDOM'));
-     my $vSchemaNodes = $doc->getElementsByTagName('virtualSchema');
-     if($vSchemaNodes->getLength() > 0) {
-     	foreach my $vSchemaNode(@$vSchemaNodes) { ## check if there exists a VS with a default=1 otherwise no need to configure
-     		if ($vSchemaNode->getAttribute('default')) {     			
+	my ($self, $source, $vSchemaName, $vSchemaDisplayName, $includeMarts,$proxy) = @_;
+
+	return undef unless($source);
+	#-------------------
+	my $hashLocations;
+	my $configurePass = 0;
+	my $parserDOM = XML::DOM::Parser->new();
+	my $doc = $parserDOM->parsefile($self->get('registryFileDOM'));
+	my $vSchemaNodes = $doc->getElementsByTagName('virtualSchema');
+	if($vSchemaNodes->getLength() > 0) {
+		if($vSchemaNodes->getLength() == 1 && !$vSchemaNodes->[0]->getAttribute('default')) {
+  			$configurePass = 1;			
+		}		
+		foreach my $vSchemaNode(@$vSchemaNodes) { ## check if there exists a VS with a default=1 otherwise no need to configure
+     		if ($vSchemaNode->getAttribute('default')) {
      			$configurePass = 1;
      		}     		
      	}
-          if (!$configurePass) {
+		if (!$configurePass) {
 			BioMart::Exception::Configuration->throw("\n\t\tInitializer.pm: Set at least one virtaulSchema attribute default=\"1\" ");
-	         	exit;
-          }
-          foreach my $vSchemaNode(@$vSchemaNodes) {
-               my $children = $vSchemaNode->getChildNodes;
-               if($children) {
-                    foreach my $childNode (@$children) {
-                         if($childNode->isa('XML::DOM::Element')) {
-                              push @{$hashLocations->{$vSchemaNode->getAttribute('name')}}, $childNode->getAttribute('name');
-                         }
-                    }
-               }          
-          }
-     }
+			exit;
+		}
+		foreach my $vSchemaNode(@$vSchemaNodes) {
+			my $children = $vSchemaNode->getChildNodes;
+			if($children) {
+				foreach my $childNode (@$children) {
+					if($childNode->isa('XML::DOM::Element')) {
+						push @{$hashLocations->{$vSchemaNode->getAttribute('name')}}, $childNode->getAttribute('name');
+					}
+				}
+			}          
+		}
+	}
      else ## assume its a 'default' VS
      {
           my $martRegistryNode = $doc->getElementsByTagName('MartRegistry');
