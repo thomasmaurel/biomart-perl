@@ -1490,8 +1490,8 @@ function setVisibleStatus(menuLists, sessionValues, schemaTitle, databaseTitle, 
 			document.getElementById('mart_datasetselectpanel').style.margin = '';
 			document.getElementById('mart_datasetselectpanel').style.overflow = 'auto';
 
-			document.getElementById('resultspanel').style.height = '400px';
-			document.getElementById('mart_export_data').style.height = '280px';
+			document.getElementById('resultspanel').style.height = '410px';
+			document.getElementById('mart_export_data').style.height = '290px';
 			document.getElementById('resultspanel').style.overflow = 'hidden';
 			var dsNames = getElementsByName_local('dataset');
 			for (var i=0; i < dsNames.length; i++)
