@@ -38,7 +38,7 @@ var currentTab="Query";
 </table>
 
 
-<table border="0"  valign="bottom" cellpadding="" cellspacing="2" height="35%" width="1000">
+<table border="0"  valign="bottom" cellpadding="" cellspacing="3" height="35%" width="800">
         <tr>
         
 			<td align="center" valign="bottom" width="14%">
