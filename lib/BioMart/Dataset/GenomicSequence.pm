@@ -634,8 +634,11 @@ sub _modFlanks {
 
 	if ($self->get('upstream_flank')) 
 	{
-	    if ($location->{"strand"} < 0) 
-	    {
+
+
+	    if ($location->{"strand"} < 0)  {
+
+
 		$location->{"start"} = $location->{"end"} + 1;
 		$location->{"end"} += $self->get('upstream_flank');
 	    } 
@@ -1217,6 +1220,9 @@ sub _utrSequences {
     my $locations = $self->get('locations');
     my $outRow = $self->get('outRow');
     
+
+
+
     if ($curRow) {
 	my $importable_indices = $self->get('importable_indices');
 
@@ -1244,13 +1250,14 @@ sub _utrSequences {
 		    else {
 			$calc_location->{"end"} = 
 			    $calc_location->{"start"} - 1;
-			$calc_location->{"start"} = 
+			 $calc_location->{"start"} = 
 			    $calc_location->{"start"} - 
-			    $self->get('upstream_flank') + 1;
+			    $self->get('upstream_flank');# lose a base if include this + 1;
 			$calc_location->{"start"} = 1 
 			    if ($calc_location->{"start"} < 1);
 		    }
-		    
+		  
+
 		    #prepend to sequence
 		    $locations->{$low_rank - 1} = $calc_location;
 		} 
@@ -1267,7 +1274,7 @@ sub _utrSequences {
 			    $calc_location->{"end"} + 1;
 			$calc_location->{"end"} = 
 			    $calc_location->{"start"} + 
-			    $self->get('downstream_flank') - 1;
+			    $self->get('downstream_flank');# lose a base if include this - 1;
 		    }
 		    
 		    #append to sequence
