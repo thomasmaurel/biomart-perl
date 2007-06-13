@@ -574,7 +574,7 @@ sub getConfigurationTree {
 			# safety guard for web performance
 			# later on set autoCompletion for these type filters
 			#$filter->displayType('text');
-				warn("\nWarning: Too many Options for filter [ ", $xmlFilter->{'internalName'}, " ], would slow down browser rendering if you are configuring Martview. API users please ignore this message\n");
+				print STDERR ("\nWarning: Too many Options for filter [ ", $xmlFilter->{'internalName'}, " ] possible rendering problems for  Martview    ");
 			}
 		    #else{
 			$filter->displayType($xmlFilter->{'displayType'});			
