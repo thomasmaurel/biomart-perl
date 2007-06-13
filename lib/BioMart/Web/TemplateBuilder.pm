@@ -248,16 +248,19 @@ sub build_templates {
 			my $datasets = $mart_registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
 			DATASET:
 			foreach my $dataset_name(sort @$datasets) {
+				$currentTCount++;
 				my $template_file = $self->get_cached_tt_dir()
 							  . "/attributepanel_$schema_name\."
 							  . $dataset_name . ".tt";
+				print STDERR "[$currentTCount\/$totalDSCount] Attribute Panel of Dataset.. :$dataset_name\n";
 				$self->process_template($template_file, { build_errors=> \%build_errors}) if (-e $template_file);
 				$template_file = 	$self->get_cached_tt_dir()
 							  . "/filterpanel_$schema_name\."
 							  . $dataset_name . ".tt";
+				print STDERR "[$currentTCount\/$totalDSCount] Filter Panel of Dataset..... :$dataset_name\n";
 				$self->process_template($template_file, { build_errors=> \%build_errors}) if (-e $template_file);
-				$currentTCount++;
-				printf STDERR "\r.... %d%%",(100*($currentTCount/$totalDSCount));
+				#$currentTCount++;
+				#printf STDERR "\r.... %d%%",(100*($currentTCount/$totalDSCount));
 			}
 		}
 	}
