@@ -110,6 +110,49 @@ function addOnceTouchedParam (onceTouchedParamName)
 	document.mainform.appendChild(hiddenParam);
 }
 
+function updateSelectMenu(collectionName, menuInfo)
+{
+
+	var targetCBox = 'idTag__'+collectionName;
+//	alert(targetCBox);	
+	for(menuName in menuInfo)
+	{
+		if (document.mainform.elements[menuName].id == targetCBox) {
+//			alert ('found target');
+			var optionsLength = document.mainform.elements[menuName].length;					
+			for (var j=0; j<optionsLength; j++)
+			{
+				// multiSelect						
+				if (document.mainform.elements[menuName].multiple)
+				{
+					var singleOption=1;
+					for (var x=0; x < menuInfo[menuName].length; x++) {							
+						if (document.mainform.elements[menuName].options[j].value == menuInfo[menuName][x])
+						{
+							//alert('M: '+menuInfo[menuName][x]+' = '+document.mainform.elements[menuName].options[j].value);
+							document.mainform.elements[menuName].options[j].selected = true;
+							singleOption = 0;
+						}
+					}
+					if(singleOption==1){ // incase of single option selected from a multi select menu
+						if (document.mainform.elements[menuName].options[j].value == menuInfo[menuName])
+						{						
+							document.mainform.elements[menuName].options[j].selected = true;
+						}
+					}
+				}					
+				else // single menu
+				{
+					if (document.mainform.elements[menuName].options[j].value == menuInfo[menuName])
+					{
+						//alert('S: '+menuInfo[menuName]+' = '+document.mainform.elements[menuName].options[j].value);
+						document.mainform.elements[menuName].options[j].selected = true;
+					}
+				}				
+			}
+		}
+	}	
+}
 
 /* 
 

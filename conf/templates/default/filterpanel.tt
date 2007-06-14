@@ -152,6 +152,18 @@ for(var pa_menuname in \${param_prefix}pushActionsOfFiltermenu) {
 
 
 <script language="JavaScript" type="text/javascript" >
+	// setting the options of selectMenus to checked 
+	var \${param_prefix}sessionValueOfFiltermenu_1 = [* wq.perlhash2js(js_session_value_of_filtermenu) *];
+	for(var filterCollectionEltName in {
+		[* tmp_array.join(",\n") *]}) 
+	{
+		updateSelectMenu(filterCollectionEltName, \${param_prefix}sessionValueOfFiltermenu_1);
+	}	
+
+</script>
+
+
+<script language="JavaScript" type="text/javascript" >
 // Update summary-tree on side panel according to info stored in the session, defer works for internet explorer OPERATION ABORTED ERROR
 
 	for(var filterCollectionEltName in {
@@ -164,6 +176,8 @@ for(var pa_menuname in \${param_prefix}pushActionsOfFiltermenu) {
 	}
 	
 </script>
+
+
 
 </div>
 

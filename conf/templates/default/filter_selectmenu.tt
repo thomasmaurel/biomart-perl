@@ -51,13 +51,12 @@ document['${param_name}__image'].src='${filter.imageURL}';
 [* END *]
 
 
-<select name="$param_name" 
+<select name="$param_name" id="idTag__${filtercollection_param_name}"
 [%  IF filter.multipleValues %]
  multiple = "multiple"  size="5" 
 [%  END %]
  onchange="[% onchange_js %]" >
 
-	[* defaultFilterOn = "[% filter.defaultValue %]" *]
 
  [% IF filter.getAllOptions() && filter.getAllOptions().size > 0 %]
 
@@ -69,17 +68,6 @@ document['${param_name}__image'].src='${filter.imageURL}';
 
 	
 	<option value="[% option_value_escaped %]"
-  [* option_value = "[% option_value_escaped %]" *]
-
-  	[* IF ( ( session.param("[% param_name %]").defined() 
-              || ( session.param("[% param_name %]").size() 
-              && ( session.param("[% param_name %]").size > 0) ) )
-            &&  filtervalues_lookup.\$option_value.defined() ) *]
-		selected="selected"
-    [* ELSIF defaultFilterOn == "[% option_value_escaped %]" 
-             && !session.param("[% param_name %]__onceTouched").defined() *]
-        selected="selected"
-	[* END *]
 
 >[% option_displayname || option_value_escaped %]</option>
 
