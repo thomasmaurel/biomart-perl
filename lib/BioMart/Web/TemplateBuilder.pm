@@ -134,9 +134,11 @@ sub build_templates {
 	}
 
 	
-     my @database_names;
-	my @datasets;
-     my $default_dataset;
+		my @database_names;
+		my @datasets;
+		my $default_dataset;
+		my %location_path = $self->getSettings('httpdSettings');
+		my $TAG_path = $location_path{'location'};
      
      SCHEMA:
      foreach my $schema(@$schemas) {
@@ -177,12 +179,13 @@ sub build_templates {
 				# Build filter templates first
 		    		my %js_pushactions_of_filtermenu; # For holding pushaction-info collected from filter-configs
 		    		my $filterpanel_tt = $self->process_template('filterpanel.tt',
-								 {
+								 {								 	
 								     tbuilder    => $self,
 								     dataset     => $dataset,
 								     filtertrees => $conf_tree->getAllFilterTrees(),
 								     build_errors=> \%build_errors,
 								     js_pushactions_of_filtermenu => \%js_pushactions_of_filtermenu,
+								     TAG_path => $TAG_path
 								 });
 		    		my $filterpanel_fh = IO::File->new(">".$self->get_cached_tt_dir()
 						       . "/filterpanel_$schema_name\."
@@ -198,6 +201,7 @@ sub build_templates {
 									dataset       => $dataset,
 									build_errors=> \%build_errors,
 									attributetrees => $conf_tree->getAllAttributeTrees(),
+							     TAG_path => $TAG_path									
 								    });
 				my $attributepanel_fh = IO::File->new(">".$self->get_cached_tt_dir()
 							  . "/attributepanel_$schema_name\."

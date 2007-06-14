@@ -22,7 +22,8 @@
   addToSummaryPanelList('\${param_prefix}[% attributetree.name() %]__attributelist', '$attribute_parname','[%  attribute_displayname.replace("'", "&lsquo;") %]'); 
   this.checked = 'checked';
   [% IF attribute.imageURL.defined() %]
-  document['[% attributecollection_parname %]__image'].src='[% attribute.imageURL() %]'; 
+
+  	document['[% attributecollection_parname %]__image'].src='/[% TAG_path %][% attribute.imageURL().replace('/martview/','/mview/') %]'; 
   [% END %]  
   var siblingNodes = getElements(this.parentNode.parentNode.parentNode); 
   for(var i=0; i<siblingNodes.length; i++) 
@@ -69,7 +70,8 @@
   "/>
   [% IF attribute.imageURL.defined() %]
      [% # Image tag for checked attributes only. %]
-     <img src="[% attribute.imageURL() %]" alt=""/>
+     <!-- [% attribute.imageURL() %] -->
+     <img src="/[% TAG_path %][% attribute.imageURL().replace('/martview/','/mview/') %]" alt=""/>
   [% END %]  
 [% END %]
 

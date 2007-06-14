@@ -1242,7 +1242,7 @@ sub handle_request {
 	# when we set resultsButton=1, galaxy doesnt forward this to us. so
 	# lets do the following
 	# e.g Galaxy sends us: OUR_URL/sessionIDdo_export=1&_export=1&GALAXY_URL=0
-	if (!$session->param('GALAXY_URL') && $session->param('_export') eq '1') {
+	if (!$session->param('GALAXY_URL') && ($session->param('_export') && $session->param('_export') eq '1') ) {
 		$session->param('resultsButton', '1');
 	}
 	
