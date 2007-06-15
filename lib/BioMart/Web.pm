@@ -1854,6 +1854,7 @@ sub handle_request {
 				my $tempered_xml = $query_main->toXML(1,1,1,1);
 				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\" uniqueRows = \"0\"/g;
 				$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
+				$tempered_xml =~s/softwareVersion/datasetConfigVersion/g;				
 				print $tempered_xml;
 			}
 			# PERL API equivalent of the query
