@@ -889,7 +889,7 @@ function getFiltersInContainer(containerEltId) {
 				// Gotta find the form-element with the filtername same as ID of the filterval-container 
 				//var childElts = divs[i].childNodes;
 				//var childElts = divs[i].getElementsByTagName('select');
-				var childElts = getElements(divs[i]);
+				var childElts = getElements_mart(divs[i]);
 				//alert('Iterating over childElts list obj='+childElts+', length='+childElts.length);
 				var loop_length_1 = childElts.length;
 				var myFilterValues = [];
@@ -1149,34 +1149,37 @@ have attributes selected from other, inactive att-pages.
 */
 function expandListCompactSiblings(listId) {
 	targetListDiv = document.getElementById(listId);
-	siblingDivs = targetListDiv.parentNode.childNodes; 
-//alert("Expanding alist "+listId+', compacting other attpage-lists');
+	// ENSEMBL HACK, to get their seq pages radio buttons and attribute page radio buttons to work
+	// if (!targetListDiv) { return; }
 
-// Compact sibling divs
+	siblingDivs = targetListDiv.parentNode.childNodes; 
+	//alert("Expanding alist "+listId+', compacting other attpage-lists');
+
+	// Compact sibling divs
 	var loop_length = siblingDivs.length; 
 	for(var i=0; i < loop_length; i++ ) { 
-//for(otherListId in otherListIds) {
+	//for(otherListId in otherListIds) {
 		if(siblingDivs[i].nodeName != 'DIV') continue; // get div only
 		if(siblingDivs[i].id == listId) continue; // skip the target div itself
 		subListDivs = siblingDivs[i].getElementsByTagName('div');
-	//alert('Compacting list div, id='+siblingDivs[i].id+', with '+subListDivs.length+' items on it');
+		//alert('Compacting list div, id='+siblingDivs[i].id+', with '+subListDivs.length+' items on it');
 
-	// hide the div containing the list and show a note with the att-count in its stead
+		// hide the div containing the list and show a note with the att-count in its stead
 		var spans = siblingDivs[i].getElementsByTagName('span');
 		if(spans.length > 1) { // delete this element if already exists
-	// alert('Removing existing count-note w/ innerHTML='+spans[1].innerHTML);
+		// alert('Removing existing count-note w/ innerHTML='+spans[1].innerHTML);
 			siblingDivs[i].removeChild(spans[1]);
 		}
-	// then recreate element w/ updated counts
+		// then recreate element w/ updated counts
 		var subListDivCountNote = document.createElement("span");
 		
 		subListDivCountNote.className = 'mart_summarypanel_listitem_disabled';
-	//subListDivCountNote.style.color = 'grey';
+		//subListDivCountNote.style.color = 'grey';
 		subListDivCountNote.style.display = 'none';
 		subListDivCountNote.innerHTML = '['+subListDivs.length+' enabled]';
 		siblingDivs[i].insertBefore(subListDivCountNote, null); // add as last child
 
-	// Hide the list of divs if necessary
+		// Hide the list of divs if necessary
 		var loop_length_1 = subListDivs.length;
 		for(j=0; j< loop_length_1; j++){
 			turnOff(subListDivs[j]); //.style.display = 'none';
@@ -1268,14 +1271,14 @@ function setHighlightedSummaryPanelBranch(eltId) {
 
 /*
 
-=head2 getElements()
+=head2 getElements_mart()
 
 Recursively find all child elements of the given element and return as list.
 
 =cut
 
 */
-function getElements(elt) {
+function getElements_mart(elt) {
 	var descElts = [];
 	var loop_length = elt.childNodes.length;
 	for(var i=0;i < loop_length;i++) {
@@ -1287,7 +1290,7 @@ function getElements(elt) {
 	// Only get grandchildren if they're not inside select-menus or whatever
 		if(elt.childNodes[i].type != 'select-one'
 		&& elt.childNodes[i].type != 'select-multiple') {
-			var grandChildNodes = getElements(elt.childNodes[i]);
+			var grandChildNodes = getElements_mart(elt.childNodes[i]);
 	//alert('Got grandchildnodes list of length='+grandChildNodes.length);
 			if(grandChildNodes.length > 0) {
 				descElts = descElts.concat(grandChildNodes);
@@ -2090,12 +2093,12 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 	// count schemas, if > 1, then display schema MENU, otherwise hide it
 	var schemaCount=0;
 	for(i in dataForMenus['schema'])	{
-			schemaCount++;
+		schemaCount++;
 	}
 	
 	// NEW QUERY, DEFAULT VALUES
 	if (document.mainform.newQueryValue.value == '1')
-	{	
+	{		
 		disableButtons();			
 		if (schemaCount > 1) {
 			document.mainform.schemamenu[j++] = new Option(schemaCaption, '', true, true);

@@ -1401,15 +1401,13 @@ sub handle_request {
 		my @schemaDB_units = split (/____/,$session->param('databasemenu'));
 		$session->param('schema', $schemaDB_units[0]);
 		$session->param('dataBase', $schemaDB_units[1]);
-		#$session->param('dataset', $session->param('datasetmenu_3'));
-		# print $schemaDB_units[0], " = ", $schemaDB_units[1];
 	}
 	
 	
 	if (!$session->param('schema') && !$session->param('dataBase') && !$session->param('dataset'))
 	{		
 		# NEW QUERY, set NO DEFAULTS
-#		print "***** 1";
+		#print "***** 1";
 		print $CGI->header();		
 		$session->param('newQuery', '1');
 		$js_datasetpanel_sessions_values{'schema'} = '';
@@ -1421,8 +1419,13 @@ sub handle_request {
 	}
 	else ### we have all three items at run time, SUBMITTED BY THE USER
 	{
-#		print "***** 4";
-			
+		#print "***** 4";
+		# this deals when session url string is being saved/bookmarked, say from one window to another
+		if (!$session->param('dataBase') && $session->param('dataset') && $session->param('schema')){
+			my @schemaDB_units = split (/____/,$session->param('databasemenu'));	
+			$session->param('dataBase', $schemaDB_units[1]);			
+		}
+		
 		$js_datasetpanel_sessions_values{'schema'} = $session->param('schema');
 		$js_datasetpanel_sessions_values{'databasemenu'} = $session->param('dataBase');
 		my $dsName = $session->param('datasetmenu_3');
@@ -1756,7 +1759,7 @@ sub handle_request {
 					# results panel menus would turn up populated right from the beginning.
 					my $allAttributeTrees = $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->getAllAttributeTrees();
 					my $atttree = $allAttributeTrees->[0]; # first one is supposed to be the default one
-					$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
+					$logger->debug("Got outputformats ".$atttree." for attpage $attributepage, in dataset $dataset_name");
 					my @outputformats = split(',', $atttree->outFormats());
 			   	$all_formatters = $atttree->outFormats();
 			   	$session->param("export_outputformats", \@outputformats);
@@ -2235,7 +2238,7 @@ sub handle_request {
 		}
 	}
 	else
-	{
+	{		
 		$session->clear('URL_REQUEST');
 		my $completePage = "";
 		$self->process_template( "main.tt", {
