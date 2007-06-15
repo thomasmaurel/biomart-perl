@@ -62,7 +62,9 @@
 		document.mainform.summarypanel_filter_count_1_hidden.value = summaryCountElt1.innerHTML;
 	}
 	document.mainform.summarypanel_filter_count_2_hidden.value = '';
-	
+
+	document.mainform.resultsButton.value = 0;
+			
 	document.mainform.submit();">
 	<option value="NONE" 
 	[% IF !dataset.defined() %]

@@ -87,6 +87,7 @@
 					document.mainform.summarypanel_filter_count_2_hidden.value = '';
 				}
 				document.mainform.target = '_self';
+				document.mainform.resultsButton.value = 0;				
 				document.mainform.submit();
 			}
 			else{
