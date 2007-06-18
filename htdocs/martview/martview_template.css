@@ -4,6 +4,8 @@ Many aspects of the look & layout of the interface can be tweaked via
 this stylesheet (possibly combined with customizing of HTML templates).
 */
 
+
+
 /* BioMart container panel, contains all Mart components */
 
 div#mart_containerpanel
@@ -159,7 +161,7 @@ div#mart_export_data
 {
   font-family: sans-serif; /* Needed if buton is <input> */	
   font-weight: bold;
-		font-size: 12pt;
+		font-size: 10pt;
 		padding: 3px 5px 3px 5px;	
   border     : 1px solid;
   border-style: outset;
@@ -181,7 +183,7 @@ div#mart_export_data
 {
   font-family: sans-serif; /* Needed if buton is <input> */	
   font-weight: bold;
-		font-size: 12pt;
+		font-size: 10pt;
 		padding: 3px 5px 3px 5px;	
   border     : 1px solid;
   border-style: solid;
