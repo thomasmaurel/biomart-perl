@@ -53,7 +53,17 @@ document['${param_name}__image'].src='${filter.imageURL}';
 
 <select name="$param_name" id="idTag__${filtercollection_param_name}"
 [%  IF filter.multipleValues %]
- multiple = "multiple"  size="5" 
+	[% window_size = filter.getAllOptions().size() %]
+	[% window_size = window_size / 5 %]
+	[% IF window_size > 20 %]
+	    [% window_size = 20 %]
+	[% ELSIF filter.getAllOptions().size() < 5 %]
+	    [% window_size = filter.getAllOptions().size() %]
+	[% ELSIF window_size < 5%]
+	    [% window_size = 5 %]	
+        [% END %]
+	
+ multiple = "multiple"  size="${window_size}" 
 [%  END %]
  onchange="[% onchange_js %]" >
 
