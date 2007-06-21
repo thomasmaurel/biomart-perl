@@ -195,7 +195,7 @@ sub getConfigurationTree {
 			print STDOUTTEMP $xml;
 			close(STDOUTTEMP);
 			$params->{'source'} = 'temp.xml';      
-			$params->{'style'} = Cwd::cwd().'/conf/mart_0_4_0_5.xsl';
+			$params->{'style'} = $registry->getDirPath().'../mart_0_4_0_5.xsl';
 			my $new_xml;
 			eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
 			if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
@@ -217,7 +217,7 @@ sub getConfigurationTree {
 			print STDOUTTEMP $xml;
 			close(STDOUTTEMP);
 			$params->{'source'} = 'temp.xml';      
-			$params->{'style'} = Cwd::cwd().'/conf/mart_0_5_0_6.xsl';
+			$params->{'style'} = $registry->getDirPath().'../mart_0_5_0_6.xsl';
 			eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
 			if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
 			#Now, we are printing and saving what we get
@@ -236,7 +236,7 @@ sub getConfigurationTree {
 			print STDOUTTEMP $xml;
 			close(STDOUTTEMP);
 			$params->{'source'} = 'temp.xml';      
-			$params->{'style'} = Cwd::cwd().'/conf/mart_0_5_0_6.xsl';
+			$params->{'style'} = $registry->getDirPath().'../mart_0_5_0_6.xsl';
 			my $new_xml;
 			eval{$new_xml=BioMart::Web::CGIXSLT::transform();};
 			if($@){BioMart::Web::CGIXSLT::print_error("Exception: Configurator Cannot parse xml as per xsl. $@\n"); exit;};
