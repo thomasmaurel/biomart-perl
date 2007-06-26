@@ -418,8 +418,8 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 		elsif ($filter->isa("BioMart::Configuration::FilterList"))
 		{
 			my @values;
-			my $filts = $filter->get('filters');
-			my @filters = @$filts;
+			my $filts_1 = $filter->get('filters');
+			my @filters = @$filts_1;
 			my $attribute_table = $filter->get('attribute_table');
 			my $rows_avail = $attribute_table->hasMoreRows();
 			my $value;
@@ -547,98 +547,101 @@ sub _toXML_old
 $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq|" requestId= "biomart-client">|;
 
 	my $datasets = $self->getDatasetNames;
- 	foreach my $dataset(@$datasets)
+	foreach my $dataset(@$datasets)
 	{
 		my $interface = $self->getInterfaceForDataset($dataset);
-     	$xml .= qq |
+		$xml .= qq |
 	<Dataset name = "|.$dataset.qq|" interface = "|.$interface.qq|" >|;
 
 		my $atts = $self->getAllAttributeLists($dataset);
-     	foreach my $attribute_list (@$atts)
-     	{
+		foreach my $attribute_list (@$atts)
+		{
 			my $attributeString = $attribute_list->attributeString;
-	  		my @attributeNames = split(/,/,$attributeString);
-	  		foreach my $attributeName (@attributeNames){
-	    		$xml .= qq |
-		  	<Attribute name = "|.$attributeName.qq|" />|;
+			my @attributeNames = split(/,/,$attributeString);
+			foreach my $attributeName (@attributeNames){
+				$xml .= qq |
+			<Attribute name = "|.$attributeName.qq|" />|;
 			}
 		}
 
-	     $atts = $self->getAllAttributes($dataset);
+		$atts = $self->getAllAttributes($dataset);
      	foreach my $attribute (@$atts)
-	     {
-				$xml .= qq |
-	      	<Attribute name = "|.$attribute->name.qq|" />|;
-	     }
+		{
+			$xml .= qq |
+				<Attribute name = "|.$attribute->name.qq|" />|;
+		}
 
      	my $filts = $self->getAllFilters($dataset);
-	     foreach my $filter (@$filts)
+		foreach my $filter (@$filts)
      	{
 			if ($filter->isa("BioMart::Configuration::ValueFilter"))
 			{
-			     my @values;
-		     	my @rows;
-			     my $atable = $filter->getTable;
-			     while (my $row = $atable->nextRow)
-	    		 	{
+				my @values;
+				my @rows;
+				my $atable = $filter->getTable;
+				while (my $row = $atable->nextRow)
+				{
 					push @rows,$row;
 					foreach my $col (@$row)
 					{
 				     	push @values,$col;
 			  		}
 				}
-			     # need to regenerate AttributeTable cols for subsequent calls
-			     $atable->addRows(\@rows);
+				# need to regenerate AttributeTable cols for subsequent calls
+			   $atable->addRows(\@rows);
 				my $value = join(',',@values);
-	    	 
-		     $xml .= qq |
+				
+				$xml .= qq |
 	     	<ValueFilter name = "|.$filter->name.qq|" value = "|.
                    $value.qq|"/>|;
 			}
 			elsif ($filter->isa("BioMart::Configuration::FilterList"))
 			{
-	    
-			    	my @values;
-			    	my $filts = $filter->get('filters');
-		    		my @filters = @$filts;
-			    	my $attribute_table = $filter->get('attribute_table');
-			    	my $rows_avail = $attribute_table->hasMoreRows();
-	    			my $value;
+				my @values;
+				my $filts = $filter->get('filters');
+				my @filters = @$filts;
+				my $attribute_table = $filter->get('attribute_table');
+				my $rows_avail = $attribute_table->hasMoreRows();
+				my $value;
 	  		  	# deal with non-batching invisible datasets for webservice
 	  		  	# need to keep reusing the same values for the filterlist
-			    	if (!$rows_avail)
-			    	{
+				if (!$rows_avail)
+				{
 					if (!$filter->batching || $filter->batching != 1)
 					{
-				    		my $oldFilterListValues = $self->get('oldFilterListValues');
-					    	$value = $oldFilterListValues->{$filter->name};
+						my $oldFilterListValues = $self->get('oldFilterListValues');
+						$value = $oldFilterListValues->{$filter->name};
 					}
-			    	}
-			    	else
-			    	{	
+				}
+				else
+				{	
 					while ($rows_avail && $filter->_inBatch($attribute_table))
 					{
-					    	my $row = $attribute_table->nextRow();
-					    	my $val = '';
-				    		my $separator = '';
-					    	foreach my $col (@$row)
-					    	{	
+						my $row = $attribute_table->nextRow();
+						my $val = '';
+						my $separator = '';
+						foreach my $col (@$row)
+						{	
 							$val = $val.$separator.$col;
 							$separator = '|';
-				    		}
-				    		push @values,$val;
+						}
+						push @values,$val;
 					}
 					$value = join(',',@values);
 				}
 				# needed for correct batching behaviour
-	    			$filter->set('exhausted', 1) unless ($rows_avail);
+				$filter->set('exhausted', 1) unless ($rows_avail);
          		   
 	 		   	my $oldFilterListValues = $self->get('oldFilterListValues');
 	 		   	$oldFilterListValues->{$filter->name} = $value;
-			    	$self->set('oldFilterListValues',$oldFilterListValues);
+				$self->set('oldFilterListValues',$oldFilterListValues);
+
+				# removing batching from second dataset onwards/invisible datasets 
+				$xml =~ s/limitStart.*?limitSize\s*=\s*\"\d*\"//g;
+			   
     	 
 				unless( defined $value) {$value="";} 
-			     $xml .= qq |
+				$xml .= qq |
 			     <ValueFilter name = "|.$filter->name.qq|" value = "|.
 $value.qq|"/>|;
 	
