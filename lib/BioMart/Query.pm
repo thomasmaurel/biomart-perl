@@ -418,8 +418,8 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 		elsif ($filter->isa("BioMart::Configuration::FilterList"))
 		{
 			my @values;
-			my $filts_1 = $filter->get('filters');
-			my @filters = @$filts_1;
+			my $filts = $filter->get('filters');
+			my @filters = @$filts;
 			my $attribute_table = $filter->get('attribute_table');
 			my $rows_avail = $attribute_table->hasMoreRows();
 			my $value;
@@ -638,10 +638,9 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 
 				# removing batching from second dataset onwards/invisible datasets 
 				$xml =~ s/limitStart.*?limitSize\s*=\s*\"\d*\"//g;
-			   
     	 
 				unless( defined $value) {$value="";} 
-				$xml .= qq |
+			     $xml .= qq |
 			     <ValueFilter name = "|.$filter->name.qq|" value = "|.
 $value.qq|"/>|;
 	
