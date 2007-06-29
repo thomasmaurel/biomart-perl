@@ -276,7 +276,7 @@ sub get_geneAnnotation
 	
 		$results .= &feature_open($portions[1], $portions[1]);
 		#$results .= &type($portions[1],"no","no","no", $portions[1]);
-		$results .= &type($dasDatasetName,"no","no","no", $dsDisplayName);
+		$results .= &type($dsDisplayName,"no","no","no", $dsDisplayName);
 		#$results .= &method("methodID:unknown", "");
 		#$results .= &start("0");
 		#$results .= &end("0");
