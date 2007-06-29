@@ -63,6 +63,7 @@ my $CGI = $ENV{MOD_PERL} ? CGI->new(shift @_) : CGI->new();
 my $segment = $CGI->param('segment');
 my $url_string = $CGI->self_url();
 $url_string =~ m/.*?\/das\/(.*)\/features.*/;
+my $dasDSNName = $1;
 my @schema__DS = split(/__/, $1);
 my $schemaName= $schema__DS[0];
 my $dasDatasetName = $schema__DS[1];
@@ -209,6 +210,7 @@ sub get_geneAnnotation
 	my $attributeList;
 	my $linkURL;
 	my $hrefURL;
+	my $dsDisplayName; 
 	
 	my $query = BioMart::Query->new('registry'=>$registry,'virtualSchemaName'=>$schemaName);
      
@@ -218,6 +220,7 @@ sub get_geneAnnotation
 		foreach my $mart (@{$schema->getAllMarts(0)}) {
 			foreach my $dataset (@{$mart->getAllDatasets(0)}) {
 				if ($dataset->name eq $dasDatasetName) {
+					$dsDisplayName = $dataset->displayName;
 					foreach my $exportable (@{$dataset->getExportables()}) {
 						if($exportable->type() eq 'dasGene') {
 							foreach my $importable (@{$dataset->getImportables()}) {
@@ -264,7 +267,7 @@ sub get_geneAnnotation
 	#&dummyResultsGene();
 	
 	$results .= &header();
-	$results .= &GFF_open("http://[TAG:server_host]/[TAG:cgiLocation]/das/$dasDatasetName/features");
+	$results .= &GFF_open("http://[TAG:server_host]/[TAG:cgiLocation]/das/$dasDSNName/features");
 	$results .= &segment_open($geneID, "1", ""); # first argument should be the same as sent by ensembl as geneID
 	
 	@resultRows = split(/\n/, $temp_results);
@@ -273,7 +276,7 @@ sub get_geneAnnotation
 	
 		$results .= &feature_open($portions[1], $portions[1]);
 		#$results .= &type($portions[1],"no","no","no", $portions[1]);
-		$results .= &type($dasDatasetName,"no","no","no", $dasDatasetName);
+		$results .= &type($dasDatasetName,"no","no","no", $dsDisplayName);
 		#$results .= &method("methodID:unknown", "");
 		#$results .= &start("0");
 		#$results .= &end("0");
@@ -408,7 +411,7 @@ sub get_chromosomeAnnotation
 	####  represent $resultsHash in terms of DAS XML
 		
 	$results .= &header();
-	$results .= &GFF_open("http://[TAG:server_host]/[TAG:cgiLocation]/das/$dasDatasetName/features");	
+	$results .= &GFF_open("http://[TAG:server_host]/[TAG:cgiLocation]/das/$dasDSNName/features");	
 	$results .= &segment_open($chromosome, $start, $end);
 
 	################################### ADDING TRANSCRIPT FEATURES
