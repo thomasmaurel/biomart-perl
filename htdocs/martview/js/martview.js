@@ -388,6 +388,17 @@ function removeFromSummaryPanelList(listContainerId,name) {
 }
 
 /*
+=head2 addHiddenFormParam()
+
+Called from datasetpanel.tt, only to add hiddenformparam for 'schema' after doing some fleshing
+
+*/
+function addHiddenFormParam_Schema(paramName, parentElt, paramValue) {
+	var portions = paramValue.split("____");
+	addHiddenFormParam(paramName, parentElt, portions[0]);
+}
+
+/*
 
 =head2 addHiddenFormParam()
 
@@ -414,7 +425,21 @@ function addHiddenFormParam(paramName, parentElt, paramValue) {
 	//alert('param name '+paramName+' w/ value '+paramValue+' already exists, not adding a new one');	    
 	var hiddenParam = document.createElement("input");
 	hiddenParam.type  = "hidden";
-	hiddenParam.name  = paramName;
+	
+	// __attributelist and __filterlist are added with schemaName as we might have two VS merged into one DB menu
+	if (paramName.match(/__attributelist$/) || paramName.match(/__filterlist$/))
+	{
+		var schemaName = document.mainform['schemaName'].value +'____';
+		//alert(schemaName);
+		paramName = schemaName+paramName;
+		hiddenParam.name = paramName;
+		//	alert(paramName);
+	}
+	else
+	{
+		hiddenParam.name  = paramName;
+	}
+	
 	if(paramValue) { hiddenParam.value = paramValue; }
 	//	alert(hiddenParam.name);
 	parentElt.appendChild(hiddenParam);	
@@ -463,7 +488,7 @@ if present.
 */
 function removeHiddenFormParam(paramName, paramValue) {
 
-	//alert('removing    ' + paramName);
+//	alert('removing    ' + paramName);
 	var existingParamElts = getElementsByName_local(paramName);
 	var loop_length = existingParamElts.length; // vv important thing in JS, for DOM API. speeds up 
 
@@ -852,6 +877,7 @@ handled.
 */
 function getFiltersInContainer(containerEltId) {
 	var containerElt = document.getElementById(containerEltId);
+	if(!containerElt) {return;}
 	//alert('Getting filters in container '+containerEltId+', got obj='+containerElt);
 	var divs = containerElt.getElementsByTagName('div');
 	var currentFilterDisplayName;
@@ -2074,7 +2100,7 @@ identity: "Linux"
 	}
 
 ////////////////////////////////////////////////////////
-////////////// Functions for datasetpanel_pre.tt
+////////////// Functions for datasetpanel.tt
 ////////////////////////////////////////////////////////
 var dataForMenus;
 var dsPanelSessionValues;
@@ -2099,8 +2125,9 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 	// NEW QUERY, DEFAULT VALUES
 	if (document.mainform.newQueryValue.value == '1')
 	{		
-		disableButtons();			
-		if (schemaCount > 1) {
+		disableButtons();
+		// [PancreasExpression changed > 1 to > 5]
+		if (schemaCount > 5) {
 			document.mainform.schemamenu[j++] = new Option(schemaCaption, '', true, true);
 			for(i in dataForMenus['schema'])	{
 				document.mainform.schemamenu[j++] = new Option(i, i);
@@ -2114,9 +2141,9 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 			document.mainform.databasemenu[j++] = new Option(databaseCaption, '', true, true);
 			for(schema_name in dataForMenus['schema'])	{
 				// this is imp as we dont have schemaMenu visible, so somehow add schema value to session
-				addHiddenFormParam('schema', document.mainform, schema_name);
+				// [PancreasExpression] addHiddenFormParam('schema', document.mainform, schema_name);
 				for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)	{
-					//		alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
+					//	alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
 					var val = dataForMenus['schema'][schema_name]['databasemenu'][i][0];
 					var display = dataForMenus['schema'][schema_name]['databasemenu'][i][1];
 					document.mainform.databasemenu[j++] = new Option(display, val);					
@@ -2129,7 +2156,8 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 		//populate SCHEMA MENU
 		j=0;
 		// document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '');
-		if (schemaCount > 1) {
+		// [PancreasExpression changed > 1 to > 5]
+		if (schemaCount > 5) {
 			document.mainform.schemamenu[j++] = new Option(schemaCaption, '');
 			for(i in dataForMenus['schema'])	{
 				if(i == dsPanelSessionValues['schema']) {
@@ -2146,11 +2174,13 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 		}
 		// populate DB MENU
 		j=0;
+		var toBeSelected = 'none';
 		document.mainform.databasemenu.length = 0;
 		document.getElementById('dbMenu').style.display = 'block';
-		document.mainform.databasemenu[j++] = new Option(databaseCaption, '');
+		document.mainform.databasemenu[j++] = new Option(databaseCaption, '');		
 		for(schema_name in dataForMenus['schema']){
-			if (schema_name == dsPanelSessionValues['schema'])	{
+			// [PancreasExpression removed the if statement]
+			// if (schema_name == dsPanelSessionValues['schema'])	{
 				for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)	{
 					var val = dataForMenus['schema'][schema_name]['databasemenu'][i][0];
 					var display = dataForMenus['schema'][schema_name]['databasemenu'][i][1];
@@ -2159,8 +2189,8 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 					}
 					document.mainform.databasemenu[j++] = new Option(display, val);
 				}
-				document.mainform.databasemenu[toBeSelected].selected='true';
-			}
+				if (toBeSelected != 'none')  { document.mainform.databasemenu[toBeSelected].selected='true'; }
+			//}
 		}
 		// populate DS MENU
 		// Compara Style
@@ -2429,6 +2459,34 @@ function clearSummaryPanel()
 	
 	var attPageVisible;
 	var eltVal;
+
+/*	
+	//alert(getElementsByName_local('databasemenu')[0].value);
+	//var portions = getElementsByName_local('databasemenu')[0].value.split("____");
+	//var schemaName = portions[0];
+	//alert(schemaName);
+	var dsNames = getElementsByName_local('dataset');
+	for (var i=0; i < dsNames.length; i++)
+	{
+		if(dsNames[i].value!='')
+		{
+			var attList = dsNames[i].value+'__attributepage';
+			var filtList= dsNames[i].value+'__filterlist';
+			if (dsNames[i].value == 'msd')
+			{
+				
+				var elt = document.getElementById('msd__feature_page__attributelist');
+				var atts = elt.getElementsByTagName('input');
+				var loop_length = atts.length;
+		//		for (var i=0; i < loop_length; i++)
+		//		{				
+		//			atts = elt.getElementsByTagName('input');
+		//			removeFromSummaryPanelList('msd__feature_page__attributelist', atts[0].value);										
+		//		}
+			}			
+		}
+	}
+*/
 /*
 	var dsNames = getElementsByName_local('dataset');
 	for (var i=0; i < dsNames.length; i++)

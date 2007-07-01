@@ -912,7 +912,7 @@ sub handleURLRequest
 		}
 		# adding _attributelist foreach dataset
 		my $currentPage = $session->param($dsName.'__attributepage');
-		$session->param($dsName.'__'.$currentPage.'__attributelist', \@{$atts->{$dsName}} );
+		$session->param($session->param('schema').'____'.$dsName.'__'.$currentPage.'__attributelist', \@{$atts->{$dsName}} );
 	}
 	
 	# FILTERS
@@ -988,7 +988,7 @@ sub handleURLRequest
 			}			
 		}
 		# adding __filterlist foreach dataset
-		$session->param($dsName.'__filterlist', \@{$filts->{$dsName}} );
+		$session->param($session->param('schema').'____'.$dsName.'__filterlist', \@{$filts->{$dsName}} );
 		
 		# adding __filtercollections
 		my @collectionsArray;
@@ -1397,12 +1397,12 @@ sub handle_request {
 			
 	if($session->param('menuNumber') && $session->param('menuNumber') eq '3')
 	{
-		# this form is return by datasetpanel_pre.tt so set the schema, DB and DS session params
+		# this form is return by datasetpanel.tt so set the schema, DB and DS session params
+		
 		my @schemaDB_units = split (/____/,$session->param('databasemenu'));
 		$session->param('schema', $schemaDB_units[0]);
 		$session->param('dataBase', $schemaDB_units[1]);
-	}
-	
+	}	
 	
 	if (!$session->param('schema') && !$session->param('dataBase') && !$session->param('dataset'))
 	{		
@@ -1419,12 +1419,15 @@ sub handle_request {
 	}
 	else ### we have all three items at run time, SUBMITTED BY THE USER
 	{
-		#print "***** 4";
+		# print "***** 4";
 		# this deals when session url string is being saved/bookmarked, say from one window to another
 		if (!$session->param('dataBase') && $session->param('dataset') && $session->param('schema')){
 			my @schemaDB_units = split (/____/,$session->param('databasemenu'));	
 			$session->param('dataBase', $schemaDB_units[1]);			
 		}
+		
+		# print "<br/>SCHEMA: ", $session->param('schema');
+		# print "<br/>DBMENU: ", $session->param('databasemenu');
 		
 		$js_datasetpanel_sessions_values{'schema'} = $session->param('schema');
 		$js_datasetpanel_sessions_values{'databasemenu'} = $session->param('dataBase');
@@ -1666,6 +1669,7 @@ sub handle_request {
 		# If one or more datasets are selected by now, get initial counts and build query
 		my $datasets_string = $session->param('dataset');
 		my $schema_name     = $session->param('schema');
+
 		my $query_main      =  BioMart::Query->new(registry	=> $registry,
 														virtualSchemaName => $schema_name);
 		my $qrunner = BioMart::QueryRunner->new();		
@@ -1679,12 +1683,15 @@ sub handle_request {
 	
 		foreach my $dataset_name(@dataset_names) {
 		    
-		    	# Pull out filter & attribute params for this dataset and prepare the query
-			my $filterlist_string    = $session->param($dataset_name.'__filterlist') if ($session->param($dataset_name.'__filterlist'));
+			# Pull out filter & attribute params for this dataset and prepare the query
+			my $vs_dataset_name = $session->param('schema').'____'.$dataset_name;
+			my $filterlist_string    = $session->param($vs_dataset_name.'__filterlist') if ($session->param($vs_dataset_name.'__filterlist'));
+			
 			my $attributepage        = $session->param($dataset_name.'__attributepage') if ($session->param($dataset_name.'__attributepage'));
-			my $attributelist_string = $session->param($dataset_name.'__'.($attributepage||'').'__attributelist');
+			
+			my $attributelist_string = $session->param($vs_dataset_name.'__'.($attributepage||'').'__attributelist');
 	    	
-			if ($filterlist_string){ $logger->debug("FILTERLIST_STRING IS $filterlist_string"); }
+	    	if ($filterlist_string){ $logger->debug("FILTERLIST_STRING IS $filterlist_string"); }
 			else {$logger->debug("FILTERLIST_STRING IS *EMPTY*"); }
 	    	
 			my @filterlist = !defined($filterlist_string) ? ()
@@ -2239,8 +2246,10 @@ sub handle_request {
 		}
 	}
 	else
-	{		
+	{
+		$session->param('resultsButton', '0') if ($session->param('URL_REQUEST'));
 		$session->clear('URL_REQUEST');
+		
 		my $completePage = "";
 		$self->process_template( "main.tt", {
 			tbuilder			=> $self,

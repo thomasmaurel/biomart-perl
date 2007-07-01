@@ -825,8 +825,13 @@ sub _loadLocationsFrom {
 							}
 							next if (!$seen);
 						}
+						
 						my $martLocation =   $self->_setMartLocation($mtype,$virtualSchema,$dbloc,$proxy);
 						next if (!$martLocation);
+						# serverVirtualSchema for martservice,
+						if (!$dbloc->{'serverVirtualSchema'}) {
+							$dbloc->{'serverVirtualSchema'} = $virtualSchema->name();
+						}
 						$self->_registryXML($mtype, $dbloc);
 						$virtualSchema->addLocation($martLocation);   		
 					}

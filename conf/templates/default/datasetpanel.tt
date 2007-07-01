@@ -23,6 +23,9 @@
 		class="mart_input"
 		onchange="
 
+			removeHiddenFormParam('schema');
+			addHiddenFormParam_Schema('schema', document.mainform, this.options[this.selectedIndex].value);
+									
 			removeHiddenFormParam('dataBase');
 
 			addHiddenFormParam('dataBase', document.mainform, this.options[this.selectedIndex].innerHTML);

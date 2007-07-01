@@ -239,7 +239,7 @@ $stash->set('attcount_half', $attcount_half-1);
 // Update summary-tree on side panel according to enabled-attributes info stored in 
 // the session OR the list of default attributes to pre-enable (if any).
 
-[* atts_to_check = session.param("\${param_prefix}[% attributetree.name() %]__attributelist") *]
+[* atts_to_check = session.param("\${vs_param_prefix}[% attributetree.name() %]__attributelist") *]
 //1: atts_to_check.join()=     '[* atts_to_check.join('|') *]'
 //1: atts_to_check=     '[* atts_to_check || "[undef]" *]'
 //1: atts_to_check.size='[* atts_to_check.size() || "[undef]" *]'

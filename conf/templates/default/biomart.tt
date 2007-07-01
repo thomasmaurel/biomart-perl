@@ -81,7 +81,8 @@
 			<input type="hidden" name="uniqueRowsPreView" value="[% session.param('uniqueRowsPreView') %]" />
 			<input type="hidden" name="uniqueRowsExportView" value="[% session.param('uniqueRowsExportView') %]" />
 			<input type="hidden" name="showAll" value="0" />
-
+			<input type="hidden" name="schemaName" value="[% session.param('schema') %]" />
+			
 			<input type="hidden" name="mart_mainpanel__current_visible_section" value="[% session.param('mart_mainpanel__current_visible_section') %]"/>
 			<input type="hidden" name="summarypanel__current_highlighted_branch" value="[% session.param('summarypanel__current_highlighted_branch') %]"/>
 			
@@ -138,9 +139,9 @@
 			</div>
 
 
-
+				[% vs_param_prefix = session.param('schema') %]
 				[% param_prefix = dset_name _ '__' %]
-
+				[% vs_param_prefix = vs_param_prefix _ '____' _ dset_name _ '__' %]
 				[% # Render pre-generated attributepanel for this dataset %]
 				[% attributepanel = 'attributepanel_'
 	                  		_ session.param('schema') _ '.'

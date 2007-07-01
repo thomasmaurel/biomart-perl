@@ -178,7 +178,13 @@ sub getConfigurationTree {
 							  $dataSetName,
 							  $interfaceType,
 							  $dsCounter);
-  
+
+		# same funny character ü comes, and XML Parser moans. for pancreasExpression DB, 
+		# we request ensembl datasets from webservice and on our side, parser crashes
+		# $xml =~ s/Müller/Muller/mg;
+		$xml =~ s/M[^a-zA-Z]{1}ller/Muller/mg;
+		#print STDERR "\n\n", $xml;
+		
 		my $tempXMLHash = XMLin($xml, forcearray => [qw(AttributePage AttributeGroup 
 		 	AttributeCollection AttributeDescription FilterPage FilterGroup 
 			FilterCollection FilterDescription Importable Exportable Key 
