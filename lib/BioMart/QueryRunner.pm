@@ -364,38 +364,7 @@ sub _processPath {
     my %union_tables = %{$self->get('union_tables')};
     my $last_visible_exportable = $self->get('last_visible_exportable');
     
-	# only for processing Count Request
-	if ($query->count())
-	{
-		foreach my $vDS (@{$self->get('final_dataset_order')})
-		{   		
-			my $dataSet = $self->get('registry')->
-	    			getDatasetByName($query->virtualSchema, $vDS);
-			if($dataSet->visible)
-			{
-				my $virtualSchemaNameForQuery = $query->virtualSchema;
-				if ($dataSet->serverType eq "web"){    
-					my $location = $dataSet->getParam('configurator')->get('location');
-					$virtualSchemaNameForQuery = $location->serverVirtualSchema;
-				}
-				my $subquery = BioMart::Query->new('registry' => $self->get('registry'),'virtualSchemaName'=>$virtualSchemaNameForQuery);
-				my $subquery_filts = $query->getAllFilters($vDS);
-				if ($subquery_filts){
-	    			foreach my $subquery_filter(@{$subquery_filts}){
-						$subquery->addFilterWithoutLinking($subquery_filter);
-					}
-				}
-				else {
-					$subquery->addDatasetName($vDS, $query->getInterfaceForDataset($vDS));
-				}
-				my %params = ('query' => $subquery);
-				my $countVal = $dataSet->getCount(%params);	
-				return $countVal;
-			}
-		}
-	}
-    
-    
+  
     # $datasetsToProcess length > 1
     unless (scalar(@{$datasetsToProcess}) > 1) {
 	# base case, process the query and return the ResulTable or count
