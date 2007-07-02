@@ -1394,10 +1394,24 @@ sub handle_request {
 		$logger->warn("No datasets found in registry, so no templates were built. Returning 0");
 		return 0;
 	}	
-			
+
+	# finding if two virtualSchemas (1 visible and other invisible) set mergeVs to 1 
+	my $schemaCount = $registry->getAllVirtualSchemas();
+	if (scalar (@{$schemaCount}) == 2) {
+		my ($visibleVS, $invisibleVS) = 0 ;
+		foreach my $schema(@$schemaCount) {
+			$visibleVS++ if($schema->visible());
+			$invisibleVS++ if(!$schema->visible());
+		}
+		$session->clear('mergeVS');
+		if ($visibleVS == 1 && $invisibleVS == 1) {	$session->param('mergeVS', '1');	}
+		else {	$session->param('mergeVS', '0');	}		
+	}
+	else {	$session->param('mergeVS', '0');	}
+		
 	if($session->param('menuNumber') && $session->param('menuNumber') eq '3')
 	{
-		# this form is return by datasetpanel.tt so set the schema, DB and DS session params
+		# this form is returned by datasetpanel.tt so set the schema, DB and DS session params
 		
 		my @schemaDB_units = split (/____/,$session->param('databasemenu'));
 		$session->param('schema', $schemaDB_units[0]);
@@ -1407,8 +1421,8 @@ sub handle_request {
 	if (!$session->param('schema') && !$session->param('dataBase') && !$session->param('dataset'))
 	{		
 		# NEW QUERY, set NO DEFAULTS
-		#print "***** 1";
-		print $CGI->header();		
+		# print "***** 1";
+		print $CGI->header();
 		$session->param('newQuery', '1');
 		$js_datasetpanel_sessions_values{'schema'} = '';
 		$js_datasetpanel_sessions_values{'databasmenu'} = '';

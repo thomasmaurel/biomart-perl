@@ -2107,7 +2107,7 @@ var dsPanelSessionValues;
 var schemaCaption;
 var databaseCaption;
 var datasetCaption;
-function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, databaseTitle, datasetTitle)
+function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, databaseTitle, datasetTitle, mergeVS)
 {
 	dataForMenus = menuLists;
 	dsPanelSessionValues = sessionValues;
@@ -2126,8 +2126,8 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 	if (document.mainform.newQueryValue.value == '1')
 	{		
 		disableButtons();
-		// [PancreasExpression changed > 1 to > 5]
-		if (schemaCount > 5) {
+		// [two VS, whereby 1 visible 1 invisible, merge them into 1 DB menu]
+		if (schemaCount > 1 && mergeVS == '0') {
 			document.mainform.schemamenu[j++] = new Option(schemaCaption, '', true, true);
 			for(i in dataForMenus['schema'])	{
 				document.mainform.schemamenu[j++] = new Option(i, i);
@@ -2140,8 +2140,6 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 			document.getElementById('dbMenu').style.display = 'block';
 			document.mainform.databasemenu[j++] = new Option(databaseCaption, '', true, true);
 			for(schema_name in dataForMenus['schema'])	{
-				// this is imp as we dont have schemaMenu visible, so somehow add schema value to session
-				// [PancreasExpression] addHiddenFormParam('schema', document.mainform, schema_name);
 				for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)	{
 					//	alert(dataForMenus['databasemenu'][db_name]['datasetmenu_3'][i][0]);
 					var val = dataForMenus['schema'][schema_name]['databasemenu'][i][0];
@@ -2156,8 +2154,8 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 		//populate SCHEMA MENU
 		j=0;
 		// document.mainform.schemamenu[j++] = new Option(' - CHOOSE SCHEMA - ', '');
-		// [PancreasExpression changed > 1 to > 5]
-		if (schemaCount > 5) {
+		// [two VS, whereby 1 visible 1 invisible, merge them into 1 DB menu]
+		if (schemaCount > 1 && mergeVS == '0') {
 			document.mainform.schemamenu[j++] = new Option(schemaCaption, '');
 			for(i in dataForMenus['schema'])	{
 				if(i == dsPanelSessionValues['schema']) {
@@ -2179,8 +2177,8 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 		document.getElementById('dbMenu').style.display = 'block';
 		document.mainform.databasemenu[j++] = new Option(databaseCaption, '');		
 		for(schema_name in dataForMenus['schema']){
-			// [PancreasExpression removed the if statement]
-			// if (schema_name == dsPanelSessionValues['schema'])	{
+			// [two VS, whereby 1 visible 1 invisible, merge them into 1 DB menu]
+			if (schema_name == dsPanelSessionValues['schema'] || mergeVS == '1')	{
 				for (var i=0; i < dataForMenus['schema'][schema_name]['databasemenu'].length; i++)	{
 					var val = dataForMenus['schema'][schema_name]['databasemenu'][i][0];
 					var display = dataForMenus['schema'][schema_name]['databasemenu'][i][1];
@@ -2190,7 +2188,7 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 					document.mainform.databasemenu[j++] = new Option(display, val);
 				}
 				if (toBeSelected != 'none')  { document.mainform.databasemenu[toBeSelected].selected='true'; }
-			//}
+			}
 		}
 		// populate DS MENU
 		// Compara Style

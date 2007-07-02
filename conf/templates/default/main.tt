@@ -62,7 +62,7 @@
 
 	<script language="JavaScript" type="text/javascript" >
 		//<![CDATA[
-			datasetpanel_pre_onload([% tbuilder.perlhash2js(js_pushactions_of_datasetmenu) %] , [% tbuilder.perlhash2js(js_datasetpanel_sessions_values) %] , '[% session.param("__Schema") %]', '[% session.param("__Database") %]', '[% session.param("__Dataset") %]');
+			datasetpanel_pre_onload([% tbuilder.perlhash2js(js_pushactions_of_datasetmenu) %] , [% tbuilder.perlhash2js(js_datasetpanel_sessions_values) %] , '[% session.param("__Schema") %]', '[% session.param("__Database") %]', '[% session.param("__Dataset") %]', '[% session.param("mergeVS") %]');
 		//]]>
 	</script>
 
