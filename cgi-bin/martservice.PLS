@@ -208,7 +208,8 @@ sub _set_location {
 	    delete $$location_atts{$att} if (grep $att eq $_, @to_ignore);
 	}
 	my %new_location_atts= %$location_atts;
-	$new_location_atts{'serverVirtualSchema'} = $serverVirtualSchema;
+	# not required anymore as being set by Initializer now
+	# $new_location_atts{'serverVirtualSchema'} = $serverVirtualSchema;
 	push (@new_location,\%new_location_atts);
     }
     
