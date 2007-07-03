@@ -319,13 +319,12 @@ foreach my $schema (@{$mart_registry->getAllVirtualSchemas()}) {
 	foreach my $mart (@{$schema->getAllMarts(0)}) {
 		foreach my $dataset (@{$mart->getAllDatasets(0)}) {
 			foreach my $exportable (@{$dataset->getExportables()}) {
-				#print "\nEXP: ", $exportable->linkName();
+				# print "\nEXP: ", $exportable->linkName();
 				# geneDAS and chrDAS
-				if($exportable->type() eq 'dasGene' || $exportable->type() eq 'dasChr')	{
-					if (!exists $repetition{$dataset->name()}) {
-						push @{$OPTIONS{'dasDatasets'}}, $schema->name.'__'.$dataset->name();
-						$repetition{$dataset->name()} = '';
-					}
+				if($exportable->type() eq 'dasGene' || $exportable->type() eq 'dasChr' ||
+					$exportable->type() eq 'dasRegionGene' || $exportable->type() eq 'dasRegionFeature')	{
+					# print "\nEXP: ", $exportable->name();
+					push @{$OPTIONS{'dasDatasets'}}, $schema->name.'__'.$dataset->name().'__'.$exportable->name();
 				}
 			}
 		}
