@@ -623,7 +623,8 @@ sub printMartServiceHelp
 	    my $first_dataset = ${$first_location->getAllDatasets}[0];
 			my $first_dataset_name = $first_dataset->name;
 
-	    	    print $CGI->header(-type=>'text/html');
+	    # causing warnings.CGI will not stay shared.
+	    # print $CGI->header(-type=>'text/html');
 	    	    
 	    print qq(
 <html><!-- InstanceBegin template="/Templates/biomart_standalone.dwt" codeOutsideHTMLIsLocked="false" -->	
