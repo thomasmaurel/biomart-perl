@@ -43,7 +43,7 @@ function updateMenuPushactions(menu, pushActionsOfMenu, prevValueOfMenu) {
 	for(var menu2_name in pushActionInfo) {
 		var menu2 = document.mainform.elements[menu2_name];
 		//alert("Have secondary menu to update: " + menu2_name);
-	
+		menu2.length = 0;
 		if(!menu2) {
 			continue;
 		}
