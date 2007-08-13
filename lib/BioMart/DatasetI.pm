@@ -1462,9 +1462,14 @@ sub _attributeMerge {
 												$finalRow->[$i] = $row->[$i];
 											}
 											else {
-												if ( index ($finalRow->[$i],$row->[$i]) < 0 )	{
-													$finalRow->[$i] .= ';'.$row->[$i]; # bcoz comma exits in some data contents
+												#if ( index ($finalRow->[$i],$row->[$i]) < 0 )	{
+												#	$finalRow->[$i] .= ';'.$row->[$i]; # bcoz comma exits in some data contents
+												#}
+												my $presenceFlag = 0;
+												foreach my $val ( split(/\;/, $finalRow->[$i]) ){
+													$presenceFlag = 1 if ($val eq $row->[$i]);
 												}
+												$finalRow->[$i] .= ';'.$row->[$i] if (!$presenceFlag);
 											}
 										}
 									}	
