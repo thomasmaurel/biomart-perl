@@ -87,18 +87,33 @@ else
 eval{
 	if($segment)
 	{
-		my $exportable_type = &exportableType($dasExportableName);
-		#print "EXP _TYPE: $exportable_type";
+		my $exportable_type = &exportableType($registry, $schemaName, $dasDatasetName, $dasExportableName);
+		my $results;
+		# print "EXP _TYPE: $exportable_type";
 		if ($exportable_type eq 'dasGene') {
-			&get_geneAnnotation($segment, $dasExportableName);
+			$results = &get_geneAnnotation($registry, $schemaName, $dasDatasetName, $dasDSNName, $segment, $dasExportableName);
 		}
 		elsif ($exportable_type eq 'dasRegionFeature') {
-			&get_chromosomeAnnotationFeatures($segment, $dasExportableName);
+			$results = &get_chromosomeAnnotationFeatures($registry, $schemaName, $dasDatasetName, $dasDSNName, $segment, $dasExportableName);
 		}
 		elsif ($exportable_type eq 'dasChr' || $exportable_type eq 'dasRegionGene') {	
-			&get_chromosomeAnnotationGTE($segment, $dasExportableName);
+			$results =  &get_chromosomeAnnotationGTE($registry, $schemaName, $dasDatasetName, $dasDSNName, $segment, $dasExportableName);
+		}
+		else {
 		}
 		
+		# print results 
+		if ($results)
+		{
+			print $CGI->header(	-'type' =>'text/xml',
+								-'X-DAS-Version' => 'DAS/1.5',
+								-'X-DAS-Status'  => '200',
+								-'X-DAS-Capabilities' => 'dsn/1.0; features/1.0;');
+			print $results;
+		}
+		else {
+			# print Error codes here
+		}
 	} 
 
 };
@@ -118,7 +133,7 @@ if($@) {
 # otherwise its a gene Request
 sub exportableType
 {
-	my $exportableName = shift;
+	my ($registry, $schemaName, $dasDatasetName, $exportableName) = @_;
 	
 	foreach my $schema (@{$registry->getAllVirtualSchemas()}) {
 		if ($schemaName eq $schema->name){	
@@ -152,7 +167,7 @@ sub exportableType
 # Ensembl calls this as .../das/DSN/features?segment=ENSGid
 sub get_geneAnnotation
 {
-	my ($geneID, $exp_name) = @_;
+	my ($registry, $schemaName, $dasDatasetName, $dasDSNName, $geneID, $exp_name) = @_;
 	my $results;
 	my $temp_results;
 	my @resultRows;
@@ -245,8 +260,7 @@ sub get_geneAnnotation
 	$results .= &GFF_close();
 	$results .= &footer();
 	
-	&printDASHttpHeader(1); # 1 for DAS success code 200		
-	print $results;
+	return $results;
 }
 
 # ContigView
@@ -255,7 +269,7 @@ sub get_geneAnnotation
 sub get_chromosomeAnnotationFeatures
 {
 	
-	my ($coordinates_string, $exp_name) = @_;
+	my ($registry, $schemaName, $dasDatasetName, $dasDSNName, $coordinates_string, $exp_name) = @_;
 
 	my $resultsHash;
 	my $results;
@@ -362,9 +376,7 @@ sub get_chromosomeAnnotationFeatures
 	$results .= &GFF_close();
 	$results .= &footer();
 	
-	&printDASHttpHeader(1); # 1 for DAS success code 200		
-	print $results;
-
+	return $results;
 }
 
 
@@ -384,7 +396,7 @@ sub get_chromosomeAnnotationFeatures
 
 sub get_chromosomeAnnotationGTE
 {
-	my ($coordinates_string, $exp_name) = @_;
+	my ($registry, $schemaName, $dasDatasetName, $dasDSNName, $coordinates_string, $exp_name) = @_;
 	my $resultsHash;
 	my $results;
 	my $temp_results;
@@ -577,27 +589,13 @@ sub get_chromosomeAnnotationGTE
 	$results .= &GFF_close();
 	$results .= &footer();
 	
-	&printDASHttpHeader(1); # 1 for DAS success code 200	
-	print $results;
-				
+	return $results;
 	#&dummyResultsContig();
 
 }
-########################################### Validate 
-
-########################################### DAS HTTP HEADER
-sub printDASHttpHeader
-{
-	my $val = shift;
-	print $CGI->header(	-'type' =>'text/xml',
-								-'X-DAS-Version' => 'DAS/1.5',
-								-'X-DAS-Status'  => '200',
-								-'X-DAS-Capabilities' => 'dsn/1.0; features/1.0;');
-	
-}
-
-
-########################################### FORMATTING SUBROUTINES
+##################################################################
+################### FORMATTING SUBROUTINES #######################
+##################################################################
 sub header
 {
 	my $version;
@@ -610,12 +608,14 @@ sub header
 sub GFF_open
 {
 	my $hrefURL = shift;
+	no warnings 'uninitialized';
 	return qq|
 	<GFF version="1.0" href="|.$hrefURL.qq|" >		|;
 }
 sub segment_open
 {
 	my ($id, $start, $end) = @_;
+	no warnings 'uninitialized';
 	return qq|
 	<SEGMENT id="|.$id.qq|" version="1.0" start="|.$start.qq|" stop="|.$end.qq|">	|;
 }
@@ -623,12 +623,14 @@ sub segment_open
 sub feature_open
 {
 	my ($id, $label) = @_;
+	no warnings 'uninitialized';
 	return qq|
 		<FEATURE id="|.$id.qq|" label="|.$label.qq|">	|;
 }
 sub type
 {
 	my ($id, $reference, $subparts, $superparts, $val) = @_;
+	no warnings 'uninitialized';
 	# return qq|
 	#	<TYPE id="|.$id.qq|"  reference="|.$reference.qq|" subparts="|.$subparts.qq|" superparts="|.$superparts.qq|">$val</TYPE>	|;
 	return qq|
@@ -645,47 +647,53 @@ sub method
 }
 sub start
 {
-	my $val = shift;	
+	my $val = shift;
+	no warnings 'uninitialized';
 	return qq|
 		<START>$val</START>	|;
 }
 sub end
 {
-	my $val = shift;	
+	my $val = shift;
+	no warnings 'uninitialized';
 	return qq|
 		<END>$val</END>	|;
 
 }
 sub score
 {
-	my $val = shift;	
+	my $val = shift;
+	no warnings 'uninitialized';
 	return qq|
 		<SCORE>$val</SCORE>	|;
 
 }
 sub orientation
 {
-
-	my $val = shift;	
+	my $val = shift;
+	no warnings 'uninitialized';
 	return qq|
 		<ORIENTATION>$val</ORIENTATION>	|;
 }
 sub phase
 {
-	my $val = shift;	
+	my $val = shift;
+	no warnings 'uninitialized';
 	return qq|
 		<PHASE>$val</PHASE>	|;
 
 }
 sub note
 {
-	my $val = shift;	
+	my $val = shift;
+	no warnings 'uninitialized';
 	return qq|
 		<NOTE>$val</NOTE>	|;
 }
 sub link
 {
 	my ($url, $label) = @_;
+	no warnings 'uninitialized';
 	return qq|
 		<LINK href="|.$url.qq|">$label</LINK>|;
 }
@@ -696,6 +704,7 @@ sub target
 sub group
 {
 	my ($id, $type, $label) = @_;
+	no warnings 'uninitialized';
 	return qq|
 		<GROUP id="|.$id.qq|" type="|.$type.qq|" label="|.$label.qq|"/>	|;
 }
