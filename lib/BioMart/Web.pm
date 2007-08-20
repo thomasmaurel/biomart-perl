@@ -2142,7 +2142,7 @@ sub handle_request {
 								$qrunner->printFooter($result_buffer);
 								close($result_buffer);
 								
-								if($preView_formatter_name eq 'HTML') {
+								if($preView_formatter_name =~ 'HTML|HTML_36|GOENRICH') {
 						    		# strip out HTML stuff in case this is HTML-format
 						    		$result_string =~ s/\A\<\?xml.+\<table/\<table/xms; 
 						    		$result_string =~ s/\<\/body.+\Z//xms;
