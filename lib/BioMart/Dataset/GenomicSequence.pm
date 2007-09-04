@@ -1274,7 +1274,7 @@ sub _utrSequences {
 			    $calc_location->{"end"} + 1;
 			$calc_location->{"end"} = 
 			    $calc_location->{"start"} + 
-			    $self->get('downstream_flank');# lose a base if include this - 1;
+			    $self->get('downstream_flank') -1; # positive strand & downstream flank, wont lose the base.
 		    }
 		    
 		    #append to sequence
