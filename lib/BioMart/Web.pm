@@ -631,8 +631,12 @@ sub _new
 	    
             if($real_value = $value_of_param->{ $filtername.'__list' }) {
                # First case: boolean-list type, where the filter indicates which db-table column has the boolean flag
+               if (ref($real_value) eq 'ARRAY') { 
+               	# radio boolean makes an array of only/excluded in safari
+                 	$real_value = pop(@$real_value);
+               }
                $filtervalue = $real_value; # and the real value, stored in the secondary parameter
-			$logger->debug("Modifying bool-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value");
+               $logger->debug("Modifying bool-list filter name/value pair $filtername=>$filtervalue to $filtervalue=>$real_value");
               	# $filtername  = $filtervalue;# name of the actual filter (bool-list thing)
             }
             elsif($real_value = $value_of_param->{ $filtername.'__text__file' }) {
