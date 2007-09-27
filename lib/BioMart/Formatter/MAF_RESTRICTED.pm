@@ -347,14 +347,17 @@ sub preProcessRow2{
 #--------------------------------------------
 sub _printHeader {
     my $date = localtime();
-    my $p1 = sprintf "##maf version=1 source=ensembl\n";
-    my $p2 = sprintf "#".localtime()."\n\n";
-    
+    my $p1 = sprintf "##maf version=1\n";
+    my $p2 = sprintf "#".localtime()."\n";
+    my $p3 = sprintf "#The start coordinate is a zero-based number.\n";
+    my $p4 = sprintf "#For segments in the negative strand, the start\n";
+    my $p5 = sprintf "#is relative to the end of the chromosome. Please, refer to\n";
+    my $p6 = sprintf "#http://genome.ucsc.edu/FAQ/FAQformat#format5 for a\n";
+    my $p7 = sprintf "#description of this file format.\n\n";
     #print $p1;
     #print $p2;
-    return $p1.$p2;
+    return $p1.$p2.$p3.$p4.$p5.$p6.$p7;
 }
-
 # subroutines from AXT.pm <alpha version>
 #--------------------------------------------
 sub _get_aligned_sequence_from_original_sequence_and_cigar_line  {
