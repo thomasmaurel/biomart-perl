@@ -246,6 +246,7 @@ sub printResults {
 		no warnings 'uninitialized';
 		while (my $row = $formatter->nextRow)
 		{
+		    next if ($row eq "\n");
 			# send unique results only if its set on QueryRunner Object
 			if ($self->uniqueRowsOnly()) {
 				my $hash = sha256_base64($row);

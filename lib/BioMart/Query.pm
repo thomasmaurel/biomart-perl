@@ -984,6 +984,11 @@ sub removeAllAttributes{
 }
 
 
+sub removeAllFilters{
+    my $self = shift;
+    $self->set('filters',[]);
+}
+
 =head2 getAllAttributeLists
 
   Usage      :  get all attributeLists, involving all datasets:
