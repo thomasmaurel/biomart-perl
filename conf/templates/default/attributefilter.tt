@@ -9,6 +9,8 @@
 
 [% # Load templates w/ macros to render various attributefilter components %]
 [% PROCESS 'attributefilter_text.tt'              %]
+[% PROCESS 'attributefilter_selectmenu.tt'              %]
+
 
 [% attribute_displayname = attribute.displayName() %]
 [% attribute_parname = "\${param_prefix}"_ attributetree.name _ "__attribute.${attribute.name}" %]
@@ -91,6 +93,11 @@
 [% CASE 'text' %]
   [% # The attribute filter is a plain text filter %]
   [% render_textfield(attribute, filter_parname, attribute_parname) %]
+
+[% CASE 'list' %]
+  [% # The attribute filter is a list filter %]
+  [% render_selectmenu(attribute, filter_parname, attribute_parname) %]
+
 
 [% CASE %]
   ERROR: attributefilter displayType '[% attribute.displayType() || '[undef]' %]' not valid
