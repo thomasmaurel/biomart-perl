@@ -246,6 +246,7 @@ sub printResults {
 		no warnings 'uninitialized';
 		while (my $row = $formatter->nextRow)
 		{
+		    next if ($row eq "\n");
 			# send unique results only if its set on QueryRunner Object
 			if ($self->uniqueRowsOnly()) {
 				my $hash = sha256_base64($row);
@@ -364,7 +365,7 @@ sub _processPath {
     my %union_tables = %{$self->get('union_tables')};
     my $last_visible_exportable = $self->get('last_visible_exportable');
     
-	    
+  
     # $datasetsToProcess length > 1
     unless (scalar(@{$datasetsToProcess}) > 1) {
 	# base case, process the query and return the ResulTable or count

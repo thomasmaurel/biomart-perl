@@ -983,6 +983,13 @@ sub removeAllAttributes{
   $self->set('attributes',[]);
 }
 
+sub removeAllFilters{
+    my $self = shift;
+    $self->set('filters',[]);
+}
+ 
+
+
 
 =head2 getAllAttributeLists
 
