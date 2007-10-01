@@ -65,13 +65,13 @@ Readonly my $FIELD_DELIMITER  =>  q{,};
 Readonly my $RECORD_DELIMITER => qq{\n};
 Readonly my $FIELD_ENCLOSER   => qq{\"};
 
-Readonly  my $current_assembly => 'NCBIM36';
-Readonly  my $new_assembly => 'NCBIM35';
+Readonly  my $current_assembly => 'NCBIM37';
+Readonly  my $new_assembly => 'NCBIM36';
 Readonly my $host => '127.0.0.1';
 Readonly my $port => '3309';
 Readonly my $user => '????';
 Readonly my $pass => '????';
-Readonly my $dbname => 'mus_musculus_core_46_36g';
+Readonly my $dbname => 'mus_musculus_core_47_37';
 
 sub _new {
     my ($self) = @_;
