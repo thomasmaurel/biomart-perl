@@ -285,6 +285,11 @@ sub getFileType {
     return 'txt';
 }
 
+sub getFormatterDisplayName {
+    return undef;
+}
+
+
 sub isBinary {
     return 0;
 }
