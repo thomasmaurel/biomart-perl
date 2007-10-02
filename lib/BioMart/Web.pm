@@ -28,8 +28,9 @@ package BioMart::Web;
 use strict;
 use warnings;
 use English;
+
 use Readonly;
-use Log::Log4perl;					
+use Log::Log4perl;
 use Mail::Mailer;
 use Data::Dumper;
 use File::Path;
@@ -42,10 +43,11 @@ use Number::Format qw(:subs);
 use POSIX qw(strftime);
 use Template;
 use Time::HiRes qw/time/;
-use Template::Constants qw( :debug );
+use Template::Constants qw( :debug ); 
 use Storable qw(store retrieve freeze nfreeze thaw);
 local $Storable::Deparse = 1;
 $Storable::forgive_me = 1;
+
 
 use BioMart::Initializer;
 use BioMart::QueryRunner;
@@ -1760,6 +1762,12 @@ sub handle_request {
 			   	$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
 			   	my @outputformats = split(',', $atttree->outFormats());
 			   	$all_formatters = $atttree->outFormats();
+				my @outputformat_displays;
+				foreach my $formatter(@outputformats){
+				    my $formatter_mod = 'BioMart::Formatter::'.uc($formatter);
+				    push @outputformat_displays, $formatter_mod->getFormatterDisplayName();
+				}
+				$session->param("export_outputdisplays", \@outputformat_displays);
 			   	$session->param("export_outputformats", \@outputformats);		    	
 					my $preView_session_outformat = $session->param('preView_outputformat');
 					my $exportView_session_outformat = $session->param('exportView_outputformat');
@@ -1787,6 +1795,12 @@ sub handle_request {
 					$logger->debug("Got outputformats ".$atttree." for attpage $attributepage, in dataset $dataset_name");
 					my @outputformats = split(',', $atttree->outFormats());
 			   	$all_formatters = $atttree->outFormats();
+				my @outputformat_displays;
+                                foreach my $formatter(@outputformats){
+                                    my $formatter_mod = 'BioMart::Formatter::'.uc($formatter);
+                                    push @outputformat_displays, $formatter_mod->getFormatterDisplayName();
+                                }
+				$session->param("export_outputdisplays", \@outputformats);	
 			   	$session->param("export_outputformats", \@outputformats);
 				}
 			}
@@ -2146,21 +2160,21 @@ sub handle_request {
 								$qrunner->printFooter($result_buffer);
 								close($result_buffer);
 								
-								if($preView_formatter_name =~ 'HTML|HTML_36|GOENRICH') {
-						    		# strip out HTML stuff in case this is HTML-format
-						    		$result_string =~ s/\A\<\?xml.+\<table/\<table/xms; 
-						    		$result_string =~ s/\<\/body.+\Z//xms;
-						    		# apply different css styles here, the classes now removed from
-						    		# HTML formatter as for EXPORT options, no point having those
-						    		# class tags in there
-						    		$result_string =~ s/\<table\>/\<table\ class=\"mart_table\">/gxms;
-						    		$result_string =~ s/\<th\>/\<th\ class=\"mart_th\">/gxms;						    		
-						    		$result_string =~ s/\<tr\>/\<tr\ class=\"mart_tr1\">/gxms;
-						    		$result_string =~ s/\<td\>/\<td\ class=\"mart_td\">/gxms;
+								if($preView_formatter_name =~ '^HTML$|^HTML_36$|^GOENRICH$|^FAMILYENRICH$|^EXPRESSIONENRICH$|^SAME$|^DIFF$|^ALL$') {
+								    # strip out HTML stuff in case this is HTML-format
+								    $result_string =~ s/\A\<\?xml.+\<table/\<table/xms; 
+								    $result_string =~ s/\<\/body.+\Z//xms;
+								    # apply different css styles here, the classes now removed from
+								    # HTML formatter as for EXPORT options, no point having those
+								    # class tags in there
+								    $result_string =~ s/\<table\>/\<table\ class=\"mart_table\">/gxms;
+								    $result_string =~ s/\<th\>/\<th\ class=\"mart_th\">/gxms;						    		
+								    $result_string =~ s/\<tr\>/\<tr\ class=\"mart_tr1\">/gxms;
+								    $result_string =~ s/\<td/\<td\ class=\"mart_td\"/gxms;
 								}
 								else {
-									# wrap in <pre/> to make it look pretty.
-		    						$result_string = "<pre class=\"mart_results\">$result_string</pre>";
+								    # wrap in <pre/> to make it look pretty.
+								    $result_string = "<pre class=\"mart_results\">$result_string</pre>";
 								}
 			    			}
 			    												    			
@@ -2250,14 +2264,25 @@ sub handle_request {
 		{
 			# should return 5 values
 			$all_formatters = 'TSV' if ($session->param("GALAXY_URL"));
-		
+		        my @outputformat_displays;
+                        foreach my $formatter(split(/\,/,$all_formatters)){
+                              my $formatter_mod = 'BioMart::Formatter::'.uc($formatter);
+                              if ($formatter_mod->getFormatterDisplayName()){      
+                                  push @outputformat_displays, $formatter.';'.$formatter_mod->getFormatterDisplayName();
+                              }
+                              else{
+                                  push @outputformat_displays, $formatter.';'.uc($formatter);
+                              }
+                        }
+                        my $display_string = join ",",@outputformat_displays;
+
 			print lc($preView_formatter_name);
 			print '____';
-			print uc($all_formatters);
+			print $display_string;
 			print '____';
 			print lc($exportView_formatter_name);
 			print '____';
-			print uc($all_formatters);
+			print $display_string;
 			print '____';
 			print $result_string;
 			# only resultsString

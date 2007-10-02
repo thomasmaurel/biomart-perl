@@ -1998,12 +1998,15 @@ identity: "Linux"
 			preView_formatters = arr[1].split(',');
 			for (var i = 0; i < preView_formatters.length; i++)
 			{
-				if(preView_formatters[i] != 'TXT' &&  preView_formatters[i] != 'XLS') {
-					if(arr[0].toUpperCase() == preView_formatters[i]){
-						document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase(), true, true);
+				var valAndDisplay = new Array();
+				valAndDisplay = preView_formatters[i].split(';');
+				// if(preView_formatters[i] != 'TXT' &&  preView_formatters[i] != 'XLS') {
+				if (valAndDisplay[0] != 'txt' && valAndDisplay[0] != 'xls') {	
+					if(arr[0] == valAndDisplay[0]){
+						document.mainform.preView_outputformat[j++] = new Option(valAndDisplay[1], valAndDisplay[0], true, true);
 					}
 					else {
-						document.mainform.preView_outputformat[j++] = new Option(preView_formatters[i], preView_formatters[i].toLowerCase());
+						document.mainform.preView_outputformat[j++] = new Option(valAndDisplay[1], valAndDisplay[0]);
 					}
 				}
 			}
@@ -2017,14 +2020,21 @@ identity: "Linux"
 			exportView_formatters = arr[3].split(',');	
 			for (var i = 0; i < exportView_formatters.length; i++)
 			{
-				if(preView_formatters[i] != 'TXT') {
-					if(arr[2].toUpperCase() == exportView_formatters[i]){
-						document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase(),true,true);
-					}
-					else {
-						document.mainform.exportView_outputformat[j++] = new Option(exportView_formatters[i], exportView_formatters[i].toLowerCase());
-					}
-				}
+
+
+                                var valAndDisplay = new Array();
+                                valAndDisplay = exportView_formatters[i].split(';');
+                                if (preView_formatters[i].split(';')[0] != 'txt') {
+                                        if(arr[2] == valAndDisplay[0]){
+                                                document.mainform.exportView_outputformat[j++] = new Option(valAndDisplay[1], valAndDisplay[0], true, true);
+                                        }
+                                        else {
+                                                document.mainform.exportView_outputformat[j++] = new Option(valAndDisplay[1], valAndDisplay[0]);
+                                        }
+                                }
+
+
+				
 			}
 			document.getElementById('resultsTableId').innerHTML = arr[4];
 		}
