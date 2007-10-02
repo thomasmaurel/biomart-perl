@@ -93,6 +93,10 @@ sub _new {
     $self->attr('reference',0);
 }
 
+sub getFormatterDisplayName {
+    return 'Diff to reference';
+}
+
 
 sub processQuery {
     my ($self, $query) = @_;

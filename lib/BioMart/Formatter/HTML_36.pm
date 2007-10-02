@@ -118,6 +118,11 @@ sub _new {
 }
 
 
+sub getFormatterDisplayName {
+    return 'Mouse 36 assembly (HTML)';
+}
+
+
 sub processQuery {
     my ($self, $query) = @_;
     $self->set('original_attributes',[@{$query->getAllAttributes()}]) 

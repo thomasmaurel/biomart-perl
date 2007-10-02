@@ -93,6 +93,9 @@ sub _new {
     $self->attr('reference',0);
 }
 
+sub getFormatterDisplayName {
+    return 'Same as reference';
+}
 
 sub processQuery {
     my ($self, $query) = @_;
