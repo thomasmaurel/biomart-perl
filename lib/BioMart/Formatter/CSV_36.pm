@@ -87,6 +87,11 @@ sub _new {
     $self->attr('db_adaptor',$db);
 }
 
+sub getFormatterDisplayName {
+    return 'Mouse 36 assembly (CSV)';
+}
+
+
 sub processQuery {
     my ($self, $query) = @_;
 

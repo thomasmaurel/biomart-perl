@@ -66,6 +66,11 @@ sub _new {
     $self->attr('reference',0);
 }
 
+sub getFormatterDisplayName {
+    return 'Same as reference (tab separated)';
+}
+
+
 sub processQuery {
     my ($self, $query) = @_;
 
