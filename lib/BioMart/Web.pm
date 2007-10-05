@@ -1879,14 +1879,16 @@ sub handle_request {
 			if ($showQuery eq '1') {
 				# do not want to show internals of BioMart ;-) 
 				my $tempered_xml = $query_main->toXML(1,1,1,1);
-				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/header = \"0\" uniqueRows = \"0\"/g;
+				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/formatter = \"$exportView_formatter_name\" header = \"0\" uniqueRows = \"0\"/g;
 				$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
 				$tempered_xml =~s/softwareVersion/datasetConfigVersion/g;				
 				print $tempered_xml;
 			}
 			# PERL API equivalent of the query
 			if ($showQuery eq '2') {
-				print $query_main->toPerl();
+				my $tempered_perlScript = $query_main->toPerl();
+				$tempered_perlScript =~ s/my \$query_runner = BioMart::QueryRunner->new\(\)\;/\$query->formatter\(\"$exportView_formatter_name\"\)\;\n\nmy \$query_runner = BioMart::QueryRunner->new\(\)\;/;
+				print $tempered_perlScript;
 			}
 			$session->clear('showquery'); # so we don't get stuck a this stage
 			$session->flush();
