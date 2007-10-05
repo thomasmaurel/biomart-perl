@@ -55,10 +55,12 @@ use warnings;
 use base qw(BioMart::FormatterI);
 use Readonly;
 use Getopt::Long;
-use Bio::EnsEMBL::SimpleFeature;
-use Bio::EnsEMBL::Analysis;
-use Bio::EnsEMBL::DBSQL::DBAdaptor;
 
+eval{
+require Bio::EnsEMBL::SimpleFeature;
+require Bio::EnsEMBL::Analysis;
+require Bio::EnsEMBL::DBSQL::DBAdaptor;
+};
 # Constants
 
 Readonly my $FIELD_DELIMITER  =>  q{,};
