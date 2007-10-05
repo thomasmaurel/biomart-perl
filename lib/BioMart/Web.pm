@@ -1759,16 +1759,10 @@ sub handle_request {
 				# || BioMart::Exception::Configuration->throw("Can't find attpage $attributepage for $schema_name\.$dataset_name");			
 				if (defined($atttree))
 				{ 
-			   	$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
-			   	my @outputformats = split(',', $atttree->outFormats());
-			   	$all_formatters = $atttree->outFormats();
-				my @outputformat_displays;
-				foreach my $formatter(@outputformats){
-				    my $formatter_mod = 'BioMart::Formatter::'.uc($formatter);
-				    push @outputformat_displays, $formatter_mod->getFormatterDisplayName();
-				}
-				$session->param("export_outputdisplays", \@outputformat_displays);
-			   	$session->param("export_outputformats", \@outputformats);		    	
+					$logger->debug("Got outputformats ".$atttree->outFormats()." for attpage $attributepage, in dataset $dataset_name");
+					my @outputformats = split(',', $atttree->outFormats());
+					$all_formatters = $atttree->outFormats();
+					$session->param("export_outputformats", \@outputformats);		    	
 					my $preView_session_outformat = $session->param('preView_outputformat');
 					my $exportView_session_outformat = $session->param('exportView_outputformat');
 				 	foreach (@outputformats)
@@ -1794,14 +1788,8 @@ sub handle_request {
 					my $atttree = $allAttributeTrees->[0]; # first one is supposed to be the default one
 					$logger->debug("Got outputformats ".$atttree." for attpage $attributepage, in dataset $dataset_name");
 					my @outputformats = split(',', $atttree->outFormats());
-			   	$all_formatters = $atttree->outFormats();
-				my @outputformat_displays;
-                                foreach my $formatter(@outputformats){
-                                    my $formatter_mod = 'BioMart::Formatter::'.uc($formatter);
-                                    push @outputformat_displays, $formatter_mod->getFormatterDisplayName();
-                                }
-				$session->param("export_outputdisplays", \@outputformats);	
-			   	$session->param("export_outputformats", \@outputformats);
+					$all_formatters = $atttree->outFormats();
+					$session->param("export_outputformats", \@outputformats);
 				}
 			}
 		
@@ -2264,17 +2252,18 @@ sub handle_request {
 		{
 			# should return 5 values
 			$all_formatters = 'TSV' if ($session->param("GALAXY_URL"));
-		        my @outputformat_displays;
-                        foreach my $formatter(split(/\,/,$all_formatters)){
-                              my $formatter_mod = 'BioMart::Formatter::'.uc($formatter);
-                              if ($formatter_mod->getFormatterDisplayName()){      
-                                  push @outputformat_displays, $formatter.';'.$formatter_mod->getFormatterDisplayName();
-                              }
-                              else{
-                                  push @outputformat_displays, $formatter.';'.uc($formatter);
-                              }
-                        }
-                        my $display_string = join ",",@outputformat_displays;
+			my @outputformat_displays;
+			foreach my $formatter(split(/\,/,$all_formatters)){
+				my $formatter_mod = 'BioMart::Formatter::'.uc($formatter);
+				if ($formatter_mod->getFormatterDisplayName()){      
+					push @outputformat_displays, $formatter.';'.$formatter_mod->getFormatterDisplayName();
+				}
+				else{
+					push @outputformat_displays, $formatter.';'.uc($formatter);
+				}
+			}
+			
+			my $display_string = join ",",@outputformat_displays;
 
 			print lc($preView_formatter_name);
 			print '____';

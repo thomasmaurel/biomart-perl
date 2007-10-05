@@ -56,11 +56,11 @@ package BioMart::Formatter::HTML_36;
 use strict;
 use warnings;
 use Readonly;
-
-use Bio::EnsEMBL::SimpleFeature;
-use Bio::EnsEMBL::Analysis;
-use Bio::EnsEMBL::DBSQL::DBAdaptor;
-
+eval{
+require Bio::EnsEMBL::SimpleFeature;
+require Bio::EnsEMBL::Analysis;
+require Bio::EnsEMBL::DBSQL::DBAdaptor;
+};
 # Constants
 
 Readonly  my $current_assembly => 'NCBIM37';
