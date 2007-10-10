@@ -1322,7 +1322,7 @@ sub handle_request {
 			push(@{ $js_pushactions_of_datasetmenu{ 'schema' }->{ $schema_name }->{ 'databasemenu' } }, [$schema__dbName, $database_name] );
 			my $datasets = $registry->getAllDataSetsByDatabaseName($schema_name, $database_name, 1);
 			my $last_dataset;
-	     	DATASET:
+	     	DATASET:	     	
 			#foreach my $dataset_name(sort @$datasets) {
 			foreach my $dataset_name(@$datasets) {
 				my $dataset = $registry->getDatasetByName($schema_name, $dataset_name)
@@ -1340,7 +1340,7 @@ sub handle_request {
 						# just in case there are more than one defaults DSs in a MART, they shouls also be ordered
 						# alphabetically tore them in a separate hash, and towards the end of this Mart
 						# add them to the top in alphabetical order
-						$defDSHash{$dataset->displayName()} = $dataset->name();
+						$defDSHash{$dataset->displayName()} = $dataset->name();						
 	    			}
 	    			else{
 						push(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
@@ -1387,8 +1387,22 @@ sub handle_request {
 					}	
 				}
 			}
+			# find out longest dataset displayName in order to draw separator line b/w default DS and the rest
+	     	my $separator_length = 5; # default
+	     	foreach my $dataset_name(@$datasets) {
+				my $dataset = $registry->getDatasetByName($schema_name, $dataset_name);
+				if (length($dataset->displayName()) > $separator_length) {
+					$separator_length = length($dataset->displayName());
+				}
+			}
+			my $separator_added = 0;
+			my $separator = '-'x$separator_length;
 			foreach my $dispName(reverse sort keys %defDSHash) {
-				#print "$defDSHash{$dispName}";
+				if (!$separator_added) {
+					unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
+						['', $separator]); # behave just like -choose dataset-, so set no value
+					$separator_added = 1;
+				}
 				unshift(@{ $js_pushactions_of_datasetmenu{ 'databasemenu' }->{ $schema__dbName }->{ 'datasetmenu_3' } }, 
 						[$defDSHash{$dispName}, $dispName]);				
 			}
