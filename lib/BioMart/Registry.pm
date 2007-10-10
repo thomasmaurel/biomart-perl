@@ -1242,8 +1242,8 @@ sub getDatasetsExportingTo_reverseDBs
 		my $dsObj = $self->getDatasetByName($virtualSchema, $dsName);
 		my $dbName = $dsObj->locationDisplayName();
 		if ($dsObj->getConfigurationTree('default')->defaultDataset())	{
-			#unshift @{$martsHash{$dbName}}, $dsName;
-			push @{$martsHashDefaultDS{$dbName}}, $dsName;
+			#push @{$martsHashDefaultDS{$dbName}}, $dsName;
+			push @{$martsHash{$dbName}}, $dsName;
 		}
 		else {		
 			push @{$martsHash{$dbName}}, $dsName;
