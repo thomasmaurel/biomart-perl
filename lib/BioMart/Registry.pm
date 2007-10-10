@@ -58,6 +58,7 @@ package BioMart::Registry;
 use strict;
 use warnings;
 use BioMart::Links;
+use Data::Dumper;
 use Storable qw(store retrieve freeze nfreeze thaw);
 local $Storable::Deparse = 1;
 $Storable::forgive_me = 1;
@@ -1217,30 +1218,60 @@ sub getDatasetsExportingTo_reverseDBs
 		push @exporting_datasets, $fr_dataset if ($self->getLinkBetween(
 		$virtualSchema,$fr_dataset,$to_dataset));
 	}
-	
-	# return @exporting_datasets;
-	# maintain the same order of datasets by rearrange them in reverse order as per DB Names
+
+	# get LocationName of this dataset
+	my $to_datasetLocationName = $self->getDatasetByName($virtualSchema, $to_dataset)->locationDisplayName();
+
+	# maintain the same order of datasets by rearrange them as
+	# the mart of first DS selection should go at the bottom of second dataset list
 	my @allMarts;
 	my %martsHash;
+	my %martsHashDefaultDS;
 	my @revisedOrder;
 	foreach my $virtualSchemaObj (@{$self->getAllVirtualSchemas}) {
 		next unless ($virtualSchemaObj->name eq $virtualSchema);
-		foreach my $location (@{$virtualSchemaObj->getAllLocations(1)}) {			
-			unshift @allMarts, $location->displayName();
-			$martsHash{$location->displayName()} = undef;
+		foreach my $location (@{$virtualSchemaObj->getAllLocations(1)}) {				
+			next if ($location->displayName() eq $to_datasetLocationName);
+			push @allMarts, $location->displayName();
+		}
+		push @allMarts, $to_datasetLocationName;
+	}
+	
+	# assigning datasets to their marts, except default datasets, they need to be sorted
+	foreach my $dsName (@exporting_datasets) {
+		my $dsObj = $self->getDatasetByName($virtualSchema, $dsName);
+		my $dbName = $dsObj->locationDisplayName();
+		if ($dsObj->getConfigurationTree('default')->defaultDataset())	{
+			#unshift @{$martsHash{$dbName}}, $dsName;
+			push @{$martsHashDefaultDS{$dbName}}, $dsName;
+		}
+		else {		
+			push @{$martsHash{$dbName}}, $dsName;
 		}
 	}
 	
-	foreach my $dsName (@exporting_datasets) {
-		my $dbName = $self->getDatasetByName($virtualSchema, $dsName)->locationDisplayName();
-		push @{$martsHash{$dbName}}, $dsName;
+	# sorting default datasets and adding them to their respective mart keys
+	foreach my $dbName (keys %martsHashDefaultDS)	{
+		if ($martsHashDefaultDS{$dbName}) {
+			foreach my $dsName (reverse sort(@{$martsHashDefaultDS{$dbName}})) {
+				unshift @{$martsHash{$dbName}}, $dsName;
+			}
+		}
 	}
 	
+	# determine if splitter-line is required or not. 
+	# this is only required when linking within the mart and across
+	# marts exists
+	my $splitter_line = 0;
+	$splitter_line = 1 if($martsHash{$to_datasetLocationName} && scalar keys %martsHash > 1);
+
 	foreach my $martName (@allMarts) {
+		push @revisedOrder, "splitter-line" if($splitter_line && $martName eq $to_datasetLocationName);
 		foreach (@{$martsHash{$martName}}) {
 			push @revisedOrder, $_;
 		}
 	}
+	
 	return @revisedOrder;
 }
 
