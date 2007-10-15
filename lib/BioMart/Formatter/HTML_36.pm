@@ -205,7 +205,12 @@ sub nextRow {
 							    );
 
                 # project feature to new assembly
-	       my @segments = @{ $feat->feature_Slice->project('chromosome', $new_assembly) };
+	       my $feat_slice = $feat->feature_Slice;
+	       my @segments;
+	       if ($feat_slice){
+		   @segments = @{ $feat->feature_Slice->project('chromosome', $new_assembly) };
+	       }
+
 
                 # do some sanity checks on the projection results:
                 # discard the projected feature if
