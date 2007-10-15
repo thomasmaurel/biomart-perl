@@ -337,13 +337,15 @@ sub getConfigurationTree {
     foreach my $xmlAttributeTree (@{ $xmlHash->{'AttributePage'} }) {
 	next if ($xmlAttributeTree->{'hidden'}
 		 && $xmlAttributeTree->{'hidden'} eq 'true');
+	my $outFormats = $xmlAttributeTree->{'outFormats'};
+	$outFormats =~ s/,,/,/g if ($outFormats);
         my $attributeTree = BioMart::Configuration::AttributeTree->new(
 		'name'        => $xmlAttributeTree->{'internalName'},
 		'displayName' => $xmlAttributeTree->{'displayName'},
 		'description' => $xmlAttributeTree->{'description'},
 		'hideDisplay' => $xmlAttributeTree->{'hideDisplay'},
-		'outFormats'  => $xmlAttributeTree->{'outFormats'},
-     	'maxSelect'  => $xmlAttributeTree->{'maxSelect'},    
+		'outFormats'  => $outFormats,
+		'maxSelect'  => $xmlAttributeTree->{'maxSelect'},    
 								       );
         foreach my $xmlAttributeGroup
             (@{ $xmlAttributeTree->{'AttributeGroup'} }) {
