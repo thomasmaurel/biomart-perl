@@ -201,6 +201,7 @@ sub nextRow {
        if ($$attribute_url[$i]){
 	   my @url_data = map {$$row[$_]} @{$$attribute_url_positions[$i]};
 	   my $url_string = sprintf($$attribute_url[$i],@url_data);
+	   $url_string =~ s/>//g;
 	   push @{$new_row}, '<a href="'.$url_string.'" target="_blank"'.
 	       $$row[$$attribute_positions[$i]]."</a>";
        }
