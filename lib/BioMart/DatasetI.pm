@@ -1451,7 +1451,7 @@ sub _attributeMerge {
 #						print "<BR>, Merging Here";
 						#e.g pKey=267929 AND key=26792911522636522755-15 
 	    											
-			    		my $finalRow;
+			    		my ($finalRow, $avoidRepeats) = ();
 #						print "<BR>=================== ALL_ROWS ================ <BR>", Dumper(\@allRows);
 						foreach my $subrow (@allRows) {						    	
 			   				if($subrow) {
@@ -1462,15 +1462,9 @@ sub _attributeMerge {
 												$finalRow->[$i] = $row->[$i];
 											}
 											else {
-												#if ( index ($finalRow->[$i],$row->[$i]) < 0 )	{
-												#	$finalRow->[$i] .= ';'.$row->[$i]; # bcoz comma exits in some data contents
-												#}
-												my $presenceFlag = 0;
-												foreach my $val ( split(/\;/, $finalRow->[$i]) ){
-													$presenceFlag = 1 if ($val eq $row->[$i]);
-												}
-												$finalRow->[$i] .= ';'.$row->[$i] if (!$presenceFlag);
+												$finalRow->[$i] .= ';'.$row->[$i] if (!$avoidRepeats->{$i}->{$row->[$i]});
 											}
+											$avoidRepeats->{$i}->{$row->[$i]} = 1;
 										}
 									}	
 								}		
