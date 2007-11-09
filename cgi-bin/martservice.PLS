@@ -453,7 +453,7 @@ sub get_filters {
 				foreach (@$options){
 				    push @vals,$_->value;
 				}
-				$output .= $option->filter->name."\t".$option->filter->displayName."\t[".join(",",@vals)."]\t".$option->filter->description."\n";
+				$output .= $option->filter->name."\t".$option->filter->displayName."\t[".join(",",@vals)."]\t".$option->filter->description."\t".$fpage->name."\n";
 			    }
 			}
 			else{
@@ -462,7 +462,7 @@ sub get_filters {
 			    foreach (@$options){
 				push @vals,$_->value;
 			    }
-			    $output .= $filter->name."\t".$filter->displayName."\t[".join(",",@vals)."]\t".$filter->description."\n";
+			    $output .= $filter->name."\t".$filter->displayName."\t[".join(",",@vals)."]\t".$filter->description."\t".$fpage->name."\n";
 			}
 		    }
 		}
@@ -508,7 +508,7 @@ sub get_attributes {
 	    foreach my $agroup (@{$apage->getAllAttributeGroups}){
 		foreach my $acollection(@{$agroup->getAllCollections}){
 		    foreach my $attribute(@{$acollection->getAllAttributes}){
-			$output .= $attribute->name."\t".$attribute->displayName."\t".$attribute->description."\n";
+			$output .= $attribute->name."\t".$attribute->displayName."\t".$attribute->description."\t".$apage->name."\n";
 		    }
 		}
 	    }
