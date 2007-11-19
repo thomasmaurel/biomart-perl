@@ -396,7 +396,8 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 			$actualDS = $self->getActualDS_reverseLinks($filter->dataSetName, \%vDataset);
 		}	
 
-		if ($filter->isa("BioMart::Configuration::ValueFilter"))
+		if ($filter->isa("BioMart::Configuration::ValueFilter")
+			|| $filter->isa("BioMart::Configuration::FilterList_List"))
 		{
 			my @values;
 			my @rows;
@@ -547,20 +548,20 @@ sub _toXML_old
 $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq|" requestId= "biomart-client">|;
 
 	my $datasets = $self->getDatasetNames;
- 	foreach my $dataset(@$datasets)
+	foreach my $dataset(@$datasets)
 	{
 		my $interface = $self->getInterfaceForDataset($dataset);
-     	$xml .= qq |
+		$xml .= qq |
 	<Dataset name = "|.$dataset.qq|" interface = "|.$interface.qq|" >|;
 
 		my $atts = $self->getAllAttributeLists($dataset);
-     	foreach my $attribute_list (@$atts)
-     	{
+		foreach my $attribute_list (@$atts)
+		{
 			my $attributeString = $attribute_list->attributeString;
-	  		my @attributeNames = split(/,/,$attributeString);
-	  		foreach my $attributeName (@attributeNames){
-	    		$xml .= qq |
-		  	<Attribute name = "|.$attributeName.qq|" />|;
+			my @attributeNames = split(/,/,$attributeString);
+			foreach my $attributeName (@attributeNames){
+				$xml .= qq |
+			<Attribute name = "|.$attributeName.qq|" />|;
 			}
 		}
 
@@ -574,7 +575,8 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
      	my $filts = $self->getAllFilters($dataset);
 		foreach my $filter (@$filts)
      	{
-			if ($filter->isa("BioMart::Configuration::ValueFilter"))
+			if ($filter->isa("BioMart::Configuration::ValueFilter") 
+				|| $filter->isa("BioMart::Configuration::FilterList_List"))
 			{
 				my @values;
 				my @rows;
@@ -983,11 +985,13 @@ sub removeAllAttributes{
   $self->set('attributes',[]);
 }
 
-
 sub removeAllFilters{
     my $self = shift;
     $self->set('filters',[]);
 }
+ 
+
+
 
 =head2 getAllAttributeLists
 
