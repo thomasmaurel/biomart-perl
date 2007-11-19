@@ -396,7 +396,8 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
 			$actualDS = $self->getActualDS_reverseLinks($filter->dataSetName, \%vDataset);
 		}	
 
-		if ($filter->isa("BioMart::Configuration::ValueFilter"))
+		if ($filter->isa("BioMart::Configuration::ValueFilter")
+			|| $filter->isa("BioMart::Configuration::FilterList_List"))
 		{
 			my @values;
 			my @rows;
@@ -574,7 +575,8 @@ $limit_size.qq|" count = "|.$count.qq|" softwareVersion = "|.$softwareVersion.qq
      	my $filts = $self->getAllFilters($dataset);
 		foreach my $filter (@$filts)
      	{
-			if ($filter->isa("BioMart::Configuration::ValueFilter"))
+			if ($filter->isa("BioMart::Configuration::ValueFilter") 
+				|| $filter->isa("BioMart::Configuration::FilterList_List"))
 			{
 				my @values;
 				my @rows;

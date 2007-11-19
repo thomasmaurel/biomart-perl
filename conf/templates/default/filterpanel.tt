@@ -82,21 +82,21 @@
 				[% # Get all non-hidden filters in this filtercollection and render them %]
 
 				[% FOREACH filter = filtercollection.getAllFilters() %]
+					[% NEXT IF filter.hideDisplay() == 'true' %]					
 					[% render_filter(filter) %]
 					[% IF filter.defaultOn.defined() && filter.defaultOn == "true"  %]
-	  					[% default_filters.push("\"$filtercollection_paramname\"") # add to list to set as default filter %]
-  					[% END %]
-					
+		  				[% default_filters.push("\"$filtercollection_paramname\"") # add to list to set as default filter %]
+	  				[% END %]
 				[% END %]
 				<br />
 			[% ELSIF filters.size == 1 %]
 				[% filter = filters.0 %]
+				[% NEXT IF filter.hideDisplay() == 'true' %]
 				[% render_filter(filter, filtercollection) %] 
 				[% filtercollection_paramname = "\${param_prefix}filtercollection." _ filtercollection.name %] 
 				[% IF filter.defaultOn.defined() && filter.defaultOn == "true"  %]
   					[% default_filters.push("\"$filtercollection_paramname\"") # add to list to set as default filter %]
-  										
-				[% END %]
+  				[% END %]
 			[% ELSE %]
   				[% # <span style="font-size: 80%"><i>No visible filters in collection $filtercollection.name</i></span> %]
 			[% END %]

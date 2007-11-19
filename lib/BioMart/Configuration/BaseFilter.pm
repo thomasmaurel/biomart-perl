@@ -60,6 +60,8 @@ use constant POINTEDFROMDATASET   => "pointedFromDataset";
 use constant POINTEDFROMINTERFACE => "pointedFromInterface";
 use constant DEPENDSON            => "dependsOn";
 use constant DEPENDSONTYPE        => "dependsOnType";
+use constant HIDEDISPLAY        => "hideDisplay";
+
 
 use constant TITLES => [
                NAME,
@@ -81,7 +83,8 @@ use constant TITLES => [
                POINTEDFROMDATASET,
                POINTEDFROMINTERFACE,
                DEPENDSON,
-               DEPENDSONTYPE
+               DEPENDSONTYPE,
+               HIDEDISPLAY
 			 ];
 =head2 _new
 
@@ -605,6 +608,24 @@ sub style {
     $self->setParam(STYLE, $value);
   }
   return $self->getParam(STYLE);
+}
+
+=head2 hideDisplay
+
+  Usage      : Arg [1] - (optional) string $display
+  Description: get/set for style
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+
+=cut
+
+sub hideDisplay {
+  my ($self, $value) = @_;
+  if ($value){
+    $self->setParam(HIDEDISPLAY, $value);
+  }
+  return $self->getParam(HIDEDISPLAY);
 }
 
 =head2 autoCompletion

@@ -306,7 +306,8 @@ sub _generateSQL {
 
 	my $filters = $query->getAllFilters;
 	foreach my $filter (@$filters){
-	    if ($filter->isa("BioMart::Configuration::FilterList")){
+	    if ($filter->isa("BioMart::Configuration::FilterList")
+	    	|| $filter->isa("BioMart::Configuration::FilterList_List") ){
 		if ($filter->batching) {
 		    $self->set('batched_filterlist', $filter);
 		    #REPLACEBFILTER replaced later with actual SQL
@@ -315,7 +316,7 @@ sub _generateSQL {
 		else {
 		    $where .= $and.$filter->toSQL($oracle);
 		}
-
+	
 		my $list_filters = $filter->getAllFilters;
 		foreach my $list_filter (@$list_filters){
 		    my $table = $list_filter->table;
@@ -734,7 +735,7 @@ sub _generateSQL {
 my $logger=Log::Log4perl->get_logger(__PACKAGE__);
  $logger->warn("QUERY SQL:  $sql");
 
-    return $sql;
+	return $sql;
 }
 
 sub _getCount {
@@ -782,7 +783,8 @@ sub _getCount {
       # call with 'ORACLE' flag if appropiate to allow IN list switching
       $where .= $and.$filter->toSQL($oracle);
       # recover the tables
-      if ($filter->isa("BioMart::Configuration::FilterList")){
+      if ($filter->isa("BioMart::Configuration::FilterList")
+      	|| $filter->isa("BioMart::Configuration::FilterList_List")){
         if ($filter->batching) {
 	    $ret = 1; 
 	    $batching = 1;

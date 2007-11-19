@@ -89,6 +89,7 @@ use BioMart::Configuration::BooleanFilter;
 use BioMart::Configuration::ValueFilter;
 use BioMart::Configuration::AttributeList;
 use BioMart::Configuration::FilterList;
+use BioMart::Configuration::FilterList_List;
 
 
 use base qw(BioMart::Root);
@@ -441,6 +442,7 @@ sub getConfigurationTree {
     # FILTERS
     # for attributes just required for filters don't add them to the config 
     # tree - no need to hide them then
+    
     foreach my $xmlFilterTree (@{ $xmlHash->{'FilterPage'} }) {
         next if ($xmlFilterTree->{'hidden'} 
 		 && $xmlFilterTree->{'hidden'} eq 'true');
@@ -451,54 +453,78 @@ sub getConfigurationTree {
 								 );
         foreach my $xmlFilterGroup (@{ $xmlFilterTree->{'FilterGroup'} }) {
             next if ($xmlFilterGroup->{'hidden'} 
-		     && $xmlFilterGroup->{'hidden'} eq 'true');
-            my $filterGroup = BioMart::Configuration::FilterGroup->new(
+			     && $xmlFilterGroup->{'hidden'} eq 'true');
+   	         my $filterGroup = BioMart::Configuration::FilterGroup->new(
                     'name'  => $xmlFilterGroup->{'internalName'},
                     'displayName' => $xmlFilterGroup->{'displayName'},
                     'description' => $xmlFilterGroup->{'description'},
 								       );
             foreach my $xmlFilterCollection 
-		(@{ $xmlFilterGroup->{'FilterCollection'} }) {
+					(@{ $xmlFilterGroup->{'FilterCollection'} }) {
                 next if ($xmlFilterCollection->{'hidden'} 
-			 && $xmlFilterCollection->{'hidden'} eq 'true');
+					 && $xmlFilterCollection->{'hidden'} eq 'true');
                 my $filterCollection =
                     BioMart::Configuration::FilterCollection->new(
                         'name'  => lc($xmlFilterCollection->{'internalName'}),
                         'displayName' => $xmlFilterCollection->{'displayName'},
-                    'description' => $xmlFilterCollection->{'description'},
+   	                 'description' => $xmlFilterCollection->{'description'},
 								  );
                 foreach my $xmlFilter
                     (@{ $xmlFilterCollection->{'FilterDescription'} }) {
-                    next if ($xmlFilter->{'hidden'} 
-			     && $xmlFilter->{'hidden'} eq 'true');
-		    my $attribute;
-		    $attribute = $configurationTree->
-			getAttributeByName($xmlFilter->{'internalName'});
-		    if (!$attribute){
-			$attribute = BioMart::Configuration::Attribute->new(
-			    'name' => lc($xmlFilter->{'internalName'}),
+                   	 	next if ($xmlFilter->{'hidden'} 
+						     	&& $xmlFilter->{'hidden'} eq 'true');
+						    	my $attribute;
+						   	$attribute = $configurationTree->
+								getAttributeByName($xmlFilter->{'internalName'});
+					 	if (!$attribute){
+
+							$attribute = BioMart::Configuration::Attribute->new(
+			    				'name' => lc($xmlFilter->{'internalName'}),
                             'imageURL' => $xmlFilter->{'imageURL'},
                             'displayName' => $xmlFilter->{'displayName'},
-                    'description' => $xmlFilter->{'description'},
+                  	  	'description' => $xmlFilter->{'description'},
                             'table' => $xmlFilter->{'tableConstraint'},
                             'relational_attribute' => $xmlFilter->{'field'},
                             'key' => lc($xmlFilter->{'key'}),
-			    'dependsOnType' => $xmlFilter->{'dependsOnType'},      
-			    'dependsOn' => $xmlFilter->{'dependsOn'},   
+			    				'dependsOnType' => $xmlFilter->{'dependsOnType'},      
+			    					'dependsOn' => $xmlFilter->{'dependsOn'},   
                             'dataSetName' => $dataSetName,
                             'interface' => $interfaceType,
                         );
-		    }
+		    			}
 		    
-		    my $filter;
-		    if ($xmlFilter->{'pointerDataset'} 
-			&& $xmlFilter->{'pointerInterface'} && 
-			$xmlFilter->{'pointerFilter'}){
-			next;
-		    }
-		    elsif ($xmlFilter->{'type'}  
-			   && $xmlFilter->{'type'} eq 'boolean'){
-			$filter = BioMart::Configuration::BooleanFilter->new(
+		    			my $filter;
+		    		if ($xmlFilter->{'pointerDataset'} 
+						&& $xmlFilter->{'pointerInterface'} && 
+						$xmlFilter->{'pointerFilter'}){
+						next;
+		    		}
+					# FILTER_LIST_HACK-part 1
+		    		elsif ($xmlFilter->{'filterList'}) {
+		    			#print STDERR "\nprocessing FILTER LIST: ", $xmlFilter->{'filterList'}, "\n";
+		    			$filter = BioMart::Configuration::FilterList_List->new(
+                    	'name'           => $xmlFilter->{'internalName'},
+                    	'displayName'    => $xmlFilter->{'displayName'},
+			       	  	'description' => $xmlFilter->{'description'},
+		    				'filter_string'    => $xmlFilter->{'filterList'},
+                    	'orderby_string' => $xmlFilter->{'orderby_string'},
+                    	'dataSetName'    => $dataSetName,
+                    	'interface' => $interfaceType,
+                    	'type'				=> $xmlFilter->{'type'},
+                    	'displayType'				=> $xmlFilter->{'displayType'},
+                    	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},
+						 );
+							# this is done once the configuration tree is populated, so we can find the filter Objects
+							# and associate them with this filterList. see code before importables
+							#foreach my $filterName (split (/,/, $xmlFilter->{'filterList'})) {
+							#  my $filterListItem = $configurationTree->getFilterByName($filterName);
+         				#	print Dumper($filter);
+         				# 	$filter->addFilter($filterListItem);
+							#}
+		    		}
+		    	elsif ($xmlFilter->{'type'}  
+			   	&& $xmlFilter->{'type'} eq 'boolean'){
+					$filter = BioMart::Configuration::BooleanFilter->new(
 		               'name'          => $xmlFilter->{'internalName'},
                             'imageURL' => $xmlFilter->{'imageURL'},
 			       'displayName' => $xmlFilter->{'displayName'},
@@ -511,6 +537,7 @@ sub getConfigurationTree {
                                'type'        => $xmlFilter->{'type'},
 			    'dependsOnType' => $xmlFilter->{'dependsOnType'},      
 			    'dependsOn' => $xmlFilter->{'dependsOn'},  
+            	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},  
 									     );
 			$filter->attribute($attribute);
                         $filter->defaultOn($xmlFilter->{'defaultOn'});
@@ -532,7 +559,8 @@ sub getConfigurationTree {
 				   $xmlFilter->{'setAttributePage'},
                               'type'        => $xmlFilter->{'type'},
 			    'dependsOnType' => $xmlFilter->{'dependsOnType'},      
-			    'dependsOn' => $xmlFilter->{'dependsOn'},  
+			    'dependsOn' => $xmlFilter->{'dependsOn'}, 
+            	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},  
 								       );
 			$filter->setNumberFlag();
 			$filter->attribute($attribute);
@@ -540,7 +568,7 @@ sub getConfigurationTree {
                         $filter->setAttribute($xmlFilter->{'setAttribute'});
 		    }
 		    else
-		    {     # if other types correspond to value     
+		    {  
 			    $filter =
 			      BioMart::Configuration::ValueFilter->new(
 				'name'        => $xmlFilter->{'internalName'},
@@ -554,7 +582,8 @@ sub getConfigurationTree {
 				     $xmlFilter->{'setAttributePage'},
                                 'type'        => $xmlFilter->{'type'},
 			    'dependsOnType' => $xmlFilter->{'dependsOnType'},      
-			    'dependsOn' => $xmlFilter->{'dependsOn'},  
+			    'dependsOn' => $xmlFilter->{'dependsOn'},
+             	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},  
 								       );
 			    $filter->attribute($attribute);
 			    $filter->operation($xmlFilter->{'qualifier'});
@@ -598,15 +627,39 @@ sub getConfigurationTree {
 		    $filter->style($xmlFilter->{'style'});
 		    $filter->graph($xmlFilter->{'graph'});
 		    $filter->autoCompletion($xmlFilter->{'autoCompletion'});
+                    
                     $filterCollection->addFilter($filter);
+                    
+       
                 }
                 $filterGroup->addCollection($filterCollection);
             }
             $filterTree->addFilterGroup($filterGroup);
         }
-        
-        $configurationTree->addFilterTree($filterTree);
+       	
+        	$configurationTree->addFilterTree($filterTree);
     }
+    
+    # FILTER_LIST_HACK-part 2
+	foreach my $filterTree (@{$configurationTree->getAllFilterTrees()}){
+		foreach my $group(@{$filterTree->getAllFilterGroups()}){
+			foreach my $collection (@{$group->getAllCollections()}){
+				foreach my $filter (@{$collection->getAllFilters()}){
+					if ($filter->isa("BioMart::Configuration::FilterList_List")) {
+						#print STDERR "\nassociating FilterList filters to its objects";
+						foreach my $filterName (split (/,/, $filter->filterString)) {
+						  my $filterListItem = $configurationTree->getFilterByName($filterName);
+         				#print STDERR "\n\tfound Filter: ", $filterListItem->name();
+         				$filter->addFilter($filterListItem);
+						}
+					}
+				}
+			}
+		}
+	}
+    
+    
+    
     # Importables
     my $extraAttTree = BioMart::Configuration::AttributeTree->new(
 	  'name'  => 'extra_importable_atts',
