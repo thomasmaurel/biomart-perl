@@ -948,7 +948,9 @@ sub _setLocation {
 				   serverVirtualSchema  => $dbloc->{'serverVirtualSchema'} || 'default',);
   };
   if($@ || !$location) {
-      warn("COULD NOT CONNECT TO DATABASE ".$dbloc->{'database'}.".CHECK YOUR SETTINGS\n");
+      warn("\n\n\n !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                \n COULD NOT CONNECT TO DATABASE ".$dbloc->{'database'}.".CHECK YOUR SETTINGS\n 
+ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n\n\n");
       
   }
   else {
