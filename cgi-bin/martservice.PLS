@@ -877,7 +877,7 @@ sub listFilterOptions {
 								if ($o->filter) {
                                                                 	$output .= $o->filter->name."\n";
 								} else {
-                                                                	$output .= $o->filter->name."\n";
+                                                                	$output .= $o->value."\n";
 								}
                                                         }
                                                 }
