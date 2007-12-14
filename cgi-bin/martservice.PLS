@@ -735,7 +735,7 @@ sub listAttributes {
 					my $ac = $ag->getAttributeCollectionByName($attColls);
 					if ($ac) {
                                         	foreach my $a(@{$ac->getAllAttributes()}){
-                                                	$output .= $a->name."\n";
+                                                	$output .= $a->name."\n" unless $a->isa("BioMart::Configuration::BaseFilter");
                                         	}
 					}
                                 }
