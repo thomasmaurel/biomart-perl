@@ -77,6 +77,7 @@ sub _new {
   $self->attr('limitSize',undef);
   $self->attr('count',undef);
   $self->attr('header',undef);
+  $self->attr('completionStamp',undef);
   $self->attr('virtualSchema', undef);    
   $self->attr('attribute_lists', []);
   $self->attr('links', []);
@@ -1799,6 +1800,26 @@ sub count {
   return $self->get('count');
 }
 
+=head2 completionStamp
+
+  Usage      : my $completionStamp = $query->completionStamp(); $query->completionStamp($completionStamp);
+  Description: get/sets the completionStamp flag on the Query 
+  Returntype : scalar $completionStamp
+  Exceptions : none
+  Caller     : caller
+
+=cut
+
+sub completionStamp {
+  my ($self, $completionStamp) = @_;
+
+  if (defined $completionStamp) {
+    $self->set('completionStamp', $completionStamp);
+  }
+  return $self->get('completionStamp');
+}
+
+
 =head2 limitStart
 
   Usage      : my $limitStart = $query->limitStart(); 
@@ -1939,6 +1960,8 @@ sub _populateFromXML {
 
     } 
     $self->header($config->{'header'});
+    
+	$self->completionStamp($config->{'completionStamp'});
 
     my ($sourceDataset, $sourceInterface, $targetDataset, $targetInterface);
 

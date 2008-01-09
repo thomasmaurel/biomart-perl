@@ -302,6 +302,22 @@ sub printFooter {
     if ($text) { print $filehandle $text };
 }
 
+=head2 printCompletionStamp
+  Usage      :  $query_runner->printCompletionStamp;
+                
+  Description:  Prints a CompletionStamp [success]
+                
+  Return type:  [success]
+  Exceptions :
+  Caller     :  Any BioMart clients executing up a mart query
+=cut
+
+sub printCompletionStamp {
+    my ($self, $filehandle) = @_;
+    
+    $filehandle ||= \*STDOUT; # in case no fhandle is provided
+	print $filehandle "[success]\n";
+}
 
 =head2 _getResultTable
   

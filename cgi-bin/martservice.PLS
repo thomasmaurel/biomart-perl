@@ -552,10 +552,13 @@ sub run_query {
     		}
     		else{	
 		        if ($query->header && $query->header eq '1') {
-			    $query_planner->printHeader();
-			}
-			$query_planner->printResults();
-			$query_planner->printFooter();
+				    $query_planner->printHeader();
+				}
+				$query_planner->printResults();
+				$query_planner->printFooter();
+			    if ($query->completionStamp && $query->completionStamp eq '1') {
+				    $query_planner->printCompletionStamp();
+				}
 	    	}
 	};
 
