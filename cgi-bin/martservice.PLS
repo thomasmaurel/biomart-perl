@@ -63,11 +63,17 @@ my $CGI = $ENV{MOD_PERL} ? CGI->new(shift @_) : CGI->new();
 
 #my $CGI       = CGI->new();
 my $type          = $CGI->param('type');
-my $vschema_name  = $CGI->param('virtualschema');# || 'default'; 
+my $vschema_name  = $CGI->param('virtualschema') || $CGI->param('virtualSchema');# || 'default'; 
 my $dataset_name  = $CGI->param('dataset');
 my $version       = $CGI->param('version');
 my $atts          = $CGI->param('attribute');
+my $attGroups     = $CGI->param('attributeGroup');
+my $attColls      = $CGI->param('attributeCollection');
+my $attPages      = $CGI->param('attributePage');
 my $fils          = $CGI->param('filter');
+my $filGroups     = $CGI->param('filterGroup');
+my $filColls      = $CGI->param('filterCollection');
+my $filPages      = $CGI->param('filterPage');
 my $mart_name     = $CGI->param('mart');
 my $martuser      = $CGI->param('martuser') || 'default';
 my $interface     = $CGI->param('interface') || 'default';
@@ -114,6 +120,46 @@ eval{
 		} 
 		elsif ($type eq "version") {
 			&version($registry,$vschema_name,$mart_name);
+		}
+                # TEST SERVER
+		elsif ($type eq "listVirtualSchemas") {
+			&listVirtualSchemas($registry);
+		}
+		elsif ($type eq "listMarts") {
+			&listMarts($registry,$vschema_name);
+		}
+		elsif ($type eq "listDatasets") {
+			&listDatasets($registry,$vschema_name,$mart_name);
+		}
+		elsif ($type eq "listInterfaces") {
+			&listInterfaces($registry,$vschema_name,$mart_name,$dataset_name);
+		}
+		elsif ($type eq "listAttributePages") {
+			&listAttributePages($registry,$vschema_name,$mart_name,$dataset_name,$interface);
+		}
+		elsif ($type eq "listAttributeGroups") {
+			&listAttributeGroups($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages);
+		}
+		elsif ($type eq "listAttributeCollections") {
+			&listAttributeCollections($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages,$attGroups);
+		}
+		elsif ($type eq "listAttributes") {
+			&listAttributes($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages,$attGroups,$attColls);
+		}
+		elsif ($type eq "listFilterPages") {
+			&listFilterPages($registry,$vschema_name,$mart_name,$dataset_name,$interface);
+		}
+		elsif ($type eq "listFilterGroups") {
+			&listFilterGroups($registry,$vschema_name,$mart_name,$dataset_name,$interface,$filPages);
+		}
+		elsif ($type eq "listFilterCollections") {
+			&listFilterCollections($registry,$vschema_name,$mart_name,$dataset_name,$interface,$filPages,$filGroups);
+		}
+		elsif ($type eq "listFilters") {
+			&listFilters($registry,$vschema_name,$mart_name,$dataset_name,$interface,$filPages,$filGroups,$filColls);
+		}
+		elsif ($type eq "listFilterOptions") {
+			&listFilterOptions($registry,$vschema_name,$mart_name,$dataset_name,$interface,$filPages,$filGroups,$filColls,$fils);
 		}
 	} 
     	elsif ($xml){
@@ -524,6 +570,330 @@ sub get_attributes {
 }
 
 
+# TEST SERVER STUFF
+
+sub listVirtualSchemas {
+    
+    my ($registry)=@_;
+
+    my $output;
+    foreach my $vs(@{$registry->getAllVirtualSchemas}){
+        $output .= $vs->name."\n";
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listMarts {
+    
+    my ($registry,$vschema_name)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+    	foreach my $mart(@{$vs->getAllMarts(1)}){
+       	 	$output .= $mart->name."\n";
+   	 }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listDatasets {
+    
+    my ($registry,$vschema_name,$mart_name)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+    		foreach my $ds(@{$mart->getAllDatasets(1)}){
+       	 		$output .= $ds->name."\n";
+   	 	}
+	}
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listInterfaces {
+
+    my ($registry,$vschema_name,$mart_name,$dataset_name)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+		if ($ds) {
+                	foreach my $i(split(',',$ds->interfaces)){
+                       	 	$output .= $i."\n";
+                	}
+		}
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listAttributePages {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+		if ($ds) {
+                	foreach my $ap(@{$ds->getConfigurationTree($interface)->getAllAttributeTrees()}){
+                       	 	$output .= $ap->name."\t".$ap->maxSelect."\n" unless $ap->hideDisplay eq 'true';
+                	}
+		}
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listAttributeGroups {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+                if ($ds) {
+			my $ap = $ds->getConfigurationTree($interface)->getAttributeTreeByName($attPages);
+			if ($ap) {
+                        	foreach my $ag(@{$ap->getAllAttributeGroups()}){
+                                	$output .= $ag->name."\t".$ag->maxSelect."\n";
+                       	 	}
+			}
+                }
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listAttributeCollections {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages,$attGroups)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+                if ($ds) {
+                        my $ap = $ds->getConfigurationTree($interface)->getAttributeTreeByName($attPages);
+                        if ($ap) {
+				my $ag = $ap->getAttributeGroupByName($attGroups);
+				if ($ag) {
+                                	foreach my $ac(@{$ag->getAllCollections()}){
+                                        	$output .= $ac->name."\t".$ac->maxSelect."\n";
+                               	 	}
+				}
+                        }
+                }
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listAttributes {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages,$attGroups,$attColls)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+                if ($ds) {
+                        my $ap = $ds->getConfigurationTree($interface)->getAttributeTreeByName($attPages);
+                        if ($ap) {
+                                my $ag = $ap->getAttributeGroupByName($attGroups);
+                                if ($ag) {
+					my $ac = $ag->getAttributeCollectionByName($attColls);
+					if ($ac) {
+                                        	foreach my $a(@{$ac->getAllAttributes()}){
+                                                	$output .= $a->name."\n" unless $a->isa("BioMart::Configuration::BaseFilter");
+                                        	}
+					}
+                                }
+                        }
+                }
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listFilterPages {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+		if ($ds) {
+                	foreach my $ap(@{$ds->getConfigurationTree($interface)->getAllFilterTrees()}){
+                       	 	$output .= $ap->name."\n" unless $ap->hideDisplay eq 'true';
+                	}
+		}
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listFilterGroups {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+                if ($ds) {
+			my $ap = $ds->getConfigurationTree($interface)->getFilterTreeByName($attPages);
+			if ($ap) {
+                        	foreach my $ag(@{$ap->getAllFilterGroups()}){
+                                	$output .= $ag->name."\n";
+                       	 	}
+			}
+                }
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listFilterCollections {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages,$attGroups)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+                if ($ds) {
+                        my $ap = $ds->getConfigurationTree($interface)->getFilterTreeByName($attPages);
+                        if ($ap) {
+				my $ag = $ap->getFilterGroupByName($attGroups);
+				if ($ag) {
+                                	foreach my $ac(@{$ag->getAllCollections()}){
+                                        	$output .= $ac->name."\n";
+                               	 	}
+				}
+                        }
+                }
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listFilters {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages,$attGroups,$attColls)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+                if ($ds) {
+                        my $ap = $ds->getConfigurationTree($interface)->getFilterTreeByName($attPages);
+                        if ($ap) {
+                                my $ag = $ap->getFilterGroupByName($attGroups);
+                                if ($ag) {
+					my $ac = $ag->getFilterCollectionByName($attColls);
+					if ($ac) {
+                                        	foreach my $a(@{$ac->getAllFilters()}){
+                                                	$output .= $a->name."\t".$a->type."\n";
+                                        	}
+					}
+                                }
+                        }
+                }
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+sub listFilterOptions {
+    
+    my ($registry,$vschema_name,$mart_name,$dataset_name,$interface,$attPages,$attGroups,$attColls,$fils)=@_;
+
+    my $output;
+    my $vs = $registry->getVirtualSchemaByName($vschema_name);
+    if ($vs) {
+        my $mart = $vs->getMartByName($mart_name);
+        if ($mart) {
+	        my $ds = $mart->getDatasetByName($dataset_name);
+                if ($ds) {
+                        my $ap = $ds->getConfigurationTree($interface)->getFilterTreeByName($attPages);
+                        if ($ap) {
+                                my $ag = $ap->getFilterGroupByName($attGroups);
+                                if ($ag) {
+					my $ac = $ag->getFilterCollectionByName($attColls);
+					if ($ac) {
+                                                my $f = $ac->getFilterByName($fils);
+                                                if ($f) {
+                                                        foreach my $o(@{$f->getAllOptions()}){
+								if ($o->filter) {
+                                                                	$output .= $o->filter->name."\n";
+								} else {
+                                                                	$output .= $o->value."\n";
+								}
+                                                        }
+                                                }
+					}
+                                }
+                        }
+                }
+        }
+    }
+    if ($output){
+	print "$output";
+    }
+}
+
+# END OF TEST SERVER STUFF
+
 sub run_query {
     my ($registry,$xml) = @_;
     my $query;	
@@ -550,7 +920,7 @@ sub run_query {
 			my $count = $query_planner->getCount();
 			print "$count\n"; 
     		}
-    		else{	
+			else{	
 		        if ($query->header && $query->header eq '1') {
 				    $query_planner->printHeader();
 				}

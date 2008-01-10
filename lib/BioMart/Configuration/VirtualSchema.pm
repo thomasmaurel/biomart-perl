@@ -228,6 +228,21 @@ sub getAllMarts {
 	}
 }
 
+sub getMartByName {
+  	my ($self, $name) = @_;
+
+		my $allMarts = $self->get('locations');
+		my $Marts;
+		foreach my $mart(@$allMarts)
+  		{				
+			if($name eq $mart->name()) 
+			{
+				return $mart;
+  			}
+  		}
+  		return undef;  
+}
+
 =head2 getDatasetByName
 
   Usage      : usage
