@@ -121,6 +121,12 @@ eval{
 		elsif ($type eq "version") {
 			&version($registry,$vschema_name,$mart_name);
 		}
+		
+				# biomaRt registry, static contents
+   		elsif ($type eq "registry_archive") {
+			&printBiomaRtRegistry();
+		}	  
+				
                 # TEST SERVER
 		elsif ($type eq "listVirtualSchemas") {
 			&listVirtualSchemas($registry);
@@ -1119,7 +1125,54 @@ For more information see the webservices section of our <a href="http://www.biom
 );   
 }
 
+sub printBiomaRtRegistry
+{
+print qq(
+<MartRegistry>
 
+  <MartURLLocation database="ensembl_mart_47" default="1" displayName="ENSEMBL GENES 47 (SANGER)" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="sequence_mart_47" default="" displayName="Sequence" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+  <MartURLLocation database="genomic_features_mart_47" default="" displayName="Genomic Features" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_GENOMIC" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="snp_mart_47" default="" displayName="SNP" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="vega_mart_47" default="" displayName="Vega" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_homology_47" default="" displayName="Compara homology" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_HOMOLOGY" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_multiple_ga_47" default="" displayName="Compara multiple alignments" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_MULTIPLE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_pairwise_ga_47" default="" displayName="Compara pairwise alignments" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_PAIRWISE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="ensembl_mart_46" default="1" displayName="ENSEMBL GENES 46 (SANGER)" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="sequence_mart_46" default="" displayName="Sequence" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+  <MartURLLocation database="genomic_features_mart_46" default="" displayName="Genomic Features" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_GENOMIC" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="snp_mart_46" default="" displayName="SNP" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="vega_mart_46" default="" displayName="Vega" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_homology_46" default="" displayName="Compara homology" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_HOMOLOGY" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_multiple_ga_46" default="" displayName="Compara multiple alignments" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_MULTIPLE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_pairwise_ga_46" default="" displayName="Compara pairwise alignments" host="aug2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_PAIRWISE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="ensembl_mart_45" default="1" displayName="ENSEMBL GENES 45 (SANGER)" host="jun2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="sequence_mart_45" default="" displayName="Sequence" host="jun2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+  <MartURLLocation database="snp_mart_45" default="" displayName="SNP" host="jun2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="vega_mart_45" default="" displayName="Vega" host="jun2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_homology_45" default="" displayName="Compara homology" host="jun2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_HOMOLOGY" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_multiple_ga_45" default="" displayName="Compara multiple alignments" host="jun2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_MULTIPLE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_pairwise_ga_45" default="" displayName="Compara pairwise alignments" host="jun2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_COMPARA_MART_PAIRWISE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="ensembl_mart_44" default="1" displayName="ENSEMBL GENES 44 (SANGER)" host="apr2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="sequence_mart_44" default="" displayName="Sequence" host="apr2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+  <MartURLLocation database="snp_mart_44" default="" displayName="SNP" host="apr2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="vega_mart_44" default="" displayName="Vega" host="apr2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_homology_44" default="" displayName="Compara homology" host="apr2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_COMPARA_MART_HOMOLOGY" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_pairwise_ga_44" default="" displayName="Compara pairwise alignments" host="apr2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_COMPARA_MART_PAIRWISE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="ensembl_mart_43" default="1" displayName="ENSEMBL GENES 43 (SANGER)" host="feb2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="sequence_mart_43" default="" displayName="Sequence" host="feb2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+  <MartURLLocation database="snp_mart_43" default="" displayName="SNP" host="feb2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="vega_mart_43" default="" displayName="Vega" host="feb2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_homology_43" default="" displayName="Compara homology" host="feb2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_COMPARA_MART_HOMOLOGY" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+  <MartURLLocation database="compara_mart_pairwise_ga_43" default="" displayName="Compara pairwise alignments" host="feb2007.archive.ensembl.org" includeDatasets="" includeMarts="" martUser="" name="ENSEMBL_COMPARA_MART_PAIRWISE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+</MartRegistry>
+);
+}
 
 
 
