@@ -410,14 +410,14 @@ sub _new
     	$session->param("__schema",$aliases{'schema'});
     	$session->param("__Schema",$aliases{'Schema'});
 	    # Rewrite URL if required, so session ID is part of URL string from now on (see note above). 
-	    $logger->warn("Creating new session and rewriting URL to ".$full_url.'/'.$session->id().", then redirecting");
+	    $logger->info("Creating new session and rewriting URL to ".$full_url.'/'.$session->id().", then redirecting");
 	    print $cgi->redirect(-uri=>$full_url.'/'.$session->id(),
 	    		 -status=>"301 Moved Permanently");
 	    
 	    return;
 	}
 	else {
-	    $logger->warn("Restoring existing session ", $session->id());
+	    $logger->info("Restoring existing session ", $session->id());
 	}
 	
         # NOTE TO SELF: How to handle permanent vs temporary users? Tmp-users only for now, but make 
@@ -1194,7 +1194,7 @@ sub handle_request {
 
 	my $form_action = $CGI->url(-absolute => 1) . '/' . $session->id();
 	$logger->is_debug() 
-	    and $logger->warn("Incoming CGI-params:\n",Dumper(\%{$CGI->Vars()}));
+	    and $logger->info("Incoming CGI-params:\n",Dumper(\%{$CGI->Vars()}));
 		
 	#------------------------------------------------------------------------
 	# TO HANDLE URL REQUEST specially for ensembl ContigView etc etc
@@ -1411,7 +1411,7 @@ sub handle_request {
 	$default_dataset ||= $datasets[0];
 	# build schema+dataset select-menus from the info collected above
 	if(keys(%{ $js_pushactions_of_datasetmenu{ 'databasemenu' } }) == 0) {
-		$logger->warn("No datasets found in registry, so no templates were built. Returning 0");
+		$logger->info("No datasets found in registry, so no templates were built. Returning 0");
 		return 0;
 	}	
 
