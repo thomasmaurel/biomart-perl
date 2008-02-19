@@ -733,7 +733,7 @@ sub _generateSQL {
     }
 
 my $logger=Log::Log4perl->get_logger(__PACKAGE__);
- $logger->warn("QUERY SQL:  $sql");
+ $logger->info("QUERY SQL:  $sql");
 
 	return $sql;
 }
@@ -756,7 +756,7 @@ sub _getCount {
 	my $xml = $query->toXML(0,0,1);
 
         my $logger=Log::Log4perl->get_logger(__PACKAGE__);
-        $logger->warn("COUNT XML:  $xml");
+        $logger->info("COUNT XML:  $xml");
 
       
 	my @results = $location->getResultSet("","POST",$xml);
@@ -892,7 +892,7 @@ sub _getCount {
 
 
 my $logger=Log::Log4perl->get_logger(__PACKAGE__);
- $logger->warn("COUNT SQL:  $sql");
+ $logger->info("COUNT SQL:  $sql");
 
 
    my $dbh = $self->_getDBH;
