@@ -121,11 +121,12 @@ sub nextRow {
    #my $dataset1_end = $self->get('dataset1_end');
 
    for (my $i = 0; $i < @{$attribute_positions}; $i++){
-       # superscripting for emma mart
-       $$row[$$attribute_positions[$i]] =~ s/\<(.*)\>/<span style="vertical-align:super;font-size:0.8em">$1<\/span>/;
-	   
 
-
+       # superscripting for mouse alleles 
+       $$row[$$attribute_positions[$i]] =~ s/</<span style="vertical-align:super;font-size:0.8em"/g;
+       $$row[$$attribute_positions[$i]] =~ s/>/<\/span>/g;
+       $$row[$$attribute_positions[$i]] =~ s/<span style="vertical-align:super;font-size:0.8em"/<span style="vertical-align:super;font-size:0.8em">/g;
+      
        if ($$attribute_url[$i]){
 	   my @url_data = map {$$row[$_]} @{$$attribute_url_positions[$i]};
 	   my $url_string = sprintf($$attribute_url[$i],@url_data);
