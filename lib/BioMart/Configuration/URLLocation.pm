@@ -109,8 +109,9 @@ sub getResultSet {
 	    if ($el =~/^Connection/) {next;}
 	    if ($el =~/^Content/) {next;}
 	    if ($el =~/^Proxy/) {next;}
-            if ($el =~/^X-Cache/) {next;}
-            if ($el =~/^Via/) {next;}
+	    if ($el =~/^X-Cache/) {next;}
+       if ($el =~/^Via/) {next;}
+       if ($el =~/^X-Pad/) {next;}
          
 	    $logger->warn("RESPONSE:  $el");
           
