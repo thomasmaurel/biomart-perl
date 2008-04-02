@@ -214,6 +214,11 @@ sub _new {
 	$self->attr('seqStorageHash', undef);
 	$self->attr('onHoldSeqsKeys', undef);
 	
+	#-- new GS development ---
+	$self->attr('exon_idHash', undef);
+	#-------------------------
+
+	
 }
 
 #private methods
@@ -447,6 +452,10 @@ sub __processNewQuery {
 	$self->set('rowsFromLastBatch', undef);
 	$self->set('seqStorageHash', undef);
 	$self->set('onHoldSeqsKeys', undef);
+	
+	#-- new GS development ---
+	$self->set('exon_idHash', undef);
+	#-------------------------
 
     #determine which BaseSequenceA object to create
     my $filters = $query->getAllFilters($self->name);
@@ -602,18 +611,169 @@ sub _calcSeqOverLocations {
 }
 
 sub _getLocationFrom {
-    my ($self, $curRow, @expectedFields) = @_;
+	my ($self, $curRow, @expectedFields) = @_;
     
-    my $importable_indices = $self->get('importable_indices');
-    my $location = {};
-    
-    foreach my $expectedField (@expectedFields) {
-	$location->{$expectedField} = 
-	    ( exists( $importable_indices->{$expectedField}  ) ) ? 
-	    $curRow->[ $importable_indices->{$expectedField} ] : undef;
-    }
-    
-    return $location;
+	my $importable_indices = $self->get('importable_indices');
+	my $location = {};
+	
+	foreach my $expectedField (@expectedFields) {
+		$location->{$expectedField} = ( exists( $importable_indices->{$expectedField}  ) ) ? 
+			$curRow->[ $importable_indices->{$expectedField} ] : undef;
+	}
+
+	# (New) hack for MartBuilder built marts. different set of exportables importables
+	# need to calculate start/end w.r.t old system
+	# here we tamper start and end values of $location so they correspond to 
+	# the old system whereby they meant coding_start/end or 3/5utr_start/end
+	# this is executed only for coding_gene_flank, coding_transcript_flank
+	# 5utr, 3utr, coding and peptide sequence types.
+	my $newCalculationsRequired = 0;
+	foreach my $key (keys %$importable_indices) {
+		$newCalculationsRequired = 1 if ($key eq 'coding_start_offset');
+	}
+	
+	if($newCalculationsRequired) {
+		my $pkey = $curRow->[$importable_indices->{'pkey'}];
+		my $rank = $curRow->[$importable_indices->{'exon_id'}];
+		my $start_rank = $curRow->[$importable_indices->{'start_exon_id'}];
+		my $end_rank = $curRow->[$importable_indices->{'end_exon_id'}];
+		my $exon_start = $curRow->[$importable_indices->{'start'}];
+		my $exon_end = $curRow->[$importable_indices->{'end'}];
+		my $strand = $curRow->[$importable_indices->{'strand'}];
+		my $coding_start_offset = $curRow->[$importable_indices->{'coding_start_offset'}];
+		my $coding_end_offset = $curRow->[$importable_indices->{'coding_end_offset'}];
+		my ($new_start, $new_end);
+		#foreach (%$location) {
+		#	print "<br/>KEY=$_ : VALUE=", $location->{$_};
+		#}
+		#exit;
+		my $exon_idHash = $self->get('exon_idHash');
+		if ($start_rank && $end_rank) {
+			if ($self->get('seq_name') eq '5utr') {
+				if ($rank == $start_rank) {
+					if ($strand == 1) {
+						$new_start = $exon_start;
+						$new_end = $exon_start + $coding_start_offset - 2;
+					}
+					if ($strand == -1) {
+						$new_start = $exon_end - $coding_start_offset + 2;
+						$new_end = $exon_end;
+					}
+					# encountered coding START exon. storing as transcriptId.start_exonId to make it unique
+					$self->_setCodingExonFlag($pkey.$start_rank, 1);
+				}
+				else {
+					if ($exon_idHash->{$pkey.$start_rank} == 1) {
+						$new_start = undef;
+						$new_end = undef;
+					}
+					else {
+						$new_start = $exon_start;
+						$new_end = $exon_end;
+					}
+				}
+			}
+			elsif ($self->get('seq_name') eq '3utr') {
+				if ($rank == $end_rank) {
+					if ($strand == 1) {
+						$new_start = $exon_start + $coding_end_offset;
+						$new_end = $exon_end;
+					}
+					if ($strand == -1) {
+						$new_start = $exon_start;
+						$new_end = $exon_end - $coding_end_offset;
+					}
+					# encountered coding END exon. storing as transcriptId.end_exonId to make it unique
+					$self->_setCodingExonFlag($pkey.$end_rank, 1);
+				}
+				else {
+					if ($exon_idHash->{$pkey.$end_rank} == 1) {
+						$new_start = $exon_start;
+						$new_end = $exon_end;
+					}
+					else {
+						$new_start = undef;
+						$new_end = undef;
+					}
+				}
+			}
+			if ($self->get('seq_name') =~ m/^coding.*?|peptide/) {
+			# this includes sequence types : coding_gene_flank, coding_transcript_flank, coding, peptide
+				if ($rank == $start_rank && $rank == $end_rank) {
+					# coding start and finish on the same exon
+					if ($strand == 1) {
+						$new_start = $exon_start + $coding_start_offset - 1;
+						$new_end = $exon_start + $coding_end_offset - 1;
+					}
+					if ($strand == -1) {
+						$new_start = $exon_end - $coding_end_offset + 1;
+						$new_end = $exon_end - $coding_start_offset + 1;
+					}
+				}
+				elsif ($rank == $start_rank) {
+					if ($strand == 1) {
+						$new_start = $exon_start + $coding_start_offset - 1;
+						$new_end = $exon_end;
+					}
+					if ($strand == -1) {
+						$new_start = $exon_start;
+						$new_end = $exon_end - $coding_start_offset + 1;
+					}
+					# encountered coding START exon. storing as transcriptId.start_exonId to make it unique
+					$self->_setCodingExonFlag($pkey.$start_rank, 1);
+				}
+				elsif ($rank == $end_rank) {
+					if ($strand == 1) {
+						$new_start = $exon_start;
+						$new_end = $exon_start + $coding_end_offset - 1;
+					}
+					if ($strand == -1) {
+						$new_start = $exon_end - $coding_end_offset + 1;
+						$new_end = $exon_end;
+					}
+					# encountered coding END exon. clear ranscriptId.start_exonId stored earlier
+					$self->_setCodingExonFlag($pkey.$start_rank, 0);
+				}
+				else {
+					if ($exon_idHash->{$pkey.$start_rank} == 1) {
+						$new_start = $exon_start;
+						$new_end = $exon_end;
+					}
+					else {
+						$new_start = undef;
+						$new_end = undef;
+					}
+				}
+			}
+			#open(STDME, ">>/ebi/www/biomart/test/biomart-perl/toto");
+			#print STDME "\n$rank : $start_rank : $end_rank  ----  $new_start : $new_end";
+			#close STDME;
+			# sanity check
+			if ($new_start > $new_end) {
+				$new_start = undef;
+				$new_end = undef;
+			}
+			# update the coordinates to be returned by this function - now similar to old coordinates
+			$location->{'start'} = $new_start;
+			$location->{'end'} = $new_end;
+		}
+		else { # no coding start/end set the vals to NULL
+			$location->{'start'} = undef;
+			$location->{'end'} = undef;
+		}		
+	}
+
+	return $location;
+}
+
+sub _setCodingExonFlag {
+	my ($self, $key, $val) = @_;
+	# the key value is pkey.start_exonId OR pkey.end_exonId
+	# doesnt matter if its start or end exon id as the corresponding
+	# value is always the same for each exon.
+	my $exon_idHash = $self->get('exon_idHash');
+	$exon_idHash->{$key} = $val;
+	$self->set('exon_idHash', $exon_idHash);
 }
 
 sub _modFlanks {
