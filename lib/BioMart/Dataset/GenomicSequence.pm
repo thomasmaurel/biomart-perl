@@ -348,18 +348,16 @@ sub _unambiquous_codons{
 }
 
 sub _editSequence {
-  my ($self, $seqref) = @_;
+	my ($self, $seqref) = @_;
 
-  my $seq_edits = $self->get('seq_edits');
-
-  if ($$seqref && $seq_edits) {
-      foreach my $seq_edit (split /\;/, $seq_edits) {
-	  my ($start, $end, $alt_seq) = split /\,/, $seq_edit;
-
-	  my $len = $end - $start + 1;
-	  substr($$seqref, $start - 1, $len) = $alt_seq;
-      }
-  }
+	my $seq_edits = $self->get('seq_edits');
+	if ($$seqref && $seq_edits) {
+		foreach my $seq_edit (split /\;/, $seq_edits) {
+			my ($start, $end, $alt_seq) = split /\,/, $seq_edit;
+			my $len = $end - $start + 1;
+			substr($$seqref, $start - 1, $len) = $alt_seq;
+		}
+	}
 }
 
 sub _initializeDNAAdaptor {
@@ -621,7 +619,7 @@ sub _getLocationFrom {
 			$curRow->[ $importable_indices->{$expectedField} ] : undef;
 	}
 
-	# (New) hack for MartBuilder built marts. different set of exportables importables
+	# (New-1) hack for MartBuilder built marts. different set of exportables importables
 	# need to calculate start/end w.r.t old system
 	# here we tamper start and end values of $location so they correspond to 
 	# the old system whereby they meant coding_start/end or 3/5utr_start/end
@@ -745,9 +743,6 @@ sub _getLocationFrom {
 					}
 				}
 			}
-			#open(STDME, ">>/ebi/www/biomart/test/biomart-perl/toto");
-			#print STDME "\n$rank : $start_rank : $end_rank  ----  $new_start : $new_end";
-			#close STDME;
 			# sanity check
 			if ($new_start > $new_end) {
 				$new_start = undef;
@@ -1121,12 +1116,19 @@ sub _codingCdnaPeptideSequences {
 	# Update the location corresponding to this row
 	my $rank = $curRow->[ $importable_indices->{"rank"} ];
 	# Requesting for phase info as well, to fix the bug of additional 
-	# Ns in the beginning - syed
+	# Ns in the beginning - [syed]
 	my $location = $self->_getLocationFrom($curRow, "chr", "start", "end", 
 					       "strand", "phase", "codon_table_id", "seq_edits"); 
 	
 	$self->set('codon_table_id',$location->{"codon_table_id"});	
-	$self->set('seq_edits',$location->{"seq_edits"});
+	# $self->set('seq_edits',$location->{"seq_edits"});	
+	# (New-2) hack for MartBuilder built marts. different set of exportables importables
+	# need to store seq_edits as 12,12,U;14,14:U which is old formart
+	# new exportable passes it in ensembl core format 12 12 U per row
+	
+	$self->set_seq_edits($location->{"seq_edits"});
+	
+	
 	
 	# $location = $self->_modFlanks($location, 0);
 	#-- This was soo wrong - it added a flank (upstream and/or downstream) 
@@ -1139,7 +1141,31 @@ sub _codingCdnaPeptideSequences {
     $self->set('lastPkey', $pkey);
     $self->set('outRow', $outRow);
 }
-
+sub set_seq_edits
+{
+    my ($self, $seq_edits) = @_;
+    if ($seq_edits) {
+    	my $temp_str;
+    	# old format 12,12,U;14,14,M
+    	if ($seq_edits =~ m/\,/) {
+    		$temp_str = $seq_edits;
+    	}
+    	else { # new format 12 12 U
+    		$temp_str = $self->get('seq_edits');
+    		$seq_edits =~ s/\s/\,/g;
+    		if ($temp_str) {
+    			$temp_str = $temp_str.';'.$seq_edits if($temp_str !~ m/$seq_edits/);
+    		}
+    		else {
+    			$temp_str = $seq_edits;
+    		}
+    	}
+    	$self->set('seq_edits', $temp_str);
+    }
+    else {
+    	$self->set('seq_edits', "");
+    }
+}
 
 sub _transcript_exonIntronFlankSequences {
     my ($self, $atable, $curRow) = @_;
