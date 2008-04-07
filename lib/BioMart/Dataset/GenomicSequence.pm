@@ -358,6 +358,9 @@ sub _editSequence {
 			substr($$seqref, $start - 1, $len) = $alt_seq;
 		}
 	}
+	
+	# important to clear if two seq_edit sequences come one after another
+	$self->set('seq_edits', "");
 }
 
 sub _initializeDNAAdaptor {
