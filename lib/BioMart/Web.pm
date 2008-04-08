@@ -18,6 +18,7 @@ them and show the results to the user. Only initialization, query-building and
 other such logic is done here: all user-interface presentation related things
 are handled by Template Toolkit templates. 
   
+=head1 AUTHOR - Syed Haider, Richard Holland, Arek Kasprzyk, Damian Smedley, Gudmundur Arni Thorisson
 
 =head1 SUBROUTINES/METHODS 
 
@@ -397,6 +398,9 @@ sub _new
 			$session->param("url_ATTRIBUTES", $cgi->param('ATTRIBUTES'));
 			if ($cgi->param('FILTERS')) {	$session->param('url_FILTERS', $cgi->param('FILTERS')); }
 			else {	$session->clear("url_FILTERS"); }
+			if ($cgi->param('VISIBLEPANEL')) {	$session->param('url_VISIBLEPANEL', $cgi->param('VISIBLEPANEL')); }
+			else {	$session->clear("url_VISIBLEPANEL"); }
+
 		}
 		
     	# Expiry.
@@ -1018,26 +1022,68 @@ sub handleURLRequest
 			}
 		}
 	}
-	$session->param('resultsButton', '1'); 
+
 	# URL_REQUEST is in addition to resultsButton, so at the end of this file
 	# when we process main.tt, we donot consider this request as AJAX request
 	# and print the whole page instead of returning results only
 	$session->param('URL_REQUEST', '1');
-	$session->param("mart_mainpanel__current_visible_section", "resultspanel");
-	$session->param('preView_outputformat', 'html');
 	$session->param('exportView_outputformat', 'tsv');
+	$session->param('preView_outputformat', 'html');
 	$session->param('datasetmenu_3', $DS[0]);
+	# setting the visible main panel and summary panel branch, defaults to resutls panel as in 0.6
+	if ($session->param('url_VISIBLEPANEL') && $session->param('url_VISIBLEPANEL') eq 'mainpanel' ) {
+		$session->param("mart_mainpanel__current_visible_section", $DS[0].'__infopanel');
+		$session->param("summarypanel__current_highlighted_branch", $DS[0].'__summarypanel_datasetbranch');
+	}
+	elsif ($session->param('url_VISIBLEPANEL') && $session->param('url_VISIBLEPANEL') eq 'attributepanel' ) {
+		$session->param("mart_mainpanel__current_visible_section", $DS[0].'__attributepanel');
+		$session->param("summarypanel__current_highlighted_branch", $DS[0].'__summarypanel_attributebranch');
+	}
+	elsif ($session->param('url_VISIBLEPANEL') && $session->param('url_VISIBLEPANEL') eq 'filterpanel' ) {
+		$session->param("mart_mainpanel__current_visible_section", $DS[0].'__filterpanel');
+		$session->param("summarypanel__current_highlighted_branch", $DS[0].'__summarypanel_filterbranch');
+	}
+	elsif ($session->param('url_VISIBLEPANEL') && $session->param('url_VISIBLEPANEL') eq 'linkpanel' ) {
+		if ($DS[1]) {
+			$session->param("mart_mainpanel__current_visible_section", $DS[1].'__infopanel');
+			$session->param("summarypanel__current_highlighted_branch", $DS[1].'__summarypanel_datasetbranch');
+		}
+		else { # if no 2nd DS, then jump to link panel
+			$session->param("mart_mainpanel__current_visible_section", 'add_linked_datasetpanel');
+			$session->param("summarypanel__current_highlighted_branch", 'show_linked_datasetpanel');
+		}
+	}
+	elsif ($session->param('url_VISIBLEPANEL') && $session->param('url_VISIBLEPANEL') eq 'linkattributepanel' ) {
+		if ($DS[1]) {
+			$session->param("mart_mainpanel__current_visible_section", $DS[1].'__attributepanel');
+			$session->param("summarypanel__current_highlighted_branch", $DS[1].'__summarypanel_attributebranch');
+		}
+		else { # if no 2nd DS, then jump to link panel
+			$session->param("mart_mainpanel__current_visible_section", 'add_linked_datasetpanel');
+			$session->param("summarypanel__current_highlighted_branch", 'show_linked_datasetpanel');
+		}
+	}
+	elsif ($session->param('url_VISIBLEPANEL') && $session->param('url_VISIBLEPANEL') eq 'linkfilterpanel' ) {
+		if ($DS[1]) {
+			$session->param("mart_mainpanel__current_visible_section", $DS[1].'__filterpanel');
+			$session->param("summarypanel__current_highlighted_branch", $DS[1].'__summarypanel_filterbranch');
+		}
+		else { # if no 2nd DS, then jump to link panel
+			$session->param("mart_mainpanel__current_visible_section", 'add_linked_datasetpanel');
+			$session->param("summarypanel__current_highlighted_branch", 'show_linked_datasetpanel');
+		}
+	}
+	else { # default case, jump to results panel
+		$session->param('resultsButton', '1');
+		$session->param("mart_mainpanel__current_visible_section", "resultspanel");		
+	}
+	
 	#--------------------------------------------------
 	
-
-	
-	#open(STDME, ">>/homes/syed/Desktop/temp5/biomart-perl/shaZi_SESSION");
-	#print STDME "\nINCOMING SESSION PARAMS: \n ", Dumper($session);
-	#close(STDME);
-
 	$session->clear("url_VIRTUALSCHEMANAME");
 	$session->clear("url_ATTRIBUTES");
 	$session->clear("url_FILTERS");
+	$session->clear("url_VISIBLEPANEL");
 	}; #end of eval block
 	
 	my $ex;
@@ -1895,7 +1941,8 @@ sub handle_request {
 				my $tempered_xml = $query_main->toXML(1,1,1,1);
 				$tempered_xml =~s/limitStart.*?limitSize\s*=\s*\"\d*\"/formatter = \"$exportView_formatter_name\" header = \"0\" uniqueRows = \"0\"/g;
 				$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
-				$tempered_xml =~s/softwareVersion/datasetConfigVersion/g;				
+				$tempered_xml =~s/softwareVersion/datasetConfigVersion/g;
+				print $CGI->header(-type=>'text/xml');
 				print $tempered_xml;
 			}
 			# PERL API equivalent of the query
