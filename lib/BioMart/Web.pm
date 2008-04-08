@@ -20,6 +20,14 @@ are handled by Template Toolkit templates.
   
 =head1 AUTHOR - Syed Haider, Richard Holland, Arek Kasprzyk, Damian Smedley, Gudmundur Arni Thorisson
 
+=head1 CONTACT
+
+This module is part of the BioMart project
+http://www.biomart.org
+
+Questions can be posted to the mart-dev mailing list:
+mart-dev@ebi.ac.uk
+
 =head1 SUBROUTINES/METHODS 
 
 =cut
@@ -2370,40 +2378,4 @@ sub handle_request {
 }					  
 1;
 
-=head1 SEE ALSO
 
-L<BioMart::Web::TemplateBuilder>, L<BioMart::Registry>, L<BioMart::Query>, L<BioMart::Web::QueryRunner>
-
-=head1 BUGS AND LIMITATIONS
-
-There are no known bugs in this module.
-Please report problems to BioMart development mailing list  (<mart-dev@ebi.ac.uk>)
-Patches are welcome.
-
-=head1 CONTACT
-
-This module is part of the BioMart project (http://www.biomart.org)
-
-Questions can be posted to the mart-dev mailing list:
-mart-dev@ebi.ac.uk
-
-=head1 AUTHOR
-
-The BioMart team <mart-dev@ebi.ac.uk>
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) <2006> The BioMart team (<mart-dev@ebi.ac.uk>). All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-=head1 CVSINFO
-
-$Id$
-
-=cut
