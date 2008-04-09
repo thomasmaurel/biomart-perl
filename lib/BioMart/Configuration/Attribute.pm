@@ -19,7 +19,7 @@ Represents an attribute in a BioMart query
 Attribute objects model the concept of a BioMart attribute ie a column in a
 mart ResultTable that can be requested as part of a mart query.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London, Richard Holland
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Darin London, Damian Smedley
 
 =head1 CONTACT
 

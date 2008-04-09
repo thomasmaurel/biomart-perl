@@ -20,7 +20,7 @@ Holds a List of BioMart::FilterGroup objects.
 Object to further define the Filters available to the User Interface by
 a Dataset.  Holds a list of one or more BioMart::FilterGroup objects.
 
-=head1 AUTHOR -  Darin London, Damian Smedley, Richard Holland
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Darin London, Damian Smedley
 
 =head1 CONTACT
 

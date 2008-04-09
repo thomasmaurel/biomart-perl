@@ -245,6 +245,9 @@
 						/> Unique results only &nbsp
 						
 						<input type="submit" name="export_submit" value="Go" 
+							style="
+							background-image: url(/[% TAG_path %]/mview/images/go.png);
+							"
 							class="mart_btn_go"
 							onmouseover="this.className='mart_btn_go mart_btnhov_go'" 
 							onmouseout="this.className='mart_btn_go'"

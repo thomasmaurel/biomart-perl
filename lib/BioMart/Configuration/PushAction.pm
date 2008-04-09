@@ -27,7 +27,7 @@ particular option is chosen for the chromosome drop down the options available
 in the band menus. The javascript driving this is populated using the Options
 and PushActions contained within the chromosome Filter.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Damian Smedley
 
 =head1 CONTACT
 

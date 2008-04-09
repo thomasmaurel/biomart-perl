@@ -32,23 +32,7 @@ The Initializer is only used once, at the
 beginning of a BioMart session, to get the
 BioMart::Registry object.
 
-=head1 AUTHORS
-
-=over
-
-=item *
-Arek Kasprzyk
-
-=item *
-Darin London
-
-=item *
-Andreas Kahari
-
-=item *
-Damian Smedley
-
-=back
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Andreas Kahari, Darin London, Damian Smedley, Gudmundur Arni Thorisson
 
 =head1 CONTACT
 

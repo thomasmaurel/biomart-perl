@@ -24,20 +24,7 @@ the entire BioMart system, and all client code.  The registry
 is also responsible for setting up all possible links between 
 datasets once these are populated with filters and attributes.
 
-=head1 AUTHORS
-
-=over
-
-=item *
-Damian Smedley
-
-=item *
-Arek Kasprzyk
-
-=item *
-Andreas Kahari
-
-=back
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Andreas Kahari, Damian Smedley
 
 =head1 CONTACT
 

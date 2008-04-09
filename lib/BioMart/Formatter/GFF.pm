@@ -24,14 +24,7 @@ for the Dataset being processed. After this initial processing the query is
 run and the ResultTable is processed row by row to calculate the correct
 structural data for GFF output
 
-=head1 AUTHORS
-
-=over
-
-=item *
-Damian Smedley
-
-=back
+=head1 AUTHOR -  Syed Haider, Damian Smedley
 
 =head1 CONTACT
 

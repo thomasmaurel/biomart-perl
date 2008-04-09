@@ -43,7 +43,8 @@ BioMart::QueryRunner
 
       recurse
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Darin London, Damian Smedley
+
 =head1 CONTACT
 
 This module is part of the BioMart project http://www.biomart.org

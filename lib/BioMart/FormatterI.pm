@@ -19,15 +19,8 @@ TODO: Synopsis here.
 
 An abstract class for Formatters
 
-=head1 AUTHORS
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Damian Smedley, Gudmundur Arni Thorisson
 
-=over
-
-=item *
-Damian Smedley
-Richard Holland
-
-=back
 
 =head1 CONTACT
 

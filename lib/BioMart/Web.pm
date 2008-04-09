@@ -18,7 +18,7 @@ them and show the results to the user. Only initialization, query-building and
 other such logic is done here: all user-interface presentation related things
 are handled by Template Toolkit templates. 
   
-=head1 AUTHOR - Syed Haider, Richard Holland, Arek Kasprzyk, Damian Smedley, Gudmundur Arni Thorisson
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Damian Smedley, Gudmundur Arni Thorisson
 
 =head1 CONTACT
 

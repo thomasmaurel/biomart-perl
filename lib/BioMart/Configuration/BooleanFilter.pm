@@ -18,7 +18,7 @@ Object responsible for boolean included/excluded filters
 
 Object responsible for boolean included/excluded filters
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Damian Smedley
 
 =head1 CONTACT
 

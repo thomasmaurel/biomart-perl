@@ -40,20 +40,7 @@ XML for the two datasets as the default).
 Finally, it holds a reference to the BioMart::Registry object 
 that created it.
 
-=head1 AUTHORS
-
-=over
-
-=item *
-Arek Kasprzyk
-
-=item *
-Damian Smedley
-
-=item *
-Andreas Kahari
-
-=back
+=head1 AUTHOR -  Arek Kasprzyk, Andreas Kahari, Damian Smedley
 
 =head1 CONTACT
 

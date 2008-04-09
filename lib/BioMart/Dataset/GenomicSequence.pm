@@ -21,7 +21,7 @@ on the presence of one or more importable-exportable relationships.
 Dataset providing Genomic Sequence attributes, which can be imported into
 other Datasets.  GenomicSequence is itself not a visible Dataset.
 
-=head1 AUTHOR - Darin London, Damian Smedley, Richard Holland
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Darin London, Damian Smedley
 
 =head1 CONTACT
 

@@ -22,7 +22,7 @@ BioMart::QueryRunner object will add the BioMart::AttributeList object
 exported from the Exporting Dataset to the Query targeted to the
 Exporting Dataset.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London, Richard Holland
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Darin London, Damian Smedley
 
 =head1 CONTACT
 

@@ -1,13 +1,36 @@
+#
+# You may distribute this module under the same terms as perl itself
+#
+# POD documentation - main docs before the code
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+CGI-script to handle BioMart background job retrievals.
+
+This simple CGI checks to see if the file exists yet.
+If it does, it looks up the mime type of that file, and
+pipes it back to the user appropriately.
+If it does not, it puts up a simple message saying so.
+
+=head1 AUTHOR - Arek Kasprzyk, Syed Haider, Richard Holland, Damian Smedley
+
+=head1 CONTACT
+
+This module is part of the BioMart project http://www.biomart.org
+
+Questions can be posted to the mart-dev mailing list:
+mart-dev@ebi.ac.uk
+
+=head1 METHODS
+
+=cut
+
 #!perl -w
 
-# $Id$
-
-# CGI-script to handle BioMart background job retrievals.
-
-# This simple CGI checks to see if the file exists yet.
-# If it does, it looks up the mime type of that file, and
-# pipes it back to the user appropriately.
-# If it does not, it puts up a simple message saying so.
 
 use strict;
 use warnings;

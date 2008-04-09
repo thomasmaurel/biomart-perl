@@ -21,14 +21,7 @@ Defines constants used throughout BioMart for things like URL prefixes.
 Loads these from a file called settings.conf in the same location as
 the registry XML file. If file not found, defaults are used.
 
-=head1 AUTHORS
-
-=over
-
-=item *
-Richard Holland
-
-=back
+=head1 AUTHOR - Syed Haider, Richard Holland
 
 =head1 CONTACT
 

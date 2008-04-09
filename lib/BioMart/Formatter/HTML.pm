@@ -27,17 +27,8 @@ then appropiate hyperlinks will be calculated for each cell of the table.
 Addition of any extra attributes to the Query that may be required for this
 hyperlink formatting is handled in this Formatter
 
-=head1 AUTHORS
+=head1 AUTHOR -  Syed Haider, Damian Smedley, Gudmundur Thorisson
 
-=over
-
-=item *
-Damian Smedley
-
-=item *
-Gudmundur Thorisson
-
-=back
 
 =head1 CONTACT
 

@@ -27,7 +27,7 @@ based on the link name.  The name of the Link representing the
 exportable<->importable relationship between the two datasets can be 
 retrieved from a FilterList using its linkName.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London, Richard Holland
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Darin London, Damian Smedley
 
 =head1 CONTACT
 

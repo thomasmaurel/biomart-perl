@@ -5,6 +5,8 @@ The following functions are used on the client side of a MartView request.
 Most are called in response to user actions (form element event handlers),
 but a few are called on page load as well.
 
+=head1 AUTHOR - Syed Haider, Richard Holland, Arek Kasprzyk, Damian Smedley, Gudmundur Arni Thorisson
+
 =cut
 
 =head2 updateMenuPushactions()

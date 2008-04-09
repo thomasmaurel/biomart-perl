@@ -18,7 +18,7 @@ Base Interface for all BioMart filters.
 
 Base Interface for BioMart filters
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London, Richard Holland
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Darin London, Damian Smedley
 
 =head1 CONTACT
 

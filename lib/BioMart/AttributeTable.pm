@@ -31,7 +31,7 @@ an AttributeTable to be exhausted, whereby the next call to getRow will return
 null. This can be avoided by prefacing each call to next_row with a call to 
 hasMoreRows.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London
+=head1 AUTHOR - Arek Kasprzyk, Syed Haider, Darin London, Damian Smedley
 
 =head1 CONTACT
 

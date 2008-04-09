@@ -1,9 +1,31 @@
+#
+# You may distribute this module under the same terms as perl itself
+#
+# POD documentation - main docs before the code
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+A simple BioMart service CGI script 
+requests: registry, dataset names, dataset configuration and query results
+
+=head1 AUTHOR - Syed Haider, Gudmundur Arni Thorisson
+
+=head1 CONTACT
+
+This module is part of the BioMart project http://www.biomart.org
+
+Questions can be posted to the mart-dev mailing list:
+mart-dev@ebi.ac.uk
+
+=head1 METHODS
+
+=cut
+
 #!perl -w
-
-# $Id$
-
-# A simple BioMart service CGI script 
-# requests: registry, dataset names, dataset configuration and query results
 
 use strict;
 use warnings;

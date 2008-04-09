@@ -22,14 +22,7 @@ a BioMart::Query the XLS Formatter will return XLS file, open
 in the browser if it supports xls mime type.
 
 
-=head1 AUTHORS 
-
-=over
-
-=item *
-Damian Smedley
-
-=back
+=head1 AUTHOR -  Syed Haider, Damian Smedley
 
 =head1 CONTACT
 

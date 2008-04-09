@@ -24,7 +24,7 @@ the attributes, filters available for each dataset.
 The ConfigurationTree is a container for BioMart::Configuration::FilterTree 
 and BioMart::Configuration::AttributeTree objects.
 
-=head1 AUTHOR Darin London, Damian Smedley
+=head1 AUTHOR  Arek Kasprzyk, Syed Haider, Darin London, Damian Smedley
 
 =head1 CONTACT
 

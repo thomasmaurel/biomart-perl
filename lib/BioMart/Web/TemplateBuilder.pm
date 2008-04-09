@@ -15,6 +15,8 @@ BioMart::Web::TemplateBuilder - class for building templates for a collection of
 
 This module handles building secondary HTML-templates & Javascript for a MartView installation.
 
+=head1 AUTHOR - Syed Haider, Damian Smedley, Gudmundur Arni Thorisson
+
 =head2 Interaction with BioMart registry
 
 All Mart-registry and related know-how is inherited from BioMart::Web, so this class only 

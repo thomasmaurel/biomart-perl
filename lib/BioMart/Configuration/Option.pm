@@ -23,7 +23,7 @@ contain a BioMart::BaseFilter implementing object themselves, in which case
 the root Filter object is an empty container for a drop down list of
 Filters
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Richard Holland
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Damian Smedley
 
 =head1 CONTACT
 

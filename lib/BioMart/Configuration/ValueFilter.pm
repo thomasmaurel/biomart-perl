@@ -22,7 +22,7 @@ A BioMart::Filter implementation that links represents one or more
 value is taken from a particular row in the Table.  The Table
 for a ValueFilter should consist of only one column.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Darin London, Damian Smedley
 
 =head1 CONTACT
 

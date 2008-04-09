@@ -26,7 +26,7 @@ to some other Dataset via a Link. They can also hold one or more
 BioMart::Links objects describing requests to linking Multiple Datasets 
 together using their Exportable - Importable relationship.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Darin London, Damian Smedley
 
 =head1 CONTACT
 

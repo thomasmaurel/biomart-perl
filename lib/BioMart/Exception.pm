@@ -30,6 +30,8 @@ modules. This is done in very few lines of code via the Exception::Class module
 like attach filehandles or db-statement handles to the exception before throwing it.
 This may make it easier for the calling code to handle the exception.
 
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Richard Holland, Damian Smedley, Gudmundur Arni Thorisson
+
 =head1 EXCEPTION CLASSES
 
 =head2 BioMart::Exception::Configuration

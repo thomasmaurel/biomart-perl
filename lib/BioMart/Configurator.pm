@@ -23,26 +23,7 @@ objects.  It holds information about database connectivity
 (getConnectionAttribute()) and knows how to parse the
 configuration file for a dataset (getConfigurationTree()).
 
-=head1 AUTHORS
-
-=over
-
-=item *
-Arek Kasprzyk
-
-=item *
-Andreas Kahari
-
-=item *
-Damian Smedley
-
-=item *
-Darin London
-
-=item *
-Richard Holland
-
-=back
+=head1 AUTHOR - Arek Kasprzyk, Syed Haider, Richard Holland, Darin London, Damian Smedley
 
 =head1 CONTACT
 

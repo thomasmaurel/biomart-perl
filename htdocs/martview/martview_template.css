@@ -162,11 +162,15 @@ div#mart_export_data
   font-family: sans-serif; /* Needed if buton is <input> */	
   font-weight: bold;
 		font-size: 10pt;
-		padding: 3px 5px 3px 5px;	
+		padding: 3px 5px 3px 25px;
   border     : 1px solid;
   border-style: outset;
   color      : [colour_saturation80];
   background-color: [colour_saturation20];
+
+	background-position: 5px center;
+	background-repeat: no-repeat;
+
 }     				
 .mart_btn:hover,
 .mart_btnhov,
@@ -184,11 +188,15 @@ div#mart_export_data
   font-family: sans-serif; /* Needed if buton is <input> */	
   font-weight: bold;
 		font-size: 10pt;
-		padding: 3px 5px 3px 5px;	
+		padding: 3px 5px 3px 25px;	
   border     : 1px solid;
   border-style: solid;
   color      : [colour_saturation40];
   background-color: [colour_saturation20];
+  	
+  	background-position: 5px center;
+	background-repeat: no-repeat;
+	
 }
 
 /* Other Input fields such drop downs and text field and hover on functions */					
@@ -726,6 +734,9 @@ acronym
 	font-weight: normal; 
 	text-decoration: none;
 }
+
+
+
 /* div {border: solid 1px #f00;}  */
 
 

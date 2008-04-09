@@ -1,11 +1,35 @@
+#
+# You may distribute this module under the same terms as perl itself
+#
+# POD documentation - main docs before the code
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+CGI-script to handle BioMart requests. Scripts does initialization
+of essential objects, checks if some things already initialized &
+persistent in memory (ModPerl) and then passes the request to the
+main BioMart::Web class which does all the work.
+
+=head1 AUTHOR - Syed Haider, Gudmundur Arni Thorisson
+
+=head1 CONTACT
+
+This module is part of the BioMart project http://www.biomart.org
+
+Questions can be posted to the mart-dev mailing list:
+mart-dev@ebi.ac.uk
+
+=head1 METHODS
+
+=cut
+
+
 #!perl -w
 
-# $Id$
-
-# CGI-script to handle BioMart requests. Scripts does initialization
-# of essential objects, checks if some things already initialized &
-# persistent in memory (ModPerl) and then passes the request to the
-# main BioMart::Web class which does all the work.
 
 #the TAG:lib below gets replaced by OPTIONS{lib}, from user's PERL5LIB
 [TAG:lib]

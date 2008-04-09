@@ -16,7 +16,9 @@
 		
 			<!--input type="submit" value="New" style="margin: 0px 0px 0px 6px" name="submit.newsession"--> 
 			<a id="new_button_tag"
-				style="margin-left:6px;"
+				style="margin-left:6px; 
+				background-image: url(/[% TAG_path %]/mview/images/new.png);
+        		"
 				class="mart_btn"
 	   			onmouseover="this.className='mart_btn mart_btnhov'" 
 	   			onmouseout="this.className='mart_btn'"
@@ -37,7 +39,9 @@
 	
 			<!--input type="button" value="Count" name="get_count_button" -->
 			<a id="count_button_tag"
-				style="margin-left:4px"
+				style="margin-left:4px;
+				background-image: url(/[% TAG_path %]/mview/images/count.png);
+				"
 				class="mart_btn"
 				onmouseover="this.className='mart_btn mart_btnhov'" 
 				onmouseout="this.className='mart_btn'"
@@ -72,7 +76,9 @@
 	
 			<!--input type="button" value="Results" name="get_results_button" -->
 			<a id="results_button_tag"
-				style="margin-left:4px"
+				style="margin-left:4px;
+				background-image: url(/[% TAG_path %]/mview/images/results.png);
+				"
 				class="mart_btn"
 				onmouseover="this.className='mart_btn mart_btnhov';" 
 				onmouseout="this.className='mart_btn';"
@@ -119,7 +125,9 @@
 		<td height="100%" align="right" valign="top" >
 		
 			<a id="xml_button_tag"
-				style="margin-right:4px"
+				style="margin-right:4px;
+				background-image: url(/[% TAG_path %]/mview/images/xml.png);
+				"
 				class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
@@ -135,7 +143,9 @@
 			</a>
 
 			<a id="perl_button_tag"
-				style="margin-right:4px"
+				style="margin-right:4px;
+				background-image: url(/[% TAG_path %]/mview/images/perl.png);
+				"
 				class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"
@@ -151,7 +161,9 @@
 			</a>
 	        
 			<a id="help_button_tag"
-				style="margin-right: 6px"
+				style="margin-right: 6px;
+				background-image: url(/[% TAG_path %]/mview/images/help.png);
+				"
 				class="mart_btn"
    			onmouseover="this.className='mart_btn mart_btnhov'" 
    			onmouseout="this.className='mart_btn'"

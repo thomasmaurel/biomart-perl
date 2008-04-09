@@ -49,7 +49,7 @@ query targeted to the importing dataset.  This allows two
 datasets to implicitly define ways to chain queries between
 them.
 
-=head1 AUTHOR - Arek Kasprzyk, Damian Smedley, Darin London
+=head1 AUTHOR - Arek Kasprzyk, Syed Haider, Richard Holland, Darin London, Damian Smedley
 
 =head1 CONTACT
 

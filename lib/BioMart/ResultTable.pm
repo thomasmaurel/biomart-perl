@@ -37,7 +37,7 @@ BioMart::ResultTable object (although users might notice a slight delay between
 some calls to next or next_row which are not experienced in other calls, when 
 the system has to call for another batch of data from the underlying Dataset).
 
-=head1 AUTHOR - Arek Kasprzyk, Darin London, Damian Smedley
+=head1 AUTHOR -  Arek Kasprzyk, Syed Haider, Darin London, Damian Smedley
 
 =head1 CONTACT
 

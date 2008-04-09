@@ -26,14 +26,7 @@ separating the individual entries in each row. The getDisplayNames
 and getFooterText can be used to return appropiately formatted
 headers and footers respectively
 
-=head1 AUTHORS
-
-=over
-
-=item *
-Damian Smedley
-
-=back
+=head1 AUTHOR -  Syed Haider, Damian Smedley
 
 =head1 CONTACT
 
