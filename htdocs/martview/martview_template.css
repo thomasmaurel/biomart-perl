@@ -156,6 +156,12 @@ div#mart_export_data
 .mart_btn,
 .mart_btn:hover,
 .mart_btnhov,
+.mart_btn_new,
+.mart_btn_count,
+.mart_btn_results,
+.mart_btn_xml,
+.mart_btn_perl,
+.mart_btn_help,
 .mart_btn_go,
 .mart_btnhov_go
 {
@@ -181,6 +187,30 @@ div#mart_export_data
   cursor       : pointer;
   color      : [colour_saturation100];
   background-color: [colour_saturation40];
+
+	background-position: 5px center;
+	background-repeat: no-repeat;
+}
+.mart_btn_new {
+        background-image: url(/[TAG:cgiLocation]/[new_button_image]);
+}
+.mart_btn_count {
+        background-image: url(/[TAG:cgiLocation]/[count_button_image]);
+}
+.mart_btn_results {
+        background-image: url(/[TAG:cgiLocation]/[results_button_image]);
+}
+.mart_btn_xml {
+        background-image: url(/[TAG:cgiLocation]/[xml_button_image]);
+}
+.mart_btn_perl {
+        background-image: url(/[TAG:cgiLocation]/[perl_button_image]);
+}
+.mart_btn_help {
+        background-image: url(/[TAG:cgiLocation]/[help_button_image]);
+}
+.mart_btn_go {
+        background-image: url(/[TAG:cgiLocation]/[go_button_image]);
 }
 
 .mart_btn_disabled
@@ -194,8 +224,10 @@ div#mart_export_data
   color      : [colour_saturation40];
   background-color: [colour_saturation20];
   	
+  	background-image: url(/[TAG:cgiLocation]/[disable_button_image]);
   	background-position: 5px center;
 	background-repeat: no-repeat;
+	
 	
 }
 
@@ -734,6 +766,7 @@ acronym
 	font-weight: normal; 
 	text-decoration: none;
 }
+
 
 
 

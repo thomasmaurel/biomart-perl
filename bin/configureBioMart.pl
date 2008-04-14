@@ -457,7 +457,7 @@ sub loadCSSSettings
 	my $cssFile = Cwd::cwd()."/htdocs/martview/martview.css"; 
 	#print $cssFile;
 	$registryFile =~ m/(.*\/)[^\/]*/;
-    	#BioMart::Web::SiteDefs::configure($1); # Load settings. $1 is absolute path to registry file Directory
+	#BioMart::Web::SiteDefs::configure($1); # Load settings. $1 is absolute path to registry file Directory
 	undef $/; ## whole file mode for read
 	open(STDCSS, $cssFile_template);
 	my $fileContents = <STDCSS> ;
@@ -467,10 +467,13 @@ sub loadCSSSettings
      foreach(keys %$hash) {     	
 	     if($_ eq "cssSettings") {
 	     	foreach my $param (keys %{$hash->{$_}}) {
-#     			print "\n\t\t\t$param \t", $hash->{$_}->{$param};
+				#print "\n\t\t\t$param \t", $hash->{$_}->{$param};
      			$fileContents =~ s/\[$param\]/$hash->{$_}->{$param}/mg;
      		}
      	}
+		if($_ eq "httpdSettings") {
+			$fileContents =~ s/\[TAG:cgiLocation\]/$hash->{$_}->{'location'}/mg;
+		}
      }
      
 	open(STDCSS, ">$cssFile");

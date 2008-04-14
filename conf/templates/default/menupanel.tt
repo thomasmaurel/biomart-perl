@@ -17,11 +17,10 @@
 			<!--input type="submit" value="New" style="margin: 0px 0px 0px 6px" name="submit.newsession"--> 
 			<a id="new_button_tag"
 				style="margin-left:6px; 
-				background-image: url(/[% TAG_path %]/mview/images/new.png);
         		"
-				class="mart_btn"
-	   			onmouseover="this.className='mart_btn mart_btnhov'" 
-	   			onmouseout="this.className='mart_btn'"
+				class="mart_btn_new"
+	   			onmouseover="this.className='mart_btn_new mart_btnhov'" 
+	   			onmouseout="this.className='mart_btn_new'"
 				onclick="
 				var currentPath = window.location.pathname; 
 				currentPath = currentPath.replace('/[% session.param('_SESSION_ID') %]', '');			
@@ -40,11 +39,10 @@
 			<!--input type="button" value="Count" name="get_count_button" -->
 			<a id="count_button_tag"
 				style="margin-left:4px;
-				background-image: url(/[% TAG_path %]/mview/images/count.png);
 				"
-				class="mart_btn"
-				onmouseover="this.className='mart_btn mart_btnhov'" 
-				onmouseout="this.className='mart_btn'"
+				class="mart_btn_count"
+				onmouseover="this.className='mart_btn_count mart_btnhov'" 
+				onmouseout="this.className='mart_btn_count'"
 
 				onclick="
 				if (datasetExists() > 0) {
@@ -77,11 +75,10 @@
 			<!--input type="button" value="Results" name="get_results_button" -->
 			<a id="results_button_tag"
 				style="margin-left:4px;
-				background-image: url(/[% TAG_path %]/mview/images/results.png);
 				"
-				class="mart_btn"
-				onmouseover="this.className='mart_btn mart_btnhov';" 
-				onmouseout="this.className='mart_btn';"
+				class="mart_btn_results"
+				onmouseover="this.className='mart_btn_results mart_btnhov';" 
+				onmouseout="this.className='mart_btn_results';"
 			
 				onclick="
 				if (datasetExists() > 0) {
@@ -126,11 +123,10 @@
 		
 			<a id="xml_button_tag"
 				style="margin-right:4px;
-				background-image: url(/[% TAG_path %]/mview/images/xml.png);
 				"
-				class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
+				class="mart_btn_xml"
+   			onmouseover="this.className='mart_btn_xml mart_btnhov'" 
+   			onmouseout="this.className='mart_btn_xml'"
           	onclick="
 				if (datasetExists() > 0) {          	
 	          	document.mainform.showquery.value = 1; 
@@ -144,11 +140,10 @@
 
 			<a id="perl_button_tag"
 				style="margin-right:4px;
-				background-image: url(/[% TAG_path %]/mview/images/perl.png);
 				"
-				class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
+				class="mart_btn_perl"
+   			onmouseover="this.className='mart_btn_perl mart_btnhov'" 
+   			onmouseout="this.className='mart_btn_perl'"
           	onclick="
 				if (datasetExists() > 0) {          	
 	          	document.mainform.showquery.value = 2; 
@@ -162,11 +157,10 @@
 	        
 			<a id="help_button_tag"
 				style="margin-right: 6px;
-				background-image: url(/[% TAG_path %]/mview/images/help.png);
 				"
-				class="mart_btn"
-   			onmouseover="this.className='mart_btn mart_btnhov'" 
-   			onmouseout="this.className='mart_btn'"
+				class="mart_btn_help"
+   			onmouseover="this.className='mart_btn_help mart_btnhov'" 
+   			onmouseout="this.className='mart_btn_help'"
    			
           	onclick="
          	 	document.mainform.showquery.value = 0; 
