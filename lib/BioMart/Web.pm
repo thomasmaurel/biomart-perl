@@ -1951,7 +1951,7 @@ sub handle_request {
 				$tempered_xml =~s/requestId\s*=\s*\".*\"//g;
 				$tempered_xml =~s/softwareVersion/datasetConfigVersion/g;
 				$tempered_xml =~s/</&lt;/g;
-				$tempered_xml =~s/</&gt;/g;
+				$tempered_xml =~s/>/&gt;/g;
 				print $CGI->header();
 				print "<html><body><pre>$tempered_xml</pre></body></html>";
 			}
