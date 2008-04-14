@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 #
 # You may distribute this module under the same terms as perl itself
 #
@@ -26,9 +28,6 @@ mart-dev@ebi.ac.uk
 =head1 METHODS
 
 =cut
-
-
-#!perl -w
 
 
 #the TAG:lib below gets replaced by OPTIONS{lib}, from user's PERL5LIB

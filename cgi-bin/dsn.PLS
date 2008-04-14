@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 #
 # You may distribute this module under the same terms as perl itself
 #
@@ -21,9 +23,6 @@ mart-dev@ebi.ac.uk
 =head1 METHODS
 
 =cut
-
-
-#!perl -w
 
 
 use strict;
