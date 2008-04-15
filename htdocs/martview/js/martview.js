@@ -2445,16 +2445,16 @@ function datasetmenu_3_Triggered(value, dsName)
 
 function disableButtons()
 {
-	document.getElementById("count_button_tag").className = "mart_btn_disabled";
+	document.getElementById("count_button_tag").className = "mart_btn_count_disabled";
 	document.getElementById("count_button_tag").onmouseover = function() {};
 	document.getElementById("count_button_tag").onmouseout = function() {};		
-	document.getElementById("results_button_tag").className = "mart_btn_disabled";
+	document.getElementById("results_button_tag").className = "mart_btn_results_disabled";
 	document.getElementById("results_button_tag").onmouseover = function() {};
 	document.getElementById("results_button_tag").onmouseout = function() {};
-	document.getElementById("xml_button_tag").className = "mart_btn_disabled";
+	document.getElementById("xml_button_tag").className = "mart_btn_xml_disabled";
 	document.getElementById("xml_button_tag").onmouseover = function() {};
 	document.getElementById("xml_button_tag").onmouseout = function() {};
-	document.getElementById("perl_button_tag").className = "mart_btn_disabled";
+	document.getElementById("perl_button_tag").className = "mart_btn_perl_disabled";
 	document.getElementById("perl_button_tag").onmouseover = function() {};
 	document.getElementById("perl_button_tag").onmouseout = function() {};
 }

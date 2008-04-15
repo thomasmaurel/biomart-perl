@@ -213,7 +213,11 @@ div#mart_export_data
         background-image: url(/[TAG:cgiLocation]/[go_button_image]);
 }
 
-.mart_btn_disabled
+.mart_btn_disabled,
+.mart_btn_count_disabled,
+.mart_btn_results_disabled,
+.mart_btn_xml_disabled,
+.mart_btn_perl_disabled
 {
   font-family: sans-serif; /* Needed if buton is <input> */	
   font-weight: bold;
@@ -223,12 +227,23 @@ div#mart_export_data
   border-style: solid;
   color      : [colour_saturation40];
   background-color: [colour_saturation20];
-  	
-  	background-image: url(/[TAG:cgiLocation]/[disable_button_image]);
+
   	background-position: 5px center;
-	background-repeat: no-repeat;
-	
-	
+	background-repeat: no-repeat;	
+}
+
+.mart_btn_count_disabled {
+
+        background-image: url(/[TAG:cgiLocation]/[count_button_image_disabled]);
+}
+.mart_btn_results_disabled {
+        background-image: url(/[TAG:cgiLocation]/[results_button_image_disabled]);
+}
+.mart_btn_xml_disabled {
+        background-image: url(/[TAG:cgiLocation]/[xml_button_image_disabled]);
+}
+.mart_btn_perl_disabled {
+        background-image: url(/[TAG:cgiLocation]/[perl_button_image_disabled]);
 }
 
 /* Other Input fields such drop downs and text field and hover on functions */					
