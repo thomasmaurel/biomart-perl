@@ -162,6 +162,10 @@ sub versionCheck() {
     my $executed = $sth->execute;
     my $tt=$sth->fetchrow_arrayref;
     my $count=$tt->[0];
+	
+	$sth->finish;
+	$self->dbhDC();
+    
     return $count;
 }
 
@@ -178,6 +182,9 @@ sub version() {
     my $executed = $sth->execute;
     my $tt=$sth->fetchrow_arrayref;
     my $version=$tt->[0];
+
+	$sth->finish;
+	$self->dbhDC();
 
     return $version;
 }
