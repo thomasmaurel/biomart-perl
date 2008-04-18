@@ -5,7 +5,7 @@ The following functions are used on the client side of a MartView request.
 Most are called in response to user actions (form element event handlers),
 but a few are called on page load as well.
 
-=head1 AUTHOR - Syed Haider, Richard Holland, Arek Kasprzyk, Damian Smedley, Gudmundur Arni Thorisson
+=head1 AUTHOR - Arek Kasprzyk, Syed Haider, Richard Holland, Damian Smedley, Gudmundur Arni Thorisson
 
 =cut
 
@@ -2451,6 +2451,9 @@ function disableButtons()
 	document.getElementById("results_button_tag").className = "mart_btn_results_disabled";
 	document.getElementById("results_button_tag").onmouseover = function() {};
 	document.getElementById("results_button_tag").onmouseout = function() {};
+	document.getElementById("url_button_tag").className = "mart_btn_url_disabled";
+	document.getElementById("url_button_tag").onmouseover = function() {};
+	document.getElementById("url_button_tag").onmouseout = function() {};
 	document.getElementById("xml_button_tag").className = "mart_btn_xml_disabled";
 	document.getElementById("xml_button_tag").onmouseover = function() {};
 	document.getElementById("xml_button_tag").onmouseout = function() {};

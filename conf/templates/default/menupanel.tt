@@ -120,6 +120,23 @@
 	
 		</td>
 		<td height="100%" align="right" valign="top" >
+
+			<a id="url_button_tag"
+				style="margin-right:4px;
+				"
+				class="mart_btn_url"
+   			onmouseover="this.className='mart_btn_url mart_btnhov'" 
+   			onmouseout="this.className='mart_btn_url'"
+          	onclick="
+				if (datasetExists() > 0) {          	
+	          	document.mainform.showquery.value = 1; 
+   	       	document.mainform.do_export.value = 0; 
+					document.mainform.savequery.value = 0; 
+					document.mainform.target = 'newwindow'; 
+					document.mainform.submit();
+				}
+				" title ="Show query in URL Access Format - Bookmark">URL
+			</a>
 		
 			<a id="xml_button_tag"
 				style="margin-right:4px;

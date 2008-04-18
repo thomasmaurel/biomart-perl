@@ -159,6 +159,7 @@ div#mart_export_data
 .mart_btn_new,
 .mart_btn_count,
 .mart_btn_results,
+.mart_btn_url,
 .mart_btn_xml,
 .mart_btn_perl,
 .mart_btn_help,
@@ -200,6 +201,9 @@ div#mart_export_data
 .mart_btn_results {
         background-image: url(/[TAG:cgiLocation]/[results_button_image]);
 }
+.mart_btn_url {
+        background-image: url(/[TAG:cgiLocation]/[url_button_image]);
+}
 .mart_btn_xml {
         background-image: url(/[TAG:cgiLocation]/[xml_button_image]);
 }
@@ -216,6 +220,7 @@ div#mart_export_data
 .mart_btn_disabled,
 .mart_btn_count_disabled,
 .mart_btn_results_disabled,
+.mart_btn_url_disabled,
 .mart_btn_xml_disabled,
 .mart_btn_perl_disabled
 {
@@ -238,6 +243,9 @@ div#mart_export_data
 }
 .mart_btn_results_disabled {
         background-image: url(/[TAG:cgiLocation]/[results_button_image_disabled]);
+}
+.mart_btn_url_disabled {
+        background-image: url(/[TAG:cgiLocation]/[url_button_image_disabled]);
 }
 .mart_btn_xml_disabled {
         background-image: url(/[TAG:cgiLocation]/[xml_button_image_disabled]);
