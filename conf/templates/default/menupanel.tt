@@ -129,7 +129,7 @@
    			onmouseout="this.className='mart_btn_url'"
           	onclick="
 				if (datasetExists() > 0) {          	
-	          	document.mainform.showquery.value = 1; 
+	          	document.mainform.showquery.value = 3; 
    	       	document.mainform.do_export.value = 0; 
 					document.mainform.savequery.value = 0; 
 					document.mainform.target = 'newwindow'; 
