@@ -45,6 +45,7 @@ use Data::Dumper;
 use File::Path;
 use CGI::Session;
 use CGI::Session::Driver::db_file; # required by CGI::Session
+use XML::Simple qw(:strict);
 use DBI;
 use File::Basename qw(dirname basename);
 use List::MoreUtils qw/apply uniq/;
@@ -1219,6 +1220,124 @@ sub filterDisplayType
 	}
 }
 
+=head2 getURLBookmark
+
+  Usage      : $self->getURLBookmark($registry, $query_main, $session);
+  Purpose    : handles xml equivalent of the query
+  Returns    : url_string
+  Arguments  : registryObject, QueryObject, session
+  Throws     : BioMart::Exception::* exceptions not caught somewhere deeper.
+  Status     : Public
+  Comments   : This method is called by SELF.
+  See Also   :
+
+=cut
+
+sub getURLBookmark
+{
+
+	my ($self, $registry, $query_main, $session) = @_;
+	
+	my ($url_string, $url_vs, $url_datasetName, $url_interface, $url_attPage, $url_atts, $url_filtPage, $url_filts, $url_visiblePanel);
+	my @DS;
+	my $i=0;
+	my $xml = $query_main->toXML(1,1,1,1);
+	my $config = XMLin($xml, forcearray=> [qw(Query Dataset Attribute 
+		      ValueFilter BooleanFilter 
+		      Filter Links)], keyattr => []);
+       
+	$url_vs =  $config->{'virtualSchemaName'} || 'default';
+
+	$url_string = "http://BioMartServer/location/martview?VIRTUALSCHEMANAME=".$url_vs;
+	$url_atts = "&ATTRIBUTES=";
+	$url_filts = "&FILTERS=";
+	$url_visiblePanel = "&VISIBLEPANEL=";
+		
+	# lets work out atts and filters
+	foreach my $url_dataset (@{$config->{'Dataset'}}) {
+		$url_interface = $url_dataset->{'interface'} || 'default';
+		$url_datasetName = $url_dataset->{'name'};
+		$DS[$i++] = $url_datasetName;
+		
+		# work out attributePage
+		my @attPageUnits = split (/__/, $session->param($url_datasetName.'__attributepages__current_visible_section'));
+		$url_attPage = $attPageUnits[2];
+
+		# work out filterPage
+		# unfortunately, there are no signs of filterPageName in session/HTML,
+		# need to find out from library with an assumption that there is ONLY ONE filterPage set with hideDisplay=false/""
+		my $datasetObj = $registry->getDatasetByName($url_vs, $url_dataset->{'name'});
+		if (!$datasetObj){
+			BioMart::Exception::Usage->throw ("WITHIN Virtual Schema : $url_vs, Dataset ".$url_dataset->{'name'}." NOT FOUND");
+		}
+		my $confTree = $registry->getDatasetByName($url_vs, $url_dataset->{'name'})->getConfigurationTree($url_interface);
+		if (!$confTree){
+			BioMart::Exception::Usage->throw ("Cannot find Configuration Tree for $url_vs.".$url_dataset->{'name'});
+		}
+		foreach my $filterTree (@{$confTree->getAllFilterTrees()}){
+			$url_filtPage = $filterTree->name if ($filterTree->hideDisplay ne 'true');
+		}
+		
+	
+		# work out atts
+		foreach my $attributeNode (@{$url_dataset->{'Attribute'}}) {
+			$url_atts = $url_atts.$url_datasetName.'.'.$url_interface.'.'.$url_attPage.'.'.$attributeNode->{'name'}.'|';
+		}
+
+		# work out filts
+		foreach my $filterNode (@{$url_dataset->{'Filter'}}) {
+			if (defined $filterNode->{'excluded'}){
+				$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'.'."excluded".'|' 
+							if ($filterNode->{'excluded'} eq '1');
+				$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'.'."only".'|' 
+							if ($filterNode->{'excluded'} eq '0');
+			}
+			elsif  (defined $filterNode->{'value'}){
+				$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'."'.$filterNode->{'value'}.'"|';
+			}
+			else {
+				BioMart::Exception::Usage->throw ("Filter ".$filterNode->{'name'}." INVALID, FILTER NEEDS 'excluded' or 'value' attribute");
+			}
+		}					
+	}
+	# lets work out visible panel
+	if ($session->param("mart_mainpanel__current_visible_section") eq $DS[0].'__infopanel') {
+		$url_visiblePanel .= 'mainpanel';
+	}
+	elsif ($session->param("mart_mainpanel__current_visible_section") eq $DS[0].'__attributepanel') {
+		$url_visiblePanel .= 'attributepanel';
+	}
+	elsif ($session->param("mart_mainpanel__current_visible_section") eq $DS[0].'__filterpanel') {
+		$url_visiblePanel .= 'filterpanel'
+	}
+	elsif ($DS[1] && $session->param("mart_mainpanel__current_visible_section") eq $DS[1].'__infopanel') {
+		$url_visiblePanel .= 'linkpanel';
+	}
+	elsif ($DS[1] && $session->param("mart_mainpanel__current_visible_section") eq $DS[1].'__attributepanel') {
+		$url_visiblePanel .= 'linkattributepanel';
+	}
+	elsif ($DS[1] && $session->param("mart_mainpanel__current_visible_section") eq $DS[1].'__filterpanel') {
+		$url_visiblePanel .= 'linkfilterpanel';
+	}
+
+	elsif ($session->param("mart_mainpanel__current_visible_section") eq 'add_linked_datasetpanel') {
+		$url_visiblePanel .= 'linkpanel';
+	}
+	else { # default case, jump to results panel
+		$url_visiblePanel .= "resultspanel";
+	}
+
+	# chop only if there is any att/filt, otherwise no point chopping off =
+	chop($url_atts) if ($url_atts ne "&ATTRIBUTES=");
+	chop($url_filts) if ($url_filts ne "&FILTERS=");
+		
+	$url_string .= $url_atts;
+	$url_string .= $url_filts;
+	$url_string .= $url_visiblePanel;
+	return $url_string;
+
+}
+
 =head2 handle_request
 
   Usage      : $bmweb->handle_request(CGI->new());
@@ -1961,6 +2080,12 @@ sub handle_request {
 				$tempered_perlScript =~ s/my \$query_runner = BioMart::QueryRunner->new\(\)\;/\$query->formatter\(\"$exportView_formatter_name\"\)\;\n\nmy \$query_runner = BioMart::QueryRunner->new\(\)\;/;
 				print $CGI->header();
 				print "<html><body><pre>$tempered_perlScript</pre></body></html>";
+			}
+			# URL access equivalent of the query
+			if ($showQuery eq '3') {
+				my $url_string = $self->getURLBookmark($registry, $query_main, $session);
+				print $CGI->header();
+				print "<html><body><pre>$url_string</pre></body></html>";
 			}
 			$session->clear('showquery'); # so we don't get stuck a this stage
 			$session->flush();
