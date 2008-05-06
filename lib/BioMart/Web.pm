@@ -401,15 +401,24 @@ sub _new
 		 	$session->param('preView_outputformat','tsv');
 	   }    	
 	   # URL request e.g ensembl URL request for contigView
-    	if ($cgi->param('VIRTUALSCHEMANAME') || $cgi->param('ATTRIBUTES'))
+    	if ($cgi->param('VIRTUALSCHEMANAME') || $cgi->param('ATTRIBUTES') )
 		{		
 			$session->param("url_VIRTUALSCHEMANAME",$cgi->param('VIRTUALSCHEMANAME'));
 			$session->param("url_ATTRIBUTES", $cgi->param('ATTRIBUTES'));
 			if ($cgi->param('FILTERS')) {	$session->param('url_FILTERS', $cgi->param('FILTERS')); }
 			else {	$session->clear("url_FILTERS"); }
 			if ($cgi->param('VISIBLEPANEL')) {	$session->param('url_VISIBLEPANEL', $cgi->param('VISIBLEPANEL')); }
-			else {	$session->clear("url_VISIBLEPANEL"); }
-
+			else {	$session->clear("url_VISIBLEPANEL"); }			
+		}
+		# ?XML=... request to martview
+		if ($cgi->param('XML') || $cgi->param('xml')) {
+			if ($cgi->param('XML')) {
+				$session->param('url_XML', $cgi->param('XML'));				
+			}
+			elsif ($cgi->param('xml')) {
+				$session->param('url_XML', $cgi->param('xml'));
+			}
+			else { $session->clear("url_XML"); }
 		}
 		
     	# Expiry.
@@ -1222,7 +1231,7 @@ sub filterDisplayType
 
 =head2 getURLBookmark
 
-  Usage      : $self->getURLBookmark($registry, $query_main, $session);
+  Usage      : $self->getURLBookmark($registry, $xml, $session);
   Purpose    : handles xml equivalent of the query
   Returns    : url_string
   Arguments  : registryObject, QueryObject, session
@@ -1236,12 +1245,12 @@ sub filterDisplayType
 sub getURLBookmark
 {
 
-	my ($self, $registry, $query_main, $session) = @_;
+	my ($self, $registry, $xml, $session) = @_;
 	
 	my ($url_string, $url_vs, $url_datasetName, $url_interface, $url_attPage, $url_atts, $url_filtPage, $url_filts, $url_visiblePanel);
 	my @DS;
+	my @attributes;
 	my $i=0;
-	my $xml = $query_main->toXML(1,1,1,1);
 	my $config = XMLin($xml, forcearray=> [qw(Query Dataset Attribute 
 		      ValueFilter BooleanFilter 
 		      Filter Links)], keyattr => []);
@@ -1252,20 +1261,15 @@ sub getURLBookmark
 	$url_atts = "&ATTRIBUTES=";
 	$url_filts = "&FILTERS=";
 	$url_visiblePanel = "&VISIBLEPANEL=";
-		
+	$url_attPage = "_ATT_PAGE_";
+	$url_filtPage = "_FILT_PAGE_";
+	
 	# lets work out atts and filters
 	foreach my $url_dataset (@{$config->{'Dataset'}}) {
 		$url_interface = $url_dataset->{'interface'} || 'default';
 		$url_datasetName = $url_dataset->{'name'};
 		$DS[$i++] = $url_datasetName;
 		
-		# work out attributePage
-		my @attPageUnits = split (/__/, $session->param($url_datasetName.'__attributepages__current_visible_section'));
-		$url_attPage = $attPageUnits[2];
-
-		# work out filterPage
-		# unfortunately, there are no signs of filterPageName in session/HTML,
-		# need to find out from library with an assumption that there is ONLY ONE filterPage set with hideDisplay=false/""
 		my $datasetObj = $registry->getDatasetByName($url_vs, $url_dataset->{'name'});
 		if (!$datasetObj){
 			BioMart::Exception::Usage->throw ("WITHIN Virtual Schema : $url_vs, Dataset ".$url_dataset->{'name'}." NOT FOUND");
@@ -1274,31 +1278,72 @@ sub getURLBookmark
 		if (!$confTree){
 			BioMart::Exception::Usage->throw ("Cannot find Configuration Tree for $url_vs.".$url_dataset->{'name'});
 		}
-		foreach my $filterTree (@{$confTree->getAllFilterTrees()}){
-			$url_filtPage = $filterTree->name if ($filterTree->hideDisplay ne 'true');
-		}
-		
+
 	
 		# work out atts
 		foreach my $attributeNode (@{$url_dataset->{'Attribute'}}) {
 			$url_atts = $url_atts.$url_datasetName.'.'.$url_interface.'.'.$url_attPage.'.'.$attributeNode->{'name'}.'|';
+			push @attributes, $attributeNode->{'name'};
 		}
 
 		# work out filts
 		foreach my $filterNode (@{$url_dataset->{'Filter'}}) {
-			if (defined $filterNode->{'excluded'}){
-				$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'.'."excluded".'|' 
-							if ($filterNode->{'excluded'} eq '1');
-				$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'.'."only".'|' 
-							if ($filterNode->{'excluded'} eq '0');
+			# test if its an attributeFilter
+			my $attFilt;
+			foreach my $attPage (@{$confTree->getAllAttributeTrees()}) {
+				$attFilt = $attPage->getFilterByName($filterNode->{'name'});
+				if ($attFilt && $attFilt->isa("BioMart::Configuration::ValueFilter")){
+					$url_atts = $url_atts.$url_datasetName.'.'.$url_interface.'.'.$url_attPage.'.'.$filterNode->{'name'}.'."'.$filterNode->{'value'}.'"|';
+					push @attributes, $filterNode->{'name'};
+					last;
+				}
 			}
-			elsif  (defined $filterNode->{'value'}){
+			if(!$attFilt){ # not an attributeFilter - simple Filter
+				if (defined $filterNode->{'excluded'}){
+					$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'.'."excluded".'|' 
+						if ($filterNode->{'excluded'} eq '1');
+					$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'.'."only".'|' 
+						if ($filterNode->{'excluded'} eq '0');
+				}
+				elsif  (defined $filterNode->{'value'}){
 				$url_filts = $url_filts.$url_datasetName.'.'.$url_interface.'.'.$url_filtPage.'.'.$filterNode->{'name'}.'."'.$filterNode->{'value'}.'"|';
+				}
+				else {
+					BioMart::Exception::Usage->throw ("Filter ".$filterNode->{'name'}." INVALID, FILTER NEEDS 'excluded' or 'value' attribute");
+				}
 			}
-			else {
-				BioMart::Exception::Usage->throw ("Filter ".$filterNode->{'name'}." INVALID, FILTER NEEDS 'excluded' or 'value' attribute");
+		}
+		
+		# work out attributePage
+		# not finding out from session as this function is also called from handleXMLRequest, so need
+		# to find out attPage from library
+		# (NO) my @attPageUnits = split (/__/, $session->param($url_datasetName.'__attributepages__current_visible_section'));
+		# (NO) $url_attPage = $attPageUnits[2];
+		foreach my $attPage (@{$confTree->getAllAttributeTrees()}) {
+			my $dirtyFlag = 1;
+			foreach my $attName (@attributes) {
+				my $attObj = $attPage->getAttributeByName($attName);
+				if (!$attObj) {
+					$attObj = $attPage->getFilterByName($attName);
+				}
+				$dirtyFlag = 0 if (!$attObj); # this cant be the desired attPage
 			}
-		}					
+			if ($dirtyFlag == 1) { # means all atts were found on this attPage - good
+				$url_attPage = $attPage->name();
+				last;
+			}
+		}
+
+		# work out filterPage
+		# unfortunately, there are no signs of filterPageName in session/HTML,
+		# need to find out from library with an assumption that there is ONLY ONE filterPage set with hideDisplay=false/""
+		foreach my $filterPage (@{$confTree->getAllFilterTrees()}){
+			$url_filtPage = $filterPage->name() if ($filterPage->hideDisplay ne 'true');
+		}
+		
+		# substitute the attPage and filtPage Tags
+		$url_atts =~ s/_ATT_PAGE_/$url_attPage/g;
+		$url_filts =~ s/_FILT_PAGE_/$url_filtPage/g;				
 	}
 	# lets work out visible panel
 	if ($session->param("mart_mainpanel__current_visible_section") eq $DS[0].'__infopanel') {
@@ -1338,6 +1383,34 @@ sub getURLBookmark
 
 }
 
+=head2 handleXMLRequest
+
+  Usage      : $self->handleXMLRequest($session, $url_string);
+  Purpose    : handles xml equivalent of the query
+  Returns    : none
+  Arguments  : session, url_string 
+  Throws     : BioMart::Exception::* exceptions not caught somewhere deeper.
+  Status     : Public
+  Comments   : This method is called by SELF.
+  See Also   :
+
+=cut
+
+sub handleXMLRequest
+{
+	my ($self, $session, $url_string) = @_;
+	$url_string =~ m/.*?VIRTUALSCHEMANAME=(.*?)\&ATTRIBUTES=(.*?)\&FILTERS=(.*?)\&VISIBLEPANEL=(.*)/;
+	$session->param("url_VIRTUALSCHEMANAME", $1);
+	$session->param("url_ATTRIBUTES", $2);
+	if ($3) {	$session->param('url_FILTERS', $3); }
+	else {	$session->clear("url_FILTERS"); }
+	if ($4) {	$session->param('url_VISIBLEPANEL', $4); }
+	else {	$session->clear("url_VISIBLEPANEL"); }
+	
+	$session->clear("url_XML");
+
+}
+
 =head2 handle_request
 
   Usage      : $bmweb->handle_request(CGI->new());
@@ -1370,6 +1443,14 @@ sub handle_request {
 	    and $logger->info("Incoming CGI-params:\n",Dumper(\%{$CGI->Vars()}));
 		
 	#------------------------------------------------------------------------
+	# TO HANDLE URL REQUEST with XML Query, it populates the minimal session,
+	# to invoke URL API's 'IF' statement right after
+	#------------------------------------------------------------------------
+	if($session->param("url_XML"))
+	{	$self->handleXMLRequest($session,
+				$self->getURLBookmark($registry, $session->param("url_XML"), $session));		
+	}
+	#------------------------------------------------------------------------
 	# TO HANDLE URL REQUEST specially for ensembl ContigView etc etc
 	# testing if its  a URL request, then need to temper the session object 
 	# to make it look alike of URL request		
@@ -1378,7 +1459,7 @@ sub handle_request {
 	{	my $returnVal = $self->handleURLRequest($session);
 		return if ($returnVal eq 'exit'); ## exception thrown	
 	}
-		
+	
 	#------------------------------------------------------------------------
 	# if its a count/Results request, only save the session, and go back sending
 	# nothing back to the target = 'hiddenIFrame'
@@ -2083,7 +2164,8 @@ sub handle_request {
 			}
 			# URL access equivalent of the query
 			if ($showQuery eq '3') {
-				my $url_string = $self->getURLBookmark($registry, $query_main, $session);
+				my $xml = $query_main->toXML(1,1,1,1);
+				my $url_string = $self->getURLBookmark($registry, $xml, $session);
 				print $CGI->header();
 				print "<html><body><pre>$url_string</pre></body></html>";
 			}
