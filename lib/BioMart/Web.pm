@@ -1257,7 +1257,7 @@ sub getURLBookmark
        
 	$url_vs =  $config->{'virtualSchemaName'} || 'default';
 
-	$url_string = "http://BioMartServer/location/martview?VIRTUALSCHEMANAME=".$url_vs;
+	$url_string = "?VIRTUALSCHEMANAME=".$url_vs;
 	$url_atts = "&ATTRIBUTES=";
 	$url_filts = "&FILTERS=";
 	$url_visiblePanel = "&VISIBLEPANEL=";
@@ -2165,7 +2165,7 @@ sub handle_request {
 			# URL access equivalent of the query
 			if ($showQuery eq '3') {
 				my $xml = $query_main->toXML(1,1,1,1);
-				my $url_string = $self->getURLBookmark($registry, $xml, $session);
+				my $url_string = $CGI->url(-full => 1) . $self->getURLBookmark($registry, $xml, $session);
 				print $CGI->header();
 				print "<html><body><pre>$url_string</pre></body></html>";
 			}
