@@ -1263,6 +1263,8 @@ sub _gene_exonIntronFlankSequences {
 			if (($storageHash->{$lastPkey}->{'transcriptCount'} >= $storageHash->{$lastPkey}->{'totalTranscripts'}) 
 				|| $self->lastDS() == 2)
 			{
+				# use the old sequence from previous batch, the new one in some case (f_gene,c_f_gene,u_gene is different)
+				$sequence = $storageHash->{$lastPkey}->{'seq'} if ($storageHash->{$lastPkey}->{'seq'});
 				if ($sequence)
 				{ 
 				    $self->_addRow($atable, $outRow, $sequence);
@@ -1275,7 +1277,7 @@ sub _gene_exonIntronFlankSequences {
 			}
 			else
 			{
-				# seqs keeps getting update, as and when a transcript of a gene
+				# sequences gets an update, as and when a transcript of a gene
 				# arrives in a separate batch. In principle this should always be the same
 
 				#my $onHoldkeys = $self->get('onHoldSeqsKeys');
