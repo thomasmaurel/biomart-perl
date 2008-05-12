@@ -194,7 +194,7 @@ sub getConfigurationTree {
 			}
 			
 			# 0.5 TO 0.6
-			print STDERR "->  upgrading to 0.6 ... ";
+			print STDERR "->  upgrading to 0.6/0.7 ... ";
 			$params=();
 			$params=BioMart::Web::CGIXSLT::read_https();
 			# ENSEMBL 37 & 38 crashes during this transformation for dataset  evoc_cell_type by XML:Parser 
@@ -218,7 +218,7 @@ sub getConfigurationTree {
 		if ($softwareVersion && $softwareVersion eq '0.5')
 		{
 			# 0.5 TO 0.6
-			print STDERR "->  upgrading to 0.6 ... ";
+			print STDERR "->  upgrading to 0.6/0.7 ... ";
 			my $params=BioMart::Web::CGIXSLT::read_https();
 			open(STDOUTTEMP, ">temp.xml");
 			print STDOUTTEMP $xml;
