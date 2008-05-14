@@ -44,8 +44,8 @@ sub makehttpdConf
 	MinSpareServers 2
 	MaxSpareServers 2
 	StartServers 2
-	MaxClients 50
-	MaxRequestsPerChild 0
+	MaxClients 30
+	MaxRequestsPerChild 4000
 	Listen $OPTIONS{server_port}
 
 	DirectoryIndex index.html
