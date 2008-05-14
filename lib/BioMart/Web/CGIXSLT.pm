@@ -2134,7 +2134,7 @@ sub is_equal
 			{my $str=node_text($arg->[0]);
 		     $str=~s/^\s+//g;
 			 $str=~s/\s+$//g;
-			 if($str==$scaler){return 1;};
+			 if($str && $str==$scaler){return 1;};
 			};
           return 0;
 		}
