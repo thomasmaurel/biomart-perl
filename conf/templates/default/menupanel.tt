@@ -169,7 +169,7 @@
 					document.mainform.target = 'newwindow'; 
 					document.mainform.submit();
 				}
-				" title ="Show query in XML Web Service Format">Perl
+				" title ="Show query as Perl Script">Perl
 			</a>
 	        
 			<a id="help_button_tag"
