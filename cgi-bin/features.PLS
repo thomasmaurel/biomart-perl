@@ -484,31 +484,17 @@ sub get_chromosomeAnnotationGTE
 		no warnings 'uninitialized';
 		my @portions = split (/\t/, $line);
 		
-		# for every transcript reinitialise the counter assuming the translation_id 'portion[8]' 
-		# changes with every new transcript. reason we append counter with translation Id is to make it
-		# unique just like there is a unique exon_stable_id
-		if (! $resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}) {
-			$counter = 0;
-		}
-		
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'start'} = $portions[2];
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'end'} = $portions[3];
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'strand'} = $portions[4];
+		$resultsHash->{$portions[0]}->{'start'} = $portions[1];
+		$resultsHash->{$portions[0]}->{'end'} = $portions[2];
+		$resultsHash->{$portions[0]}->{'strand'} = $portions[3];
 
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'exon'}->{$portions[5]}->{'start'} = $portions[6];
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'exon'}->{$portions[5]}->{'end'} = $portions[7];
+		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[4]}->{'start'} = $portions[5];
+		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[4]}->{'end'} = $portions[6];
+		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[4]}->{'strand'} = $portions[3];
 
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'exon'}->{$portions[5]}->
-					{'translation'}->{$portions[8]."-".$counter}->{'start'} = $portions[9];
-				
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'exon'}->{$portions[5]}->
-					{'translation'}->{$portions[8]."-".$counter}->{'end'} = $portions[10];
-
-		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[1]}->{'exon'}->{$portions[5]}->
-					{'translation'}->{$portions[8]."-".$counter}->{'translationGroupId'} = $portions[8];
-
-		$counter++;
-
+		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[4]}->{'exon'}->{$portions[7]}->{'start'} = $portions[8];
+		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[4]}->{'exon'}->{$portions[7]}->{'end'} = $portions[9];
+		$resultsHash->{$portions[0]}->{'transcript'}->{$portions[4]}->{'exon'}->{$portions[7]}->{'strand'} = $portions[3];
 	}
 	
 	#print Dumper($resultsHash);	
@@ -518,6 +504,25 @@ sub get_chromosomeAnnotationGTE
 	$results .= &header();
 	$results .= &GFF_open("http://[TAG:server_host]/[TAG:cgiLocation]/das/$dasDSNName/features");	
 	$results .= &segment_open($chromosome, $start, $end);
+
+	################################### ADDING GENE FEATURES
+	foreach my $geneID (keys %{$resultsHash}) {
+	
+		$results .= &feature_open($geneID, $geneID);
+		$results .= &type("gene","no","no","no", "gene");
+		$results .= &method("methodID:unknown", "");
+		$results .= &start($resultsHash->{$geneID}->{'start'});
+		$results .= &end($resultsHash->{$geneID}->{'end'});
+		$results .= &score("-");
+			
+		$results .= &orientation("+") 
+			if ($resultsHash->{$geneID}->{'strand'} == 1) ;
+		$results .= &orientation("-") 
+			if ($resultsHash->{$geneID}->{'strand'} == -1) ;
+			
+		$results .= &phase("-");
+		$results .= &feature_close();
+	}
 
 	################################### ADDING TRANSCRIPT FEATURES
 	foreach my $geneID (keys %{$resultsHash}) {
@@ -536,6 +541,7 @@ sub get_chromosomeAnnotationGTE
 				if ($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}->{'strand'} == -1) ;
 			
 			$results .= &phase("-");
+			$results .= &group($geneID, "gene", $geneID) ;
 			$results .= &feature_close();
 		}
 	}
@@ -565,44 +571,6 @@ sub get_chromosomeAnnotationGTE
 				$results .= &group($transcriptID, "transcript", $transcriptID) ;
 				$results .= &group($geneID, "gene", $geneID) ;
 				$results .= &feature_close();
-			}
-		}
-	}
-	
-	
-	################################### ADDING TRANSLATION FEATURES
-	
-	foreach my $geneID (keys %{$resultsHash}) {
-		foreach my $transcriptID (keys %{$resultsHash->{$geneID}->{'transcript'}}) {
-			foreach my $exonID (keys %{$resultsHash->{$geneID}->{'transcript'}
-							->{$transcriptID}->{'exon'}}) {
-				foreach my $translationID (keys %{$resultsHash->{$geneID}->{'transcript'}
-							->{$transcriptID}->{'exon'}->{$exonID}->{'translation'} }) {
-				
-					$results .= &feature_open($translationID, $translationID);
-					$results .= &type("translation","no","no","no", "translation");
-					$results .= &method("methodID:unknown", "");
-					$results .= &start($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}
-								->{'exon'}->{$exonID}->{'translation'}->{$translationID}->{'start'});
-					$results .= &end($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}
-								->{'exon'}->{$exonID}->{'translation'}->{$translationID}->{'end'});
-					$results .= &score("-");
-				
-					$results .= &orientation("+") 
-						if ($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}->{'strand'} == 1) ;
-					$results .= &orientation("-") 
-						if ($resultsHash->{$geneID}->{'transcript'}->{$transcriptID}->{'strand'} == -1) ;
-
-					$results .= &phase("-");
-			
-					my $tGID =  $resultsHash->{$geneID}->{'transcript'}
-									->{$transcriptID}->{'exon'}->{$exonID}->{'translation'}
-									->{$translationID}->{'translationGroupId'};
-					$results .= &group($tGID, "translation", $tGID ) ;
-					$results .= &group($transcriptID, "transcript", $transcriptID) ;
-
-					$results .= &feature_close();
-				}
 			}
 		}
 	}
