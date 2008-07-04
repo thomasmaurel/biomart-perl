@@ -682,7 +682,7 @@ sub listAttributePages {
 	        my $ds = $mart->getDatasetByName($dataset_name);
 		if ($ds) {
                 	foreach my $ap(@{$ds->getConfigurationTree($interface)->getAllAttributeTrees()}){
-                       	 	$output .= $ap->name."\t".$ap->maxSelect."\n" unless $ap->hideDisplay eq 'true';
+                       	 	$output .= $ap->name."\t".$ap->maxSelect."\t".$ap->outFormats()."\n" unless $ap->hideDisplay eq 'true';
                 	}
 		}
         }
