@@ -582,7 +582,7 @@ sub get_attributes {
 	    foreach my $agroup (@{$apage->getAllAttributeGroups}){
 		foreach my $acollection(@{$agroup->getAllCollections}){
 		    foreach my $attribute(@{$acollection->getAllAttributes}){
-			$output .= $attribute->name."\t".$attribute->displayName."\t".$attribute->description."\t".$apage->name."\n";
+			$output .= $attribute->name."\t".$attribute->displayName."\t".$attribute->description."\t".$apage->name."\t".$apage->outFormats."\n";
 		    }
 		}
 	    }
