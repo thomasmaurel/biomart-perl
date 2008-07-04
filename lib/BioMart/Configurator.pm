@@ -421,8 +421,6 @@ sub getConfigurationTree {
     }	
     
     # FILTERS
-    # for attributes just required for filters don't add them to the config 
-    # tree - no need to hide them then
     
     foreach my $xmlFilterTree (@{ $xmlHash->{'FilterPage'} }) {
         next if ($xmlFilterTree->{'hidden'} 
@@ -494,6 +492,7 @@ sub getConfigurationTree {
                     	'type'				=> $xmlFilter->{'type'},
                     	'displayType'				=> $xmlFilter->{'displayType'},
                     	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},
+                    	'legalQualifiers'		=>	$xmlFilter->{'legal_qualifiers'},
 						 );
 							# this is done once the configuration tree is populated, so we can find the filter Objects
 							# and associate them with this filterList. see code before importables
@@ -519,6 +518,7 @@ sub getConfigurationTree {
 			    'dependsOnType' => $xmlFilter->{'dependsOnType'},      
 			    'dependsOn' => $xmlFilter->{'dependsOn'},  
             	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},  
+                    	'legalQualifiers'		=>	$xmlFilter->{'legal_qualifiers'},
 									     );
 			$filter->attribute($attribute);
                         $filter->defaultOn($xmlFilter->{'defaultOn'});
@@ -542,6 +542,7 @@ sub getConfigurationTree {
 			    'dependsOnType' => $xmlFilter->{'dependsOnType'},      
 			    'dependsOn' => $xmlFilter->{'dependsOn'}, 
             	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},  
+                    	'legalQualifiers'		=>	$xmlFilter->{'legal_qualifiers'},
 								       );
 			$filter->setNumberFlag();
 			$filter->attribute($attribute);
@@ -565,6 +566,7 @@ sub getConfigurationTree {
 			    'dependsOnType' => $xmlFilter->{'dependsOnType'},      
 			    'dependsOn' => $xmlFilter->{'dependsOn'},
              	'hideDisplay'		=>	$xmlFilter->{'hideDisplay'},  
+                    	'legalQualifiers'		=>	$xmlFilter->{'legal_qualifiers'},
 								       );
 			    $filter->attribute($attribute);
 			    $filter->operation($xmlFilter->{'qualifier'});
@@ -821,6 +823,7 @@ sub _addOption {
                   'type'          => $xmlOption->{'type'},
 			    'dependsOnType' => $xmlOption->{'dependsOnType'},      
 			    'dependsOn' => $xmlOption->{'dependsOn'},  
+                    	'legalQualifiers'		=>	$xmlOption->{'legal_qualifiers'},
 								);
 	   $filter->attribute($attribute);
 	   $filter->setAttribute($xmlOption->{'setAttribute'});
@@ -837,6 +840,7 @@ sub _addOption {
                    'type'        => $xmlOption->{'type'},
 			    'dependsOnType' => $xmlOption->{'dependsOnType'},      
 			    'dependsOn' => $xmlOption->{'dependsOn'},  
+				'legalQualifiers'		=>	$xmlOption->{'legal_qualifiers'},
 								);
 	   $filter->setNumberFlag();
 	   $filter->attribute($attribute);
@@ -854,6 +858,7 @@ sub _addOption {
                    'type'        => $xmlOption->{'type'},
 			    'dependsOnType' => $xmlOption->{'dependsOnType'},      
 			    'dependsOn' => $xmlOption->{'dependsOn'},  
+				'legalQualifiers'		=>	$xmlOption->{'legal_qualifiers'},
 							      );
 	   $filter->attribute($attribute);
 	   $filter->operation($xmlOption->{'qualifier'});
@@ -1155,7 +1160,8 @@ sub addPlaceHolders {
                                    'type'        => $filter->type,
                                    'dependsOn'        => $filter->dependsOn,
                                    'dependsOnType'        => $filter->dependsOnType,
-                                   'hidden' => $xmlAttribute->{'hidden'}
+                                   'hidden' => $xmlAttribute->{'hidden'},
+                                   'legalQualifiers'		=>	$filter->legalQualifiers,
 									     );
 			       $new_filter->attribute($filter->attribute);
 			       $new_filter->defaultOn($filter->defaultOn);
@@ -1177,7 +1183,9 @@ sub addPlaceHolders {
                                    'type'        => $filter->type,
                                    'hidden' => $xmlAttribute->{'hidden'},
                                    'dependsOn'        => $filter->dependsOn,
-                                   'dependsOnType'        => $filter->dependsOnType);
+                                   'dependsOnType'        => $filter->dependsOnType,
+                                   'legalQualifiers'		=>	$filter->legalQualifiers,
+                                   );
 			      $new_filter->attribute($filter->attribute);
 			      $new_filter->operation($filter->operation);
 			      $new_filter->otherFilters($filter->otherFilters);
@@ -1325,7 +1333,8 @@ sub addPlaceHolders {
 				       $filter->setAttributePage,
                                    'type'        => $filter->type,
                                    'dependsOn'        => $filter->dependsOn,
-                                   'dependsOnType'        => $filter->dependsOnType
+                                   'dependsOnType'        => $filter->dependsOnType,
+                                   'legalQualifiers'		=>	$filter->legalQualifiers,
 									   );
 			    $new_filter->attribute($filter->attribute);
 			    $new_filter->defaultOn($filter->defaultOn);
@@ -1349,7 +1358,8 @@ sub addPlaceHolders {
 				       $filter->setAttributePage,
                                    'type'        => $filter->type,
                                    'dependsOn'        => $filter->dependsOn,
-                                   'dependsOnType'        => $filter->dependsOnType
+                                   'dependsOnType'        => $filter->dependsOnType,
+                                   'legalQualifiers'		=>	$filter->legalQualifiers,
 									 );
 			    $new_filter->attribute($filter->attribute);
 			    $new_filter->operation($filter->operation);
@@ -1417,19 +1427,6 @@ sub addPlaceHolders {
 	                    $attributeWithName = $attributeName[1];
 	              }
      
-	               # a hacker once visited this palce and left the following - to hack n test gtf
-	               #$attributeWithName =~ s/structure_chrom_name/str_chrom_name/;
-	               #$attributeWithName =~ s/structure_exon_chrom_start/exon_chrom_start/;
-    	               #$attributeWithName =~ s/structure_exon_chrom_end/exon_chrom_end/;
-    	               #$attributeWithName =~ s/structure_transcript_chrom_strand/transcript_chrom_strand/;
-	               #$attributeWithName =~ s/structure_gtf_cds_chrom_start/gtf_cds_chrom_start/;
-	               #$attributeWithName =~ s/structure_gtf_cds_chrom_end/gtf_cds_chrom_end/;
-	               #$attributeWithName =~ s/structure_gtf_start_codon_start/gtf_start_codon_start/;
-	               #$attributeWithName =~ s/structure_gtf_stop_codon_start/gtf_stop_codon_start/;
-	               #$attributeWithName =~ s/structure_gtf_frame/gtf_frame/;
-	               #$attributeWithName =~ s/structure_gene_stable_id/gene_stable_id/;
-                    #$attributeWithName =~ s/structure_transcript_stable_id/transcript_stable_id/;
-                    #$attributeWithName =~ s/structure_exon_stable_id/exon_stable_id/;
 	               	               	               	                   	               
 	               my $attribute = $configTree->getAttributeByName($attributeWithName);
 	               $attributeList->addAttribute($attribute);
