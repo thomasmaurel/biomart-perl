@@ -527,7 +527,7 @@ sub get_filters {
 				foreach (@$options){
 				    push @vals,$_->value;
 				}
-				$output .= $option->filter->name."\t".$option->filter->displayName."\t[".join(",",@vals)."]\t".$option->filter->description."\t".$fpage->name."\t".$filter->type."\n";
+				$output .= $option->filter->name."\t".$option->filter->displayName."\t[".join(",",@vals)."]\t".$option->filter->description."\t".$fpage->name."\t".$filter->type."\t".$option->filter->legalQualifiers."\n";
 			    }
 			}
 			else{
@@ -536,7 +536,7 @@ sub get_filters {
 			    foreach (@$options){
 				push @vals,$_->value;
 			    }
-			    $output .= $filter->name."\t".$filter->displayName."\t[".join(",",@vals)."]\t".$filter->description."\t".$fpage->name."\t".$filter->type."\n";
+			    $output .= $filter->name."\t".$filter->displayName."\t[".join(",",@vals)."]\t".$filter->description."\t".$fpage->name."\t".$filter->type."\t".$filter->legalQualifiers."\n";
 			}
 		    }
 		}

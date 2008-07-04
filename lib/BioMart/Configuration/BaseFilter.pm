@@ -61,6 +61,8 @@ use constant POINTEDFROMINTERFACE => "pointedFromInterface";
 use constant DEPENDSON            => "dependsOn";
 use constant DEPENDSONTYPE        => "dependsOnType";
 use constant HIDEDISPLAY        => "hideDisplay";
+use constant LEGAL_QUALIFIERS        => "legalQualifiers";
+
 
 
 use constant TITLES => [
@@ -84,7 +86,8 @@ use constant TITLES => [
                POINTEDFROMINTERFACE,
                DEPENDSON,
                DEPENDSONTYPE,
-               HIDEDISPLAY
+               HIDEDISPLAY,
+               LEGAL_QUALIFIERS
 			 ];
 =head2 _new
 
@@ -627,6 +630,25 @@ sub hideDisplay {
   }
   return $self->getParam(HIDEDISPLAY);
 }
+
+=head2 legalQualifiers
+
+  Usage      : Arg [1] - (optional) string $qualifiers
+  Description: get/set for legal_qualifiers
+  Returntype : string
+  Exceptions : none
+  Caller     : general
+
+=cut
+
+sub legalQualifiers {
+  my ($self, $value) = @_;
+  if ($value){
+    $self->setParam(LEGAL_QUALIFIERS, $value);
+  }
+  return $self->getParam(LEGAL_QUALIFIERS);
+}
+
 
 =head2 autoCompletion
 
