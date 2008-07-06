@@ -513,24 +513,28 @@ sub get_filters {
     my $dset = $registry->getDatasetByName($vschema_name, $dataset_name,$mart_user);
     my $ct = $dset->getConfigurationTree($interface) if ($dset);
     my $output;
+    my $trueContainer=0;
     if ($ct){
 	foreach my $fpage (@{$ct->getAllFilterTrees}){
 	    next if ($fpage->hideDisplay eq 'true'); 
 	    foreach my $fgroup (@{$fpage->getAllFilterGroups}){
 		foreach my $fcollection(@{$fgroup->getAllCollections}){
 		    foreach my $filter(@{$fcollection->getAllFilters}){
+		    	$trueContainer=0;
 			if ($filter->displayType eq 'container'){
 			    foreach my $option(@{$filter->getAllOptions}){
 				#print $option->filter->name."\t".$option->filter->displayName."\t[]"."\n";
+				next if (!$option->filter);
 				my $options = $option->filter->getAllOptions;
 				my @vals;
 				foreach (@$options){
 				    push @vals,$_->value;
 				}
 				$output .= $option->filter->name."\t".$option->filter->displayName."\t[".join(",",@vals)."]\t".$option->filter->description."\t".$fpage->name."\t".$filter->type."\t".$option->filter->legalQualifiers."\n";
+				$trueContainer=1;
 			    }
 			}
-			else{
+			if(!$trueContainer){
 			    my $options = $filter->getAllOptions;
 			    my @vals;
 			    foreach (@$options){
