@@ -411,13 +411,20 @@ sub _new
 			else {	$session->clear("url_VISIBLEPANEL"); }			
 		}
 		# ?XML=... request to martview
-		if ($cgi->param('XML') || $cgi->param('xml')) {
+		# ?query=... request to martview
+		if ($cgi->param('XML') || $cgi->param('xml') || $cgi->param('QUERY') || $cgi->param('query')) {
 			if ($cgi->param('XML')) {
 				$session->param('url_XML', $cgi->param('XML'));				
 			}
 			elsif ($cgi->param('xml')) {
 				$session->param('url_XML', $cgi->param('xml'));
 			}
+                        elsif ($cgi->param('QUERY')) {
+                                $session->param('url_XML', $cgi->param('QUERY'));
+                        }
+                        elsif ($cgi->param('query')) {
+                                $session->param('url_XML', $cgi->param('query'));
+                        }
 			else { $session->clear("url_XML"); }
 		}
 		
