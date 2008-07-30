@@ -1304,8 +1304,10 @@ sub __linkDatasets {
     foreach my $importable (@{ $targetDataset->getImportables() }) {
         foreach my $exportable (@{ $sourceDataset->getExportables() }) { 
             if ($importable->linkName eq $exportable->linkName) {
-		# versions must be compatible as well if exists for both
-		next if (($importable->linkVersion && $exportable->linkVersion)
+            # do not link on DAS or GFF type exp/imp pairs
+				next if ($importable->type() ne 'link' || $exportable->type ne 'link');
+				# versions must be compatible as well if exists for both
+				next if (($importable->linkVersion && $exportable->linkVersion)
                     && ($importable->linkVersion ne $exportable->linkVersion));
                 $link->addLink($virtualSchema, $importable->linkName);
                 $haveLink = 1;
