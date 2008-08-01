@@ -133,6 +133,7 @@ use Data::Dumper;
 	$OPTIONS{server_port} = $settingsHash->{'httpdSettings'}{'port'};
 	$OPTIONS{proxy} = $settingsHash->{'httpdSettings'}{'proxy'};
 	$OPTIONS{cgiLocation} = $settingsHash->{'httpdSettings'}{'location'};
+	$OPTIONS{apxs} = $settingsHash->{'httpdSettings'}{'apxs'};
 	$OPTIONS{cgiLocation} =~ s/^\///g; # remove preceeding slashes
 	$OPTIONS{cgiLocation} =~ s/\/$//g; # remove slashes at the end
 	
@@ -141,6 +142,7 @@ use Data::Dumper;
 	print "\nPORT: ", $settingsHash->{'httpdSettings'}{'port'};
 	print "\nPROXY: ", $settingsHash->{'httpdSettings'}{'proxy'};
 	print "\nLOCATION: ", $settingsHash->{'httpdSettings'}{'location'};
+	print "\nAPXS/2: ", $settingsHash->{'httpdSettings'}{'apxs'};
 	print "\n\n";
 
 
@@ -168,7 +170,7 @@ print "You can change the above configuration by editing \"biomart-perl/conf/set
 		elsif($modlist_string =~ /mod_so/xms) 
 		{
 	   		# Got DSO support, see if we have mod_perl modules around too
-			my $apxs = dirname($OPTIONS{httpd}).'/apxs';
+			my $apxs = $OPTIONS{apxs} || dirname($OPTIONS{httpd}).'/apxs';
 			-f $apxs or $apxs .= 2;
 	    		my $httpd_libdir = `$apxs -q LIBEXECDIR`;
 		    	chomp($httpd_libdir);
@@ -211,7 +213,7 @@ print "You can change the above configuration by editing \"biomart-perl/conf/set
 		if($modlist_string =~ /mod_so/xms) 
 		{
 	   		# Got DSO support, see if we have mod_perl modules around too
-			my $apxs = dirname($OPTIONS{httpd}).'/apxs';
+			my $apxs = $OPTIONS{apxs} || dirname($OPTIONS{httpd}).'/apxs';
 			-f $apxs or $apxs .= 2;
 	    		my $httpd_libdir = `$apxs -q LIBEXECDIR`;
 		    	chomp($httpd_libdir);
