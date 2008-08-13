@@ -664,7 +664,7 @@ sub _getLocationFrom {
 					$self->_setCodingExonFlag($pkey.$start_rank, 1);
 				}
 				else {
-					if ($exon_idHash->{$pkey.$start_rank} == 1) {
+					if ($exon_idHash->{$pkey.$start_rank} && $exon_idHash->{$pkey.$start_rank} == 1) {
 						$new_start = undef;
 						$new_end = undef;
 					}
@@ -688,7 +688,7 @@ sub _getLocationFrom {
 					$self->_setCodingExonFlag($pkey.$end_rank, 1);
 				}
 				else {
-					if ($exon_idHash->{$pkey.$end_rank} == 1) {
+					if ($exon_idHash->{$pkey.$end_rank} && $exon_idHash->{$pkey.$end_rank} == 1) {
 						$new_start = $exon_start;
 						$new_end = $exon_end;
 					}
@@ -736,7 +736,7 @@ sub _getLocationFrom {
 					$self->_setCodingExonFlag($pkey.$start_rank, 0);
 				}
 				else {
-					if ($exon_idHash->{$pkey.$start_rank} == 1) {
+					if ($exon_idHash->{$pkey.$start_rank} && $exon_idHash->{$pkey.$start_rank} == 1) {
 						$new_start = $exon_start;
 						$new_end = $exon_end;
 					}
@@ -747,7 +747,7 @@ sub _getLocationFrom {
 				}
 			}
 			# sanity check
-			if ($new_start > $new_end) {
+			if ($new_start && $new_end && ($new_start > $new_end)) {
 				$new_start = undef;
 				$new_end = undef;
 			}
