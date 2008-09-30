@@ -511,6 +511,12 @@ sub get_filters {
     }
     
     my $dset = $registry->getDatasetByName($vschema_name, $dataset_name,$mart_user);
+    my @main_tables = @{$dset->get('mains')};
+    my @keys = @{$dset->get('keys')};
+    my %key_to_main = ();
+    foreach(@keys){
+        $key_to_main{$_} = shift @main_tables;
+    }
     my $ct = $dset->getConfigurationTree($interface) if ($dset);
     my $output;
     my $trueContainer=0;
@@ -530,7 +536,18 @@ sub get_filters {
 				foreach (@$options){
 				    push @vals,$_->value;
 				}
-				$output .= $option->filter->name."\t".$option->filter->displayName."\t[".join(",",@vals)."]\t".$option->filter->description."\t".$fpage->name."\t".$filter->type."\t".$option->filter->legalQualifiers."\n";
+				my @filters = ($option->filter);
+				@filters = @{$option->filter->getAllFilters} if (ref($option->filter) eq "BioMart::Configuration::FilterList_List");
+				my @table = ();
+				my @relationalAttribute = ();
+				foreach (@filters) {
+				    my $table = $_->table;
+				    $table = $key_to_main{$_->attribute->key} if ($table eq 'main');
+				    $table = "pointer dataset" unless $table;
+				    push @table, $table;
+				    push @relationalAttribute, $_->attribute->relationalAttribute;
+				}
+				$output .= $option->filter->name."\t".$option->filter->displayName."\t[".join(",",@vals)."]\t".$option->filter->description."\t".$fpage->name."\t".$filter->type."\t".$option->filter->legalQualifiers."\t".join(",",@table)."\t".join(",",@relationalAttribute)."\n";
 				$trueContainer=1;
 			    }
 			}
@@ -540,7 +557,18 @@ sub get_filters {
 			    foreach (@$options){
 				push @vals,$_->value;
 			    }
-			    $output .= $filter->name."\t".$filter->displayName."\t[".join(",",@vals)."]\t".$filter->description."\t".$fpage->name."\t".$filter->type."\t".$filter->legalQualifiers."\n";
+			    my @filters = ($filter);
+			    @filters = @{$filter->getAllFilters} if (ref($filter) eq "BioMart::Configuration::FilterList_List");
+			    my @table = ();
+			    my @relationalAttribute = ();
+			    foreach (@filters) {
+				my $table = $_->table;
+				$table = $key_to_main{$_->attribute->key} if ($table eq 'main');
+				$table = "pointer dataset" unless $table;
+				push @table, $table;
+				push @relationalAttribute, $_->attribute->relationalAttribute;
+			    }
+			    $output .= $filter->name."\t".$filter->displayName."\t[".join(",",@vals)."]\t".$filter->description."\t".$fpage->name."\t".$filter->type."\t".$filter->legalQualifiers."\t".join(",",@table)."\t".join(",",@relationalAttribute)."\n";
 			}
 		    }
 		}
@@ -577,6 +605,12 @@ sub get_attributes {
     }
     
     my $dset = $registry->getDatasetByName($vschema_name, $dataset_name,$mart_user);
+    my @main_tables = @{$dset->get('mains')};
+    my @keys = @{$dset->get('keys')};
+    my %key_to_main = ();
+    foreach(@keys){
+        $key_to_main{$_} = shift @main_tables;
+    }
     my $ct = $dset->getConfigurationTree($interface) if ($dset);
     my $output;
     #print "\n";
@@ -586,7 +620,10 @@ sub get_attributes {
 	    foreach my $agroup (@{$apage->getAllAttributeGroups}){
 		foreach my $acollection(@{$agroup->getAllCollections}){
 		    foreach my $attribute(@{$acollection->getAllAttributes}){
-			$output .= $attribute->name."\t".$attribute->displayName."\t".$attribute->description."\t".$apage->name."\t".$apage->outFormats."\n";
+		    	$attribute = $attribute->attribute if (ref($attribute) eq "BioMart::Configuration::ValueFilter");
+			my $table = $attribute->table;
+			$table = $key_to_main{$attribute->key} if ($table eq 'main');
+			$output .= $attribute->name."\t".$attribute->displayName."\t".$attribute->description."\t".$apage->name."\t".$apage->outFormats."\t".$table."\t".$attribute->relationalAttribute."\n";
 		    }
 		}
 	    }
