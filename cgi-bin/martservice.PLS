@@ -132,10 +132,10 @@ eval{
 			&get_configuration($registry,$vschema_name,$mart_name,$dataset_name,$interface,$martuser);
 		} 
 		elsif ($type eq "filters") {
-			&get_filters($registry,$vschema_name,$dataset_name,$interface,$martuser);
+			&get_filters($registry,$vschema_name,$dataset_name,$interface,$martuser,$filPages,$filGroups,$filColls);
 		}
 		elsif ($type eq "attributes") {
-			&get_attributes($registry,$vschema_name,$dataset_name,$interface,$martuser);
+			&get_attributes($registry,$vschema_name,$dataset_name,$interface,$martuser,$attPages,$attGroups,$attColls);
 		}
 		elsif ($type eq "versioncheck") {	
 			&version_check($registry,$vschema_name,$mart_name,$version);
@@ -491,7 +491,7 @@ sub get_configuration {
 
 sub get_filters {
     
-    my ($registry,$vschema_name,$dataset_name,$interface,$mart_user)=@_;
+    my ($registry,$vschema_name,$dataset_name,$interface,$mart_user,$filPages,$filGroups,$filColls)=@_;
     
     
     if (!$vschema_name || $vschema_name eq ''){
@@ -511,6 +511,10 @@ sub get_filters {
     }
     
     my $dset = $registry->getDatasetByName($vschema_name, $dataset_name,$mart_user);
+    unless ($dset) {
+        BioMart::Exception::Usage->throw("Problem retrieving attributes for dataset $dataset_name in schema $vschema_name, check your parameters");
+        return;
+    }
     my @main_tables = @{$dset->get('mains')};
     my @keys = @{$dset->get('keys')};
     my %key_to_main = ();
@@ -523,8 +527,11 @@ sub get_filters {
     if ($ct){
 	foreach my $fpage (@{$ct->getAllFilterTrees}){
 	    next if ($fpage->hideDisplay eq 'true'); 
+	    next if ($filPages && $filPages ne $fpage->name);
 	    foreach my $fgroup (@{$fpage->getAllFilterGroups}){
+		next if ($filGroups && $filGroups ne $fgroup->name);
 		foreach my $fcollection(@{$fgroup->getAllCollections}){
+		    next if ($filColls && $filColls ne $fcollection->name);
 		    foreach my $filter(@{$fcollection->getAllFilters}){
 		    	$trueContainer=0;
 			if ($filter->displayType eq 'container'){
@@ -541,6 +548,7 @@ sub get_filters {
 				my @table = ();
 				my @relationalAttribute = ();
 				foreach (@filters) {
+				    next unless ($_);
 				    my $table = $_->table;
 				    $table = $key_to_main{$_->attribute->key} if ($table eq 'main');
 				    $table = "pointer dataset" unless $table;
@@ -562,6 +570,7 @@ sub get_filters {
 			    my @table = ();
 			    my @relationalAttribute = ();
 			    foreach (@filters) {
+				next unless ($_);
 				my $table = $_->table;
 				$table = $key_to_main{$_->attribute->key} if ($table eq 'main');
 				$table = "pointer dataset" unless $table;
@@ -577,7 +586,7 @@ sub get_filters {
 	$output .=  "\n";
     }
     if ($output) {
-	print "\n$output";
+	print "$output";
     }
     else{
 	BioMart::Exception::Usage->throw("Problem retrieving filters for dataset $dataset_name in schema $vschema_name, check your parameters");
@@ -586,7 +595,7 @@ sub get_filters {
 
 sub get_attributes {
     
-    my ($registry,$vschema_name,$dataset_name,$interface,$mart_user)=@_;
+    my ($registry,$vschema_name,$dataset_name,$interface,$mart_user,$attPages,$attGroups,$attColls)=@_;
         
     if (!$vschema_name || $vschema_name eq ''){
 	my $seen;
@@ -605,6 +614,10 @@ sub get_attributes {
     }
     
     my $dset = $registry->getDatasetByName($vschema_name, $dataset_name,$mart_user);
+    unless ($dset) {
+        BioMart::Exception::Usage->throw("Problem retrieving attributes for dataset $dataset_name in schema $vschema_name, check your parameters");
+        return;
+    }
     my @main_tables = @{$dset->get('mains')};
     my @keys = @{$dset->get('keys')};
     my %key_to_main = ();
@@ -617,8 +630,11 @@ sub get_attributes {
     if ($ct){
 	foreach my $apage (@{$ct->getAllAttributeTrees}){
 	    next if ($apage->hideDisplay eq 'true'); 
+	    next if ($attPages && $attPages ne $apage->name);
 	    foreach my $agroup (@{$apage->getAllAttributeGroups}){
+		next if ($attGroups && $attGroups ne $agroup->name);
 		foreach my $acollection(@{$agroup->getAllCollections}){
+		    next if ($attColls && $attColls ne $acollection->name);
 		    foreach my $attribute(@{$acollection->getAllAttributes}){
 		    	$attribute = $attribute->attribute if (ref($attribute) eq "BioMart::Configuration::ValueFilter");
 			my $table = $attribute->table;
@@ -631,7 +647,7 @@ sub get_attributes {
 	$output .=  "\n";
     }
     if ($output){
-	print "\n$output";
+	print "$output";
     }
     else{
 	BioMart::Exception::Usage->throw("Problem retrieving attributes for dataset $dataset_name in schema $vschema_name, check your parameters");
