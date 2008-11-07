@@ -2192,7 +2192,7 @@ use BioMart::Initializer;
 use BioMart::Query;
 use BioMart::QueryRunner;
 
-my \$confFile = "PATH TO YOU REGISTRY FILE UNDER biomart-perl/conf/. For Biomart Central Registry navigate to
+my \$confFile = "PATH TO YOUR REGISTRY FILE UNDER biomart-perl/conf/. For Biomart Central Registry navigate to
 						http://www.biomart.org/biomart/martservice?type=registry";
 #
 # NB: change action to 'clean' if you wish to start a fresh configuration  
