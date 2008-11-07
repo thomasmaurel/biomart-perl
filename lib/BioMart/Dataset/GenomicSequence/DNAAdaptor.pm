@@ -1,4 +1,3 @@
-# $Id$
 #
 # BioMart module for BioMart::Dataset::GenomicRegion::DNAAdaptor
 #
@@ -64,13 +63,13 @@ use constant SQLSUBORACLE  => "select substr(%s, ?, ?) from %s where %s = ? and 
 
   Usage        :  my $dna = BioMart::Dataset::GenomicSequence::DNAAdaptor->
                         new("seq_name" => $name,
-			    "dna_tablename" => $dnatablename,
-			    "seq_fieldname" => $seqfieldname,
-			    "chunk_name_fieldname" => $chunkfieldname,
-			    "chunk_start_fieldname" => $chunk_start_fieldname,
-			    "configurator" => $conf,
-			    "chunk_size" => 10
-			    );
+                            "dna_tablename" => $dnatablename,
+                            "seq_fieldname" => $seqfieldname,
+                            "chunk_name_fieldname" => $chunkfieldname,
+                            "chunk_start_fieldname" => $chunk_start_fieldname,
+                            "configurator" => $conf,
+                            "chunk_size" => 10
+                            );
 
   Description  :  creates a DNAAdaptor, for retrieving dna sequence. Requires 
                   a name, which maps to a mart sequence database, the name of 
@@ -115,46 +114,43 @@ sub _initialize {
     my $dbh = $location->dbh();
   
     if ($self->getParam('configurator')->get('location')->databaseType 
-	eq 'oracle'){
-	$dbh->{LongReadLen} = 2**25;
+        eq 'oracle'){
+        $dbh->{LongReadLen} = 2**25;
     }
 
     $self->throw("Could not connect to sequence db $dbname ".DBI::errstr."!\n")
-	unless ($dbh);
+        unless ($dbh);
   
     my $fullSQL = sprintf(SQLFULL, 
-			  $self->getParam(SEQFIELDNAME), 
-			  $self->getParam(SEQTABLENAME), 
-			  $self->getParam(CHUNKSTARTFIELD), 
-			  $self->getParam(CHUNKNAMEFIELD));
+                          $self->getParam(SEQFIELDNAME), 
+                          $self->getParam(SEQTABLENAME), 
+                          $self->getParam(CHUNKSTARTFIELD), 
+                          $self->getParam(CHUNKNAMEFIELD));
     my $subSQL;
     if ($self->getParam('configurator')->get('location')->databaseType 
-	eq 'oracle'){
-	$subSQL = sprintf(SQLSUBORACLE, 
-			  $self->getParam(SEQFIELDNAME), 
-			  $self->getParam(SEQTABLENAME), 
-			  $self->getParam(CHUNKSTARTFIELD), 
-			  $self->getParam(CHUNKNAMEFIELD));
+        eq 'oracle'){
+        $subSQL = sprintf(SQLSUBORACLE, 
+                          $self->getParam(SEQFIELDNAME), 
+                          $self->getParam(SEQTABLENAME), 
+                          $self->getParam(CHUNKSTARTFIELD), 
+                          $self->getParam(CHUNKNAMEFIELD));
     }
     else{
-	$subSQL = sprintf(SQLSUB, 
-			  $self->getParam(SEQFIELDNAME), 
-			  $self->getParam(SEQTABLENAME), 
-			  $self->getParam(CHUNKSTARTFIELD), 
-			  $self->getParam(CHUNKNAMEFIELD));
+        $subSQL = sprintf(SQLSUB, 
+                          $self->getParam(SEQFIELDNAME), 
+                          $self->getParam(SEQTABLENAME), 
+                          $self->getParam(CHUNKSTARTFIELD), 
+                          $self->getParam(CHUNKNAMEFIELD));
     }
   
     my $fullSth = $dbh->prepare($fullSQL) or 
-	$self->throw("Couldnt prepare fullSQL ".$dbh->errstr."!\n");
+        $self->throw("Couldnt prepare fullSQL ".$dbh->errstr."!\n");
     my $subSth = $dbh->prepare($subSQL) or 
-	$self->throw("Couldnt prepare subSQL ".$dbh->errstr."!\n");
+        $self->throw("Couldnt prepare subSQL ".$dbh->errstr."!\n");
 
-     my $logger=Log::Log4perl->get_logger(__PACKAGE__);
-     $logger->info("QUERY FULL SQL:  $fullSQL");
-     $logger->info("QUERY SUB SQL:  $subSQL");
-
-
-
+    #my $logger=Log::Log4perl->get_logger(__PACKAGE__);
+    #$logger->info("QUERY FULL SQL:  $fullSQL");
+    #$logger->info("QUERY SUB SQL:  $subSQL");
 
     $self->set('fullSth', $fullSth);
     $self->set('subSth', $subSth);
@@ -181,7 +177,7 @@ sub _fetchSequence {
     my $chunkStart = $start - ( ( $start - 1 ) % $chunkSize );
 
     if ($start == $chunkStart && $len == $chunkSize) {
-	return $self->_fetchFullChunk($chr, $chunkStart);
+        return $self->_fetchFullChunk($chr, $chunkStart);
     }
     return $self->_fetchChunkSubstring($chr, $start, $chunkStart, $len);
 }
@@ -190,7 +186,9 @@ sub _fetchFullChunk {
     my ($self, $chr, $chunkStart) = @_;
     
     my $sth = $self->get('fullSth');
-    $logger->info("QUERY FULL SQL CHR CHUNKSTART:  $chr\t$chunkStart");
+    my $sql_statement = $sth->{Statement};
+    $sql_statement =~ s/\?/$_/ foreach ("\"$chunkStart\"", "\"$chr\"");
+    $logger->info("QUERY FULL SQL: $sql_statement\;");
     $sth->execute($chunkStart, $chr);
  
     my $ret = $sth->fetchrow;
@@ -205,7 +203,9 @@ sub _fetchChunkSubstring {
     
     my $coord = $start - $chunkStart + 1;
     my $sth = $self->get('subSth');
-    $logger->info("QUERY SUBSTRING SQL CHR CHUNKSTART:  $chr\t$chunkStart\t$len (start $start coord $coord)");
+    my $sql_statement = $sth->{Statement};
+    $sql_statement =~ s/\?/$_/ foreach ("\"$coord\"", "\"$len\"", "\"$chunkStart\"", "\"$chr\"");
+    $logger->info("QUERY SUBSTRING SQL: $sql_statement\;");
     $sth->execute($coord, $len, $chunkStart, $chr);
     
     my $ret = $sth->fetchrow;
@@ -221,13 +221,13 @@ sub _fetchResidualSequence {
     my $currentStart = $start + $currentLength;
 
     while ($currentLength < $len) {
-	my $residual = $len - $currentLength;
-	my $curr = $self->_fetchSequence($chr, $currentStart, $residual);
+        my $residual = $len - $currentLength;
+        my $curr = $self->_fetchSequence($chr, $currentStart, $residual);
 
-	my $currLength = length($curr);
-	last if ($currLength < 1);
+        my $currLength = length($curr);
+        last if ($currLength < 1);
 
-	${$initialSeq} .= $curr;
+        ${$initialSeq} .= $curr;
         $currentLength += $currLength;
         $currentStart = $start + $currentLength;
     }
@@ -271,16 +271,16 @@ sub getSequence {
     my $seqLen = 0;
     
     if ($ret) {
-	$seqLen = length($ret);
+        $seqLen = length($ret);
     }
 
     unless ($seqLen) {
     $logger->info("Padding with Ns");
-	return $self->_Npad($len);
+        return $self->_Npad($len);
     }
 
     if ($seqLen < $len) {
-	#in place modification of reference $ret
+        #in place modification of reference $ret
 	$self->_fetchResidualSequence($chr, $start, $len, \$ret);
     }
 
@@ -305,23 +305,24 @@ sub close {
     my $dbh = $self->get('dbh');
 
     if ($dbh) {
-	my $fullSth = $self->get('fullSth');
-	my $subSth = $self->get('subSth');
+        my $fullSth = $self->get('fullSth');
+        my $subSth = $self->get('subSth');
 
-	if ($fullSth) {
-	    $fullSth->finish;
-	}
+        if ($fullSth) {
+            $fullSth->finish;
+        }
 
-	if ($subSth) {
-	    $subSth->finish;
-	}
-	$dbh->disconnect;
+        if ($subSth) {
+            $subSth->finish;
+        }
+        $dbh->disconnect;
     }
 }
 
 sub DESTROY {
-	my $self = shift;
-	$self->close;
+        my $self = shift;
+        $self->close;
 }
 
 1;
+
