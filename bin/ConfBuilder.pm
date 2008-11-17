@@ -38,14 +38,14 @@ sub makehttpdConf
 	print STDHTTPD qq/
 	PidFile logs\/httpd.pid
 	Timeout 300
-	KeepAlive On
+	KeepAlive Off
 	MaxKeepAliveRequests 100
 	KeepAliveTimeout 15
 	MinSpareServers 2
 	MaxSpareServers 2
 	StartServers 2
 	MaxClients 30
-	MaxRequestsPerChild 4000
+	MaxRequestsPerChild 400
 	Listen $OPTIONS{server_port}
 
 	DirectoryIndex index.html
