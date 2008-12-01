@@ -337,7 +337,7 @@ sub get_datasets {
 		next unless ($location->name eq $mart_name);
 		if ($seen){
 		    # duplicated mart name as virtual_schema_name not set
-		    print "\nMart name conflict for $mart_name. Need to further qualify with the virtualSchemaName as well\n";
+		    print "\nMart name conflict for $mart_name. Need to further qualify with the virtualSchema param well\n";
 		    return;
 		}
 		$vschema_name = $virtualSchema->name;
@@ -436,7 +436,7 @@ sub _find_mart {
 	    next unless ($location->name eq $mart_name);
 	    if ($seen){
 		# duplicated mart name as vschema_name not set
-		print "\nMart name conflict for $mart_name. Need to further qualify with the virtualSchemaName as well\n";
+		print "\nMart name conflict for $mart_name. Need to further qualify with the virtualSchema param as well\n";
 		return;
 	    }
 	    $found_location = $location;
@@ -467,7 +467,7 @@ sub get_configuration {
 		next unless ($dsetName eq $dataset_name);
 		if ($seen){
 		    # duplicated mart name as vschema_name not set
-		    print "\nDataset name conflict for $dataset_name. Need to further qualify with the virtualSchemaName as well\n";
+		    print "\nDataset name conflict for $dataset_name. Need to further qualify with the virtualSchema param as well\n";
 		    return;
 		}
 		$vschema_name = $virtualSchema->name;
@@ -501,7 +501,7 @@ sub get_filters {
 		next unless ($dsetName eq $dataset_name);
 		if ($seen){
 		    # duplicated mart name as vschema_name not set
-		    print "\nDataset name conflict for $dataset_name. Need to further qualify with the virtualSchemaName as well\n";
+		    print "\nDataset name conflict for $dataset_name. Need to further qualify with the virtualSchema param as well\n";
 		    return;
 		}
 		$vschema_name = $virtualSchema->name;
@@ -604,7 +604,7 @@ sub get_attributes {
 		next unless ($dsetName eq $dataset_name);
 		if ($seen){
 		    # duplicated mart name as vschema_name not set
-		    print "\nDataset name conflict for $dataset_name. Need to further qualify with the virtualSchemaName as well\n";
+		    print "\nDataset name conflict for $dataset_name. Need to further qualify with the virtualSchema param as well\n";
 		    return;
 		}
 		$vschema_name = $virtualSchema->name;
