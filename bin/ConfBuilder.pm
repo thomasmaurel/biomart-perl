@@ -282,6 +282,54 @@ sub makehttpdConf
 	/;
 	
 	print STDHTTPD qq/
+	ScriptAlias \/$OPTIONS{cgiLocation}\/martsoap "$OPTIONS{cgibin}\/martsoap"
+	<Location \/$OPTIONS{cgiLocation}\/martsoap>
+    	AllowOverride None
+    	Options None
+    	Order allow,deny
+    	Allow from all
+	/;
+	
+	if ($OPTIONS{httpd_modperl})
+	{
+		print STDHTTPD qq/	SetHandler perl-script
+		/;
+		if ($OPTIONS{httpd_version} eq '1.3')
+		{
+			print STDHTTPD qq/PerlHandler     Apache::Registry/;
+		}
+		elsif($OPTIONS{httpd_version} eq '2.0' || $OPTIONS{httpd_version} eq '2.1+')
+		{
+			print STDHTTPD qq/PerlResponseHandler ModPerl::Registry/;
+		}
+	}
+	print STDHTTPD qq/
+    	Options +ExecCGI
+	<\/Location>
+	/;
+	
+	
+	print STDHTTPD qq/
+	ScriptAlias \/$OPTIONS{cgiLocation}\/martwsdl "$OPTIONS{cgibin}\/martwsdl"
+	<Location \/$OPTIONS{cgiLocation}\/martwsdl>
+    	AllowOverride None
+    	Options None
+    	Order allow,deny
+    	Allow from all
+	<\/Location>
+	/;
+	
+	print STDHTTPD qq/
+	ScriptAlias \/$OPTIONS{cgiLocation}\/martxsd "$OPTIONS{cgibin}\/martxsd"
+	<Location \/$OPTIONS{cgiLocation}\/martxsd>
+    	AllowOverride None
+    	Options None
+    	Order allow,deny
+    	Allow from all
+	<\/Location>
+	/;
+	
+	print STDHTTPD qq/
 	ScriptAlias \/$OPTIONS{cgiLocation}\/martresults "$OPTIONS{cgibin}\/martresults"
 	<Location \/$OPTIONS{cgiLocation}\/martresults>
     	AllowOverride None
@@ -640,6 +688,120 @@ sub makeDSN
 	print STDDSN $fileContents;
 	close(STDDSN);
 	chmod 0755, $dsnFile;
+}
+sub makeMartSoap
+{
+	my ($self, %OPTIONS) = @_;
+	my $mart_registry = $OPTIONS{registryObj};
+	undef $/; ## whole file mode for read
+	my $file = $OPTIONS{cgibin}."/martsoap.PLS";	
+	open(STDMARTSERVICE, "$file");	
+	my $fileContents = <STDMARTSERVICE> ;
+	close(STDMARTSERVICE);
+	#print $fileContents;
+	##---------------- replacing [TAG:lib]
+	my $libPaths;
+	if ($OPTIONS{libdirs})
+	{
+		foreach my $path(@{$OPTIONS{libdirs}})
+		{	
+			$libPaths .= qq/use lib "$path";\n/;
+		}
+	}
+	$fileContents =~ s/\[TAG:lib\]/$libPaths/m;
+
+	##---------------- replacing [TAG:conf]
+	if ($OPTIONS{conf})
+	{
+		my $confFile = qq/\$CONF_FILE = '$OPTIONS{conf}';\n/; 
+		$fileContents =~ s/\[TAG:conf\]/$confFile/m;
+	}
+
+	##---------------- replacing [TAG:server_host]
+	if ($OPTIONS{server_host})
+	{
+		my $server_host = qq/\$server_host = '$OPTIONS{server_host}';\n/; 
+		$fileContents =~ s/\[TAG:server_host\]/$server_host/m;
+	}
+
+	##---------------- replacing [TAG:cgiLocation]
+	if ($OPTIONS{cgiLocation})
+	{
+		my $cgiLocation = qq/\$cgiLocation = '$OPTIONS{cgiLocation}';\n/; 
+		$fileContents =~ s/\[TAG:cgiLocation\]/$cgiLocation/m;
+	}
+
+	##---------------- replacing [TAG:server_port]
+	if ($OPTIONS{server_port})
+	{
+		my $server_port;
+		if($OPTIONS{proxy}) 
+		{
+			$server_port = qq/\$server_port = '$OPTIONS{proxy}';\n/; 
+		}
+		else
+		{
+			$server_port = qq/\$server_port = '$OPTIONS{server_port}';\n/; 
+		}
+			
+		$fileContents =~ s/\[TAG:server_port\]/$server_port/m;
+
+	}
+	
+	##---------------- replacing [TAG:log_dir]
+	my $logDir = qq/\$log_Dir = '$OPTIONS{logDir}';\n/;
+	$fileContents =~ s/\[TAG:log_dir\]/$logDir/m;
+
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS\]//m;
+
+	$file = $OPTIONS{cgibin}."/martsoap";
+	open(STDMARTSERVICE, ">$file");	
+	print STDMARTSERVICE $fileContents;
+	close(STDMARTSERVICE);
+
+	chmod 0755, $file;		
+}
+
+sub makeMartWSDL
+{
+	my ($self, %OPTIONS) = @_;
+	undef $/; ## whole file mode for read
+	my $file = $OPTIONS{cgibin}."/martwsdl.PLS";	
+	open(STDMARTRES, "$file");	
+	my $fileContents = <STDMARTRES> ;
+	close(STDMARTRES);
+	#print $fileContents;
+	##---------------- replacing [TAG:xx]
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_OPERATION\]//m;
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_PORTTYPE\]//m;
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_MESSAGE\]//m;
+	
+	$file = $OPTIONS{cgibin}."/martwsdl";	
+	open(STDMARTRES, ">$file");	
+	print STDMARTRES $fileContents;
+	close(STDMARTRES);
+
+	chmod 0755, $file;
+}
+
+sub makeMartXSD
+{
+	my ($self, %OPTIONS) = @_;
+	undef $/; ## whole file mode for read
+	my $file = $OPTIONS{cgibin}."/martxsd.PLS";	
+	open(STDMARTRES, "$file");	
+	my $fileContents = <STDMARTRES> ;
+	close(STDMARTRES);
+	#print $fileContents;
+	##---------------- replacing [TAG:xx]
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS\]//m;
+	
+	$file = $OPTIONS{cgibin}."/martxsd";	
+	open(STDMARTRES, ">$file");	
+	print STDMARTRES $fileContents;
+	close(STDMARTRES);
+
+	chmod 0755, $file;
 }
 
 sub makeCopyDirectories

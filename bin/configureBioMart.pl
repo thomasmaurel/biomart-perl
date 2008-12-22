@@ -136,6 +136,7 @@ use Data::Dumper;
 	$OPTIONS{apxs} = $settingsHash->{'httpdSettings'}{'apxs'};
 	$OPTIONS{cgiLocation} =~ s/^\///g; # remove preceeding slashes
 	$OPTIONS{cgiLocation} =~ s/\/$//g; # remove slashes at the end
+	$OPTIONS{semanticAnnotations} = $settingsHash->{'semanticAnnotations'};
 	
 	print "\nAPACHE: ", $settingsHash->{'httpdSettings'}{'apacheBinary'};
 	print "\nHOST: ", $settingsHash->{'httpdSettings'}{'serverHost'};
@@ -360,6 +361,14 @@ foreach my $schema (@{$mart_registry->getAllVirtualSchemas()}) {
 }
 bin::ConfBuilder->updatehttpdConf(%OPTIONS);
 bin::ConfBuilder->makeDSN(%OPTIONS);
+
+#------------------------------------------------------
+# Lets generate MartSoapService files
+#------------------------------------------------------
+$OPTIONS{registryObj} = $mart_registry;
+bin::ConfBuilder->makeMartSoap(%OPTIONS);
+bin::ConfBuilder->makeMartWSDL(%OPTIONS);
+bin::ConfBuilder->makeMartXSD(%OPTIONS);	
 
 #------------------------------------------------------
 if(&whoBakedMe($init->configurationUpdated()) == 1 || $compiletemplates eq 'force')
