@@ -212,7 +212,7 @@ sub _set_location {
 		unless ($dblc->{'redirect'} && $dblc->{'redirect'}==1){
 		    	$dblc->{'host'}=$self->getServerHost;
 	    		$dblc->{'port'}=$self->getServerPort;
-		    	$dblc->{'path'}=$self->path;
+		    	$dblc->{'path'}=$path;
 		}
 		delete $dblc->{'proxy'} if (exists $dblc->{'proxy'});
 		push (@new_location,$dblc);
@@ -603,6 +603,7 @@ sub Query
 
 	my @allAttributes = ();
 	my @resultsRows = ();
+	my $resultsCount;
 	my %attsPerDS = ();
 	my $dsCount = 0;
 
@@ -683,78 +684,77 @@ eval{
 
 	my $query_runner = BioMart::QueryRunner->new();
 
-	############################## GET COUNT ############################
 	if ($count && $count eq '1')	{
+		############################## GET COUNT ############################
 		$query->count(1);
 		$query_runner->execute($query);
-		return SOAP::Data->name('resultsRow', $query_runner->getCount());
+		$resultsCount = $query_runner->getCount();
 	}
-	#####################################################################
-
-	############################## GET RESULTS ##########################
-	# to obtain unique rows only
-	$query_runner->uniqueRowsOnly(1) if ($uniqueRows && $uniqueRows eq '1');
-	$query_runner->execute($query);
-	my $result_string;
-	open(my $result_buffer, '>', \$result_string);
-	$query_runner->printHeader($result_buffer) if ($header && $header eq '1');
-	$query_runner->printResults($result_buffer);
-	close($result_buffer);
-	#####################################################################
+	else {
+		############################## GET RESULTS ##########################
+		# to obtain unique rows only
+		$query_runner->uniqueRowsOnly(1) if ($uniqueRows && $uniqueRows eq '1');
+		$query_runner->execute($query);
+		my $result_string;
+		open(my $result_buffer, '>', \$result_string);
+		$query_runner->printHeader($result_buffer) if ($header && $header eq '1');
+		$query_runner->printResults($result_buffer);
+		close($result_buffer);
+		#####################################################################
 	
-	############################## POST PROCESSING ######################
+		############################## POST PROCESSING ######################
 	
-	my %semanticAnnotations = $self->getSettings('semanticAnnotations');
-	my $sequenceFlag = 0;
-	my $offset = 0;
-	my %swapColumns = ();
-	foreach my $key (sort keys %attsPerDS) {
-		for (my $i=0; $i < $attsPerDS{$key}; $i++) {
+		my %semanticAnnotations = $self->getSettings('semanticAnnotations');
+		my $sequenceFlag = 0;
+		my $offset = 0;
+		my %swapColumns = ();
+		foreach my $key (sort keys %attsPerDS) {
+			for (my $i=0; $i < $attsPerDS{$key}; $i++) {
 			if($allAttributes[$offset+$i] eq "transcript_exon_intron"|| $allAttributes[$offset+$i] eq "gene_exon_intron"|| 				$allAttributes[$offset+$i] eq "transcript_flank" || $allAttributes[$offset+$i] eq "gene_flank" ||
 				$allAttributes[$offset+$i] eq "coding_transcript_flank"||$allAttributes[$offset+$i] eq "coding_gene_flank"||
 				$allAttributes[$offset+$i] eq "5utr" || $allAttributes[$offset+$i] eq "3utr" ||
 				$allAttributes[$offset+$i] eq "gene_exon" || $allAttributes[$offset+$i] eq "coding" || 
 				$allAttributes[$offset+$i] eq "cdna" || $allAttributes[$offset+$i] eq "peptide")
-			{
-				$sequenceFlag = 1;
-				# swap sequence to its original location and all others atts in this dataset up to the seq attribute
-				# can be found one position on right side
-				$swapColumns{$offset+$i} = $offset;
-				for (my $j=$offset; $j < ($offset+$i); $j++) {
-					$swapColumns{$j} = $j+1;
+				{
+					$sequenceFlag = 1;
+					# swap sequence to its original location and all others atts in this dataset up to the seq attribute
+					# can be found one position on right side
+					$swapColumns{$offset+$i} = $offset;
+					for (my $j=$offset; $j < ($offset+$i); $j++) {
+						$swapColumns{$j} = $j+1;
+					}
 				}
 			}
+			$offset= $attsPerDS{$key};
 		}
-		$offset= $attsPerDS{$key};
-	}
 	
-	my @rows = split (/\n/, $result_string);	
+		my @rows = split (/\n/, $result_string);	
 
-	foreach my $row (@rows) {
-		my @cells = split (/\t/, $row);
-		my @itemsSoap = ();
-		if ($sequenceFlag) {
-			# dark magic required because TAB separated sequence results come as sequence being the first column ALWAYS
-			# %swapColumns hash contains the correct lookups/mappings based on columns indices
-			# BioMart::Exception::Usage->throw(Dumper(\%swapColumns));
-			foreach (my $i=0; $i < scalar(@cells); $i++) {
-				my $j=$i;
-				$j = $swapColumns{$i} if (defined $swapColumns{$i}); # change the lookup index
-				push @itemsSoap, SOAP::Data->name($allAttributes[$i] => $cells[$j])
+		foreach my $row (@rows) {
+			my @cells = split (/\t/, $row);
+			my @itemsSoap = ();
+			if ($sequenceFlag) {
+				# dark magic required because TAB separated sequence results come as sequence being the first column ALWAYS
+				# %swapColumns hash contains the correct lookups/mappings based on columns indices
+				# BioMart::Exception::Usage->throw(Dumper(\%swapColumns));
+				foreach (my $i=0; $i < scalar(@cells); $i++) {
+					my $j=$i;
+					$j = $swapColumns{$i} if (defined $swapColumns{$i}); # change the lookup index
+					push @itemsSoap, SOAP::Data->name($allAttributes[$i] => $cells[$j])
+								->attr({'modelReference'=>$semanticAnnotations{$allAttributes[$i]} || "" })
+								->type('string');
+				}		
+			}
+			else {
+				foreach (my $i=0; $i < scalar(@cells); $i++) {
+					push @itemsSoap, SOAP::Data->name($allAttributes[$i] => $cells[$i])
 							->attr({'modelReference'=>$semanticAnnotations{$allAttributes[$i]} || "" })
 							->type('string');
+				}
 			}
-			
-		}
-		else {
-			foreach (my $i=0; $i < scalar(@cells); $i++) {
-				push @itemsSoap, SOAP::Data->name($allAttributes[$i] => $cells[$i])
-							->attr({'modelReference'=>$semanticAnnotations{$allAttributes[$i]} || "" })
-							->type('string');
-			}
-		}
-		push @resultsRows, SOAP::Data->name('resultsRow' => \SOAP::Data->name("noName" => @itemsSoap));
-	}	
+			push @resultsRows, SOAP::Data->name('resultsRow' => \SOAP::Data->name("noName" => @itemsSoap));
+		}	
+	}  # end of else
 	}; # end of eval
 	if($@) {
 		my $ex = Exception::Class->caught('BioMart::Exception');
@@ -764,10 +764,14 @@ eval{
 		return SOAP::Data->name("BioMartException" => \SOAP::Data->name("message" => $ex->error()));
 	}
 	
-	# noName tagName is not returned in response, its just a dummy name NOT a keyword, 
-	# use reference e.g \SOAP::Data if you want this to be printed
-	return SOAP::Data->name("noName" => SOAP::Data->name("noName" => @resultsRows));
-
+	if ($count && $count eq '1') {
+		return SOAP::Data->name('resultsRow', $resultsCount);
+	}
+	else {
+		# noName tagName is not returned in response, its just a dummy name NOT a keyword, 
+		# use reference e.g \SOAP::Data if you want this to be printed
+		return SOAP::Data->name("noName" => SOAP::Data->name("noName" => @resultsRows));
+	}
 }
 
 sub getSettings
