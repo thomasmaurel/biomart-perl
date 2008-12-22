@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Published by Syed Haider -->
 <xs:schema version="1.0" 
-	targetNamespace="http://test.biomart.org/MartServiceSoap" 
-	xmlns:tns="http://test.biomart.org/MartServiceSoap"
+	targetNamespace="http://[TAG:server_host]:[TAG:server_port]/MartServiceSoap" 
+	xmlns:tns="http://[TAG:server_host]:[TAG:server_port]/MartServiceSoap"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:sawsdl="http://www.w3.org/ns/sawsdl"
 	>

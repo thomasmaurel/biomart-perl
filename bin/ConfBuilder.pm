@@ -771,10 +771,33 @@ sub makeMartWSDL
 	my $fileContents = <STDMARTRES> ;
 	close(STDMARTRES);
 	#print $fileContents;
+	
+	##---------------- replacing [TAG:server_host]
+	if ($OPTIONS{server_host})	{		
+		$fileContents =~ s/\[TAG:server_host\]/$OPTIONS{server_host}/mg;
+	}
+
+	##---------------- replacing [TAG:cgiLocation]
+	if ($OPTIONS{cgiLocation})	{
+		$fileContents =~ s/\[TAG:cgiLocation\]/$OPTIONS{cgiLocation}/mg;
+	}
+
+	##---------------- replacing [TAG:server_port]
+	if ($OPTIONS{server_port})
+	{
+		my $server_port;
+		if($OPTIONS{proxy}) {
+			$fileContents =~ s/\[TAG:server_port\]/$OPTIONS{proxy}/mg;
+		}
+		else {
+			$fileContents =~ s/\[TAG:server_port\]/$OPTIONS{server_port}/mg;
+		}
+	}
+
 	##---------------- replacing [TAG:xx]
-	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_OPERATION\]//m;
-	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_PORTTYPE\]//m;
-	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_MESSAGE\]//m;
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_OPERATION\]//mg;
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_PORTTYPE\]//mg;
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS_MESSAGE\]//mg;
 	
 	$file = $OPTIONS{cgibin}."/martwsdl";	
 	open(STDMARTRES, ">$file");	
@@ -793,8 +816,30 @@ sub makeMartXSD
 	my $fileContents = <STDMARTRES> ;
 	close(STDMARTRES);
 	#print $fileContents;
+	##---------------- replacing [TAG:server_host]
+	if ($OPTIONS{server_host})	{		
+		$fileContents =~ s/\[TAG:server_host\]/$OPTIONS{server_host}/mg;
+	}
+
+	##---------------- replacing [TAG:cgiLocation]
+	if ($OPTIONS{cgiLocation})	{
+		$fileContents =~ s/\[TAG:cgiLocation\]/$OPTIONS{cgiLocation}/mg;
+	}
+
+	##---------------- replacing [TAG:server_port]
+	if ($OPTIONS{server_port})
+	{
+		my $server_port;
+		if($OPTIONS{proxy}) {
+			$fileContents =~ s/\[TAG:server_port\]/$OPTIONS{proxy}/mg;
+		}
+		else {
+			$fileContents =~ s/\[TAG:server_port\]/$OPTIONS{server_port}/mg;
+		}
+	}
+
 	##---------------- replacing [TAG:xx]
-	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS\]//m;
+	$fileContents =~ s/\[TAG:IF_ONTOLOGY_TERMS\]//mg;
 	
 	$file = $OPTIONS{cgibin}."/martxsd";	
 	open(STDMARTRES, ">$file");	

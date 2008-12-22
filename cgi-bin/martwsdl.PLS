@@ -2,10 +2,10 @@
 <!-- Published by Syed Haider -->
 <definitions 
 	name="BioMartSoapService" 
-	targetNamespace="http://test.biomart.org/MartServiceSoap"
+	targetNamespace="http://[TAG:server_host]:[TAG:server_port]/MartServiceSoap"
 	xmlns="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"	
-	xmlns:tns="http://test.biomart.org/MartServiceSoap"
+	xmlns:tns="http://[TAG:server_host]:[TAG:server_port]/MartServiceSoap"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:sawsdl="http://www.w3.org/ns/sawsdl"
 	>
@@ -13,7 +13,7 @@
 
 <types>
 	<xsd:schema>
-		<xsd:import namespace="http://test.biomart.org/MartServiceSoap"
+		<xsd:import namespace="http://[TAG:server_host]:[TAG:server_port]/MartServiceSoap"
 				schemaLocation="martxsd" />		
 	</xsd:schema>
 </types>
@@ -185,7 +185,7 @@
 	<service name="BioMartSoapService">
         <documentation>BioMart Soap Based Webservice version 0.1</documentation>
         <port name="BioMartSoapPort" binding="tns:BioMartSoapBinding">
-           <soap:address location="http://test.biomart.org/biomart/martsoap"/>
+           <soap:address location="http://[TAG:server_host]:[TAG:server_port]/[TAG:cgiLocation]/martsoap"/>
         </port>
     </service>
 </definitions>
