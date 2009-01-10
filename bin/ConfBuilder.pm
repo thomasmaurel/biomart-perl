@@ -305,6 +305,7 @@ sub makehttpdConf
 	}
 	print STDHTTPD qq/
     	Options +ExecCGI
+	PerlOptions +ParseHeaders
 	<\/Location>
 	/;
 	
