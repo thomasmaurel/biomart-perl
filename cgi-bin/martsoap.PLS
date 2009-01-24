@@ -287,7 +287,7 @@ eval{
 			push @items, SOAP::Data->name('visible' => $dataset->visible)->type('int');
 			push @items, SOAP::Data->name('interface' => $dataset->interfaces())->type('string'); 
 			
-			push @datasets, SOAP::Data->name('dataset' => \SOAP::Data->name("noName" => @items));
+			push @datasets, SOAP::Data->name('datasetInfo' => \SOAP::Data->name("noName" => @items));
 		}		
 	}
 	
@@ -377,7 +377,7 @@ eval{
 						push @itemsSoap, SOAP::Data->name('displayName' => $attribute->displayName())->type('string');
 						push @itemsSoap, SOAP::Data->name('description' => $attribute->description())->type('string');
 						push @itemsSoap, SOAP::Data->name('modelReference' => $semanticAnnotations{$attribute->name()} || "")->type('anyURI');
-						push @attributesSoap, SOAP::Data->name('attribute' => \SOAP::Data->name("noName" => @itemsSoap));
+						push @attributesSoap, SOAP::Data->name('attributeInfo' => \SOAP::Data->name("noName" => @itemsSoap));
 					}
 					
 					unshift @attributesSoap, SOAP::Data->name('attributeCollection' 
@@ -518,7 +518,7 @@ eval {
 								push @itemsSoap, SOAP::Data->name('options' => join(",",@vals))->type('string');
 								push @itemsSoap, SOAP::Data->name('modelReference' => $semanticAnnotations{$option->filter->name()} || "")->type('anyURI');
 
-								push @filtersSoap, SOAP::Data->name('filter' => \SOAP::Data->name("noName" => @itemsSoap));
+								push @filtersSoap, SOAP::Data->name('filterInfo' => \SOAP::Data->name("noName" => @itemsSoap));
 					
 								$trueContainer=1;
 							}
@@ -550,7 +550,7 @@ eval {
 							push @itemsSoap, SOAP::Data->name('options' => join(",",@vals))->type('string');
 							push @itemsSoap, SOAP::Data->name('modelReference' => $semanticAnnotations{$filter->name()} || "")->type('anyURI');
 
-							push @filtersSoap, SOAP::Data->name('filter' => \SOAP::Data->name("noName" => @itemsSoap));
+							push @filtersSoap, SOAP::Data->name('filterInfo' => \SOAP::Data->name("noName" => @itemsSoap));
 						}
 					}
 					unshift @filtersSoap, SOAP::Data->name('filterCollection' 

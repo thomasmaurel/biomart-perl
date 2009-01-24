@@ -60,11 +60,11 @@
 	<xs:element name="getDatasetsResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" name="dataset" type="tns:dataset"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="datasetInfo" type="tns:datasetInfo"/>
 			</xs:sequence>
 		</xs:complexType>		
 	</xs:element>
-	<xs:complexType name="dataset">
+	<xs:complexType name="datasetInfo">
 		<xs:sequence>
 			<xs:element name="name" type="xs:string"/>
 			<xs:element name="displayName" type="xs:string"/>
@@ -113,10 +113,10 @@
 			<xs:element name="name" type="xs:string"/>
 			<xs:element name="displayName" type="xs:string"/>
 			<xs:element name="maxSelect" type="xs:int"/>
-			<xs:element minOccurs="0" maxOccurs="unbounded" name="attribute" type="tns:attribute"/>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="attributeInfo" type="tns:attributeInfo"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="attribute">
+	<xs:complexType name="attributeInfo">
 		<xs:sequence>
 			<xs:element name="name" type="xs:string"/>
 			<xs:element name="displayName" type="xs:string"/>
@@ -161,10 +161,10 @@
 		<xs:sequence>
 			<xs:element name="name" type="xs:string"/>
 			<xs:element name="displayName" type="xs:string"/>
-			<xs:element minOccurs="0" maxOccurs="unbounded" name="filter" type="tns:filter"/>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="filterInfo" type="tns:filterInfo"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="filter">
+	<xs:complexType name="filterInfo">
 		<xs:sequence>
 			<xs:element name="name" type="xs:string"/>
 			<xs:element name="displayName" type="xs:string"/>
