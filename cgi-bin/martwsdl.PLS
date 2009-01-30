@@ -51,8 +51,8 @@
 </message>
 
 <!-- query -->
-<message name="Query">
-	<part name="parameters" element="tns:Query"/>
+<message name="query">
+	<part name="parameters" element="tns:query"/>
 </message>
 <message name="queryResponse">
 	<part name="parameters" element="tns:queryResponse"/>
@@ -91,8 +91,8 @@
 		<fault message="tns:BioMartException" name="BioMartException"></fault>
 	</operation>
 
-	<operation name="Query">
-		<input message="tns:Query"></input>
+	<operation name="query">
+		<input message="tns:query"></input>
 		<output message="tns:queryResponse"></output>
 		<fault message="tns:BioMartException" name="BioMartException"></fault>
 	</operation>
@@ -163,7 +163,7 @@
 		</fault>
 	</operation>
 	
-	<operation name="Query">
+	<operation name="query">
 		<!-- soapAction not required -->
 		<soap:operation soapAction=""></soap:operation>
 		<input>

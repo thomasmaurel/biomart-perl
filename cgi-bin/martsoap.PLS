@@ -587,7 +587,7 @@ eval {
 
 }
 
-sub Query
+sub query
 {
 	my $self = shift;
 	
@@ -740,15 +740,17 @@ eval{
 				foreach (my $i=0; $i < scalar(@cells); $i++) {
 					my $j=$i;
 					$j = $swapColumns{$i} if (defined $swapColumns{$i}); # change the lookup index
-					push @itemsSoap, SOAP::Data->name($allAttributes[$i] => $cells[$j])
-								->attr({'modelReference'=>$semanticAnnotations{$allAttributes[$i]} || "" })
+					push @itemsSoap, SOAP::Data->name('item' => $cells[$j])
+								->attr({'attribute'=>$allAttributes[$i],
+										  'modelReference'=>$semanticAnnotations{$allAttributes[$i]} || ""  })
 								->type('string');
 				}		
 			}
 			else {
 				foreach (my $i=0; $i < scalar(@cells); $i++) {
-					push @itemsSoap, SOAP::Data->name($allAttributes[$i] => $cells[$i])
-							->attr({'modelReference'=>$semanticAnnotations{$allAttributes[$i]} || "" })
+					push @itemsSoap, SOAP::Data->name('item' => $cells[$i])
+							->attr({'attribute'=>$allAttributes[$i],
+										  'modelReference'=>$semanticAnnotations{$allAttributes[$i]} || ""  })
 							->type('string');
 				}
 			}

@@ -176,7 +176,7 @@
 	</xs:complexType>
 
 	<!-- query -->
-	<xs:element name="Query">
+	<xs:element name="query">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="1" maxOccurs="1" name="virtualSchemaName" type="xs:string"/>
@@ -210,10 +210,15 @@
 	<xs:element name="queryResponse">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" name="resultsRow" type="xs:string"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="resultsRow" type="tns:resultsRow"/>
 			</xs:sequence>
 		</xs:complexType>		
 	</xs:element>
+	<xs:complexType name="resultsRow">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="item" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
 
 	<!-- TODO: automatic addition of operations if ontology terms are present in settings.conf -->
 	[TAG:IF_ONTOLOGY_TERMS]
