@@ -1209,6 +1209,57 @@ sub printBiomaRtRegistry
 print qq(
 <MartRegistry>
 
+
+<MartURLLocation database="ensembl_mart_51" default="1" displayName="Ensembl 51" host="nov2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="sequence_mart_51" default="" displayName="Sequence" host="nov2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="ontology_mart_51" default="" displayName="Ontology" host="nov2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ONTOLOGY" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="genomic_features_mart_51" default="" displayName="Genomic Features 51" host="nov2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_GENOMIC" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="snp_mart_51" default="" displayName="SNP 51" host="nov2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="vega_mart_51" default="" displayName="Vega 32" host="nov2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+
+
+<MartURLLocation database="ensembl_mart_50" default="1" displayName="Ensembl 50" host="july2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="sequence_mart_50" default="" displayName="Sequence" host="july2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="ontology_mart_50" default="" displayName="Ontology" host="july2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ONTOLOGY" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="genomic_features_mart_50" default="" displayName="Genomic Features 50" host="july2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_GENOMIC" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="snp_mart_50" default="" displayName="SNP 50" host="july2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="vega_mart_50" default="" displayName="Vega 32" host="july2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+
+ <MartURLLocation database="ensembl_mart_49" default="1" displayName="ENSEMBL GENES 49 (SANGER)" host="mar2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="sequence_mart_49" default="" displayName="Sequence" host="mar2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="genomic_features_mart_49" default="" displayName="Genomic Features" host="mar2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_GENOMIC" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="snp_mart_49" default="" displayName="SNP" host="mar2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="vega_mart_49" default="" displayName="Vega" host="mar2008.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+
+ <MartURLLocation database="ensembl_mart_48" default="1" displayName="ENSEMBL GENES 48 (SANGER)" host="dec2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="sequence_mart_48" default="" displayName="Sequence" host="dec2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
+
+  <MartURLLocation database="genomic_features_mart_48" default="" displayName="Genomic Features" host="dec2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_GENOMIC" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="snp_mart_48" default="" displayName="SNP" host="dec2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SNP" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+  <MartURLLocation database="vega_mart_48" default="" displayName="Vega" host="dec2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_VEGA" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
+
+
+
   <MartURLLocation database="ensembl_mart_47" default="1" displayName="ENSEMBL GENES 47 (SANGER)" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_ENSEMBL" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
   <MartURLLocation database="sequence_mart_47" default="" displayName="Sequence" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_SEQUENCE" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="" />
   <MartURLLocation database="genomic_features_mart_47" default="" displayName="Genomic Features" host="oct2007.archive.ensembl.org" includeDatasets="" martUser="" name="ENSEMBL_MART_GENOMIC" path="/biomart/martservice" port="80" serverVirtualSchema="default" visible="1" />
