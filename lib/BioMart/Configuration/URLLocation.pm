@@ -101,7 +101,8 @@ sub getResultSet {
 
 
 		if ($el =~ /^Keep-Alive/) {next;}
-	    if ($el =~ /^Client/) {next;}
+if ($el =~ /^Vary/) {next;}	    
+if ($el =~ /^Client/) {next;}
 	    if ($el eq '') {next;}
 	    if ($el =~/^HTTP/) { next;}
 	    if ($el =~/^Date/) { next;}
