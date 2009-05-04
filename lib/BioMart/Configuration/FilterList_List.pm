@@ -156,9 +156,23 @@ sub _toSQL {
       
       foreach my $col (@cols){
 	  		if ((scalar(@cols) == 1) && ($filters[$i]->operation eq '=')){
-	      	push @values,$col;
-	  		}
+	  		#    	push @values,$col;
+       				for (my $h=0; $h < scalar(@filters); $h++) {
+					my $subatt_table = BioMart::AttributeTable->new();
+                        		my $aref = [$col];
+                			$subatt_table->addRow($aref);
+            				if (!defined $filters[$i]){
+                                       	BioMart::Exception::Configuration->throw ("returning undef ... missing filters from your importable?");
+                			}
+            				$filters[$i]->setTable($subatt_table);
+                			$subsql .= $and.$filters[$i]->toSQL;
+                			$and = ' OR ';
+                			$i++;
+				}
+
+			}
 	  		else{
+
 	     	 	my $subatt_table = BioMart::AttributeTable->new();
 	     	 	my $aref = [$col];
 	      	$subatt_table->addRow($aref);
@@ -217,7 +231,6 @@ sub _toSQL {
 	  $sql .= "')";
       }
   }
-  
   
   return '('.$sql.')';
 }

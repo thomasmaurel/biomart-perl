@@ -775,7 +775,7 @@ sub _getCount {
     }
 
     $select = 'COUNT(*)';
-
+	my $filtList_List_flag = 0;
     # recover where clause from filters (and filterlists)
     my $filters = $query->getAllFilters;
   FILTERS: foreach my $filter (@$filters){
@@ -785,7 +785,10 @@ sub _getCount {
       # recover the tables
       if ($filter->isa("BioMart::Configuration::FilterList")
       	|| $filter->isa("BioMart::Configuration::FilterList_List")){
-        if ($filter->batching) {
+        if ($filter->isa("BioMart::Configuration::FilterList_List")){
+		$filtList_List_flag = 1;
+	}
+	if ($filter->batching) {
 	    $ret = 1; 
 	    $batching = 1;
 	    last FILTERS;
@@ -821,6 +824,7 @@ sub _getCount {
 
     # identify the lowest key and set main accordingly
     my $keys = $self->get('keys');
+
     if (%joinTables){
 	
 	$i = scalar @$keys - 1;
@@ -837,10 +841,11 @@ sub _getCount {
       $i = 0;# for when no join tables
     } 
 
+
     my $mains = $self->get('mains');
     $main = $$mains[$i];
 
-    if ($i != 0){
+    if ($i != 0 || $filtList_List_flag){
 	$select = 'COUNT(DISTINCT main.'.$$keys[0].')';
     }
 
