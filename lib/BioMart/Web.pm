@@ -1491,7 +1491,7 @@ sub handle_request {
 		$returnaAfterSave = 1;
 		## sending the results back in HTML formatting with html, body div tags is important
 		## otherwise Safari doesnt call onload() of hiddenIFrame
-		print $CGI->header();
+		print $CGI->header(-charset=>'utf-8');
 		print "<html><body><div id =\"resultsDivIFrameId\" style=\"display:none;\">ToResultsHiddenIFrame</div></body></html>";
 	}
 	
@@ -1703,7 +1703,7 @@ sub handle_request {
 	{		
 		# NEW QUERY, set NO DEFAULTS
 		# print "***** 1";
-		print $CGI->header();
+		print $CGI->header(-charset=>'utf-8');
 		$session->param('newQuery', '1');
 		$js_datasetpanel_sessions_values{'schema'} = '';
 		$js_datasetpanel_sessions_values{'databasmenu'} = '';
@@ -2159,21 +2159,21 @@ sub handle_request {
 				$tempered_xml =~s/softwareVersion/datasetConfigVersion/g;
 				$tempered_xml =~s/</&lt;/g;
 				$tempered_xml =~s/>/&gt;/g;
-				print $CGI->header();
+				print $CGI->header(-charset=>'utf-8');
 				print "<html><body><pre>$tempered_xml</pre></body></html>";
 			}
 			# PERL API equivalent of the query
 			if ($showQuery eq '2') {
 				my $tempered_perlScript = $query_main->toPerl();
 				$tempered_perlScript =~ s/my \$query_runner = BioMart::QueryRunner->new\(\)\;/\$query->formatter\(\"$exportView_formatter_name\"\)\;\n\nmy \$query_runner = BioMart::QueryRunner->new\(\)\;/;
-				print $CGI->header();
+				print $CGI->header(-charset=>'utf-8');
 				print "<html><body><pre>$tempered_perlScript</pre></body></html>";
 			}
 			# URL access equivalent of the query
 			if ($showQuery eq '3') {
 				my $xml = $query_main->toXML(1,1,1,1);
 				my $url_string = $CGI->url(-full => 1) . $self->getURLBookmark($registry, $xml, $session);
-				print $CGI->header();
+				print $CGI->header(-charset=>'utf-8');
 				print "<html><body><pre>$url_string</pre></body></html>";
 			}
 			$session->clear('showquery'); # so we don't get stuck a this stage
@@ -2369,15 +2369,18 @@ sub handle_request {
 							
 							# Work out CGI headers
 							if ($export_saveto eq 'text') {
-								print $CGI->header(-type=>$formatter->getMimeType());
+								print $CGI->header(-type=>$formatter->getMimeType(),
+											-charset=>'utf-8');
 							}
 							elsif ($export_saveto eq 'gz') {
 								print $CGI->header(-type=>'application/octet-stream',
-										-attachment=>$file);
+										-attachment=>$file,
+										-charset=>'utf-8');
 							}
 							else {
 								print $CGI->header(-type=>$formatter->getMimeType(),
-										-attachment=>$file);
+										-attachment=>$file,
+										-charset=>'utf-8');
 							}
 							
 				   		# Create results.
