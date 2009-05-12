@@ -2555,7 +2555,7 @@ sub handle_request {
 			}
 			
 			my $display_string = join ",",@outputformat_displays;
-
+			print $CGI->header(-charset=>'utf-8');			
 			print lc($preView_formatter_name);
 			print '____';
 			print $display_string;
