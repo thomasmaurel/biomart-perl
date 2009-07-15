@@ -2104,6 +2104,7 @@ sub handle_request {
 				$countStringForJS .= $total_count || 0;
 				$countStringForJS .= ' ';
 				$countStringForJS .= $registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->entryLabel || 'Entries';
+				$countStringForJS = "Count unavailable" if ($registry->getConfigTreeForDataset($dataset_name, $schema_name, 'default')->entryLabel eq "Count unavailable");
 			}
 
 		    # Add filters & atts to main query as well, if any		
