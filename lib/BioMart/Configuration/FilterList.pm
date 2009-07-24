@@ -208,12 +208,10 @@ sub _toSQL {
       }
 
       else{
-          
-	  my $prev = 'nonesuch';
-    	  my @unique_values = grep($_ ne $prev && (($prev) = $_), @values);
+	  my %saw;
 
 	  $sql = $filters[$i]->attribute->toSQL." IN('";
-	  $sql .= join("','", grep { $_ } @unique_values) if (@values > 0);
+	  $sql .= join("','", grep(!$saw{$_}++, @values)) if (@values > 0);
 	  $sql .= "')";
       }
   }

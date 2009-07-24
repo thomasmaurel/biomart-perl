@@ -798,8 +798,17 @@ sub _getCount {
 	foreach my $list_filter (@$list_filters){
             my $table = $list_filter->table;
 	    $tables{$table} = 1;
-	    if (!(($table =~ /main$/) && ($list_filter->attribute->key eq 
-					  ($self->get('keys')->[0])))){
+	    if ($table eq 'main'){
+		my $keys = $self->get('keys');
+		foreach my $key (reverse @$keys){
+		    last if (uc($joinTables{'main'}) eq uc($key));
+		    if (uc($list_filter->attribute->key) eq uc($key)){
+			$joinTables{'main'} = $key;
+			last;
+		    }
+		}
+	    }
+	    else{ # dm table
 		$joinTables{$table} = $list_filter->attribute->key;
 	    }
 	}
@@ -807,9 +816,18 @@ sub _getCount {
       else{
 	  my $table = $filter->table;
 	  $tables{$table} = 1;
-	  if (!(($table =~ /main$/) && ($filter->attribute->key eq 
-					($self->get('keys')->[0])))){
-	      $joinTables{$table} = $filter->attribute->key;
+	  if ($table eq 'main'){
+	      my $keys = $self->get('keys');
+	      foreach my $key (reverse @$keys){
+	  	last if (uc($joinTables{'main'}) eq uc($key));
+	  	if (uc($filter->attribute->key) eq uc($key)){
+	  	    $joinTables{'main'} = $key;
+	  	    last;
+	  	}
+	      }
+	  }
+	  else{# dm table
+	  	 $joinTables{$table} = $filter->attribute->key;
 	  }
       }
       $and = ' AND ';

@@ -162,8 +162,9 @@ sub _toSQL {
 					      @in_lists );
 	   }
 	   else{
+	       my %saw;
 	       $sql = $attribute->toSQL." IN('";
-	       $sql .= join("','", grep { $_ } @values);
+	       $sql .= join("','", grep(!$saw{$_}++, @values)) if (@values > 0);
 	       $sql .= "')";
 	   }
        }

@@ -226,8 +226,9 @@ sub _toSQL {
       }
 
       else{
+	  my %saw;
 	  $sql = $filters[$i]->attribute->toSQL." IN('";
-	  $sql .= join("','", grep { $_ } @values) if (@values > 0);
+	  $sql .= join("','", grep(!$saw{$_}++, @values)) if (@values > 0);
 	  $sql .= "')";
       }
   }
