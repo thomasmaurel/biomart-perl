@@ -1491,7 +1491,7 @@ sub handle_request {
 		$returnaAfterSave = 1;
 		## sending the results back in HTML formatting with html, body div tags is important
 		## otherwise Safari doesnt call onload() of hiddenIFrame
-		print $CGI->header(-charset=>'utf-8');
+		print $CGI->header();
 		print "<html><body><div id =\"resultsDivIFrameId\" style=\"display:none;\">ToResultsHiddenIFrame</div></body></html>";
 	}
 	
