@@ -1575,7 +1575,6 @@ sub _snpSequences {
     my ($self, $atable, $curRow) = @_;
   
     my $rank = 1;
-
     if ($curRow) {
 	#since locations are just hashes, hack them
 	my $location = $self->_getLocationFrom($curRow, "chr", "pos", 
@@ -1591,6 +1590,7 @@ sub _snpSequences {
 	    $location->{"off"} = $self->get('upstream_flank');
 	} 
 	else {
+
 	    $location->{"start"} = $location->{"pos"} - 
 		$self->get('upstream_flank');
 	    $location->{"end"} = $location->{"pos"} + 
@@ -1603,16 +1603,25 @@ sub _snpSequences {
 	    }
 	}
 
+
 	my $locations = {};
 	$locations->{$rank} = $location;
 	my $sequence = $self->_processSequence($locations);
 	$self->_editSequence(\$sequence);
 	if ($sequence) {
-	    substr($sequence, $location->{"off"}, 1) = "%".$location->{"allele"}."%";
+	    #indels, insertions really. special case of allele of type hyphen/bp e.g -/A 
+	    if ($location->{"allele"} =~ m/-\//){
+	    	chop($sequence);
+	    	substr($sequence, $location->{"off"}, 0) = "%".$location->{"allele"}."%";
+	    }
+	    else{
+	    	substr($sequence, $location->{"off"}, 1) = "%".$location->{"allele"}."%";
+	    }
 	    $self->_addRow($atable, $self->_initializeReturnRow($curRow), 
 			   $sequence);
 	}    
     }
+
 }
 
 =head2 toString
