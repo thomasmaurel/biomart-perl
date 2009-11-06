@@ -177,7 +177,7 @@ sub _toSQL {
 
   if (!$sql){#need to generate an IN list
       foreach (@values) {
-	  $_ =~ s/'/''/ if ($_); # subsitituting single ' with two '' to overcome SQL issues on ORACLE, mySQL, PG
+	  $_ =~ s/'/''/g if ($_); # subsitituting single ' with two '' to overcome SQL issues on ORACLE, mySQL, PG
       }
       if ($oracle){
           #will hold stringified sublists

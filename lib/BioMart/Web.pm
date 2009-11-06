@@ -2491,7 +2491,6 @@ sub handle_request {
 				
    			$logger->debug("Serious error: ".$ex);
      			UNIVERSAL::can($ex, 'rethrow') ? $ex->rethrow : die $ex;
-     			print "Serious Error: ", $errmsg;
  			}
 		  	else 
 		  	{

@@ -125,7 +125,7 @@ sub _toSQL {
       next unless (defined($$row[0]));#avoid NULL entries
       
 	 $temp = $$row[0];
-	 $temp =~ s/'/''/; # substitute a ' with '' so it works on all platforms PG, ORACLE, MYSQL
+	 $temp =~ s/'/''/g; # substitute a ' with '' so it works on all platforms PG, ORACLE, MYSQL
 
 	 if ($operation eq '='){
 	  #push @values, $$row[0];
