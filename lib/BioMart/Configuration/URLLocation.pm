@@ -95,28 +95,10 @@ sub getResultSet {
     my @results;
     
     if ($response->is_success) {
-	my @arr=split(/\n/,$response->as_string);      
-	
-	foreach my $el(@arr){
-
-
-		if ($el =~ /^Keep-Alive/) {next;}
-if ($el =~ /^Vary/) {next;}	    
-if ($el =~ /^Client/) {next;}
-	    if ($el eq '') {next;}
-	    if ($el =~/^HTTP/) { next;}
-	    if ($el =~/^Date/) { next;}
-	    if ($el =~/^Server/) {next;}
-	    if ($el =~/^Connection/) {next;}
-	    if ($el =~/^Content/) {next;}
-	    if ($el =~/^Proxy/) {next;}
-	    if ($el =~/^X-Cache/) {next;}
-       if ($el =~/^Via/) {next;}
-       if ($el =~/^X-Pad/) {next;}
-         
+	my @arr=split(/\n/,$response->content); # much neater to use 'content' instead of 'as_string', we don't need to explicitly ignore header part of the http response any more.
+	foreach my $el(@arr){         
 	    $logger->warn("RESPONSE:  $el");
-          
-          push (@results,$el);
+	    push (@results,$el);
 	}
 	
     }  else {
