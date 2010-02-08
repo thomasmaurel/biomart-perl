@@ -2142,7 +2142,7 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 		if (schemaCount > 1 && mergeVS == '0') {
 			document.mainform.schemamenu[j++] = new Option(schemaCaption, '', true, true);
 			for(i in dataForMenus['schema'])	{
-				document.mainform.schemamenu[j++] = new Option(i, i);
+			    document.mainform.schemamenu[j++] = new Option(i.replace(/_/g, " "), i);
 			}
 		}
 		else{ // donot show Virtual Schema menu
@@ -2173,7 +2173,7 @@ function datasetpanel_pre_onload(menuLists, sessionValues, schemaTitle, database
 				if(i == dsPanelSessionValues['schema']) {
 					toBeSelected = j;
 				}
-				document.mainform.schemamenu[j++] = new Option(i, i);
+				document.mainform.schemamenu[j++] = new Option(i.replace(/_/g, " "), i);
 			}
 			document.mainform.schemamenu[toBeSelected].selected='true';
 		}
