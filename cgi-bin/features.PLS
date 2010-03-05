@@ -267,12 +267,12 @@ sub get_geneAnnotation
 		$results .= &feature_open($portions[1], $portions[1]);
 		#$results .= &type($portions[1],"no","no","no", $portions[1]);
 		$results .= &type($dsDisplayName,"no","no","no", $dsDisplayName);
-		#$results .= &method("methodID:unknown", "");
-		#$results .= &start("0");
-		#$results .= &end("0");
-		#$results .= &score("-");
-		#$results .= &orientation("0");
-		#$results .= &phase("-");
+		$results .= &method("methodID:unknown", "");
+		$results .= &start("0");
+		$results .= &end("0");
+		$results .= &score("-");
+		$results .= &orientation("0");
+		$results .= &phase("-");
 		$results .= &note($portions[2]);
 
 		$hrefURL = sprintf ($linkURL, defined ($linkURL) ? $portions[1] : '');
