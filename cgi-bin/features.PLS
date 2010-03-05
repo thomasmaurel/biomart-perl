@@ -383,13 +383,13 @@ sub get_chromosomeAnnotationFeatures
 		$results .= &feature_open($portions[0], $portions[0]);
 		#$results .= &type($portions[1],"no","no","no", $portions[1]);
 		$results .= &type($dsDisplayName,"no","no","no", $dsDisplayName);
-		#$results .= &method("methodID:unknown", "");
+		$results .= &method("methodID:unknown", "");
 		$results .= &start($portions[1]);
 		$results .= &end($portions[2]);
-		#$results .= &score("-");
+		$results .= &score("-");
 		$results .= &orientation($portions[3]);
-		#$results .= &phase("-");
-		#$results .= &note($portions[0]);
+		$results .= &phase("-");
+		$results .= &note("");
 		
 		$hrefURL = sprintf ($linkURL, defined ($linkURL) ? $portions[0] : '');
 		$results .= &link($hrefURL, $portions[0])  if($hrefURL);
