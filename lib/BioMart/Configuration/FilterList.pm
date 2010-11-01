@@ -162,7 +162,7 @@ sub _toSQL {
 		  BioMart::Exception::Configuration->throw ("returning undef ... missing filters from your importable?");
 	      }              
               $filters[$i]->setTable($subatt_table);
-	      $subsql .= $and.$filters[$i]->toSQL;
+	      $subsql .= $and.$filters[$i]->toSQL if ($filters[$i]->toSQL);
 	      $and = ' AND ';
 	      $i++;
 	  }
