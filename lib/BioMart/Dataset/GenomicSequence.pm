@@ -1410,9 +1410,6 @@ sub _utrSequences {
 
     my $locations = $self->get('locations');
     my $outRow = $self->get('outRow');
-    
-
-
 
     if ($curRow) {
 	my $importable_indices = $self->get('importable_indices');
@@ -1480,8 +1477,12 @@ sub _utrSequences {
 		    $self->_addRow($atable, $outRow, $sequence);
 		    $outRow = undef;
 		    $self->set('calc_location', undef);
-		}
-	    } 
+			} elsif((!$sequence || $sequence eq "")) {
+			$self->_addRow($atable, $outRow, "Sequence unavailable");
+			$outRow = undef;
+			} else {
+			}
+		} 
 	    else {
 		$self->_addRow($atable, $outRow, 
 			       "Sequence unavailable");
@@ -1558,11 +1559,14 @@ sub _utrSequences {
 		$self->_addRow($atable, $outRow, $sequence);
 		$outRow = undef;
 		$self->set('calc_location', undef);
-	    }
+		} elsif((!$sequence || $sequence eq "")) {
+			$self->_addRow($atable, $outRow, "Sequence unavailable");
+			$outRow = undef;
+		} else {
+		}
 	} 
 	else {
-	    $self->_addRow($atable, $outRow, 
-			   "No UTR is annotated for this transcript");
+	    $self->_addRow($atable, $outRow, "Sequence unavailable");
 	    $outRow = undef;
 	}
     }
