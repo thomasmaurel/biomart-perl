@@ -962,9 +962,8 @@ sub _getResultTable {
 	my $location = $self->getParam('configurator')->get('location');
 	my $xml = $query->toXML($batch_start,$batch_size,0);    
         
-        my $logger=Log::Log4perl->get_logger(__PACKAGE__);
-        $logger->info("QUERY XML:  $xml");
-
+	my $logger=Log::Log4perl->get_logger(__PACKAGE__);
+	$logger->info("QUERY XML:  $xml");
 	
 	foreach my $el($location->getResultSet("","POST",$xml)){
 	    if ($el =~ /No Sequence Returned/) {
@@ -999,8 +998,6 @@ sub _getResultTable {
 		next NEXTROW if (!$rowAsString || exists $avoidDuplication{$rowAsString} ) ; # no point retrieving sequence for same coordinates
 		$avoidDuplication{$rowAsString} = '';
 		$self->_processRow( $atable, $curRow);
-		
-		#print "<BR> BAtch: $batch_size [ ", $self->_continueWithBatch($batch_size, $rtable), " ] [ ", $self->get('batchIndex'), " ]";
 		
 	}
 	
@@ -1134,7 +1131,6 @@ sub _codingCdnaPeptideSequences {
 	
 	
 	# $location = $self->_modFlanks($location, 0);
-	#-- This was soo wrong - it added a flank (upstream and/or downstream) 
 	#-- for every exons, instead of once, at the 5' or 3' end  - [ben]
 	
 	$locations->{$rank} = $location if ($location->{"start"} && $rank);
@@ -1252,26 +1248,33 @@ sub _gene_exonIntronFlankSequences {
 		my $storageHash = $self->get('seqStorageHash');
 
 
-		# This IF statement is just there to keep those in sink who have Ensembl 42 or earlier
+		# This IF statement is just there to keep those in sync who have Ensembl 42 or earlier
 		# and this new code. They should not expect transcript_pkey and transcript_count from XML
 		if (exists $storageHash->{$lastPkey})
 		{
-			# this is well tricky. lastDS is 2 when its a two DS query adn its the second DS's GS.
+			# this is well tricky. lastDS is 2 when its a two DS query and its the second DS's GS.
 			# we do not wait for all transcripts to arrive because in a two DS query HUMAN/MSD, there is a chance
 			# few transcripts are absent for not having any PDBids. So we should not stop such sequences. 
-			# The sequences are meant to stop till all the transcripts are seen when its a single DS query
+			# The sequences are meant to stop until all the transcripts are seen when its a single DS query
+			my $logger=Log::Log4perl->get_logger(__PACKAGE__);
+
 			if (($storageHash->{$lastPkey}->{'transcriptCount'} >= $storageHash->{$lastPkey}->{'totalTranscripts'}) 
 				|| $self->lastDS() == 2)
 			{
 				# use the old sequence from previous batch, the new one in some case (f_gene,c_f_gene,u_gene is different)
 				$sequence = $storageHash->{$lastPkey}->{'seq'} if ($storageHash->{$lastPkey}->{'seq'});
+
+				#$logger->info("Seq IF:  $sequence");
+				#$logger->info("Seq length IF: ", length($sequence));
+				#$logger->info("OutRow IF: ", Dumper($outRow));
+
 				if ($sequence)
-				{ 
-				    $self->_addRow($atable, $outRow, $sequence);
-				}
-				else 
 				{
-				    $self->_addRow($atable, $outRow, "Sequence unavailable");
+					$self->_addRow($atable, $outRow, $sequence);
+				}
+				else
+				{
+					$self->_addRow($atable, $outRow, "Sequence unavailable");
 				}
 				delete $storageHash->{$lastPkey}; # over with this Gene.			
 			}
@@ -1279,14 +1282,17 @@ sub _gene_exonIntronFlankSequences {
 			{
 				# sequences gets an update, as and when a transcript of a gene
 				# arrives in a separate batch. In principle this should always be the same
-
 				#my $onHoldkeys = $self->get('onHoldSeqsKeys');
-					
-				$storageHash->{$lastPkey}->{'seq'} = $sequence;
-				$storageHash->{$lastPkey}->{'outRow'} = $outRow;
+				if (exists $storageHash->{$lastPkey}->{'seq'})
+				{
+					$storageHash->{$lastPkey}->{'seq'} = $sequence if ($sequence ne "");
+				}
+				else
+				{
+					$storageHash->{$lastPkey}->{'seq'} = $sequence;
+				}
 
-				#$onHoldkeys->{$lastPkey} = "";
-				#$self->set('onHoldSeqsKeys', $onHoldkeys);
+				$storageHash->{$lastPkey}->{'outRow'} = $outRow;
 				$self->set('seqStorageHash', $storageHash);
 
 			    $self->_incrementBatch;
@@ -1313,20 +1319,19 @@ sub _gene_exonIntronFlankSequences {
 		$self->_calcSeqOverLocations( $location );
 		
 		
-		# This IF statement is just there to keep those in sink who have Ensembl 42 or earlier
+		# This IF statement is just there to keep those in sync who have Ensembl 42 or earlier
 		# and this new code. They should not expect transcript_pkey and transcript_count from XML
 		if ($location->{'transcript_pkey'})
 		{
 			my $storageHash = $self->get('seqStorageHash');
 			my $prkey = $location->{'pkey'};
 			my $transcript_key = $location->{'transcript_pkey'};
-			#print "<BR>TRANS KEY: $transcript_key", " == ", $location->{'transcript_count'};
+
 			$storageHash->{$prkey}->{'totalTranscripts'} = $location->{'transcript_count'} || 1; # there are NULL vals in DB
 			if(exists $storageHash->{$prkey}->{'transcriptKeys'}) {		
 				if ($storageHash->{$prkey}->{'transcriptKeys'} !~ m/$transcript_key/) {
 					$storageHash->{$prkey}->{'transcriptKeys'} .= $transcript_key.',';
 					$storageHash->{$prkey}->{'transcriptCount'} ++;
-				#	print "<BR> I WAS HERE", $storageHash->{$prkey}->{'transcriptCount'};
 				}
 			}
 			else
@@ -1334,7 +1339,6 @@ sub _gene_exonIntronFlankSequences {
 				$storageHash->{$prkey}->{'transcriptKeys'} = $transcript_key.',';
 				$storageHash->{$prkey}->{'transcriptCount'}++;
 			}
-			#print "<BR>",Dumper ($storageHash);
 			$self->set('seqStorageHash', $storageHash);
 		}
 	}
@@ -1412,167 +1416,155 @@ sub _utrSequences {
     my $outRow = $self->get('outRow');
 
     if ($curRow) {
-	my $importable_indices = $self->get('importable_indices');
+		my $importable_indices = $self->get('importable_indices');
 
-	my $pkey = $curRow->[ $importable_indices->{"pkey"} ];
+		my $pkey = $curRow->[ $importable_indices->{"pkey"} ];
 
-	my $lastPkey = $self->get('lastPkey');
-	if ( $lastPkey && ($pkey ne $lastPkey) ) {
-	    my $hasUtr = keys %{$locations};
-	    if ($hasUtr) {
-		my @ranks = sort { $a <=> $b } keys %{$locations};
-		my $low_rank = shift @ranks;
-		my $hi_rank = ($hasUtr > 1) ? pop @ranks : $low_rank;
+		my $lastPkey = $self->get('lastPkey');
+		if ( $lastPkey && ($pkey ne $lastPkey) ) {
+		    my $hasUtr = keys %{$locations};
+		    if ($hasUtr) {
+				my @ranks = sort { $a <=> $b } keys %{$locations};
+				my $low_rank = shift @ranks;
+				my $hi_rank = ($hasUtr > 1) ? pop @ranks : $low_rank;
 
-		my $calc_location = $self->get('calc_location');
+				my $calc_location = $self->get('calc_location');
 		
-		my $low_loc_strand = $locations->{$low_rank}->{"strand"};
-		if ($self->get('upstream_flank')) {
-		    if ($low_loc_strand < 0) {
-			$calc_location->{"start"} = 
-			    $calc_location->{"end"} + 1;
-			$calc_location->{"end"} = 
-			    $calc_location->{"start"} + 
-			    $self->get('upstream_flank') - 1;
-		    } 
-		    else {
-			$calc_location->{"end"} = 
-			    $calc_location->{"start"} - 1;
-			 $calc_location->{"start"} = 
-			    $calc_location->{"start"} - 
-			    $self->get('upstream_flank');# lose a base if include this + 1;
-			$calc_location->{"start"} = 1 
-			    if ($calc_location->{"start"} < 1);
-		    }
-		  
+				my $low_loc_strand = $locations->{$low_rank}->{"strand"};
+				if ($self->get('upstream_flank')) {
+				    if ($low_loc_strand < 0) {
+						$calc_location->{"start"} = $calc_location->{"end"} + 1;
+						$calc_location->{"end"} = $calc_location->{"start"} + $self->get('upstream_flank') - 1;
+				    } 
+				    else {
+						$calc_location->{"end"} = $calc_location->{"start"} - 1;
+						$calc_location->{"start"} = $calc_location->{"start"} - $self->get('upstream_flank');# lose a base if include this + 1;
+						$calc_location->{"start"} = 1 
+					    if ($calc_location->{"start"} < 1);
+					}
 
-		    #prepend to sequence
-		    $locations->{$low_rank - 1} = $calc_location;
-		} 
-		elsif ($self->get('downstream_flank')) {
-		    if ($low_loc_strand < 0) {
-			$calc_location->{"end"} = 
-			    $calc_location->{"start"} - 1;
-			$calc_location->{"start"} = 
-			    $calc_location->{"end"} - 
-			    $self->get('downstream_flank') + 1;
-		    } 
-		    else {
-			$calc_location->{"start"} = 
-			    $calc_location->{"end"} + 1;
-			$calc_location->{"end"} = 
-			    $calc_location->{"start"} + 
-			    $self->get('downstream_flank') -1; # positive strand & downstream flank, wont lose the base.
-		    }
-		    
-		    #append to sequence
-		    $locations->{$hi_rank + 1} = $calc_location;
-		}      
+					#prepend to sequence
+					$locations->{$low_rank - 1} = $calc_location;
+				}
+				elsif ($self->get('downstream_flank')) {
+					if ($low_loc_strand < 0) {
+						$calc_location->{"end"} = $calc_location->{"start"} - 1;
+						$calc_location->{"start"} = $calc_location->{"end"} - $self->get('downstream_flank') + 1;
+				    }
+				    else {
+						$calc_location->{"start"} = $calc_location->{"end"} + 1;
+						$calc_location->{"end"} = $calc_location->{"start"} + $self->get('downstream_flank') -1; # positive strand & downstream flank, wont lose the base.
+					}
+
+				    #append to sequence
+				    $locations->{$hi_rank + 1} = $calc_location;
+				}      
 		
-		my $sequence = $self->_processSequence($locations);
-		$self->_editSequence(\$sequence);
-		if ($sequence) {
-		    $locations = {};
-		    $hasUtr = 0;
-		    $self->_addRow($atable, $outRow, $sequence);
-		    $outRow = undef;
-		    $self->set('calc_location', undef);
-			} elsif((!$sequence || $sequence eq "")) {
-			$self->_addRow($atable, $outRow, "Sequence unavailable");
-			$outRow = undef;
-			} else {
+				my $sequence = $self->_processSequence($locations);
+				$self->_editSequence(\$sequence);
+				if ($sequence) {
+					$locations = {};
+					$hasUtr = 0;
+					$self->_addRow($atable, $outRow, $sequence);
+					$outRow = undef;
+					$self->set('calc_location', undef);
+				}
+				elsif((!$sequence || $sequence eq "")) {
+					$self->_addRow($atable, $outRow, "Sequence unavailable");
+					$outRow = undef;
+				}
+				else {
+				}
+			} 
+			else {
+				$self->_addRow($atable, $outRow, "Sequence unavailable");
+				$outRow = undef;
+			}
+		}
+
+		unless ($outRow) { 
+		    $outRow = $self->_initializeReturnRow($curRow);
+		}
+
+		#for this one we build and calc
+		my $rank = $curRow->[ $importable_indices->{"rank"} ];
+		my $location = $self->_getLocationFrom($curRow, "chr", "start", "end", "strand");
+		if ($location->{"start"}) {
+		    $locations->{$rank} = $location;  
+		    $self->_calcSeqOverLocations($location);
+		}
+		$self->set('lastPkey', $pkey);
+	} 
+    else {
+		# last entry
+		my $hasUtr = keys %{$locations};
+		if ($hasUtr) {
+		    my @ranks = sort { $a <=> $b } keys %{$locations};
+		    my $low_rank = shift @ranks;
+		    my $hi_rank = ($hasUtr > 1) ? pop @ranks : $low_rank;
+	    
+		    my $calc_location = $self->get('calc_location');
+
+		    my $low_loc_strand = $locations->{$low_rank}->{"strand"};
+			if ($self->get('upstream_flank')) {
+				if ($low_loc_strand < 0) {
+				    $calc_location->{"start"} = $calc_location->{"end"} + 1;
+				    $calc_location->{"end"} = 
+					$calc_location->{"start"} + 
+					$self->get('upstream_flank') - 1;
+				} 
+				else {
+				    $calc_location->{"end"} = $calc_location->{"start"} - 1;
+				    $calc_location->{"start"} = 
+					$calc_location->{"start"} - 
+					$self->get('upstream_flank') + 1;
+				    $calc_location->{"start"} = 1 
+					if ($calc_location->{"start"} < 1);
+				}
+
+				#prepend to sequence
+				$locations->{$low_rank - 1} = $calc_location;
+			} 
+			elsif ($self->get('downstream_flank')) {
+				if ($low_loc_strand < 0) {
+					$calc_location->{"end"} = $calc_location->{"start"} - 1;
+				    $calc_location->{"start"} = $calc_location->{"end"} - 
+					$self->get('downstream_flank') + 1;
+				} 
+				else {
+				    $calc_location->{"start"} = $calc_location->{"end"} + 1;
+				    $calc_location->{"end"} = $calc_location->{"start"} + 
+					$self->get('downstream_flank') - 1;
+				}
+
+				#append to sequence
+				$locations->{$hi_rank + 1} = $calc_location;
+			}
+
+			my $sequence = $self->_processSequence($locations);
+			$self->_editSequence(\$sequence);
+		    if ($sequence) {
+				$locations = {};
+				$hasUtr = 0;
+				$self->_addRow($atable, $outRow, $sequence);
+				$outRow = undef;
+				$self->set('calc_location', undef);
+			}
+			elsif((!$sequence || $sequence eq "")) {
+				$self->_addRow($atable, $outRow, "Sequence unavailable");
+				$outRow = undef;
+			}
+			else {
 			}
 		} 
-	    else {
-		$self->_addRow($atable, $outRow, 
-			       "Sequence unavailable");
-		$outRow = undef;
-	    }
-	}
-
-	unless ($outRow) { 
-	    $outRow = $self->_initializeReturnRow($curRow);
-	}
-
-	#for this one we build and calc
-	my $rank = $curRow->[ $importable_indices->{"rank"} ];
-	my $location = $self->_getLocationFrom($curRow, "chr", "start", 
-					       "end", "strand");
-	if ($location->{"start"}) {
-	    $locations->{$rank} = $location;  
-	    $self->_calcSeqOverLocations($location);
-	}
-
-	$self->set('lastPkey', $pkey);
-    } 
-    else {
-	# last entry
-	my $hasUtr = keys %{$locations};
-	if ($hasUtr) {
-	    my @ranks = sort { $a <=> $b } keys %{$locations};
-	    my $low_rank = shift @ranks;
-	    my $hi_rank = ($hasUtr > 1) ? pop @ranks : $low_rank;
-	    
-	    my $calc_location = $self->get('calc_location');
-
-	    my $low_loc_strand = $locations->{$low_rank}->{"strand"};
-	    if ($self->get('upstream_flank')) {
-		if ($low_loc_strand < 0) {
-		    $calc_location->{"start"} = $calc_location->{"end"} + 1;
-		    $calc_location->{"end"} = 
-			$calc_location->{"start"} + 
-			$self->get('upstream_flank') - 1;
-		} 
 		else {
-		    $calc_location->{"end"} = $calc_location->{"start"} - 1;
-		    $calc_location->{"start"} = 
-			$calc_location->{"start"} - 
-			$self->get('upstream_flank') + 1;
-		    $calc_location->{"start"} = 1 
-			if ($calc_location->{"start"} < 1);
+		    $self->_addRow($atable, $outRow, "Sequence unavailable");
+		    $outRow = undef;
 		}
-
-		#prepend to sequence
-		$locations->{$low_rank - 1} = $calc_location;
-	    } 
-	    elsif ($self->get('downstream_flank')) {
-		if ($low_loc_strand < 0) {
-		    $calc_location->{"end"} = $calc_location->{"start"} - 1;
-		    $calc_location->{"start"} = $calc_location->{"end"} - 
-			$self->get('downstream_flank') + 1;
-		} 
-		else {
-		    $calc_location->{"start"} = $calc_location->{"end"} + 1;
-		    $calc_location->{"end"} = $calc_location->{"start"} + 
-			$self->get('downstream_flank') - 1;
-		}
-
-		#append to sequence
-		$locations->{$hi_rank + 1} = $calc_location;
-	    }
-
-	    my $sequence = $self->_processSequence($locations);
-	    $self->_editSequence(\$sequence);
-	    if ($sequence) {
-		$locations = {};
-		$hasUtr = 0;
-		$self->_addRow($atable, $outRow, $sequence);
-		$outRow = undef;
-		$self->set('calc_location', undef);
-		} elsif((!$sequence || $sequence eq "")) {
-			$self->_addRow($atable, $outRow, "Sequence unavailable");
-			$outRow = undef;
-		} else {
-		}
-	} 
-	else {
-	    $self->_addRow($atable, $outRow, "Sequence unavailable");
-	    $outRow = undef;
 	}
-    }
-    
-    $self->set('locations', $locations);
-    $self->set('outRow', $outRow);
+ 
+	$self->set('locations', $locations);
+	$self->set('outRow', $outRow);
 }
 
 sub _snpSequences {
