@@ -863,7 +863,7 @@ sub handleURLRequest
 	my $datasets;
 	my @attributes;
 	my @attributeList = split (/\|/, $session->param("url_ATTRIBUTES") );
-
+	my $orderCount = 1;
 
 	foreach(@attributeList)
 	{
@@ -871,10 +871,10 @@ sub handleURLRequest
 		# <DatasetName>.<Interface>.<AttributePage>.<AttributeInternalName>."<Optional: attributevalue incase its an AttributeFilter>"
 		if ($temp_portions[4]) {
 			$temp_portions[4] =~ s/\"//g; # remove double quotes
-			$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'ATTRIBUTES'}->{$temp_portions[2].'.'.$temp_portions[3]}  = $temp_portions[4];
+			$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'ATTRIBUTES'}->{$orderCount++}->{$temp_portions[2].'.'.$temp_portions[3]}  = $temp_portions[4];
 		}
 		else{
-			$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'ATTRIBUTES'}->{$temp_portions[2].'.'.$temp_portions[3]}  = "NULL";
+			$datasets->{$temp_portions[0]}->{$temp_portions[1]}->{'ATTRIBUTES'}->{$orderCount++}->{$temp_portions[2].'.'.$temp_portions[3]}  = "NULL";
 		}			
 		
 		# adding dataset names in array to maintain the order of datasets for query execution
@@ -926,20 +926,22 @@ sub handleURLRequest
 		foreach my $interface(keys %{$datasets->{$dsName}}) {
 			foreach my $ATTRIBUTES (keys %{$datasets->{$dsName}->{$interface}}) {
 				if ($ATTRIBUTES eq 'ATTRIBUTES') {
-					foreach my $attTreeAttribute (keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}}) {
-						# set AttTree
-						my @portions = split(/\./,$attTreeAttribute);
-						$session->param($dsName.'__attributepage', $portions[0]) if (!$session->param($dsName.'__attributepage'));
+					foreach my $attOrder (sort keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}}) {
+						foreach my $attTreeAttribute (keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}->{$attOrder}}) {
+							# set AttTree
+							my @portions = split(/\./,$attTreeAttribute);
+							$session->param($dsName.'__attributepage', $portions[0]) if (!$session->param($dsName.'__attributepage'));
 						
-						# make a AttName ds__AttTree__attribute.internalName   FOR __attributelist
-						my $attributeString = $dsName.'__'.$portions[0].'__attribute'.'.'.$portions[1];
-						push @{$atts->{$dsName}}, $attributeString;
+							# make a AttName ds__AttTree__attribute.internalName   FOR __attributelist
+							my $attributeString = $dsName.'__'.$portions[0].'__attribute'.'.'.$portions[1];
+							push @{$atts->{$dsName}}, $attributeString;
 						
-						# it has a value- assuming its attributeFilter, then add DS_attPage_attributefilter.internalName = 'value'
-						my $val = $datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}->{$attTreeAttribute};
-						if ($val ne "NULL")	{
-							$attributeString =~ s/attribute\./attributefilter\./;
-							$session->param($attributeString, $val);								
+							# it has a value- assuming its attributeFilter, then add DS_attPage_attributefilter.internalName = 'value'
+							my $val = $datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}->{$attOrder}->{$attTreeAttribute};
+							if ($val ne "NULL")	{
+								$attributeString =~ s/attribute\./attributefilter\./;
+								$session->param($attributeString, $val);								
+							}
 						}
 					}
 				}
@@ -1038,10 +1040,12 @@ sub handleURLRequest
 		foreach my $interface(keys %{$datasets->{$dsName}}) {
 			foreach my $ATTRIBUTES (keys %{$datasets->{$dsName}->{$interface}}) {
 				if ($ATTRIBUTES eq 'ATTRIBUTES') {
-					foreach my $attTreeAttribute (keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}}) {
-						my @portions = split(/\./,$attTreeAttribute);
-						$session->param($dsName.'__attributepages__current_visible_section', $dsName.'__attributepanel__'.$portions[0])
+					foreach my $attOrder (sort keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}}) {
+						foreach my $attTreeAttribute (keys %{$datasets->{$dsName}->{$interface}->{'ATTRIBUTES'}->{$attOrder}}) {
+							my @portions = split(/\./,$attTreeAttribute);
+							$session->param($dsName.'__attributepages__current_visible_section', $dsName.'__attributepanel__'.$portions[0])
 							if (!$session->param($dsName.'__attributepages__current_visible_section'));
+						}
 					}
 				}
 			}
