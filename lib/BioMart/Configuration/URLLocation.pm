@@ -88,7 +88,7 @@ sub getResultSet {
     }
 
 	my $ua = LWP::UserAgent->new;
-	$ua->timeout(20); # default is 180 seconds
+	$ua->timeout(180); # default is 180 seconds
     $ua->proxy( ['http', 'https'], $self->proxy ) if defined $self->proxy;
     my $response = $ua->request($request);
     
